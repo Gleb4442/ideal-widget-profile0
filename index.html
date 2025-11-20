@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hilton Chat Widget</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -87,22 +87,29 @@
             animation: badge-pop 2s infinite ease-in-out; z-index: 10;
         }
 
-        /* --- CHAT WINDOW --- */
+        /* --- CHAT WINDOW (MOBILE FIRST BASE STYLES) --- */
         #chat-window {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; 
+            top: 12px; left: 12px; right: 12px; bottom: 12px;
+            width: auto; height: auto;
             background-color: white; display: flex; flex-direction: column; overflow: hidden; z-index: 1001;
+            border-radius: 20px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             opacity: 0; visibility: hidden; transform-origin: bottom right;
-            transform: scale(0.5) translateY(20px); transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            transform: scale(0.95) translateY(10px); 
+            transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
+        /* --- DESKTOP OVERRIDES --- */
         @media (min-width: 768px) {
             #chat-window {
                 top: auto; left: auto; bottom: 20px; right: 20px;
-                /* Width +10%, Height +25% approx */
                 width: 418px; height: 812px; max-height: 90vh;
                 border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+                transform: scale(0.5) translateY(20px);
             }
         }
+        
         #chat-window.open { opacity: 1; visibility: visible; transform: scale(1) translateY(0); }
 
         /* --- MESSAGES STYLING --- */
@@ -336,7 +343,10 @@
             <!-- TELEGRAM BANNER -->
             <a href="https://t.me/hilton" target="_blank" id="telegram-banner" class="bg-[#24A1DE] text-white rounded-2xl p-3 shadow-lg flex items-center gap-3 hover:opacity-95 no-underline">
                 <div class="tg-icon-wrapper w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-2.05-1.23-2.21-1.41-.37-.39.52-1.23.91-1.6 1.22-1.18 2.43-2.17 2.43-2.17s.2-.18-.05.08c-.24.26-3.45 2.36-3.7 2.53-.34.23-.97.28-1.38.16l-1.97-.6c-.48-.15-.7-.32-.67-.67.02-.4.53-.8 2.08-1.42 6.08-2.27 7.55-2.87 8.2-2.87.67 0 .62 1.3.75 1.9z"/></svg>
+                    <!-- UPDATED TELEGRAM ICON -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/>
+                    </svg>
                 </div>
                 <div class="tg-content flex flex-col pr-6">
                     <span class="text-sm font-bold leading-tight">Перейти в Telegram</span>
@@ -350,7 +360,7 @@
             <!-- INPUT AREA -->
             <div class="px-3 pb-1 pt-2">
                 <div class="input-wrapper-bg flex items-center gap-2 bg-white border border-gray-200 rounded-3xl pl-3 pr-1 py-1 focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500 transition-shadow transition-colors">
-                    <input type="text" id="message-input" placeholder="Напишите сообщение..." class="flex-1 bg-transparent border-none focus:ring-0 p-1 text-sm max-h-20 overflow-y-auto resize-none outline-none text-gray-700 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed" autocomplete="off">
+                    <input type="text" id="message-input" placeholder="Напишите сообщение..." class="flex-1 bg-transparent border-none focus:ring-0 p-1 text-base max-h-20 overflow-y-auto resize-none outline-none text-gray-700 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed" autocomplete="off">
                     <button id="send-button" class="w-10 h-10 rounded-full accent-bg text-white flex items-center justify-center accent-bg-hover transition transform hover:scale-105 flex-shrink-0 mb-0.5 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed">
                         <svg id="btn-icon-send" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
                         <svg id="btn-icon-loading" class="hidden animate-spin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
@@ -359,7 +369,7 @@
             </div>
 
             <div class="text-center pb-2 pt-1"> 
-                <span class="text-sm text-gray-400 font-medium">Powered by <a href="https://hotelmol.com" target="_blank" class="accent-text hover:underline cursor-pointer">hotelmol.com</a></span>
+                <span class="text-sm text-gray-400 font-medium">powered by <a href="https://hotelmol.com" target="_blank" class="accent-text hover:underline cursor-pointer">hotelmol.com</a></span>
             </div>
         </footer>
     </div>
@@ -383,6 +393,11 @@
         const langOptions = document.querySelectorAll('.lang-option');
         const chatButtonText = document.querySelector('.chat-button-text');
         
+        // Admin panel elements
+        const adminPanel = document.getElementById('admin-panel');
+        const openAdminBtn = document.getElementById('open-admin-btn');
+        const closeAdminBtn = document.getElementById('close-admin-btn');
+        
         const accentColorPicker = document.getElementById('accent-color-picker');
         const colorValueText = document.getElementById('color-value-text');
         const themeToggle = document.getElementById('theme-toggle');
@@ -390,11 +405,6 @@
         const logoUpload = document.getElementById('logo-upload');
         const hotelNameText = document.getElementById('hotel-name-text');
         const hotelLogoContainer = document.getElementById('hotel-logo-container');
-        
-        // Admin panel elements
-        const adminPanel = document.getElementById('admin-panel');
-        const openAdminBtn = document.getElementById('open-admin-btn');
-        const closeAdminBtn = document.getElementById('close-admin-btn');
 
         let welcomed = false;
         let currentLang = 'ru';
