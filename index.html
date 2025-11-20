@@ -3,25 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Прототип ИИ-чата для Отеля</title>
-    <!-- Подключаем Tailwind CSS -->
+    <title>Hilton Chat Widget</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Подключаем шрифт Inter -->
+    <!-- Font Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
         /*
-         * CSS ПЕРЕМЕННЫЕ ДЛЯ АКЦЕНТНОГО ЦВЕТА
+         * --- CSS VARIABLES & THEME ---
          */
         :root {
-            --accent-color: #2563eb; /* Default blue-600 */
-            --accent-hover: #1d4ed8; /* Default blue-700 */
-            --accent-rgb: 37, 99, 235; /* Для полупрозрачных эффектов */
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-rgb: 37, 99, 235;
         }
 
-        /*
-         * Глобальные стили
-         */
         body {
             background-color: #ffffff;
             font-family: 'Inter', sans-serif;
@@ -29,10 +26,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
+            overflow: hidden;
         }
 
-        /* * СТИЛИ ТЕМНОЙ ТЕМЫ (Применяются только к #chat-window) */
+        /* --- DARK MODE STYLES (Applied to #chat-window only) --- */
         #chat-window.dark-mode {
             background-color: #1f2937; border-color: #374151;
         }
@@ -48,173 +45,97 @@
         #chat-window.dark-mode .lang-option:hover { background-color: #374151; }
         #chat-window.dark-mode .lang-option.selected { background-color: #374151; color: var(--accent-color); }
 
-        /* * ПРИМЕНЕНИЕ АКЦЕНТНОГО ЦВЕТА */
+        /* --- UTILITIES --- */
         .accent-bg { background-color: var(--accent-color) !important; }
         .accent-bg-hover:hover { background-color: var(--accent-hover) !important; }
         .accent-text { color: var(--accent-color) !important; }
         .accent-border { border-color: var(--accent-color) !important; }
         .accent-fill { fill: var(--accent-color) !important; }
+        .hidden-important { display: none !important; }
 
-        
-        /* Кнопка виджета */
+        /* --- WIDGET BUTTON --- */
         #chat-widget-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: auto;
-            padding: 12px 24px;
-            border-radius: 30px;
-            gap: 10px;
-            background-color: var(--accent-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            z-index: 1000;
-            border: none;
-            /* Комбинированная анимация: Маяк + Периодическая встряска */
+            position: fixed; bottom: 20px; right: 20px; width: auto; padding: 12px 24px;
+            border-radius: 30px; gap: 10px; background-color: var(--accent-color);
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); transition: all 0.3s ease; z-index: 1000; border: none;
             animation: ripple 2s infinite, shake-interval 6s infinite ease-in-out;
         }
+        #chat-widget-button:hover { transform: scale(1.05); animation-play-state: paused; background-color: var(--accent-hover); }
+        .chat-button-text { color: white; font-weight: 600; font-size: 16px; line-height: 1; white-space: nowrap; }
 
-        #chat-widget-button:hover {
-            transform: scale(1.05);
-            animation-play-state: paused; /* Останавливаем при наведении */
-            background-color: var(--accent-hover);
-        }
-
-        /* Анимация "Маяк" (Ripple) */
         @keyframes ripple {
             0% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.7); }
             70% { box-shadow: 0 0 0 15px rgba(var(--accent-rgb), 0); }
             100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0); }
         }
-
-        /* Анимация "Периодическая встряска" */
         @keyframes shake-interval {
             0%, 85% { transform: rotate(0deg); }
-            87% { transform: rotate(-5deg); }
-            89% { transform: rotate(5deg); }
-            91% { transform: rotate(-5deg); }
-            93% { transform: rotate(5deg); }
-            95% { transform: rotate(0deg); }
-            100% { transform: rotate(0deg); }
+            87% { transform: rotate(-5deg); } 89% { transform: rotate(5deg); }
+            91% { transform: rotate(-5deg); } 93% { transform: rotate(5deg); }
+            95%, 100% { transform: rotate(0deg); }
         }
-
-        .chat-button-text {
-            color: white;
-            font-weight: 600;
-            font-size: 16px;
-            line-height: 1;
-            white-space: nowrap;
-        }
-        
-        /* Анимация подпрыгивания для значка */
         @keyframes badge-pop {
             0%, 100% { transform: scale(1) translateY(0); }
             50% { transform: scale(1.1) translateY(-4px); }
         }
 
-        /* Значок уведомления */
         #chat-notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 20px;
-            height: 20px;
-            background-color: #ef4444;
-            color: white;
-            font-size: 11px;
-            font-weight: bold;
-            border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            animation: badge-pop 2s infinite ease-in-out;
-            z-index: 10;
+            position: absolute; top: -5px; right: -5px; display: flex; align-items: center; justify-content: center;
+            width: 20px; height: 20px; background-color: #ef4444; color: white;
+            font-size: 11px; font-weight: bold; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            animation: badge-pop 2s infinite ease-in-out; z-index: 10;
         }
 
-        /* Окно чата */
+        /* --- CHAT WINDOW --- */
         #chat-window {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            z-index: 1001;
-            opacity: 0;
-            visibility: hidden;
-            transform-origin: bottom right;
-            transform: scale(0.5) translateY(20px);
-            transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: white; display: flex; flex-direction: column; overflow: hidden; z-index: 1001;
+            opacity: 0; visibility: hidden; transform-origin: bottom right;
+            transform: scale(0.5) translateY(20px); transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
         @media (min-width: 768px) {
             #chat-window {
-                top: auto;
-                left: auto;
-                bottom: 90px;
-                right: 20px;
-                width: 380px;
-                height: 650px;
-                max-height: 85vh;
-                border-radius: 16px;
-                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                top: auto; left: auto; bottom: 20px; right: 20px;
+                /* Width +10%, Height +25% approx */
+                width: 418px; height: 812px; max-height: 90vh;
+                border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             }
         }
+        #chat-window.open { opacity: 1; visibility: visible; transform: scale(1) translateY(0); }
 
-        #chat-window.open {
-            opacity: 1;
-            visibility: visible;
-            transform: scale(1) translateY(0);
-        }
-
-        /* Сообщения */
+        /* --- MESSAGES STYLING --- */
         .chat-message-user {
-            background-color: var(--accent-color); color: white;
-            align-self: flex-end; border-radius: 18px 18px 4px 18px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            background-color: var(--accent-color); color: white; align-self: flex-end;
+            border-radius: 18px 18px 4px 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; max-width: 85%;
         }
         .chat-message-ai {
-            background-color: #f3f4f6; color: #1f2937;
-            align-self: flex-start; border-radius: 18px 18px 18px 4px;
+            background-color: #f3f4f6; color: #1f2937; align-self: flex-start; border-radius: 18px 18px 18px 4px;
+            word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; max-width: 85%;
         }
 
-        /* Индикатор набора */
         .typing-indicator-bubble {
-            display: flex; align-items: center; padding: 12px 16px;
-            background-color: #f3f4f6; border-radius: 18px 18px 18px 4px;
-            align-self: flex-start; width: fit-content; margin-bottom: 4px;
+            display: flex; align-items: center; padding: 12px 16px; background-color: #f3f4f6;
+            border-radius: 18px 18px 18px 4px; align-self: flex-start; width: fit-content; margin-bottom: 4px;
         }
         .typing-indicator-bubble span {
-            height: 8px; width: 8px; background-color: #9ca3af;
-            border-radius: 50%; display: inline-block; margin: 0 2px;
+            height: 8px; width: 8px; background-color: #9ca3af; border-radius: 50%; display: inline-block; margin: 0 2px;
             animation: typing-bounce 1.4s infinite ease-in-out both;
         }
         .typing-indicator-bubble span:nth-child(1) { animation-delay: -0.32s; }
         .typing-indicator-bubble span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes typing-bounce {
-            0%, 80%, 100% { transform: scale(0); opacity: 0.6; }
-            40% { transform: scale(1); opacity: 1; }
-        }
+        @keyframes typing-bounce { 0%, 80%, 100% { transform: scale(0); opacity: 0.6; } 40% { transform: scale(1); opacity: 1; } }
 
         #chat-messages::-webkit-scrollbar { width: 6px; }
         #chat-messages::-webkit-scrollbar-track { background: transparent; }
         #chat-messages::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.1); border-radius: 20px; }
 
-        /* Меню языка */
         #lang-dropdown {
-            position: absolute; top: 100%; right: 0; margin-top: 8px;
-            background-color: white; border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15); padding: 4px; min-width: 120px;
-            opacity: 0; visibility: hidden; transform: translateY(-10px);
-            transition: all 0.2s ease; z-index: 60;
+            position: absolute; top: 100%; right: 0; margin-top: 8px; background-color: white;
+            border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); padding: 4px; min-width: 120px;
+            opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.2s ease; z-index: 60;
         }
         #lang-dropdown.active { opacity: 1; visibility: visible; transform: translateY(0); }
         .lang-option {
@@ -224,7 +145,6 @@
         .lang-option:hover { background-color: #f3f4f6; color: var(--accent-color); }
         .lang-option.selected { background-color: #eff6ff; color: var(--accent-color); }
 
-        /* Telegram Баннер */
         #telegram-banner {
             position: absolute; bottom: 100%; left: 12px; right: 12px; margin-bottom: 30px;
             transform: translateY(0); overflow: hidden; white-space: nowrap; height: 64px; z-index: 50;
@@ -238,15 +158,33 @@
         #telegram-banner.collapsed .tg-icon-wrapper { margin: 0; background-color: transparent; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
         #telegram-banner.collapsed .tg-icon-wrapper svg { width: 20px; height: 20px; }
 
-        /* * СТИЛИ ДЛЯ АДМИН ПАНЕЛИ */
+        /* --- ADMIN PANEL --- */
         #admin-panel {
             position: fixed; top: 20px; left: 20px; background: white; padding: 20px;
             border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 2000;
             width: 280px; font-family: 'Inter', sans-serif; border: 1px solid #e5e7eb;
-            max-height: 90vh; overflow-y: auto; /* На случай, если панель станет высокой */
+            max-height: 90vh; overflow-y: auto;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        #admin-panel.hidden-panel {
+            transform: translateX(-120%);
+            opacity: 0;
+            pointer-events: none;
         }
         #admin-panel::-webkit-scrollbar { width: 4px; }
         #admin-panel::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
+        
+        /* Кнопка открытия админки */
+        #open-admin-btn {
+            position: fixed; top: 20px; left: 20px;
+            width: 40px; height: 40px; background: white; border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 1999;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border: 1px solid #e5e7eb; color: #4b5563;
+            transition: all 0.3s ease;
+        }
+        #open-admin-btn:hover { transform: rotate(90deg); color: var(--accent-color); }
+        #open-admin-btn.hidden-btn { display: none !important; }
 
         .admin-control { margin-bottom: 16px; }
         .admin-label {
@@ -255,42 +193,24 @@
         }
         .color-picker-wrapper { display: flex; align-items: center; gap: 10px; }
         input[type="color"] {
-            -webkit-appearance: none; border: none; width: 40px; height: 40px;
-            border-radius: 50%; cursor: pointer; padding: 0; overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            -webkit-appearance: none; border: none; width: 40px; height: 40px; border-radius: 50%;
+            cursor: pointer; padding: 0; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
         input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
-        
-        /* Стиль для текстового поля админки */
         .admin-input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 14px;
-            color: #374151;
-            outline: none;
+            width: 100%; padding: 8px 12px; border: 1px solid #d1d5db;
+            border-radius: 8px; font-size: 14px; color: #374151; outline: none;
             transition: border-color 0.2s;
         }
         .admin-input:focus { border-color: var(--accent-color); }
-
-        /* Стиль для загрузки файла */
         .file-upload-btn {
-            display: block;
-            width: 100%;
-            padding: 8px;
-            text-align: center;
-            background-color: #f3f4f6;
-            border: 1px dashed #d1d5db;
-            border-radius: 8px;
-            font-size: 13px;
-            color: #6b7280;
-            cursor: pointer;
+            display: block; width: 100%; padding: 8px; text-align: center;
+            background-color: #f3f4f6; border: 1px dashed #d1d5db;
+            border-radius: 8px; font-size: 13px; color: #6b7280; cursor: pointer;
             transition: all 0.2s;
         }
         .file-upload-btn:hover { background-color: #e5e7eb; border-color: #9ca3af; }
-
         .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
@@ -303,22 +223,29 @@
         }
         input:checked + .slider { background-color: var(--accent-color); }
         input:checked + .slider:before { transform: translateX(24px); }
-
     </style>
 </head>
 <body>
 
-    <!-- АДМИН ПАНЕЛЬ -->
+    <!-- ADMIN TOGGLE BUTTON (Visible when panel is closed) -->
+    <button id="open-admin-btn" class="hidden-btn" aria-label="Открыть настройки">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.35a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+    </button>
+
+    <!-- ADMIN PANEL -->
     <div id="admin-panel">
-        <h3 class="font-bold text-lg mb-4">⚙️ Админ Панель</h3>
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-lg">⚙️ Админ Панель</h3>
+            <button id="close-admin-btn" class="text-gray-400 hover:text-gray-600 p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
         
-        <!-- Смена названия -->
         <div class="admin-control">
             <span class="admin-label">Название отеля</span>
             <input type="text" id="hotel-name-input" class="admin-input" placeholder="Введите название" value="Hilton">
         </div>
 
-        <!-- Смена логотипа -->
         <div class="admin-control">
             <span class="admin-label">Логотип (Фото)</span>
             <label class="file-upload-btn">
@@ -327,7 +254,6 @@
             </label>
         </div>
 
-        <!-- Смена цвета -->
         <div class="admin-control">
             <span class="admin-label">Акцентный цвет</span>
             <div class="color-picker-wrapper">
@@ -336,7 +262,6 @@
             </div>
         </div>
 
-        <!-- Темная тема -->
         <div class="admin-control">
             <span class="admin-label">Тема оформления</span>
             <div class="flex items-center justify-between">
@@ -349,7 +274,7 @@
         </div>
     </div>
 
-    <!-- 1. КНОПКА ВИДЖЕТА -->
+    <!-- WIDGET BUTTON -->
     <button id="chat-widget-button" aria-label="Открыть чат">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -358,15 +283,14 @@
         <span id="chat-notification-badge">1</span>
     </button>
 
-    <!-- 2. ОКНО ЧАТА -->
+    <!-- CHAT WINDOW -->
     <div id="chat-window">
-        <!-- Заголовок -->
+        <!-- HEADER -->
         <header class="accent-bg text-white p-4 flex justify-between items-center shadow-md flex-shrink-0 z-20 relative">
             <div class="flex items-center gap-3">
                 <div class="relative">
-                    <!-- Круг логотипа (добавлен ID для JS) -->
                     <div id="hotel-logo-container" class="w-12 h-12 rounded-full bg-white accent-text flex items-center justify-center shadow-sm overflow-hidden">
-                        <!-- Изначальный логотип (SVG) -->
+                        <!-- DEFAULT LOGO (SVG) -->
                         <svg width="32" height="32" viewBox="0 0 200 200" fill="currentColor" xmlns="http://www.w3.org/2000/svg" class="accent-fill">
                             <g>
                                 <path d="M100 0C44.7715 0 0 44.7715 0 100C0 155.228 44.7715 200 100 200C155.228 200 200 155.228 200 100C200 44.7715 155.228 0 100 0ZM100 190C50.2944 190 10 149.706 10 100C10 50.2944 50.2944 10 100 10C149.706 10 190 50.2944 190 100C190 149.706 149.706 190 100 190Z"/>
@@ -376,11 +300,9 @@
                             </g>
                         </svg>
                     </div>
-                    <!-- Зеленый кружочек -->
                     <div class="absolute bottom-0 right-0 w-4 h-4 bg-green-400 border-2 accent-border rounded-full" title="Онлайн"></div>
                 </div>
                 <div>
-                    <!-- Название отеля (добавлен ID для JS) -->
                     <h3 id="hotel-name-text" class="text-lg font-bold leading-tight tracking-wide">Hilton</h3>
                 </div>
             </div>
@@ -400,7 +322,7 @@
             </div>
         </header>
 
-        <!-- Область сообщений -->
+        <!-- MESSAGES -->
         <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3 flex flex-col bg-white relative">
             <div id="typing-indicator" class="hidden" aria-hidden="true">
                 <div class="typing-indicator-bubble">
@@ -409,10 +331,9 @@
             </div>
         </div>
 
-        <!-- Нижняя панель: Footer -->
+        <!-- FOOTER -->
         <footer class="border-t border-gray-100 bg-gray-50 flex-shrink-0 flex flex-col relative z-20">
-            
-            <!-- БАННЕР TELEGRAM -->
+            <!-- TELEGRAM BANNER -->
             <a href="https://t.me/hilton" target="_blank" id="telegram-banner" class="bg-[#24A1DE] text-white rounded-2xl p-3 shadow-lg flex items-center gap-3 hover:opacity-95 no-underline">
                 <div class="tg-icon-wrapper w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white flex-shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-2.05-1.23-2.21-1.41-.37-.39.52-1.23.91-1.6 1.22-1.18 2.43-2.17 2.43-2.17s.2-.18-.05.08c-.24.26-3.45 2.36-3.7 2.53-.34.23-.97.28-1.38.16l-1.97-.6c-.48-.15-.7-.32-.67-.67.02-.4.53-.8 2.08-1.42 6.08-2.27 7.55-2.87 8.2-2.87.67 0 .62 1.3.75 1.9z"/></svg>
@@ -426,7 +347,7 @@
                 </button>
             </a>
 
-            <!-- Основная строка ввода -->
+            <!-- INPUT AREA -->
             <div class="px-3 pb-1 pt-2">
                 <div class="input-wrapper-bg flex items-center gap-2 bg-white border border-gray-200 rounded-3xl pl-3 pr-1 py-1 focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500 transition-shadow transition-colors">
                     <input type="text" id="message-input" placeholder="Напишите сообщение..." class="flex-1 bg-transparent border-none focus:ring-0 p-1 text-sm max-h-20 overflow-y-auto resize-none outline-none text-gray-700 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed" autocomplete="off">
@@ -443,7 +364,7 @@
         </footer>
     </div>
 
-    <!-- 3. JAVASCRIPT ЛОГИКА -->
+    <!-- JS LOGIC -->
     <script>
         const widgetButton = document.getElementById('chat-widget-button');
         const chatWindow = document.getElementById('chat-window');
@@ -462,16 +383,18 @@
         const langOptions = document.querySelectorAll('.lang-option');
         const chatButtonText = document.querySelector('.chat-button-text');
         
-        // Admin controls elements
         const accentColorPicker = document.getElementById('accent-color-picker');
         const colorValueText = document.getElementById('color-value-text');
         const themeToggle = document.getElementById('theme-toggle');
         const hotelNameInput = document.getElementById('hotel-name-input');
         const logoUpload = document.getElementById('logo-upload');
-        
-        // Elements to update
         const hotelNameText = document.getElementById('hotel-name-text');
         const hotelLogoContainer = document.getElementById('hotel-logo-container');
+        
+        // Admin panel elements
+        const adminPanel = document.getElementById('admin-panel');
+        const openAdminBtn = document.getElementById('open-admin-btn');
+        const closeAdminBtn = document.getElementById('close-admin-btn');
 
         let welcomed = false;
         let currentLang = 'ru';
@@ -483,65 +406,48 @@
             en: { buttonText: "Chat with Hotel", placeholder: "Type a message...", welcome: "Hello! Welcome to Hilton. How can I help you with your reservation?", defaultAI: "Sorry, I am still learning. Can I help you book a room?", keywords: { hello: /(hello|hi|greetings|hey)/, book: /(book|reserve|room|reservation)/, price: /(price|cost|rates|much)/, thanks: /(thanks|thank you)/ }, answers: { hello: "Good afternoon! Glad to see you at Hilton. Planning a trip to us?", book: "I'd be happy to help with your booking! 📅 \nWhat dates are you planning to check in?", price: "💰 **Our Rates:**\n• King Room: from $180/night\n• Executive Suite: from $350/night. Should I check availability?", thanks: "You are always welcome! Have a nice day! ☀️" } }
         };
 
-        // --- Admin Panel Logic ---
+        // --- Admin Visibility Logic ---
+        function closeAdmin() {
+            adminPanel.classList.add('hidden-panel');
+            openAdminBtn.classList.remove('hidden-btn');
+        }
+        function openAdmin() {
+            adminPanel.classList.remove('hidden-panel');
+            openAdminBtn.classList.add('hidden-btn');
+        }
+        closeAdminBtn.addEventListener('click', closeAdmin);
+        openAdminBtn.addEventListener('click', openAdmin);
 
-        // 1. Change Hotel Name
-        hotelNameInput.addEventListener('input', (e) => {
-            hotelNameText.textContent = e.target.value || "Hilton";
-        });
-
-        // 2. Upload Logo
+        // --- Admin Functional Logic ---
+        hotelNameInput.addEventListener('input', (e) => { hotelNameText.textContent = e.target.value || "Hilton"; });
         logoUpload.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    // Заменяем содержимое контейнера логотипа на изображение
-                    hotelLogoContainer.innerHTML = `<img src="${event.target.result}" class="w-full h-full object-cover rounded-full" alt="Logo">`;
-                }
+                reader.onload = function(event) { hotelLogoContainer.innerHTML = `<img src="${event.target.result}" class="w-full h-full object-cover rounded-full" alt="Logo">`; }
                 reader.readAsDataURL(file);
             }
         });
-
-        // 3. Change Accent Color
         accentColorPicker.addEventListener('input', (e) => {
             const color = e.target.value;
             colorValueText.textContent = color;
             document.documentElement.style.setProperty('--accent-color', color);
-            
-            const hexToRgb = (hex) => {
-                let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-                return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '37, 99, 235';
-            }
+            const hexToRgb = (hex) => { let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '37, 99, 235'; }
             document.documentElement.style.setProperty('--accent-rgb', hexToRgb(color));
-            
             const darkenColor = (hex, percent) => {
-                let num = parseInt(hex.replace("#",""), 16),
-                amt = Math.round(2.55 * percent),
-                R = (num >> 16) - amt,
-                G = (num >> 8 & 0x00FF) - amt,
-                B = (num & 0x0000FF) - amt;
+                let num = parseInt(hex.replace("#",""), 16), amt = Math.round(2.55 * percent), R = (num >> 16) - amt, G = (num >> 8 & 0x00FF) - amt, B = (num & 0x0000FF) - amt;
                 return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1);
             };
             document.documentElement.style.setProperty('--accent-hover', darkenColor(color, 20));
         });
-
-        // 4. Toggle Dark Theme
         themeToggle.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                chatWindow.classList.add('dark-mode');
-            } else {
-                chatWindow.classList.remove('dark-mode');
-            }
+            if (e.target.checked) { chatWindow.classList.add('dark-mode'); } else { chatWindow.classList.remove('dark-mode'); }
         });
 
-        // --- Existing Chat Logic ---
-
+        // --- Chat Logic ---
         function updateLanguage(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            messageInput.placeholder = t.placeholder;
-            chatButtonText.textContent = t.buttonText;
+            currentLang = lang; const t = translations[lang];
+            messageInput.placeholder = t.placeholder; chatButtonText.textContent = t.buttonText;
             langOptions.forEach(opt => { if (opt.dataset.lang === lang) opt.classList.add('selected'); else opt.classList.remove('selected'); });
         }
 
@@ -553,28 +459,36 @@
 
         function toggleChat() {
             const isOpen = chatWindow.classList.contains('open');
+            const isMobile = window.innerWidth < 768; // Add this check
+
             if (isOpen) { 
+                // CLOSING CHAT
                 chatWindow.classList.remove('open'); 
                 widgetButton.style.display = 'flex'; 
+
+                if (isMobile) {
+                    // Restore admin button on mobile close
+                    openAdminBtn.style.display = ''; // Unhide
+                    closeAdmin(); // Ensure panel itself is closed but button is visible
+                }
             } else { 
+                // OPENING CHAT
                 chatWindow.classList.add('open'); 
+                widgetButton.style.display = 'none'; 
                 if(notificationBadge) notificationBadge.style.display = 'none'; 
                 messageInput.focus(); 
-                if (!welcomed) { 
-                    simulateWelcome(); 
-                    welcomed = true; 
-                } 
+                
+                // Auto-hide admin panel AND toggle button on mobile when chat opens
+                if (isMobile) {
+                    adminPanel.classList.add('hidden-panel'); // Hide panel
+                    openAdminBtn.style.display = 'none'; // Hide toggle button
+                }
+
+                if (!welcomed) { simulateWelcome(); welcomed = true; } 
             }
         }
 
-        function simulateWelcome() { 
-            showTyping(); 
-            setTimeout(() => { 
-                hideTyping(); 
-                addMessage(translations[currentLang].welcome, 'ai'); 
-            }, 1000); 
-        }
-        
+        function simulateWelcome() { showTyping(); setTimeout(() => { hideTyping(); addMessage(translations[currentLang].welcome, 'ai'); }, 1000); }
         function addMessage(text, sender) { 
             const messageElement = document.createElement('div'); 
             messageElement.className = `chat-message-${sender} p-3 max-w-[85%] text-sm leading-relaxed animate-fade-in mb-2`; 
@@ -582,23 +496,12 @@
             messagesContainer.insertBefore(messageElement, typingIndicator); 
             messagesContainer.scrollTop = messagesContainer.scrollHeight; 
         }
-
-        function showTyping() { 
-            typingIndicator.classList.remove('hidden');
-            messagesContainer.scrollTop = messagesContainer.scrollHeight; 
-        }
-        function hideTyping() { 
-            typingIndicator.classList.add('hidden'); 
-        }
-
+        function showTyping() { typingIndicator.classList.remove('hidden'); messagesContainer.scrollTop = messagesContainer.scrollHeight; }
+        function hideTyping() { typingIndicator.classList.add('hidden'); }
+        
         function setButtonLoading(isLoading) {
-            if (isLoading) {
-                btnIconSend.classList.add('hidden'); btnIconLoading.classList.remove('hidden');
-                sendButton.disabled = true; messageInput.disabled = true;
-            } else {
-                btnIconSend.classList.remove('hidden'); btnIconLoading.classList.add('hidden');
-                sendButton.disabled = false; messageInput.disabled = false; messageInput.focus();
-            }
+            if (isLoading) { btnIconSend.classList.add('hidden'); btnIconLoading.classList.remove('hidden'); sendButton.disabled = true; messageInput.disabled = true; } 
+            else { btnIconSend.classList.remove('hidden'); btnIconLoading.classList.add('hidden'); sendButton.disabled = false; messageInput.disabled = false; messageInput.focus(); }
         }
 
         function getAIResponse(userMessage) {
@@ -607,39 +510,18 @@
             else if (lowerMessage.match(t.keywords.book)) aiResponse = t.answers.book;
             else if (lowerMessage.match(t.keywords.price)) aiResponse = t.answers.price;
             else if (lowerMessage.match(t.keywords.thanks)) aiResponse = t.answers.thanks;
-            
-            setTimeout(() => { 
-                hideTyping(); 
-                isGenerating = false; 
-                setButtonLoading(false); 
-                addMessage(aiResponse, 'ai'); 
-            }, 2500);
+            setTimeout(() => { hideTyping(); isGenerating = false; setButtonLoading(false); addMessage(aiResponse, 'ai'); }, 2500);
         }
 
         function handleSendMessage() { 
             if (isGenerating) return;
             const text = messageInput.value.trim(); 
             if (text === '') return; 
-            
-            isGenerating = true;
-            addMessage(text, 'user'); 
-            messageInput.value = ''; 
-            setButtonLoading(true);
-            
-            showTyping();
-            
-            getAIResponse(text); 
+            isGenerating = true; addMessage(text, 'user'); messageInput.value = ''; setButtonLoading(true); showTyping(); getAIResponse(text); 
         }
         
-        widgetButton.addEventListener('click', toggleChat); 
-        closeButton.addEventListener('click', toggleChat); 
-        sendButton.addEventListener('click', handleSendMessage);
-        messageInput.addEventListener('keydown', (event) => { 
-            if (event.key === 'Enter' && !event.shiftKey) { 
-                event.preventDefault(); 
-                handleSendMessage(); 
-            } 
-        });
+        widgetButton.addEventListener('click', toggleChat); closeButton.addEventListener('click', toggleChat); sendButton.addEventListener('click', handleSendMessage);
+        messageInput.addEventListener('keydown', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); handleSendMessage(); } });
     </script>
 </body>
 </html>
