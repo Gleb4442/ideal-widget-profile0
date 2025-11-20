@@ -170,7 +170,7 @@
         /* --- SCROLL TO BOTTOM BUTTON --- */
         #scroll-to-bottom-btn {
             position: absolute;
-            /* CHANGE: Raised bottom position to align with TG button */
+            /* Raised bottom position to align with TG button */
             bottom: 130px; 
             
             /* Center Positioning */
@@ -242,8 +242,11 @@
         /* Removed Lang Dropdown styles */
 
         #telegram-banner {
-            position: absolute; bottom: 100%; left: 12px; right: 12px; margin-bottom: 30px;
+            position: absolute; bottom: 100%; left: 12px; right: 12px; 
+            /* CHANGE: Updated margin-bottom to 27px */
+            margin-bottom: 27px;
             transform: translateY(0); overflow: hidden; white-space: nowrap; height: 64px; z-index: 50;
+            cursor: pointer; /* Make it look clickable */
         }
         #telegram-banner.collapsed {
             /* Updated COMPACT styles */
@@ -418,8 +421,8 @@
                         <!-- DEFAULT LOGO: TEXT H -->
                         <span class="text-2xl font-bold accent-text">H</span>
                     </div>
-                    <!-- CHANGE: Increased size of online indicator to exactly 13px -->
-                    <div class="absolute bottom-0 right-0 w-[13px] h-[13px] bg-green-400 border-2 accent-border rounded-full" title="Онлайн"></div>
+                    <!-- CHANGE: Increased size of online indicator to exactly 14px -->
+                    <div class="absolute bottom-0 right-0 w-[14px] h-[14px] bg-green-400 border-2 accent-border rounded-full" title="Онлайн"></div>
                 </div>
                 <div><h3 id="hotel-name-text" class="text-lg font-bold leading-tight tracking-wide">Hilton</h3></div>
             </div>
@@ -464,9 +467,31 @@
             </div>
         </div>
 
+        <!-- NEW: TELEGRAM CONFIRMATION MODAL -->
+        <div id="tg-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
+             <div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
+                <!-- CHANGE: Replaced Icon with Telegram Plane Icon -->
+                <div class="mx-auto w-12 h-12 bg-[#24A1DE]/20 rounded-full flex items-center justify-center mb-4 text-[#24A1DE]">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg>
+                </div>
+                <!-- CHANGE: Updated Text -->
+                <h4 class="text-lg font-bold mb-2">Бажаєте перейти?</h4>
+                <p class="modal-text-secondary text-sm text-gray-500 mb-6">Ви будете перенаправлені у зовнішній додаток.</p>
+                <div class="flex flex-col gap-2">
+                    <button id="confirm-tg-btn" class="w-full py-2.5 bg-[#24A1DE] hover:bg-[#1e88bd] text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2">
+                        <span>Перейти</span>
+                    </button>
+                    <button id="cancel-tg-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">
+                        Скасувати
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- FOOTER -->
         <footer id="chat-footer" class="border-t border-gray-100 bg-gray-50 flex-shrink-0 flex flex-col relative z-20 transition-all">
-            <a href="https://t.me/hilton" target="_blank" id="telegram-banner" class="bg-[#24A1DE] text-white rounded-2xl p-3 shadow-lg flex items-center gap-3 hover:opacity-95 no-underline">
+            <!-- Changed href to javascript:void(0) to prevent default navigation -->
+            <a href="javascript:void(0)" id="telegram-banner" class="bg-[#24A1DE] text-white rounded-2xl p-3 shadow-lg flex items-center gap-3 hover:opacity-95 no-underline">
                 <div class="tg-icon-wrapper w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white flex-shrink-0">
                     <svg class="-ml-1 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg>
                 </div>
@@ -512,10 +537,15 @@
         const chatButtonText = document.querySelector('.chat-button-text');
         const scrollToBottomBtn = document.getElementById('scroll-to-bottom-btn');
         
-        // Modal Elements
+        // Reset Modal Elements
         const resetConfirmationModal = document.getElementById('reset-confirmation-modal');
         const confirmResetBtn = document.getElementById('confirm-reset-btn');
         const cancelResetBtn = document.getElementById('cancel-reset-btn');
+        
+        // Telegram Modal Elements
+        const tgConfirmationModal = document.getElementById('tg-confirmation-modal');
+        const confirmTgBtn = document.getElementById('confirm-tg-btn');
+        const cancelTgBtn = document.getElementById('cancel-tg-btn');
 
         const adminPanel = document.getElementById('admin-panel');
         const openAdminBtn = document.getElementById('open-admin-btn');
@@ -565,8 +595,40 @@
         }
         initLanguage();
 
-        tgBanner.addEventListener('click', function(e) { if (this.classList.contains('collapsed')) { e.preventDefault(); this.classList.remove('collapsed'); } });
-        closeTgBannerBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); tgBanner.classList.add('collapsed'); });
+        // TELEGRAM BANNER LOGIC
+        tgBanner.addEventListener('click', function(e) { 
+            // If it's collapsed, we PREVENT default action (which is nothing now since href is void)
+            // and show the confirmation modal.
+            // If it's NOT collapsed (expanded), we allow the user to go to Telegram.
+            
+            if (this.classList.contains('collapsed')) { 
+                e.preventDefault(); 
+                tgConfirmationModal.classList.remove('hidden');
+            } else {
+                // Expanded state: Direct navigation
+                // Using window.open because href is javascript:void(0)
+                window.open('https://t.me/hilton', '_blank');
+            }
+        });
+
+        // Telegram Modal Actions
+        confirmTgBtn.addEventListener('click', () => {
+             window.open('https://t.me/hilton', '_blank');
+             tgConfirmationModal.classList.add('hidden');
+        });
+
+        cancelTgBtn.addEventListener('click', () => {
+             tgConfirmationModal.classList.add('hidden');
+        });
+
+        // Updated Close Button Logic:
+        // Prevent Default, Stop Propagation (so it doesn't trigger the banner click),
+        // and add the 'collapsed' class.
+        closeTgBannerBtn.addEventListener('click', (e) => { 
+            e.preventDefault(); 
+            e.stopPropagation(); 
+            tgBanner.classList.add('collapsed'); 
+        });
         
         function toggleChat() { 
             const isOpen = chatWindow.classList.contains('open'); 
