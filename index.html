@@ -226,34 +226,48 @@
         }
         .close-banner-btn:hover { background-color: rgba(0,0,0,0.1); color: white; }
 
-        /* Collapsed State (Small Circle) */
+        /* * --- UPDATED COLLAPSED STATE (SIDE TAB STYLE) --- 
+         */
         .contact-banner.collapsed {
-            width: 74px; height: 36px;
-            left: auto; right: 12px; 
-            border-radius: 24px;
-            padding: 0 4px;
+            width: 60px; /* Smaller width just for icon */
+            height: 40px; /* Slightly taller for touch target */
+            left: auto; 
+            right: -20px; /* Push half off the viewport to the right */
+            border-radius: 24px 0 0 24px; /* Round left side, flat right side like a tab */
+            padding: 0 0 0 10px; /* Push icon slightly left to align in visible area */
+            justify-content: flex-start; /* Align icon to the left */
+            box-shadow: -2px 2px 8px rgba(0,0,0,0.15);
         }
+
+        /* Slide out slightly on hover for better UX */
+        .contact-banner.collapsed:hover {
+            right: -10px;
+        }
+
         .contact-banner.collapsed .banner-content, 
         .contact-banner.collapsed .close-banner-btn { 
             opacity: 0; pointer-events: none; position: absolute; 
         }
+        
+        /* Adjust icon size in collapsed state */
         .contact-banner.collapsed .banner-icon-wrapper {
-            width: 28px; height: 28px; margin-left: 2px;
+            width: 28px; height: 28px; margin: 0;
+            background-color: transparent; /* Remove icon background to reduce clutter */
         }
-        .contact-banner.collapsed svg.main-icon { width: 14px; height: 14px; }
+        .contact-banner.collapsed svg.main-icon { width: 16px; height: 16px; }
 
-        /* Arrow that appears in collapsed state */
+        /* Hide arrow in collapsed state to save space */
         .expand-arrow { 
             display: none; width: 18px; height: 18px; margin-right: 6px; color: white; flex-shrink: 0; 
         }
-        .contact-banner.collapsed .expand-arrow { display: block; }
+        /* Removed the display:block rule for collapsed arrow */
 
 
         /* --- ADMIN PANEL --- */
         #admin-panel {
             position: fixed; top: 20px; left: 20px; background: white; padding: 20px;
             border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 2000;
-            width: 280px; font-family: 'Inter', sans-serif; border: 1px solid #e5e7eb;
+            width: 320px; font-family: 'Inter', sans-serif; border: 1px solid #e5e7eb;
             max-height: 90vh; overflow-y: auto;
             transition: transform 0.3s ease, opacity 0.3s ease;
         }
@@ -375,6 +389,55 @@
                 <span class="text-sm text-gray-600">Темна тема</span>
                 <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider"></span></label>
             </div>
+        </div>
+
+        <!-- BUTTON BUILDER -->
+        <hr class="my-4 border-gray-200">
+        <h3 class="font-bold text-lg mb-4">🛠 Конструктор Кнопки</h3>
+
+        <div class="admin-control">
+            <span class="admin-label">Текст кнопки</span>
+            <input type="text" id="builder-text" class="admin-input" value="Написати нам">
+        </div>
+
+        <!-- REMOVED: Button Logo Input -->
+
+        <div class="admin-control">
+            <span class="admin-label">Колір фону</span>
+            <div class="color-picker-wrapper">
+                <input type="color" id="builder-color" value="#2563eb">
+                <span id="builder-color-val" class="text-sm font-mono opacity-70">#2563eb</span>
+            </div>
+        </div>
+
+        <div class="admin-control">
+            <span class="admin-label">Шрифт</span>
+            <select id="builder-font" class="admin-input">
+                <option value="Inter, sans-serif">Inter</option>
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="'Helvetica Neue', Helvetica, sans-serif">Helvetica</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+                <option value="Verdana, sans-serif">Verdana</option>
+                <!-- Added more fonts as requested -->
+                <option value="'Courier New', Courier, monospace">Courier New</option>
+                <option value="Georgia, serif">Georgia</option>
+                <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                <option value="Impact, sans-serif">Impact</option>
+                <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Segoe UI</option>
+                <option value="'Lucida Console', Monaco, monospace">Lucida Console</option>
+            </select>
+        </div>
+
+        <div class="admin-control">
+            <span class="admin-label">Попередній перегляд</span>
+            <div id="builder-preview" class="p-4 border border-gray-200 rounded-lg bg-gray-50 flex justify-center min-h-[80px] items-center overflow-hidden">
+                <!-- Button renders here -->
+            </div>
+        </div>
+
+        <div class="admin-control flex gap-2">
+            <button id="builder-apply-btn" class="flex-1 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition font-medium">Застосувати</button>
+            <button id="builder-reset-btn" class="flex-1 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300 transition font-medium">Скинути</button>
         </div>
     </div>
 
@@ -508,7 +571,8 @@
 
             <!-- WHATSAPP BANNER -->
             <a href="javascript:void(0)" id="whatsapp-banner" class="contact-banner">
-                <div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></div>
+                <div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                </div>
                 <div class="banner-content"><span class="banner-title">Перейти в WhatsApp</span><span class="banner-subtitle">Швидше і зручніше</span></div>
                 <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
@@ -571,6 +635,15 @@
         const hotelNameText = document.getElementById('hotel-name-text');
         const hotelLogoContainer = document.getElementById('hotel-logo-container');
         
+        // Builder Elements
+        const bText = document.getElementById('builder-text');
+        const bColor = document.getElementById('builder-color');
+        const bColorVal = document.getElementById('builder-color-val');
+        const bFont = document.getElementById('builder-font');
+        const bPreview = document.getElementById('builder-preview');
+        const bApplyBtn = document.getElementById('builder-apply-btn');
+        const bResetBtn = document.getElementById('builder-reset-btn');
+
         // Toggles
         const tgToggle = document.getElementById('tg-toggle');
         const whatsappToggle = document.getElementById('whatsapp-toggle');
@@ -597,6 +670,7 @@
         let welcomed = false;
         let currentLang = 'ua'; 
         let isGenerating = false;
+        // Removed logoDataUrl related to button builder
 
         // --- INITIALIZATION & EVENT LISTENERS ---
 
@@ -621,6 +695,100 @@
         accentColorPicker.addEventListener('input', (e) => { const color = e.target.value; colorValueText.textContent = color; document.documentElement.style.setProperty('--accent-color', color); const hexToRgb = (hex) => { let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '37, 99, 235'; }; document.documentElement.style.setProperty('--accent-rgb', hexToRgb(color)); const darkenColor = (hex, percent) => { let num = parseInt(hex.replace("#",""), 16), amt = Math.round(2.55 * percent), R = (num >> 16) - amt, G = (num >> 8 & 0x00FF) - amt, B = (num & 0x0000FF) - amt; return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1); }; document.documentElement.style.setProperty('--accent-hover', darkenColor(color, 20)); });
         themeToggle.addEventListener('change', (e) => { if (e.target.checked) { chatWindow.classList.add('dark-mode'); } else { chatWindow.classList.remove('dark-mode'); } });
         brandingToggle.addEventListener('change', (e) => { poweredByContainer.style.display = e.target.checked ? 'block' : 'none'; chatFooter.classList.toggle('pb-1', !e.target.checked); });
+
+        // --- BUTTON BUILDER LOGIC ---
+        const DEFAULT_TEXT = "Чат з готелем";
+        const DEFAULT_COLOR = "#2563eb";
+        const DEFAULT_FONT = "Inter, sans-serif";
+
+        function generateButton() {
+            const text = bText.value || 'Button';
+            const color = bColor.value;
+            const font = bFont.value;
+            
+            let imgTag = '';
+            // Removed logic for custom image, using default SVG behavior in preview if we wanted, 
+            // but for preview simplify to text. Real button has SVG.
+            
+            // Minified inline styles
+            const styles = `display: inline-flex; align-items: center; justify-content: center; background-color: ${color}; color: #ffffff; font-family: ${font}; font-size: 16px; font-weight: 600; text-decoration: none; padding: 12px 24px; border-radius: 30px; border: none; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s ease, opacity 0.2s ease; line-height: 1;`;
+            const hoverScript = `onmouseover="this.style.transform='scale(1.05)';this.style.opacity='0.95'" onmouseout="this.style.transform='scale(1)';this.style.opacity='1'"`;
+
+            // Simple preview with text
+            return `<a href="#" style="${styles}" ${hoverScript}><span>${text}</span></a>`;
+        }
+
+        function updateBuilderUI() {
+            const html = generateButton();
+            bPreview.innerHTML = html;
+            bColorVal.textContent = bColor.value;
+        }
+
+        // Helper: Hex to RGB for ripple animation
+        const hexToRgbString = (hex) => { 
+            let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); 
+            return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '37, 99, 235'; 
+        };
+
+        function applyButtonDesign() {
+            const newText = bText.value;
+            if(newText) chatButtonText.textContent = newText;
+
+            const newColor = bColor.value;
+            widgetButton.style.backgroundColor = newColor;
+            widgetButton.style.setProperty('--accent-rgb', hexToRgbString(newColor));
+            
+            widgetButton.style.fontFamily = bFont.value;
+
+            // Reset to default SVG icon since custom upload is removed
+            const existingSvg = widgetButton.querySelector('svg');
+            const existingImg = widgetButton.querySelector('img.custom-btn-logo');
+            
+            if(existingImg) existingImg.remove();
+            if(existingSvg) existingSvg.style.display = 'block';
+            
+            const originalText = bApplyBtn.textContent;
+            bApplyBtn.textContent = 'Застосовано! ✅';
+            setTimeout(() => bApplyBtn.textContent = originalText, 2000);
+        }
+
+        function resetButtonDesign() {
+            // 1. Reset Inputs
+            bText.value = DEFAULT_TEXT;
+            bColor.value = DEFAULT_COLOR;
+            bFont.value = DEFAULT_FONT;
+
+            // 2. Update UI
+            updateBuilderUI();
+
+            // 3. Reset Widget Button to defaults
+            chatButtonText.textContent = DEFAULT_TEXT;
+            widgetButton.style.backgroundColor = ''; // Fallback to CSS class
+            widgetButton.style.fontFamily = '';
+            widgetButton.style.removeProperty('--accent-rgb');
+
+            // Restore Icon
+            const existingImg = widgetButton.querySelector('img.custom-btn-logo');
+            const existingSvg = widgetButton.querySelector('svg');
+            if (existingImg) existingImg.remove();
+            if (existingSvg) existingSvg.style.display = 'block';
+
+            // Feedback
+            const originalText = bResetBtn.textContent;
+            bResetBtn.textContent = 'Скинуто! ↺';
+            setTimeout(() => bResetBtn.textContent = originalText, 2000);
+        }
+
+        bText.addEventListener('input', updateBuilderUI);
+        bColor.addEventListener('input', updateBuilderUI);
+        bFont.addEventListener('change', updateBuilderUI);
+
+        bApplyBtn.addEventListener('click', applyButtonDesign);
+        bResetBtn.addEventListener('click', resetButtonDesign);
+        
+        // Init Builder
+        updateBuilderUI();
+
 
         // --- SMART STACKING LOGIC (UPDATED FOR COLLAPSED DISTANCE) ---
         function updateContactStack() {
@@ -662,6 +830,13 @@
         function setupBannerInteractions(bannerId, modalId, externalLink) {
             const banner = document.getElementById(bannerId);
             const modal = document.getElementById(modalId);
+            
+            // Fix: Guard clause to prevent null pointer errors if elements are missing
+            if (!banner || !modal) {
+                console.warn(`Elements not found: ${bannerId}, ${modalId}`);
+                return;
+            }
+
             const closeBtn = banner.querySelector('.close-banner-btn');
             const confirmBtn = modal.querySelector('button:first-child'); // First button is always confirm
             const cancelBtn = modal.querySelector('.modal-btn-cancel');
@@ -729,7 +904,7 @@
                 if (isMobile) { adminPanel.classList.add('hidden-panel'); openAdminBtn.style.display = 'none'; } 
                 if (!welcomed) { simulateWelcome(); welcomed = true; } 
             } 
-        }
+        } 
         
         function simulateWelcome() { showTyping(); setTimeout(() => { hideTyping(); addMessage(translations[currentLang].welcome, 'ai'); }, 1000); }
         
