@@ -17,6 +17,9 @@
             --accent-color: #2563eb;
             --accent-hover: #1d4ed8;
             --accent-rgb: 37, 99, 235;
+            --call-color: #22c55e;
+            --whatsapp-color: #25D366;
+            --messenger-color: #0084FF;
         }
 
         body {
@@ -29,7 +32,7 @@
             overflow: hidden;
         }
 
-        /* --- DARK MODE STYLES (Applied to #chat-window only) --- */
+        /* --- DARK MODE STYLES --- */
         #chat-window.dark-mode {
             background-color: #1f2937; border-color: #374151;
         }
@@ -40,11 +43,9 @@
         #chat-window.dark-mode #message-input { color: #f3f4f6; }
         #chat-window.dark-mode #message-input::placeholder { color: #6b7280; }
         #chat-window.dark-mode .input-wrapper-bg { background-color: #374151; border-color: #4b5563; }
-        #chat-window.dark-mode .message-time { color: #9ca3af; } /* Time color in dark mode */
+        #chat-window.dark-mode .message-time { color: #9ca3af; }
         #chat-window.dark-mode #scroll-to-bottom-btn { background-color: #374151; color: #e5e7eb; border-color: #4b5563; }
         #chat-window.dark-mode #scroll-to-bottom-btn:hover { background-color: #4b5563; }
-        
-        /* Dark mode for modal */
         #chat-window.dark-mode .modal-content { background-color: #374151; color: #f3f4f6; }
         #chat-window.dark-mode .modal-text-secondary { color: #9ca3af; }
         #chat-window.dark-mode .modal-btn-cancel { background-color: #4b5563; color: #e5e7eb; }
@@ -55,7 +56,6 @@
         .accent-bg-hover:hover { background-color: var(--accent-hover) !important; }
         .accent-text { color: var(--accent-color) !important; }
         .accent-border { border-color: var(--accent-color) !important; }
-        .accent-fill { fill: var(--accent-color) !important; }
         .hidden-important { display: none !important; }
 
         /* --- WIDGET BUTTON --- */
@@ -85,7 +85,6 @@
             50% { transform: scale(1.1) translateY(-4px); }
         }
         
-        /* Animation for Bottom Sheet Modal */
         @keyframes slide-up {
             from { transform: translateY(100%); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
@@ -101,7 +100,7 @@
             animation: badge-pop 2s infinite ease-in-out; z-index: 10;
         }
 
-        /* --- CHAT WINDOW (MOBILE FIRST BASE STYLES) --- */
+        /* --- CHAT WINDOW --- */
         #chat-window {
             position: fixed; 
             top: 12px; left: 12px; right: 12px; bottom: 12px;
@@ -114,7 +113,6 @@
             transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
-        /* --- DESKTOP OVERRIDES --- */
         @media (min-width: 768px) {
             #chat-window {
                 top: auto; left: auto; bottom: 20px; right: 20px;
@@ -126,101 +124,39 @@
         
         #chat-window.open { opacity: 1; visibility: visible; transform: scale(1) translateY(0); }
 
-        /* --- MESSAGE WRAPPERS & TIMESTAMPS --- */
-        .message-wrapper {
-            display: flex;
-            width: 100%;
-            margin-bottom: 8px;
-            /* Center alignment for timestamp */
-            align-items: center; 
-        }
-        
-        .message-wrapper.user {
-            justify-content: flex-end;
-        }
-        
-        .message-wrapper.ai {
-            justify-content: flex-start;
-        }
+        /* --- MESSAGE STYLING --- */
+        .message-wrapper { display: flex; width: 100%; margin-bottom: 8px; align-items: center; }
+        .message-wrapper.user { justify-content: flex-end; }
+        .message-wrapper.ai { justify-content: flex-start; }
 
         .message-time {
-            font-size: 10px;
-            color: #9ca3af; /* gray-400 */
-            margin: 0 8px;
-            white-space: nowrap;
-            opacity: 0; /* Hidden by default on desktop */
-            transition: opacity 0.2s ease;
-            user-select: none;
+            font-size: 10px; color: #9ca3af; margin: 0 8px; white-space: nowrap;
+            opacity: 0; transition: opacity 0.2s ease; user-select: none;
         }
+        @media (min-width: 769px) { .message-wrapper:hover .message-time { opacity: 1; } }
+        @media (max-width: 768px) { .message-time { opacity: 1 !important; } }
 
-        /* DESKTOP HOVER LOGIC: Show time only on hover */
-        @media (min-width: 769px) {
-            .message-wrapper:hover .message-time {
-                opacity: 1;
-            }
-        }
-
-        /* MOBILE LOGIC: Always show time */
-        @media (max-width: 768px) {
-            .message-time {
-                opacity: 1 !important;
-            }
-        }
-
-        /* --- SCROLL TO BOTTOM BUTTON --- */
+        /* --- SCROLL BTN --- */
         #scroll-to-bottom-btn {
-            position: absolute;
-            /* Raised bottom position to align with TG button */
-            bottom: 130px; 
-            
-            /* Center Positioning */
-            left: 50%;
-            right: auto;
-            
-            width: 36px;
-            height: 36px;
-            background-color: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 50%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 30;
-            opacity: 0;
-            visibility: hidden;
-            
-            /* Transform includes translateX(-50%) for centering */
-            transform: translateX(-50%) translateY(10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            color: var(--accent-color);
+            position: absolute; bottom: 130px; left: 50%; right: auto;
+            width: 36px; height: 36px; background-color: white; border: 1px solid #e5e7eb;
+            border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30;
+            opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: var(--accent-color);
         }
-        #scroll-to-bottom-btn.visible {
-            opacity: 1;
-            visibility: visible;
-            /* Maintain centered X position */
-            transform: translateX(-50%) translateY(0);
-        }
-        #scroll-to-bottom-btn:hover {
-            background-color: #f9fafb;
-            /* Maintain centered X position on hover */
-            transform: translateX(-50%) translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-        }
+        #scroll-to-bottom-btn.visible { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+        #scroll-to-bottom-btn:hover { background-color: #f9fafb; transform: translateX(-50%) translateY(-2px); }
 
-        /* --- MESSAGES STYLING --- */
         .chat-message-user {
             background-color: var(--accent-color); color: white;
             border-radius: 18px 18px 4px 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            padding: 12px;
-            word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; max-width: 85%;
+            padding: 12px; word-wrap: break-word; overflow-wrap: break-word; max-width: 85%;
         }
         .chat-message-ai {
             background-color: #f3f4f6; color: #1f2937;
             border-radius: 18px 18px 18px 4px;
-            padding: 12px;
-            word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; max-width: 85%;
+            padding: 12px; word-wrap: break-word; overflow-wrap: break-word; max-width: 85%;
         }
 
         .typing-indicator-bubble {
@@ -239,56 +175,79 @@
         #chat-messages::-webkit-scrollbar-track { background: transparent; }
         #chat-messages::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.1); border-radius: 20px; }
 
-        /* Removed Lang Dropdown styles */
-
-        #telegram-banner {
+        /* --- CONTACT BANNERS (SHARED STYLES) --- */
+        .contact-banner {
             position: absolute; bottom: 100%; left: 12px; right: 12px; 
-            /* CHANGE: Lowered margin-bottom from 27px to 20px */
-            margin-bottom: 20px;
+            margin-bottom: 20px; /* Will be overridden by JS */
             transform: translateY(0); overflow: hidden; white-space: nowrap; height: 64px; z-index: 50;
-            cursor: pointer; /* Make it look clickable */
+            cursor: pointer;
+            border-radius: 24px;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+            display: flex; align-items: center; padding: 0 4px;
+            text-decoration: none;
+            opacity: 0; visibility: hidden; pointer-events: none;
         }
-        #telegram-banner.collapsed {
-            /* Updated COMPACT styles */
-            width: 74px; /* Reduced width */
-            height: 36px; /* Reduced height */
-            padding: 0 4px; /* Minimal padding */
-            left: auto; 
-            right: 12px; 
-            border-radius: 24px; /* Pill shape */
-            justify-content: space-between; 
-            cursor: pointer; 
-            box-shadow: 0 4px 12px rgba(36, 161, 222, 0.3);
-            transform: translateY(16px) scale(0.95); /* Adjusted height to 16px (higher than 24px) */
-            transition: all 0.3s ease; 
-            display: flex; 
-            align-items: center; 
-        }
-        #telegram-banner.collapsed .tg-content, #telegram-banner.collapsed #close-tg-banner { opacity: 0; pointer-events: none; position: absolute; }
-        #telegram-banner.collapsed .tg-icon-wrapper { 
-            margin: 0; 
-            background-color: rgba(255,255,255,0.2); /* White semi-transparent */
-            width: 28px; /* Smaller circle */
-            height: 28px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            border-radius: 50%; 
-            flex-shrink: 0; 
-            margin-left: 2px;
-        }
-        #telegram-banner.collapsed .tg-icon-wrapper svg { width: 14px; height: 14px; margin: 0; } /* Smaller icon */
         
-        /* Back arrow in collapsed state */
-        #telegram-banner.collapsed .tg-back-arrow {
-            display: block; 
-            width: 18px; /* Smaller arrow */
-            height: 18px; 
-            margin-right: 6px; 
-            color: white; 
-            flex-shrink: 0;
+        /* Styling for Visible State */
+        .contact-banner.show-banner {
+            opacity: 1; visibility: visible; pointer-events: auto;
+            transform: translateY(16px) scale(0.98);
         }
-        .tg-back-arrow { display: none; }
+        .contact-banner:hover { opacity: 0.98; transform: translateY(16px) scale(1); }
+
+        /* Specific Colors */
+        #telegram-banner { background-color: #24A1DE; }
+        #whatsapp-banner { background-color: var(--whatsapp-color); }
+        #messenger-banner { background-color: var(--messenger-color); }
+        #call-banner { background-color: var(--call-color); }
+
+        /* Inner Elements */
+        .banner-icon-wrapper {
+            margin: 0; background-color: rgba(255,255,255,0.2);
+            width: 40px; height: 40px; /* Default Size */
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; flex-shrink: 0; margin-left: 8px; color: white;
+            transition: all 0.3s ease;
+        }
+        .banner-content {
+            flex: 1; display: flex; flex-col; flex-direction: column; padding-left: 12px; padding-right: 30px;
+            transition: opacity 0.2s ease;
+        }
+        .banner-title { font-size: 14px; font-weight: bold; color: white; line-height: 1.2; }
+        .banner-subtitle { font-size: 11px; color: rgba(255,255,255,0.9); }
+        
+        .close-banner-btn {
+            position: absolute; top: 16px; right: 16px;
+            width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.7); border-radius: 50%; 
+            transition: all 0.2s; z-index: 10;
+        }
+        .close-banner-btn:hover { background-color: rgba(0,0,0,0.1); color: white; }
+
+        /* Collapsed State (Small Circle) */
+        .contact-banner.collapsed {
+            width: 74px; height: 36px;
+            left: auto; right: 12px; 
+            border-radius: 24px;
+            padding: 0 4px;
+        }
+        .contact-banner.collapsed .banner-content, 
+        .contact-banner.collapsed .close-banner-btn { 
+            opacity: 0; pointer-events: none; position: absolute; 
+        }
+        .contact-banner.collapsed .banner-icon-wrapper {
+            width: 28px; height: 28px; margin-left: 2px;
+        }
+        .contact-banner.collapsed svg.main-icon { width: 14px; height: 14px; }
+
+        /* Arrow that appears in collapsed state */
+        .expand-arrow { 
+            display: none; width: 18px; height: 18px; margin-right: 6px; color: white; flex-shrink: 0; 
+        }
+        .contact-banner.collapsed .expand-arrow { display: block; }
+
 
         /* --- ADMIN PANEL --- */
         #admin-panel {
@@ -298,15 +257,10 @@
             max-height: 90vh; overflow-y: auto;
             transition: transform 0.3s ease, opacity 0.3s ease;
         }
-        #admin-panel.hidden-panel {
-            transform: translateX(-120%);
-            opacity: 0;
-            pointer-events: none;
-        }
+        #admin-panel.hidden-panel { transform: translateX(-120%); opacity: 0; pointer-events: none; }
         #admin-panel::-webkit-scrollbar { width: 4px; }
         #admin-panel::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
         
-        /* Кнопка открытия админки */
         #open-admin-btn {
             position: fixed; top: 20px; left: 20px;
             width: 40px; height: 40px; background: white; border-radius: 50%;
@@ -395,6 +349,26 @@
                 <label class="switch"><input type="checkbox" id="branding-toggle" checked><span class="slider"></span></label>
             </div>
         </div>
+        
+        <div class="admin-control">
+            <span class="admin-label">Кнопки контактів</span>
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-gray-600">Telegram</span>
+                <label class="switch"><input type="checkbox" id="tg-toggle" checked><span class="slider"></span></label>
+            </div>
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-gray-600">WhatsApp</span>
+                <label class="switch"><input type="checkbox" id="whatsapp-toggle" checked><span class="slider"></span></label>
+            </div>
+             <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-gray-600">Messenger</span>
+                <label class="switch"><input type="checkbox" id="messenger-toggle" checked><span class="slider"></span></label>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Телефон</span>
+                <label class="switch"><input type="checkbox" id="call-toggle" checked><span class="slider"></span></label>
+            </div>
+        </div>
         <div class="admin-control">
             <span class="admin-label">Тема оформлення</span>
             <div class="flex items-center justify-between">
@@ -418,23 +392,16 @@
             <div class="flex items-center gap-3">
                 <div class="relative">
                     <div id="hotel-logo-container" class="w-12 h-12 rounded-full bg-white accent-text flex items-center justify-center shadow-sm overflow-hidden">
-                        <!-- DEFAULT LOGO: TEXT H -->
                         <span class="text-2xl font-bold accent-text">H</span>
                     </div>
-                    <!-- CHANGE: Increased size of online indicator to exactly 14px -->
                     <div class="absolute bottom-0 right-0 w-[14px] h-[14px] bg-green-400 border-2 accent-border rounded-full" title="Онлайн"></div>
                 </div>
                 <div><h3 id="hotel-name-text" class="text-lg font-bold leading-tight tracking-wide">Hilton</h3></div>
             </div>
             <div class="flex items-center gap-1 relative">
-                <!-- RESET BUTTON (Replaced Language) -->
                 <button id="reset-chat-btn" class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white" title="Перезапустити чат">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-                        <path d="M3 3v5h5"></path>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
                 </button>
-                
                 <button id="chat-close-button" class="text-white/80 hover:text-white hover:bg-white/10 rounded-full p-2 transition ml-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
             </div>
         </header>
@@ -443,62 +410,116 @@
             <div id="typing-indicator" class="hidden" aria-hidden="true"><div class="typing-indicator-bubble"><span></span><span></span><span></span></div></div>
         </div>
         
-        <!-- SCROLL TO BOTTOM BUTTON -->
         <button id="scroll-to-bottom-btn" aria-label="Прокрутити вниз" title="До нових повідомлень">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
         
-        <!-- RESET CONFIRMATION MODAL (BOTTOM SHEET) -->
+        <!-- RESET MODAL -->
         <div id="reset-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
              <div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-                <div class="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                </div>
+                <div class="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg></div>
                 <h4 class="text-lg font-bold mb-2">Розпочати новий чат?</h4>
                 <p class="modal-text-secondary text-sm text-gray-500 mb-6">Поточну історію листування буде видалено безповоротно.</p>
                 <div class="flex flex-col gap-2">
-                    <button id="confirm-reset-btn" class="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2">
-                        <span>Розпочати</span>
-                    </button>
-                    <button id="cancel-reset-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">
-                        Скасувати
-                    </button>
+                    <button id="confirm-reset-btn" class="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Розпочати</span></button>
+                    <button id="cancel-reset-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
                 </div>
             </div>
         </div>
 
-        <!-- NEW: TELEGRAM CONFIRMATION MODAL -->
+        <!-- GENERIC CONTACT CONFIRMATION MODAL TEMPLATE -->
+        <!-- Used for TG, WA, Messenger. Content updated dynamically or separate blocks for simplicity -->
+        
+        <!-- TELEGRAM MODAL -->
         <div id="tg-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
              <div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-                <!-- CHANGE: Replaced Icon with Telegram Plane Icon -->
-                <div class="mx-auto w-12 h-12 bg-[#24A1DE]/20 rounded-full flex items-center justify-center mb-4 text-[#24A1DE]">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg>
-                </div>
-                <!-- CHANGE: Updated Text -->
+                <div class="mx-auto w-12 h-12 bg-[#24A1DE]/20 rounded-full flex items-center justify-center mb-4 text-[#24A1DE]"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg></div>
                 <h4 class="text-lg font-bold mb-2">Бажаєте перейти?</h4>
                 <p class="modal-text-secondary text-sm text-gray-500 mb-6">Ви будете перенаправлені у зовнішній додаток.</p>
                 <div class="flex flex-col gap-2">
-                    <button id="confirm-tg-btn" class="w-full py-2.5 bg-[#24A1DE] hover:bg-[#1e88bd] text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2">
-                        <span>Перейти</span>
-                    </button>
-                    <button id="cancel-tg-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">
-                        Скасувати
-                    </button>
+                    <button id="confirm-tg-btn" class="w-full py-2.5 bg-[#24A1DE] hover:bg-[#1e88bd] text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Перейти</span></button>
+                    <button id="cancel-tg-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- WHATSAPP MODAL -->
+        <div id="whatsapp-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
+             <div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
+                <div class="mx-auto w-12 h-12 bg-[#25D366]/20 rounded-full flex items-center justify-center mb-4 text-[#25D366]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                </div>
+                <h4 class="text-lg font-bold mb-2">Бажаєте перейти?</h4>
+                <p class="modal-text-secondary text-sm text-gray-500 mb-6">Ви будете перенаправлені у зовнішній додаток.</p>
+                <div class="flex flex-col gap-2">
+                    <button id="confirm-whatsapp-btn" class="w-full py-2.5 bg-[#25D366] hover:bg-[#20bd5a] text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Перейти</span></button>
+                    <button id="cancel-whatsapp-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MESSENGER MODAL -->
+        <div id="messenger-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
+             <div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
+                <div class="mx-auto w-12 h-12 bg-[#0084FF]/20 rounded-full flex items-center justify-center mb-4 text-[#0084FF]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.24c1.093.301 2.246.464 3.443.464 6.627 0 12-4.975 12-11.11S18.627 0 12 0zm1.191 14.963l-3.056-3.246-5.963 3.246 6.559-6.963 3.13 3.245 5.89-3.245-6.56 6.963z"/></svg>
+                </div>
+                <h4 class="text-lg font-bold mb-2">Бажаєте перейти?</h4>
+                <p class="modal-text-secondary text-sm text-gray-500 mb-6">Ви будете перенаправлені у зовнішній додаток.</p>
+                <div class="flex flex-col gap-2">
+                    <button id="confirm-messenger-btn" class="w-full py-2.5 bg-[#0084FF] hover:bg-[#0078e7] text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Перейти</span></button>
+                    <button id="cancel-messenger-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CALL MODAL -->
+        <div id="call-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
+             <div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
+                <div class="mx-auto w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mb-4 text-white">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                </div>
+                <h4 class="text-lg font-bold mb-2">Бажаєте поговорити?</h4>
+                <p class="modal-text-secondary text-sm text-gray-500 mb-6">Дзвінок буде здійснено через ваш пристрій.</p>
+                <div class="flex flex-col gap-2">
+                    <button id="confirm-call-btn" class="w-full py-2.5 bg-green-500 hover:bg-green-600 text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Зателефонувати</span></button>
+                    <button id="cancel-call-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
                 </div>
             </div>
         </div>
 
         <!-- FOOTER -->
         <footer id="chat-footer" class="border-t border-gray-100 bg-gray-50 flex-shrink-0 flex flex-col relative z-20 transition-all">
-            <!-- Changed href to javascript:void(0) to prevent default navigation -->
-            <a href="javascript:void(0)" id="telegram-banner" class="bg-[#24A1DE] text-white rounded-2xl p-3 shadow-lg flex items-center gap-3 hover:opacity-95 no-underline">
-                <div class="tg-icon-wrapper w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white flex-shrink-0">
-                    <svg class="-ml-1 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg>
-                </div>
-                <div class="tg-content flex flex-col pr-6"><span class="text-sm font-bold leading-tight">Перейти в Telegram</span><span class="text-xs opacity-90 text-blue-50">Швидше і зручніше</span></div>
-                <!-- Back arrow for collapsed state -->
-                <svg class="tg-back-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                <button id="close-tg-banner" class="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-white/60 hover:text-white rounded-full bg-black/10 hover:bg-black/20 transition-all z-10"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            <!-- CALL BANNER -->
+            <a href="javascript:void(0)" id="call-banner" class="contact-banner">
+                <div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div>
+                <div class="banner-content"><span class="banner-title">Зателефонувати</span></div>
+                <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </a>
+
+            <!-- MESSENGER BANNER -->
+            <a href="javascript:void(0)" id="messenger-banner" class="contact-banner">
+                <div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.24c1.093.301 2.246.464 3.443.464 6.627 0 12-4.975 12-11.11S18.627 0 12 0zm1.191 14.963l-3.056-3.246-5.963 3.246 6.559-6.963 3.13 3.245 5.89-3.245-6.56 6.963z"/></svg></div>
+                <div class="banner-content"><span class="banner-title">Перейти в Messenger</span><span class="banner-subtitle">Facebook Chat</span></div>
+                <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </a>
+
+            <!-- WHATSAPP BANNER -->
+            <a href="javascript:void(0)" id="whatsapp-banner" class="contact-banner">
+                <div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></div>
+                <div class="banner-content"><span class="banner-title">Перейти в WhatsApp</span><span class="banner-subtitle">Чат зараз</span></div>
+                <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </a>
+
+            <!-- TELEGRAM BANNER -->
+            <a href="javascript:void(0)" id="telegram-banner" class="contact-banner">
+                <div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg></div>
+                <div class="banner-content"><span class="banner-title">Перейти в Telegram</span><span class="banner-subtitle">Швидше і зручніше</span></div>
+                <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </a>
 
             <!-- INPUT AREA -->
@@ -520,33 +541,25 @@
 
     <!-- JS LOGIC -->
     <script>
+        // Elements
         const widgetButton = document.getElementById('chat-widget-button');
         const chatWindow = document.getElementById('chat-window');
         const closeButton = document.getElementById('chat-close-button');
         const messagesContainer = document.getElementById('chat-messages');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
-        // CHANGE: Declared as let to allow updating reference
         let typingIndicator = document.getElementById('typing-indicator');
         const notificationBadge = document.getElementById('chat-notification-badge');
         const btnIconSend = document.getElementById('btn-icon-send');
         const btnIconLoading = document.getElementById('btn-icon-loading');
-        const tgBanner = document.getElementById('telegram-banner');
-        const closeTgBannerBtn = document.getElementById('close-tg-banner');
         const resetChatBtn = document.getElementById('reset-chat-btn'); 
         const chatButtonText = document.querySelector('.chat-button-text');
         const scrollToBottomBtn = document.getElementById('scroll-to-bottom-btn');
+        const brandingToggle = document.getElementById('branding-toggle');
+        const poweredByContainer = document.getElementById('powered-by-container');
+        const chatFooter = document.getElementById('chat-footer');
         
-        // Reset Modal Elements
-        const resetConfirmationModal = document.getElementById('reset-confirmation-modal');
-        const confirmResetBtn = document.getElementById('confirm-reset-btn');
-        const cancelResetBtn = document.getElementById('cancel-reset-btn');
-        
-        // Telegram Modal Elements
-        const tgConfirmationModal = document.getElementById('tg-confirmation-modal');
-        const confirmTgBtn = document.getElementById('confirm-tg-btn');
-        const cancelTgBtn = document.getElementById('cancel-tg-btn');
-
+        // Admin Elements
         const adminPanel = document.getElementById('admin-panel');
         const openAdminBtn = document.getElementById('open-admin-btn');
         const closeAdminBtn = document.getElementById('close-admin-btn');
@@ -557,36 +570,41 @@
         const logoUpload = document.getElementById('logo-upload');
         const hotelNameText = document.getElementById('hotel-name-text');
         const hotelLogoContainer = document.getElementById('hotel-logo-container');
-        const brandingToggle = document.getElementById('branding-toggle');
-        const poweredByContainer = document.getElementById('powered-by-container');
-        const chatFooter = document.getElementById('chat-footer');
         
+        // Toggles
+        const tgToggle = document.getElementById('tg-toggle');
+        const whatsappToggle = document.getElementById('whatsapp-toggle');
+        const messengerToggle = document.getElementById('messenger-toggle');
+        const callToggle = document.getElementById('call-toggle');
+
+        // Banners
+        const banners = {
+            telegram: document.getElementById('telegram-banner'),
+            whatsapp: document.getElementById('whatsapp-banner'),
+            messenger: document.getElementById('messenger-banner'),
+            call: document.getElementById('call-banner')
+        };
+
+        // Modals
+        const modals = {
+            reset: document.getElementById('reset-confirmation-modal'),
+            telegram: document.getElementById('tg-confirmation-modal'),
+            whatsapp: document.getElementById('whatsapp-confirmation-modal'),
+            messenger: document.getElementById('messenger-confirmation-modal'),
+            call: document.getElementById('call-confirmation-modal')
+        };
+
         let welcomed = false;
         let currentLang = 'ua'; 
         let isGenerating = false;
+
+        // --- INITIALIZATION & EVENT LISTENERS ---
 
         const translations = {
             ru: { buttonText: "Чат с отелем", placeholder: "Напишите сообщение...", welcome: "Здравствуйте! Добро пожаловать в Hilton. Чем могу помочь с вашим бронированием?", defaultAI: "Извините, я пока учусь. Могу ли я помочь вам забронировать номер?", keywords: { hello: /(привет|здравствуй|hello|hi)/, book: /(бронь|забронировать|номер|book|reservation)/, price: /(цена|стоимость|сколько стоит|price)/, thanks: /(спасибо|благодарю|thanks)/ }, answers: { hello: "Добрый день! Рад вас видеть в Hilton. Планируете поездку к нам?", book: "С удовольствием помогу с бронированием! 📅 \nНа какие даты вы планируете заезд?", price: "💰 **Наши тарифы:**\n• King Room: от $180/ночь\n• Executive Suite: от $350/ночь. Подсказать свободные даты?", thanks: "Всегда пожалуйста! Хорошего дня! ☀️" } },
             ua: { buttonText: "Чат з готелем", placeholder: "Напишіть повідомлення...", welcome: "Вітаємо! Ласкаво просимо до Hilton. Чим можу допомогти з вашим бронюванням?", defaultAI: "Вибачте, я поки що вчуся. Чи можу я допомогти вам забронювати номер?", keywords: { hello: /(привіт|вітаю|hello|hi)/, book: /(бронь|забронювати|номер|book|reservation)/, price: /(ціна|вартість|скільки коштує|price)/, thanks: /(дякую|спасибі|thanks)/ }, answers: { hello: "Добрий день! Радий бачити вас у Hilton. Плануєте поїздку до нас?", book: "Із задоволенням допоможу з бронюванням! 📅 \nНа які дати ви плануєте заїзд?", price: "💰 **Наші тарифи:**\n• King Room: від $180/ніч\n• Executive Suite: від $350/ніч. Підказати вільні дати?", thanks: "Завжди будь ласка! Гарного дня! ☀️" } },
             en: { buttonText: "Chat with Hotel", placeholder: "Type a message...", welcome: "Hello! Welcome to Hilton. How can I help you with your reservation?", defaultAI: "Sorry, I am still learning. Can I help you book a room?", keywords: { hello: /(hello|hi|greetings|hey)/, book: /(book|reserve|room|reservation)/, price: /(price|cost|rates|much)/, thanks: /(thanks|thank you)/ }, answers: { hello: "Good afternoon! Glad to see you at Hilton. Planning a trip to us?", book: "I'd be happy to help with your booking! 📅 \nWhat dates are you planning to check in?", price: "💰 **Our Rates:**\n• King Room: from $180/night\n• Executive Suite: from $350/night. Should I check availability?", thanks: "You are always welcome! Have a nice day! ☀️" } }
         };
-
-        closeAdminBtn.addEventListener('click', () => { adminPanel.classList.add('hidden-panel'); openAdminBtn.classList.remove('hidden-btn'); });
-        openAdminBtn.addEventListener('click', () => { adminPanel.classList.remove('hidden-panel'); openAdminBtn.classList.add('hidden-btn'); });
-        hotelNameInput.addEventListener('input', (e) => { hotelNameText.textContent = e.target.value || "Hilton"; });
-        logoUpload.addEventListener('change', function(e) { if (this.files && this.files[0]) { const reader = new FileReader(); reader.onload = function(e) { hotelLogoContainer.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full" alt="Logo">`; }; reader.readAsDataURL(this.files[0]); } });
-        accentColorPicker.addEventListener('input', (e) => { const color = e.target.value; colorValueText.textContent = color; document.documentElement.style.setProperty('--accent-color', color); const hexToRgb = (hex) => { let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '37, 99, 235'; }; document.documentElement.style.setProperty('--accent-rgb', hexToRgb(color)); const darkenColor = (hex, percent) => { let num = parseInt(hex.replace("#",""), 16), amt = Math.round(2.55 * percent), R = (num >> 16) - amt, G = (num >> 8 & 0x00FF) - amt, B = (num & 0x0000FF) - amt; return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1); }; document.documentElement.style.setProperty('--accent-hover', darkenColor(color, 20)); });
-        themeToggle.addEventListener('change', (e) => { if (e.target.checked) { chatWindow.classList.add('dark-mode'); } else { chatWindow.classList.remove('dark-mode'); } });
-        
-        brandingToggle.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                poweredByContainer.style.display = 'block';
-                chatFooter.classList.remove('pb-1'); 
-            } else {
-                poweredByContainer.style.display = 'none';
-                chatFooter.classList.add('pb-1'); 
-            }
-        });
 
         function initLanguage() {
             const t = translations[currentLang];
@@ -595,101 +613,132 @@
         }
         initLanguage();
 
-        // TELEGRAM BANNER LOGIC
-        tgBanner.addEventListener('click', function(e) { 
-            // If it's collapsed, we PREVENT default action (which is nothing now since href is void)
-            // and show the confirmation modal.
-            // If it's NOT collapsed (expanded), we allow the user to go to Telegram.
+        // Admin Panel Logic
+        closeAdminBtn.addEventListener('click', () => { adminPanel.classList.add('hidden-panel'); openAdminBtn.classList.remove('hidden-btn'); });
+        openAdminBtn.addEventListener('click', () => { adminPanel.classList.remove('hidden-panel'); openAdminBtn.classList.add('hidden-btn'); });
+        hotelNameInput.addEventListener('input', (e) => { hotelNameText.textContent = e.target.value || "Hilton"; });
+        logoUpload.addEventListener('change', function(e) { if (this.files && this.files[0]) { const reader = new FileReader(); reader.onload = function(e) { hotelLogoContainer.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full" alt="Logo">`; }; reader.readAsDataURL(this.files[0]); } });
+        accentColorPicker.addEventListener('input', (e) => { const color = e.target.value; colorValueText.textContent = color; document.documentElement.style.setProperty('--accent-color', color); const hexToRgb = (hex) => { let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '37, 99, 235'; }; document.documentElement.style.setProperty('--accent-rgb', hexToRgb(color)); const darkenColor = (hex, percent) => { let num = parseInt(hex.replace("#",""), 16), amt = Math.round(2.55 * percent), R = (num >> 16) - amt, G = (num >> 8 & 0x00FF) - amt, B = (num & 0x0000FF) - amt; return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1); }; document.documentElement.style.setProperty('--accent-hover', darkenColor(color, 20)); });
+        themeToggle.addEventListener('change', (e) => { if (e.target.checked) { chatWindow.classList.add('dark-mode'); } else { chatWindow.classList.remove('dark-mode'); } });
+        brandingToggle.addEventListener('change', (e) => { poweredByContainer.style.display = e.target.checked ? 'block' : 'none'; chatFooter.classList.toggle('pb-1', !e.target.checked); });
+
+        // --- SMART STACKING LOGIC (UPDATED FOR COLLAPSED DISTANCE) ---
+        function updateContactStack() {
+            // Define the desired stack order (Bottom to Top)
+            const stackOrder = [
+                { el: banners.telegram, enabled: tgToggle.checked },
+                { el: banners.whatsapp, enabled: whatsappToggle.checked },
+                { el: banners.messenger, enabled: messengerToggle.checked },
+                { el: banners.call, enabled: callToggle.checked }
+            ];
+
+            let currentBottom = 20; // Base margin from bottom
             
-            if (this.classList.contains('collapsed')) { 
-                e.preventDefault(); 
-                tgConfirmationModal.classList.remove('hidden');
-            } else {
-                // Expanded state: Direct navigation
-                // Using window.open because href is javascript:void(0)
-                window.open('https://t.me/hilton', '_blank');
-            }
+            stackOrder.forEach(item => {
+                if (item.enabled) {
+                    item.el.classList.add('show-banner');
+                    item.el.style.marginBottom = `${currentBottom}px`;
+                    
+                    // CHECK IF COLLAPSED TO ADJUST SPACING
+                    const isCollapsed = item.el.classList.contains('collapsed');
+                    
+                    // If collapsed: use smaller gap (45px). If expanded: use standard gap (75px)
+                    // 45px = 60px - 15px (requested reduction)
+                    const spacing = isCollapsed ? 45 : 75;
+
+                    currentBottom += spacing; 
+                } else {
+                    item.el.classList.remove('show-banner');
+                }
+            });
+        }
+
+        // Attach listeners to all contact toggles
+        [tgToggle, whatsappToggle, messengerToggle, callToggle].forEach(toggle => {
+            toggle.addEventListener('change', updateContactStack);
         });
 
-        // Telegram Modal Actions
-        confirmTgBtn.addEventListener('click', () => {
-             window.open('https://t.me/hilton', '_blank');
-             tgConfirmationModal.classList.add('hidden');
-        });
+        // --- BANNER INTERACTIONS (Generic Handler) ---
+        function setupBannerInteractions(bannerId, modalId, externalLink) {
+            const banner = document.getElementById(bannerId);
+            const modal = document.getElementById(modalId);
+            const closeBtn = banner.querySelector('.close-banner-btn');
+            const confirmBtn = modal.querySelector('button:first-child'); // First button is always confirm
+            const cancelBtn = modal.querySelector('.modal-btn-cancel');
 
-        cancelTgBtn.addEventListener('click', () => {
-             tgConfirmationModal.classList.add('hidden');
-        });
+            // Click on Banner (Main Area)
+            banner.addEventListener('click', function(e) {
+                // If clicked on close button, ignore (handled separately)
+                if (e.target.closest('.close-banner-btn')) return;
 
-        // Updated Close Button Logic:
-        // Prevent Default, Stop Propagation (so it doesn't trigger the banner click),
-        // and add the 'collapsed' class.
-        closeTgBannerBtn.addEventListener('click', (e) => { 
-            e.preventDefault(); 
-            e.stopPropagation(); 
-            tgBanner.classList.add('collapsed'); 
-        });
-        
+                if (this.classList.contains('collapsed')) {
+                    e.preventDefault();
+                    modal.classList.remove('hidden');
+                } else {
+                    // Expanded state behavior
+                    if (externalLink) {
+                        // If it has a link (like TG/WA/Messenger), open it
+                         window.open(externalLink, '_blank');
+                    } else {
+                         // For call, show modal anyway or trigger tel:
+                         modal.classList.remove('hidden');
+                    }
+                }
+            });
+
+            // Close (Collapse) Button
+            closeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                banner.classList.add('collapsed');
+                // RECALCULATE STACK IMMEDIATELY TO REDUCE GAP
+                updateContactStack();
+            });
+
+            // Modal Actions
+            confirmBtn.addEventListener('click', () => {
+                if (externalLink) window.open(externalLink, '_blank');
+                else if (bannerId === 'call-banner') window.location.href = 'tel:+1234567890';
+                modal.classList.add('hidden');
+            });
+
+            cancelBtn.addEventListener('click', () => {
+                modal.classList.add('hidden');
+            });
+        }
+
+        // Initialize Interactions
+        setupBannerInteractions('telegram-banner', 'tg-confirmation-modal', 'https://t.me/hilton');
+        setupBannerInteractions('whatsapp-banner', 'whatsapp-confirmation-modal', 'https://wa.me/1234567890');
+        setupBannerInteractions('messenger-banner', 'messenger-confirmation-modal', 'https://m.me/hilton');
+        setupBannerInteractions('call-banner', 'call-confirmation-modal', null);
+
+        // --- CHAT CORE FUNCTIONS ---
         function toggleChat() { 
             const isOpen = chatWindow.classList.contains('open'); 
             const isMobile = window.innerWidth < 768; 
             if (isOpen) { 
                 chatWindow.classList.remove('open'); 
                 widgetButton.style.display = 'flex'; 
-                if (isMobile) { 
-                    openAdminBtn.style.display = ''; 
-                    adminPanel.classList.add('hidden-panel'); 
-                    openAdminBtn.classList.remove('hidden-btn');
-                } 
+                if (isMobile) { openAdminBtn.style.display = ''; adminPanel.classList.add('hidden-panel'); openAdminBtn.classList.remove('hidden-btn'); } 
             } else { 
                 chatWindow.classList.add('open'); 
                 widgetButton.style.display = 'none'; 
                 if(notificationBadge) notificationBadge.style.display = 'none'; 
                 messageInput.focus(); 
-                if (isMobile) { 
-                    adminPanel.classList.add('hidden-panel'); 
-                    openAdminBtn.style.display = 'none'; 
-                } 
-                if (!welcomed) { 
-                    simulateWelcome(); 
-                    welcomed = true; 
-                } 
+                if (isMobile) { adminPanel.classList.add('hidden-panel'); openAdminBtn.style.display = 'none'; } 
+                if (!welcomed) { simulateWelcome(); welcomed = true; } 
             } 
         }
         
         function simulateWelcome() { showTyping(); setTimeout(() => { hideTyping(); addMessage(translations[currentLang].welcome, 'ai'); }, 1000); }
         
-        // UPDATED ADD MESSAGE FUNCTION FOR TIMESTAMPS
         function addMessage(text, sender) { 
-            // 1. Create Wrapper
-            const wrapper = document.createElement('div');
-            wrapper.className = `message-wrapper ${sender} animate-fade-in`;
-            
-            // 2. Create Message Bubble
-            const messageElement = document.createElement('div'); 
-            messageElement.className = `chat-message-${sender} text-sm leading-relaxed`; 
-            messageElement.innerHTML = text.replace(/\n/g, '<br>'); 
-            
-            // 3. Create Time Element
-            const timeElement = document.createElement('span');
-            timeElement.className = 'message-time';
-            const now = new Date();
-            // Format time as HH:MM
-            timeElement.innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-            // 4. Append logic based on sender
-            if (sender === 'user') {
-                // User: Time on left, Bubble on right
-                wrapper.appendChild(timeElement);
-                wrapper.appendChild(messageElement);
-            } else {
-                // AI: Bubble on left, Time on right
-                wrapper.appendChild(messageElement);
-                wrapper.appendChild(timeElement);
-            }
-
-            messagesContainer.insertBefore(wrapper, typingIndicator); 
-            messagesContainer.scrollTop = messagesContainer.scrollHeight; 
+            const wrapper = document.createElement('div'); wrapper.className = `message-wrapper ${sender} animate-fade-in`;
+            const messageElement = document.createElement('div'); messageElement.className = `chat-message-${sender} text-sm leading-relaxed`; messageElement.innerHTML = text.replace(/\n/g, '<br>'); 
+            const timeElement = document.createElement('span'); timeElement.className = 'message-time'; timeElement.innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            if (sender === 'user') { wrapper.appendChild(timeElement); wrapper.appendChild(messageElement); } else { wrapper.appendChild(messageElement); wrapper.appendChild(timeElement); }
+            messagesContainer.insertBefore(wrapper, typingIndicator); messagesContainer.scrollTop = messagesContainer.scrollHeight; 
         }
         
         function showTyping() { typingIndicator.classList.remove('hidden'); messagesContainer.scrollTop = messagesContainer.scrollHeight; }
@@ -706,60 +755,30 @@
 
         function handleSendMessage() { if (isGenerating) return; const text = messageInput.value.trim(); if (text === '') return; isGenerating = true; addMessage(text, 'user'); messageInput.value = ''; setButtonLoading(true); showTyping(); getAIResponse(text); }
         
-        // Функция сброса чата
         function resetChat() {
-            // Сохраняем индикатор, удаляем всё остальное
-            const indicatorHTML = typingIndicator.outerHTML;
-            messagesContainer.innerHTML = ''; 
-            messagesContainer.innerHTML = indicatorHTML;
-            
-            // FIX: Update global reference to the new DOM element
+            const indicatorHTML = typingIndicator.outerHTML; messagesContainer.innerHTML = ''; messagesContainer.innerHTML = indicatorHTML;
             typingIndicator = document.getElementById('typing-indicator');
-            
-            // Сброс переменных
-            welcomed = false;
-            isGenerating = false;
-            setButtonLoading(false);
-            
-            // Запуск приветствия
-            simulateWelcome();
+            welcomed = false; isGenerating = false; setButtonLoading(false); simulateWelcome();
         }
 
-        // Scroll to Bottom Logic
+        // Reset Modal Logic
+        resetChatBtn.addEventListener('click', () => modals.reset.classList.remove('hidden'));
+        document.getElementById('confirm-reset-btn').addEventListener('click', () => { resetChat(); modals.reset.classList.add('hidden'); });
+        document.getElementById('cancel-reset-btn').addEventListener('click', () => modals.reset.classList.add('hidden'));
+
+        // Scroll Logic
         messagesContainer.addEventListener('scroll', () => {
-            // Show button if scrolled up more than 100px from bottom
             const distanceToBottom = messagesContainer.scrollHeight - (messagesContainer.scrollTop + messagesContainer.clientHeight);
-            
-            if (distanceToBottom > 100) {
-                scrollToBottomBtn.classList.add('visible');
-            } else {
-                scrollToBottomBtn.classList.remove('visible');
-            }
+            scrollToBottomBtn.classList.toggle('visible', distanceToBottom > 100);
         });
+        scrollToBottomBtn.addEventListener('click', () => messagesContainer.scrollTo({ top: messagesContainer.scrollHeight, behavior: 'smooth' }));
 
-        scrollToBottomBtn.addEventListener('click', () => {
-            messagesContainer.scrollTo({
-                top: messagesContainer.scrollHeight,
-                behavior: 'smooth'
-            });
-        });
-
-        // Event Listeners for Reset Modal
-        resetChatBtn.addEventListener('click', () => {
-            resetConfirmationModal.classList.remove('hidden');
-        });
-
-        confirmResetBtn.addEventListener('click', () => {
-            resetChat();
-            resetConfirmationModal.classList.add('hidden');
-        });
-
-        cancelResetBtn.addEventListener('click', () => {
-            resetConfirmationModal.classList.add('hidden');
-        });
-
+        // Basic Events
         widgetButton.addEventListener('click', toggleChat); closeButton.addEventListener('click', toggleChat); sendButton.addEventListener('click', handleSendMessage);
         messageInput.addEventListener('keydown', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); handleSendMessage(); } });
+
+        // Initial Run
+        updateContactStack();
     </script>
 </body>
 </html>
