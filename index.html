@@ -58,16 +58,50 @@
         .accent-border { border-color: var(--accent-color) !important; }
         .hidden-important { display: none !important; }
 
+        /* --- DYNAMIC INPUT FOCUS --- */
+        .input-focus-dynamic {
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-focus-dynamic:focus-within {
+            border-color: var(--accent-color) !important;
+            box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.5) !important;
+        }
+
         /* --- WIDGET BUTTON --- */
         #chat-widget-button {
-            position: fixed; bottom: 20px; right: 20px; width: auto; padding: 12px 24px;
+            position: fixed; bottom: 20px; width: auto; padding: 12px 24px;
             border-radius: 30px; gap: 10px; background-color: var(--accent-color);
             display: flex; align-items: center; justify-content: center; cursor: pointer;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); transition: all 0.3s ease; z-index: 1000; border: none;
             animation: ripple 2s infinite, shake-interval 6s infinite ease-in-out;
+            
+            /* Default Position (Right) - can be overridden by classes */
+            right: 20px; left: auto; 
         }
         #chat-widget-button:hover { transform: scale(1.05); animation-play-state: paused; background-color: var(--accent-hover); }
-        .chat-button-text { color: white; font-weight: 600; font-size: 16px; line-height: 1; white-space: nowrap; }
+        .chat-button-text { color: white; font-weight: 600; font-size: 16px; line-height: 1; white-space: nowrap; font-family: 'Inter', sans-serif; }
+
+        /* --- WIDGET POSITIONING CLASSES --- */
+        /* Button Positioning */
+        .widget-pos-right { right: 20px !important; left: auto !important; }
+        .widget-pos-left { left: 20px !important; right: auto !important; }
+        .widget-pos-center { 
+            left: 50% !important; 
+            right: auto !important; 
+            translate: -50% 0 !important; /* Modern CSS for centering without interfering with transform */
+        }
+
+        /* Window Positioning (Desktop Only) */
+        @media (min-width: 768px) {
+            #chat-window.widget-pos-right { right: 20px; left: auto; transform-origin: bottom right; }
+            #chat-window.widget-pos-left { left: 20px; right: auto; transform-origin: bottom left; }
+            #chat-window.widget-pos-center { 
+                left: 50%; 
+                right: auto; 
+                translate: -50% 0; 
+                transform-origin: bottom center; 
+            }
+        }
 
         @keyframes ripple {
             0% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.7); }
@@ -125,7 +159,13 @@
         #chat-window.open { opacity: 1; visibility: visible; transform: scale(1) translateY(0); }
 
         /* --- MESSAGE STYLING --- */
-        .message-wrapper { display: flex; width: 100%; margin-bottom: 8px; align-items: center; }
+        .message-wrapper { 
+            display: flex; 
+            width: 100%; 
+            margin-bottom: 8px; 
+            align-items: center; 
+            padding: 0 12px; 
+        }
         .message-wrapper.user { justify-content: flex-end; }
         .message-wrapper.ai { justify-content: flex-start; }
 
@@ -136,7 +176,7 @@
         @media (min-width: 769px) { .message-wrapper:hover .message-time { opacity: 1; } }
         @media (max-width: 768px) { .message-time { opacity: 1 !important; } }
 
-        /* --- SCROLL BTN --- */
+        /* SCROLL BTN */
         #scroll-to-bottom-btn {
             position: absolute; bottom: 130px; left: 50%; right: auto;
             width: 36px; height: 36px; background-color: white; border: 1px solid #e5e7eb;
@@ -146,22 +186,25 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: var(--accent-color);
         }
         #scroll-to-bottom-btn.visible { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
-        #scroll-to-bottom-btn:hover { background-color: #f9fafb; transform: translateX(-50%) translateY(-2px); }
+        #scroll-to-bottom-btn.visible:hover { background-color: #f9fafb; transform: translateX(-50%) translateY(-2px); }
 
         .chat-message-user {
             background-color: var(--accent-color); color: white;
             border-radius: 18px 18px 4px 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            padding: 12px; word-wrap: break-word; overflow-wrap: break-word; max-width: 85%;
+            padding: 12px; word-wrap: break-word; overflow-wrap: break-word; 
+            max-width: 70%; 
         }
         .chat-message-ai {
             background-color: #f3f4f6; color: #1f2937;
             border-radius: 18px 18px 18px 4px;
-            padding: 12px; word-wrap: break-word; overflow-wrap: break-word; max-width: 85%;
+            padding: 12px; word-wrap: break-word; overflow-wrap: break-word; 
+            max-width: 70%; 
         }
 
         .typing-indicator-bubble {
             display: flex; align-items: center; padding: 12px 16px; background-color: #f3f4f6;
             border-radius: 18px 18px 18px 4px; align-self: flex-start; width: fit-content; margin-bottom: 4px;
+            margin-left: 12px;
         }
         .typing-indicator-bubble span {
             height: 8px; width: 8px; background-color: #9ca3af; border-radius: 50%; display: inline-block; margin: 0 2px;
@@ -178,7 +221,7 @@
         /* --- CONTACT BANNERS (SHARED STYLES) --- */
         .contact-banner {
             position: absolute; bottom: 100%; left: 12px; right: 12px; 
-            margin-bottom: 20px; /* Will be overridden by JS */
+            margin-bottom: 20px; 
             transform: translateY(0); overflow: hidden; white-space: nowrap; height: 64px; z-index: 50;
             cursor: pointer;
             border-radius: 24px;
@@ -190,23 +233,20 @@
             opacity: 0; visibility: hidden; pointer-events: none;
         }
         
-        /* Styling for Visible State */
         .contact-banner.show-banner {
             opacity: 1; visibility: visible; pointer-events: auto;
             transform: translateY(16px) scale(0.98);
         }
         .contact-banner:hover { opacity: 0.98; transform: translateY(16px) scale(1); }
 
-        /* Specific Colors */
         #telegram-banner { background-color: #24A1DE; }
         #whatsapp-banner { background-color: var(--whatsapp-color); }
         #messenger-banner { background-color: var(--messenger-color); }
         #call-banner { background-color: var(--call-color); }
 
-        /* Inner Elements */
         .banner-icon-wrapper {
             margin: 0; background-color: rgba(255,255,255,0.2);
-            width: 40px; height: 40px; /* Default Size */
+            width: 40px; height: 40px; 
             display: flex; align-items: center; justify-content: center;
             border-radius: 50%; flex-shrink: 0; margin-left: 8px; color: white;
             transition: all 0.3s ease;
@@ -218,50 +258,46 @@
         .banner-title { font-size: 14px; font-weight: bold; color: white; line-height: 1.2; }
         .banner-subtitle { font-size: 11px; color: rgba(255,255,255,0.9); }
         
+        /* UPDATED: Close Banner Button Styles */
         .close-banner-btn {
-            position: absolute; top: 16px; right: 16px;
-            width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+            position: relative; /* Changed from absolute */
+            margin-left: auto; /* Push to the right */
+            margin-right: 12px; /* Add spacing */
+            width: 32px; /* Increased from 24px */
+            height: 32px; /* Increased from 24px */
+            display: flex; align-items: center; justify-content: center;
             color: rgba(255,255,255,0.7); border-radius: 50%; 
             transition: all 0.2s; z-index: 10;
         }
         .close-banner-btn:hover { background-color: rgba(0,0,0,0.1); color: white; }
 
-        /* * --- UPDATED COLLAPSED STATE (SIDE TAB STYLE) --- 
-         */
+        /* COLLAPSED STATE */
         .contact-banner.collapsed {
-            width: 60px; /* Smaller width just for icon */
-            height: 40px; /* Slightly taller for touch target */
+            width: 60px; 
+            height: 40px; 
             left: auto; 
-            right: -20px; /* Push half off the viewport to the right */
-            border-radius: 24px 0 0 24px; /* Round left side, flat right side like a tab */
-            padding: 0 0 0 10px; /* Push icon slightly left to align in visible area */
-            justify-content: flex-start; /* Align icon to the left */
+            right: -20px; 
+            border-radius: 24px 0 0 24px; 
+            padding: 0 0 0 10px; 
+            justify-content: flex-start; 
             box-shadow: -2px 2px 8px rgba(0,0,0,0.15);
         }
-
-        /* Slide out slightly on hover for better UX */
-        .contact-banner.collapsed:hover {
-            right: -10px;
-        }
+        .contact-banner.collapsed:hover { right: -10px; }
 
         .contact-banner.collapsed .banner-content, 
         .contact-banner.collapsed .close-banner-btn { 
             opacity: 0; pointer-events: none; position: absolute; 
         }
         
-        /* Adjust icon size in collapsed state */
         .contact-banner.collapsed .banner-icon-wrapper {
             width: 28px; height: 28px; margin: 0;
-            background-color: transparent; /* Remove icon background to reduce clutter */
+            background-color: transparent; 
         }
         .contact-banner.collapsed svg.main-icon { width: 16px; height: 16px; }
 
-        /* Hide arrow in collapsed state to save space */
         .expand-arrow { 
             display: none; width: 18px; height: 18px; margin-right: 6px; color: white; flex-shrink: 0; 
         }
-        /* Removed the display:block rule for collapsed arrow */
-
 
         /* --- ADMIN PANEL --- */
         #admin-panel {
@@ -356,6 +392,37 @@
                 <span id="color-value-text" class="text-sm font-mono opacity-70">#2563eb</span>
             </div>
         </div>
+        
+        <!-- UPDATED: Button Text Dropdown -->
+        <div class="admin-control">
+            <span class="admin-label">Текст кнопки</span>
+            <select id="button-text-select" class="admin-input">
+                <option value="Спросите наш ИИ">Спросите наш ИИ</option>
+                <option value="Онлайн ассистент">Онлайн ассистент</option>
+                <option value="Чат с отелем" selected>Чат с отелем</option>
+                <option value="Свяжитесь с нами">Свяжитесь с нами</option>
+                <option value="Быстрая поддержка">Быстрая поддержка</option>
+                <option value="Быстрая связь">Быстрая связь</option>
+                <option value="Быстрая помощь">Быстрая помощь</option>
+                <option value="Мгновенная помощь">Мгновенная помощь</option>
+                <option value="Нужна помощь?">Нужна помощь?</option>
+                <option value="Хотите забронировать?">Хотите забронировать?</option>
+                <option value="Задать вопрос">Задать вопрос</option>
+                <option value="Вопросы? Мы онлайн">Вопросы? Мы онлайн</option>
+                <option value="Поддержка 24/7">Поддержка 24/7</option>
+            </select>
+        </div>
+        
+        <!-- Widget Position Section -->
+        <div class="admin-control">
+            <span class="admin-label">Розташування віджета</span>
+            <select id="position-select" class="admin-input">
+                <option value="widget-pos-right" selected>Справа знизу</option>
+                <option value="widget-pos-center">По центру знизу</option>
+                <option value="widget-pos-left">Зліва знизу</option>
+            </select>
+        </div>
+
         <div class="admin-control">
             <span class="admin-label">Підпис Powered by</span>
             <div class="flex items-center justify-between">
@@ -390,61 +457,12 @@
                 <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider"></span></label>
             </div>
         </div>
-
-        <!-- BUTTON BUILDER -->
-        <hr class="my-4 border-gray-200">
-        <h3 class="font-bold text-lg mb-4">🛠 Конструктор Кнопки</h3>
-
-        <div class="admin-control">
-            <span class="admin-label">Текст кнопки</span>
-            <input type="text" id="builder-text" class="admin-input" value="Написати нам">
-        </div>
-
-        <!-- REMOVED: Button Logo Input -->
-
-        <div class="admin-control">
-            <span class="admin-label">Колір фону</span>
-            <div class="color-picker-wrapper">
-                <input type="color" id="builder-color" value="#2563eb">
-                <span id="builder-color-val" class="text-sm font-mono opacity-70">#2563eb</span>
-            </div>
-        </div>
-
-        <div class="admin-control">
-            <span class="admin-label">Шрифт</span>
-            <select id="builder-font" class="admin-input">
-                <option value="Inter, sans-serif">Inter</option>
-                <option value="Arial, sans-serif">Arial</option>
-                <option value="'Helvetica Neue', Helvetica, sans-serif">Helvetica</option>
-                <option value="'Times New Roman', serif">Times New Roman</option>
-                <option value="Verdana, sans-serif">Verdana</option>
-                <!-- Added more fonts as requested -->
-                <option value="'Courier New', Courier, monospace">Courier New</option>
-                <option value="Georgia, serif">Georgia</option>
-                <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
-                <option value="Impact, sans-serif">Impact</option>
-                <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Segoe UI</option>
-                <option value="'Lucida Console', Monaco, monospace">Lucida Console</option>
-            </select>
-        </div>
-
-        <div class="admin-control">
-            <span class="admin-label">Попередній перегляд</span>
-            <div id="builder-preview" class="p-4 border border-gray-200 rounded-lg bg-gray-50 flex justify-center min-h-[80px] items-center overflow-hidden">
-                <!-- Button renders here -->
-            </div>
-        </div>
-
-        <div class="admin-control flex gap-2">
-            <button id="builder-apply-btn" class="flex-1 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition font-medium">Застосувати</button>
-            <button id="builder-reset-btn" class="flex-1 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300 transition font-medium">Скинути</button>
-        </div>
     </div>
 
     <!-- WIDGET BUTTON -->
     <button id="chat-widget-button" aria-label="Відкрити чат">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-        <span class="chat-button-text">Чат з готелем</span>
+        <span class="chat-button-text">Чат с отелем</span>
         <span id="chat-notification-badge">1</span>
     </button>
 
@@ -490,9 +508,6 @@
             </div>
         </div>
 
-        <!-- GENERIC CONTACT CONFIRMATION MODAL TEMPLATE -->
-        <!-- Used for TG, WA, Messenger. Content updated dynamically or separate blocks for simplicity -->
-        
         <!-- TELEGRAM MODAL -->
         <div id="tg-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
              <div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
@@ -558,7 +573,7 @@
                 <div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div>
                 <div class="banner-content"><span class="banner-title">Зателефонувати</span></div>
                 <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </a>
 
             <!-- MESSENGER BANNER -->
@@ -566,7 +581,7 @@
                 <div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.24c1.093.301 2.246.464 3.443.464 6.627 0 12-4.975 12-11.11S18.627 0 12 0zm1.191 14.963l-3.056-3.246-5.963 3.246 6.559-6.963 3.13 3.245 5.89-3.245-6.56 6.963z"/></svg></div>
                 <div class="banner-content"><span class="banner-title">Перейти в Messenger</span><span class="banner-subtitle">Швидше і зручніше</span></div>
                 <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </a>
 
             <!-- WHATSAPP BANNER -->
@@ -575,7 +590,7 @@
                 </div>
                 <div class="banner-content"><span class="banner-title">Перейти в WhatsApp</span><span class="banner-subtitle">Швидше і зручніше</span></div>
                 <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </a>
 
             <!-- TELEGRAM BANNER -->
@@ -583,12 +598,12 @@
                 <div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg></div>
                 <div class="banner-content"><span class="banner-title">Перейти в Telegram</span><span class="banner-subtitle">Швидше і зручніше</span></div>
                 <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </a>
 
             <!-- INPUT AREA -->
             <div class="px-3 pb-1 pt-2">
-                <div class="input-wrapper-bg flex items-center gap-2 bg-white border border-gray-200 rounded-3xl pl-3 pr-1 py-1 focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500 transition-shadow transition-colors">
+                <div class="input-wrapper-bg input-focus-dynamic flex items-center gap-2 bg-white border border-gray-200 rounded-3xl pl-3 pr-1 py-1 transition-shadow transition-colors">
                     <input type="text" id="message-input" placeholder="Напишіть повідомлення..." class="flex-1 bg-transparent border-none focus:ring-0 p-1 text-base max-h-20 overflow-y-auto resize-none outline-none text-gray-700 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed" autocomplete="off">
                     <button id="send-button" class="w-10 h-10 rounded-full accent-bg text-white flex items-center justify-center accent-bg-hover transition transform hover:scale-105 flex-shrink-0 mb-0.5 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed">
                         <svg id="btn-icon-send" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
@@ -634,15 +649,10 @@
         const logoUpload = document.getElementById('logo-upload');
         const hotelNameText = document.getElementById('hotel-name-text');
         const hotelLogoContainer = document.getElementById('hotel-logo-container');
+        const buttonTextSelect = document.getElementById('button-text-select'); // CHANGED: Now a select
         
-        // Builder Elements
-        const bText = document.getElementById('builder-text');
-        const bColor = document.getElementById('builder-color');
-        const bColorVal = document.getElementById('builder-color-val');
-        const bFont = document.getElementById('builder-font');
-        const bPreview = document.getElementById('builder-preview');
-        const bApplyBtn = document.getElementById('builder-apply-btn');
-        const bResetBtn = document.getElementById('builder-reset-btn');
+        // Position Selector
+        const positionSelect = document.getElementById('position-select');
 
         // Toggles
         const tgToggle = document.getElementById('tg-toggle');
@@ -670,7 +680,6 @@
         let welcomed = false;
         let currentLang = 'ua'; 
         let isGenerating = false;
-        // Removed logoDataUrl related to button builder
 
         // --- INITIALIZATION & EVENT LISTENERS ---
 
@@ -683,7 +692,9 @@
         function initLanguage() {
             const t = translations[currentLang];
             messageInput.placeholder = t.placeholder;
-            chatButtonText.textContent = t.buttonText;
+            // Removed: chatButtonText.textContent = t.buttonText; 
+            // We now respect the select value initially
+            chatButtonText.textContent = buttonTextSelect.value;
         }
         initLanguage();
 
@@ -692,126 +703,64 @@
         openAdminBtn.addEventListener('click', () => { adminPanel.classList.remove('hidden-panel'); openAdminBtn.classList.add('hidden-btn'); });
         hotelNameInput.addEventListener('input', (e) => { hotelNameText.textContent = e.target.value || "Hilton"; });
         logoUpload.addEventListener('change', function(e) { if (this.files && this.files[0]) { const reader = new FileReader(); reader.onload = function(e) { hotelLogoContainer.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full" alt="Logo">`; }; reader.readAsDataURL(this.files[0]); } });
-        accentColorPicker.addEventListener('input', (e) => { const color = e.target.value; colorValueText.textContent = color; document.documentElement.style.setProperty('--accent-color', color); const hexToRgb = (hex) => { let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '37, 99, 235'; }; document.documentElement.style.setProperty('--accent-rgb', hexToRgb(color)); const darkenColor = (hex, percent) => { let num = parseInt(hex.replace("#",""), 16), amt = Math.round(2.55 * percent), R = (num >> 16) - amt, G = (num >> 8 & 0x00FF) - amt, B = (num & 0x0000FF) - amt; return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1); }; document.documentElement.style.setProperty('--accent-hover', darkenColor(color, 20)); });
+        
+        // Updated Accent Color Logic
+        accentColorPicker.addEventListener('input', (e) => { 
+            const color = e.target.value; 
+            colorValueText.textContent = color; 
+            document.documentElement.style.setProperty('--accent-color', color); 
+            const hexToRgb = (hex) => { let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '37, 99, 235'; }; 
+            document.documentElement.style.setProperty('--accent-rgb', hexToRgb(color)); 
+            const darkenColor = (hex, percent) => { let num = parseInt(hex.replace("#",""), 16), amt = Math.round(2.55 * percent), R = (num >> 16) - amt, G = (num >> 8 & 0x00FF) - amt, B = (num & 0x0000FF) - amt; return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1); }; 
+            document.documentElement.style.setProperty('--accent-hover', darkenColor(color, 20)); 
+        });
+        
+        // Button Text Listener (Dropdown Change)
+        buttonTextSelect.addEventListener('change', (e) => {
+            chatButtonText.textContent = e.target.value;
+        });
+        
         themeToggle.addEventListener('change', (e) => { if (e.target.checked) { chatWindow.classList.add('dark-mode'); } else { chatWindow.classList.remove('dark-mode'); } });
         brandingToggle.addEventListener('change', (e) => { poweredByContainer.style.display = e.target.checked ? 'block' : 'none'; chatFooter.classList.toggle('pb-1', !e.target.checked); });
 
-        // --- BUTTON BUILDER LOGIC ---
-        const DEFAULT_TEXT = "Чат з готелем";
-        const DEFAULT_COLOR = "#2563eb";
-        const DEFAULT_FONT = "Inter, sans-serif";
-
-        function generateButton() {
-            const text = bText.value || 'Button';
-            const color = bColor.value;
-            const font = bFont.value;
+        // POSITION LOGIC
+        positionSelect.addEventListener('change', (e) => {
+            const posClass = e.target.value;
             
-            let imgTag = '';
-            // Removed logic for custom image, using default SVG behavior in preview if we wanted, 
-            // but for preview simplify to text. Real button has SVG.
-            
-            // Minified inline styles
-            const styles = `display: inline-flex; align-items: center; justify-content: center; background-color: ${color}; color: #ffffff; font-family: ${font}; font-size: 16px; font-weight: 600; text-decoration: none; padding: 12px 24px; border-radius: 30px; border: none; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s ease, opacity 0.2s ease; line-height: 1;`;
-            const hoverScript = `onmouseover="this.style.transform='scale(1.05)';this.style.opacity='0.95'" onmouseout="this.style.transform='scale(1)';this.style.opacity='1'"`;
+            // Clean up all classes
+            ['widget-pos-right', 'widget-pos-center', 'widget-pos-left'].forEach(cls => {
+                widgetButton.classList.remove(cls);
+                chatWindow.classList.remove(cls);
+            });
 
-            // Simple preview with text
-            return `<a href="#" style="${styles}" ${hoverScript}><span>${text}</span></a>`;
-        }
+            // Add selected class
+            widgetButton.classList.add(posClass);
+            chatWindow.classList.add(posClass);
+        });
 
-        function updateBuilderUI() {
-            const html = generateButton();
-            bPreview.innerHTML = html;
-            bColorVal.textContent = bColor.value;
-        }
-
-        // Helper: Hex to RGB for ripple animation
-        const hexToRgbString = (hex) => { 
-            let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); 
-            return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '37, 99, 235'; 
-        };
-
-        function applyButtonDesign() {
-            const newText = bText.value;
-            if(newText) chatButtonText.textContent = newText;
-
-            const newColor = bColor.value;
-            widgetButton.style.backgroundColor = newColor;
-            widgetButton.style.setProperty('--accent-rgb', hexToRgbString(newColor));
-            
-            widgetButton.style.fontFamily = bFont.value;
-
-            // Reset to default SVG icon since custom upload is removed
-            const existingSvg = widgetButton.querySelector('svg');
-            const existingImg = widgetButton.querySelector('img.custom-btn-logo');
-            
-            if(existingImg) existingImg.remove();
-            if(existingSvg) existingSvg.style.display = 'block';
-            
-            const originalText = bApplyBtn.textContent;
-            bApplyBtn.textContent = 'Застосовано! ✅';
-            setTimeout(() => bApplyBtn.textContent = originalText, 2000);
-        }
-
-        function resetButtonDesign() {
-            // 1. Reset Inputs
-            bText.value = DEFAULT_TEXT;
-            bColor.value = DEFAULT_COLOR;
-            bFont.value = DEFAULT_FONT;
-
-            // 2. Update UI
-            updateBuilderUI();
-
-            // 3. Reset Widget Button to defaults
-            chatButtonText.textContent = DEFAULT_TEXT;
-            widgetButton.style.backgroundColor = ''; // Fallback to CSS class
-            widgetButton.style.fontFamily = '';
-            widgetButton.style.removeProperty('--accent-rgb');
-
-            // Restore Icon
-            const existingImg = widgetButton.querySelector('img.custom-btn-logo');
-            const existingSvg = widgetButton.querySelector('svg');
-            if (existingImg) existingImg.remove();
-            if (existingSvg) existingSvg.style.display = 'block';
-
-            // Feedback
-            const originalText = bResetBtn.textContent;
-            bResetBtn.textContent = 'Скинуто! ↺';
-            setTimeout(() => bResetBtn.textContent = originalText, 2000);
-        }
-
-        bText.addEventListener('input', updateBuilderUI);
-        bColor.addEventListener('input', updateBuilderUI);
-        bFont.addEventListener('change', updateBuilderUI);
-
-        bApplyBtn.addEventListener('click', applyButtonDesign);
-        bResetBtn.addEventListener('click', resetButtonDesign);
-        
-        // Init Builder
-        updateBuilderUI();
-
-
-        // --- SMART STACKING LOGIC (UPDATED FOR COLLAPSED DISTANCE) ---
+        // --- SMART STACKING LOGIC ---
         function updateContactStack() {
-            // Define the desired stack order (Bottom to Top)
+            // Safely get checked state
+            const isChecked = (el) => el && el.checked;
+
             const stackOrder = [
-                { el: banners.telegram, enabled: tgToggle.checked },
-                { el: banners.whatsapp, enabled: whatsappToggle.checked },
-                { el: banners.messenger, enabled: messengerToggle.checked },
-                { el: banners.call, enabled: callToggle.checked }
+                { el: banners.telegram, enabled: isChecked(tgToggle) },
+                { el: banners.whatsapp, enabled: isChecked(whatsappToggle) },
+                { el: banners.messenger, enabled: isChecked(messengerToggle) },
+                { el: banners.call, enabled: isChecked(callToggle) }
             ];
 
             let currentBottom = 20; // Base margin from bottom
             
             stackOrder.forEach(item => {
+                // Fix: Check if banner element exists before manipulating classList
+                if (!item.el) return;
+
                 if (item.enabled) {
                     item.el.classList.add('show-banner');
                     item.el.style.marginBottom = `${currentBottom}px`;
                     
-                    // CHECK IF COLLAPSED TO ADJUST SPACING
                     const isCollapsed = item.el.classList.contains('collapsed');
-                    
-                    // If collapsed: use smaller gap (45px). If expanded: use standard gap (75px)
-                    // 45px = 60px - 15px (requested reduction)
                     const spacing = isCollapsed ? 45 : 75;
 
                     currentBottom += spacing; 
@@ -821,56 +770,45 @@
             });
         }
 
-        // Attach listeners to all contact toggles
         [tgToggle, whatsappToggle, messengerToggle, callToggle].forEach(toggle => {
-            toggle.addEventListener('change', updateContactStack);
+            if (toggle) {
+                toggle.addEventListener('change', updateContactStack);
+            }
         });
 
-        // --- BANNER INTERACTIONS (Generic Handler) ---
+        // --- BANNER INTERACTIONS ---
         function setupBannerInteractions(bannerId, modalId, externalLink) {
             const banner = document.getElementById(bannerId);
             const modal = document.getElementById(modalId);
             
-            // Fix: Guard clause to prevent null pointer errors if elements are missing
-            if (!banner || !modal) {
-                console.warn(`Elements not found: ${bannerId}, ${modalId}`);
-                return;
-            }
+            if (!banner || !modal) return;
 
             const closeBtn = banner.querySelector('.close-banner-btn');
-            const confirmBtn = modal.querySelector('button:first-child'); // First button is always confirm
+            const confirmBtn = modal.querySelector('button:first-child');
             const cancelBtn = modal.querySelector('.modal-btn-cancel');
 
-            // Click on Banner (Main Area)
             banner.addEventListener('click', function(e) {
-                // If clicked on close button, ignore (handled separately)
                 if (e.target.closest('.close-banner-btn')) return;
 
                 if (this.classList.contains('collapsed')) {
                     e.preventDefault();
                     modal.classList.remove('hidden');
                 } else {
-                    // Expanded state behavior
                     if (externalLink) {
-                        // If it has a link (like TG/WA/Messenger), open it
-                         window.open(externalLink, '_blank');
+                          window.open(externalLink, '_blank');
                     } else {
-                         // For call, show modal anyway or trigger tel:
-                         modal.classList.remove('hidden');
+                          modal.classList.remove('hidden');
                     }
                 }
             });
 
-            // Close (Collapse) Button
             closeBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 banner.classList.add('collapsed');
-                // RECALCULATE STACK IMMEDIATELY TO REDUCE GAP
                 updateContactStack();
             });
 
-            // Modal Actions
             confirmBtn.addEventListener('click', () => {
                 if (externalLink) window.open(externalLink, '_blank');
                 else if (bannerId === 'call-banner') window.location.href = 'tel:+1234567890';
@@ -882,7 +820,6 @@
             });
         }
 
-        // Initialize Interactions
         setupBannerInteractions('telegram-banner', 'tg-confirmation-modal', 'https://t.me/hilton');
         setupBannerInteractions('whatsapp-banner', 'whatsapp-confirmation-modal', 'https://wa.me/1234567890');
         setupBannerInteractions('messenger-banner', 'messenger-confirmation-modal', 'https://m.me/hilton');
@@ -936,24 +873,24 @@
             welcomed = false; isGenerating = false; setButtonLoading(false); simulateWelcome();
         }
 
-        // Reset Modal Logic
         resetChatBtn.addEventListener('click', () => modals.reset.classList.remove('hidden'));
         document.getElementById('confirm-reset-btn').addEventListener('click', () => { resetChat(); modals.reset.classList.add('hidden'); });
         document.getElementById('cancel-reset-btn').addEventListener('click', () => modals.reset.classList.add('hidden'));
 
-        // Scroll Logic
         messagesContainer.addEventListener('scroll', () => {
             const distanceToBottom = messagesContainer.scrollHeight - (messagesContainer.scrollTop + messagesContainer.clientHeight);
             scrollToBottomBtn.classList.toggle('visible', distanceToBottom > 100);
         });
         scrollToBottomBtn.addEventListener('click', () => messagesContainer.scrollTo({ top: messagesContainer.scrollHeight, behavior: 'smooth' }));
 
-        // Basic Events
         widgetButton.addEventListener('click', toggleChat); closeButton.addEventListener('click', toggleChat); sendButton.addEventListener('click', handleSendMessage);
         messageInput.addEventListener('keydown', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); handleSendMessage(); } });
 
-        // Initial Run
         updateContactStack();
+        
+        // Init default positioning
+        widgetButton.classList.add('widget-pos-right');
+        chatWindow.classList.add('widget-pos-right');
     </script>
 </body>
 </html>
