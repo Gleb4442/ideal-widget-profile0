@@ -58,23 +58,25 @@
         .accent-border { border-color: var(--accent-color) !important; }
         .hidden-important { display: none !important; }
         
-        /* NEW: No Animation Class */
+        /* No Animation Class */
         .no-animation {
             animation: none !important;
             transform: none !important;
         }
-        /* Fix hover scale when animation is disabled but hover effect is desired */
         .no-animation:hover {
             transform: scale(1.05) !important;
         }
 
-        /* --- DYNAMIC INPUT FOCUS --- */
-        .input-focus-dynamic {
-            transition: border-color 0.2s, box-shadow 0.2s;
+        /* --- INPUT STYLES (CLEANED UP) --- */
+        /* Removed all dynamic focus border logic as requested */
+        .input-wrapper-bg {
+            border: 1px solid #e5e7eb; /* Static clean border */
         }
-        .input-focus-dynamic:focus-within {
-            border-color: var(--accent-color) !important;
-            box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.5) !important;
+        
+        /* Ensure the inner input has absolutely no outline */
+        #message-input:focus {
+            outline: none !important;
+            box-shadow: none !important;
         }
 
         /* --- WIDGET BUTTON --- */
@@ -85,19 +87,13 @@
             border-radius: 30px; gap: 10px; background-color: var(--accent-color);
             display: flex; align-items: center; justify-content: center; cursor: pointer;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); transition: all 0.3s ease; z-index: 1000; border: none;
-            
-            /* Animations defined here, can be disabled via .no-animation class */
             animation: ripple 2s infinite, shake-interval 6s infinite ease-in-out;
-            
-            /* Default Position (Right) - can be overridden by classes */
             right: 20px; left: auto; 
         }
         #chat-widget-button:hover { transform: scale(1.05); animation-play-state: paused; background-color: var(--accent-hover); }
         .chat-button-text { color: white; font-weight: 600; font-size: 16px; line-height: 1; white-space: nowrap; font-family: 'Inter', sans-serif; }
 
         /* --- WIDGET POSITIONING CLASSES --- */
-        
-        /* 1. BUTTON Positioning (Applies everywhere, including mobile) */
         #chat-widget-button.widget-pos-right { right: 20px !important; left: auto !important; }
         #chat-widget-button.widget-pos-left { left: 20px !important; right: auto !important; }
         #chat-widget-button.widget-pos-center { 
@@ -106,8 +102,6 @@
             translate: -50% 0 !important; 
         }
 
-        /* 2. WINDOW Positioning (DESKTOP ONLY) */
-        /* On desktop, the window follows the button position */
         @media (min-width: 768px) {
             #chat-window.widget-pos-right { right: 20px; left: auto; transform-origin: bottom right; }
             #chat-window.widget-pos-left { left: 20px; right: auto; transform-origin: bottom left; }
@@ -119,22 +113,15 @@
             }
         }
 
-        /* 3. WINDOW Positioning (MOBILE STANDARDIZATION) */
-        /* On mobile, ignore widget-pos classes for the window. Always fill screen. */
         @media (max-width: 767px) {
             #chat-window {
-                /* Override any specific positioning classes */
                 left: 12px !important;
                 right: 12px !important;
                 bottom: 12px !important;
                 top: 12px !important;
                 width: auto !important;
                 height: auto !important;
-                
-                /* Reset transform/translate that might come from 'center' class */
                 translate: 0 0 !important;
-                
-                /* Standardize animation origin from bottom center */
                 transform-origin: bottom center !important;
             }
         }
@@ -173,16 +160,12 @@
         /* --- CHAT WINDOW CORE --- */
         #chat-window {
             position: fixed; 
-            /* Base styles (Mobile default) */
             top: 12px; left: 12px; right: 12px; bottom: 12px;
             width: auto; height: auto;
-            
             background-color: white; display: flex; flex-direction: column; overflow: hidden; z-index: 1001;
             border-radius: 20px; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             opacity: 0; visibility: hidden; 
-            
-            /* Default transform origin (can be overridden by classes) */
             transform-origin: bottom center;
             transform: scale(0.95) translateY(10px); 
             transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
@@ -233,13 +216,21 @@
             background-color: var(--accent-color); color: white;
             border-radius: 18px 18px 4px 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
             padding: 12px; word-wrap: break-word; overflow-wrap: break-word; 
-            max-width: 70%; 
+            max-width: 75%; /* Increased width slightly for bigger text */
+            
+            /* UPDATED: Bigger Text */
+            font-size: 16px; 
+            line-height: 1.5;
         }
         .chat-message-ai {
             background-color: #f3f4f6; color: #1f2937;
             border-radius: 18px 18px 18px 4px;
             padding: 12px; word-wrap: break-word; overflow-wrap: break-word; 
-            max-width: 70%; 
+            max-width: 75%; /* Increased width slightly for bigger text */
+
+            /* UPDATED: Bigger Text */
+            font-size: 16px;
+            line-height: 1.5;
         }
 
         .typing-indicator-bubble {
@@ -299,13 +290,12 @@
         .banner-title { font-size: 14px; font-weight: bold; color: white; line-height: 1.2; }
         .banner-subtitle { font-size: 11px; color: rgba(255,255,255,0.9); }
         
-        /* UPDATED: Close Banner Button Styles */
         .close-banner-btn {
-            position: relative; /* Changed from absolute */
-            margin-left: auto; /* Push to the right */
-            margin-right: 12px; /* Add spacing */
-            width: 32px; /* Increased from 24px */
-            height: 32px; /* Increased from 24px */
+            position: relative; 
+            margin-left: auto; 
+            margin-right: 12px; 
+            width: 32px; 
+            height: 32px; 
             display: flex; align-items: center; justify-content: center;
             color: rgba(255,255,255,0.7); border-radius: 50%; 
             transition: all 0.2s; z-index: 10;
@@ -444,7 +434,7 @@
             </select>
         </div>
 
-        <!-- NEW: Animation Toggle -->
+        <!-- Animation Toggle -->
         <div class="admin-control">
             <span class="admin-label">Анимация кнопки</span>
             <div class="flex items-center justify-between">
@@ -456,6 +446,12 @@
         <div class="admin-control">
             <span class="admin-label">Текст кнопки</span>
             <select id="button-text-select" class="admin-input">
+                <!-- NEW OPTIONS ADDED HERE -->
+                <option value="Чат">Чат</option>
+                <option value="Спросить Roomie">Спросить Roomie</option>
+                <option value="Спросить">Спросить</option>
+                <option value="Помощь">Помощь</option>
+                <!-- EXISTING OPTIONS -->
                 <option value="Спросите наш ИИ">Спросите наш ИИ</option>
                 <option value="Онлайн ассистент">Онлайн ассистент</option>
                 <option value="Чат с отелем" selected>Чат с отелем</option>
@@ -652,9 +648,11 @@
 
             <!-- INPUT AREA -->
             <div class="px-3 pb-1 pt-2">
-                <div class="input-wrapper-bg input-focus-dynamic flex items-center gap-2 bg-white border border-gray-200 rounded-3xl pl-3 pr-1 py-1 transition-shadow transition-colors">
+                <!-- UPDATED: Removed 'input-focus-dynamic' class and related logic -->
+                <div class="input-wrapper-bg flex items-center gap-2 bg-white border border-gray-200 rounded-3xl pl-3 pr-1 py-1 transition-shadow transition-colors">
                     <input type="text" id="message-input" placeholder="Напишіть повідомлення..." class="flex-1 bg-transparent border-none focus:ring-0 p-1 text-base max-h-20 overflow-y-auto resize-none outline-none text-gray-700 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed" autocomplete="off">
-                    <button id="send-button" class="w-10 h-10 rounded-full accent-bg text-white flex items-center justify-center accent-bg-hover transition transform hover:scale-105 flex-shrink-0 mb-0.5 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed">
+                    <!-- FIX: Removed mb-0.5 to center the button perfectly -->
+                    <button id="send-button" class="w-10 h-10 rounded-full accent-bg text-white flex items-center justify-center accent-bg-hover transition transform hover:scale-105 flex-shrink-0 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed">
                         <svg id="btn-icon-send" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
                         <svg id="btn-icon-loading" class="hidden animate-spin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
                     </button>
@@ -911,7 +909,8 @@
         
         function addMessage(text, sender) { 
             const wrapper = document.createElement('div'); wrapper.className = `message-wrapper ${sender} animate-fade-in`;
-            const messageElement = document.createElement('div'); messageElement.className = `chat-message-${sender} text-sm leading-relaxed`; messageElement.innerHTML = text.replace(/\n/g, '<br>'); 
+            // UPDATED: Used text-base (16px) instead of text-sm
+            const messageElement = document.createElement('div'); messageElement.className = `chat-message-${sender} text-base leading-relaxed`; messageElement.innerHTML = text.replace(/\n/g, '<br>'); 
             const timeElement = document.createElement('span'); timeElement.className = 'message-time'; timeElement.innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             if (sender === 'user') { wrapper.appendChild(timeElement); wrapper.appendChild(messageElement); } else { wrapper.appendChild(messageElement); wrapper.appendChild(timeElement); }
             messagesContainer.insertBefore(wrapper, typingIndicator); messagesContainer.scrollTop = messagesContainer.scrollHeight; 
