@@ -57,6 +57,16 @@
         .accent-text { color: var(--accent-color) !important; }
         .accent-border { border-color: var(--accent-color) !important; }
         .hidden-important { display: none !important; }
+        
+        /* NEW: No Animation Class */
+        .no-animation {
+            animation: none !important;
+            transform: none !important;
+        }
+        /* Fix hover scale when animation is disabled but hover effect is desired */
+        .no-animation:hover {
+            transform: scale(1.05) !important;
+        }
 
         /* --- DYNAMIC INPUT FOCUS --- */
         .input-focus-dynamic {
@@ -69,10 +79,14 @@
 
         /* --- WIDGET BUTTON --- */
         #chat-widget-button {
-            position: fixed; bottom: 20px; width: auto; padding: 12px 24px;
+            position: fixed; 
+            bottom: 32px; 
+            width: auto; padding: 12px 24px;
             border-radius: 30px; gap: 10px; background-color: var(--accent-color);
             display: flex; align-items: center; justify-content: center; cursor: pointer;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); transition: all 0.3s ease; z-index: 1000; border: none;
+            
+            /* Animations defined here, can be disabled via .no-animation class */
             animation: ripple 2s infinite, shake-interval 6s infinite ease-in-out;
             
             /* Default Position (Right) - can be overridden by classes */
@@ -82,16 +96,18 @@
         .chat-button-text { color: white; font-weight: 600; font-size: 16px; line-height: 1; white-space: nowrap; font-family: 'Inter', sans-serif; }
 
         /* --- WIDGET POSITIONING CLASSES --- */
-        /* Button Positioning */
-        .widget-pos-right { right: 20px !important; left: auto !important; }
-        .widget-pos-left { left: 20px !important; right: auto !important; }
-        .widget-pos-center { 
+        
+        /* 1. BUTTON Positioning (Applies everywhere, including mobile) */
+        #chat-widget-button.widget-pos-right { right: 20px !important; left: auto !important; }
+        #chat-widget-button.widget-pos-left { left: 20px !important; right: auto !important; }
+        #chat-widget-button.widget-pos-center { 
             left: 50% !important; 
             right: auto !important; 
-            translate: -50% 0 !important; /* Modern CSS for centering without interfering with transform */
+            translate: -50% 0 !important; 
         }
 
-        /* Window Positioning (Desktop Only) */
+        /* 2. WINDOW Positioning (DESKTOP ONLY) */
+        /* On desktop, the window follows the button position */
         @media (min-width: 768px) {
             #chat-window.widget-pos-right { right: 20px; left: auto; transform-origin: bottom right; }
             #chat-window.widget-pos-left { left: 20px; right: auto; transform-origin: bottom left; }
@@ -100,6 +116,26 @@
                 right: auto; 
                 translate: -50% 0; 
                 transform-origin: bottom center; 
+            }
+        }
+
+        /* 3. WINDOW Positioning (MOBILE STANDARDIZATION) */
+        /* On mobile, ignore widget-pos classes for the window. Always fill screen. */
+        @media (max-width: 767px) {
+            #chat-window {
+                /* Override any specific positioning classes */
+                left: 12px !important;
+                right: 12px !important;
+                bottom: 12px !important;
+                top: 12px !important;
+                width: auto !important;
+                height: auto !important;
+                
+                /* Reset transform/translate that might come from 'center' class */
+                translate: 0 0 !important;
+                
+                /* Standardize animation origin from bottom center */
+                transform-origin: bottom center !important;
             }
         }
 
@@ -134,15 +170,20 @@
             animation: badge-pop 2s infinite ease-in-out; z-index: 10;
         }
 
-        /* --- CHAT WINDOW --- */
+        /* --- CHAT WINDOW CORE --- */
         #chat-window {
             position: fixed; 
+            /* Base styles (Mobile default) */
             top: 12px; left: 12px; right: 12px; bottom: 12px;
             width: auto; height: auto;
+            
             background-color: white; display: flex; flex-direction: column; overflow: hidden; z-index: 1001;
             border-radius: 20px; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            opacity: 0; visibility: hidden; transform-origin: bottom right;
+            opacity: 0; visibility: hidden; 
+            
+            /* Default transform origin (can be overridden by classes) */
+            transform-origin: bottom center;
             transform: scale(0.95) translateY(10px); 
             transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
         }
@@ -393,7 +434,25 @@
             </div>
         </div>
         
-        <!-- UPDATED: Button Text Dropdown -->
+        <!-- Widget Position Section -->
+        <div class="admin-control">
+            <span class="admin-label">Розташування віджета</span>
+            <select id="position-select" class="admin-input">
+                <option value="widget-pos-right" selected>Справа знизу</option>
+                <option value="widget-pos-center">По центру знизу</option>
+                <option value="widget-pos-left">Зліва знизу</option>
+            </select>
+        </div>
+
+        <!-- NEW: Animation Toggle -->
+        <div class="admin-control">
+            <span class="admin-label">Анимация кнопки</span>
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Включена</span>
+                <label class="switch"><input type="checkbox" id="animation-toggle" checked><span class="slider"></span></label>
+            </div>
+        </div>
+
         <div class="admin-control">
             <span class="admin-label">Текст кнопки</span>
             <select id="button-text-select" class="admin-input">
@@ -413,16 +472,6 @@
             </select>
         </div>
         
-        <!-- Widget Position Section -->
-        <div class="admin-control">
-            <span class="admin-label">Розташування віджета</span>
-            <select id="position-select" class="admin-input">
-                <option value="widget-pos-right" selected>Справа знизу</option>
-                <option value="widget-pos-center">По центру знизу</option>
-                <option value="widget-pos-left">Зліва знизу</option>
-            </select>
-        </div>
-
         <div class="admin-control">
             <span class="admin-label">Підпис Powered by</span>
             <div class="flex items-center justify-between">
@@ -649,7 +698,8 @@
         const logoUpload = document.getElementById('logo-upload');
         const hotelNameText = document.getElementById('hotel-name-text');
         const hotelLogoContainer = document.getElementById('hotel-logo-container');
-        const buttonTextSelect = document.getElementById('button-text-select'); // CHANGED: Now a select
+        const buttonTextSelect = document.getElementById('button-text-select');
+        const animationToggle = document.getElementById('animation-toggle'); // NEW
         
         // Position Selector
         const positionSelect = document.getElementById('position-select');
@@ -692,8 +742,6 @@
         function initLanguage() {
             const t = translations[currentLang];
             messageInput.placeholder = t.placeholder;
-            // Removed: chatButtonText.textContent = t.buttonText; 
-            // We now respect the select value initially
             chatButtonText.textContent = buttonTextSelect.value;
         }
         initLanguage();
@@ -704,6 +752,15 @@
         hotelNameInput.addEventListener('input', (e) => { hotelNameText.textContent = e.target.value || "Hilton"; });
         logoUpload.addEventListener('change', function(e) { if (this.files && this.files[0]) { const reader = new FileReader(); reader.onload = function(e) { hotelLogoContainer.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full" alt="Logo">`; }; reader.readAsDataURL(this.files[0]); } });
         
+        // Animation Toggle Logic
+        animationToggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                widgetButton.classList.remove('no-animation');
+            } else {
+                widgetButton.classList.add('no-animation');
+            }
+        });
+
         // Updated Accent Color Logic
         accentColorPicker.addEventListener('input', (e) => { 
             const color = e.target.value; 
@@ -750,10 +807,10 @@
                 { el: banners.call, enabled: isChecked(callToggle) }
             ];
 
-            let currentBottom = 20; // Base margin from bottom
+            // UPDATED: Starting value increased from 20 to 32 to raise minimum allowed position
+            let currentBottom = 32; 
             
             stackOrder.forEach(item => {
-                // Fix: Check if banner element exists before manipulating classList
                 if (!item.el) return;
 
                 if (item.enabled) {
@@ -790,14 +847,21 @@
             banner.addEventListener('click', function(e) {
                 if (e.target.closest('.close-banner-btn')) return;
 
+                // Check if the banner is currently collapsed (side button)
                 if (this.classList.contains('collapsed')) {
+                    // Prevent default to ensure no accidental navigation, show confirmation modal
                     e.preventDefault();
                     modal.classList.remove('hidden');
                 } else {
+                    // --- UPDATED LOGIC FOR EXPANDED BANNER ---
                     if (externalLink) {
-                          window.open(externalLink, '_blank');
+                        window.open(externalLink, '_blank');
+                    } else if (bannerId === 'call-banner') {
+                         // Direct Call Action when Expanded
+                         window.location.href = 'tel:+1234567890';
                     } else {
-                          modal.classList.remove('hidden');
+                         // Default behavior for other expanded banners without direct links
+                         modal.classList.remove('hidden');
                     }
                 }
             });
