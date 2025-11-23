@@ -16,9 +16,6 @@
 --accent-color: #2563eb;
 --accent-hover: #1d4ed8;
 --accent-rgb: 37, 99, 235;
---call-color: #22c55e;
---whatsapp-color: #25D366;
---messenger-color: #0084FF;
 }
 
 body {
@@ -48,11 +45,10 @@ background-color: #374151 !important;
 border-color: transparent;
 }
 
-/* Active Focus State in Dark Mode (UPDATED) */
+/* Active Focus State in Dark Mode */
 #chat-window.dark-mode .input-container-bg:focus-within {
 background-color: #374151 !important;
 border-color: var(--accent-color) !important;
-/* 1px border + 2px solid shadow = 3px total thickness, no blur */
 box-shadow: 0 0 0 2px var(--accent-color) !important; 
 }
 #chat-window.dark-mode .message-time { color: #9ca3af; }
@@ -84,20 +80,15 @@ outline: none !important;
 box-shadow: none !important;
 }
 
-/* --- INPUT HIGHLIGHT LOGIC (UPDATED) --- */
-/* Base state for input container */
+/* --- INPUT HIGHLIGHT LOGIC --- */
 .input-container-bg {
-border: 1px solid transparent !important; /* Invisible border to prevent jumping */
-transition: all 0.2s ease-out !important; /* Slightly faster for crisp feel */
+border: 1px solid transparent !important;
+transition: all 0.2s ease-out !important;
 }
 
-/* Active state when user clicks inside */
 .input-container-bg:focus-within {
 background-color: white !important;
-border-color: var(--accent-color) !important; /* 1px real border */
-/* Logic: 1px solid border + 2px solid shadow (0 blur) = 3px solid visual line.
-   Using var(--accent-color) directly ensures it is solid, not semi-transparent.
-*/
+border-color: var(--accent-color) !important;
 box-shadow: 0 0 0 2px var(--accent-color) !important;
 }
 
@@ -266,7 +257,7 @@ animation: typing-bounce 1.4s infinite ease-in-out both;
 #chat-messages::-webkit-scrollbar-track { background: transparent; }
 #chat-messages::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.1); border-radius: 20px; }
 
-/* --- CONTACT BANNERS (SHARED STYLES) --- */
+/* --- CONTACT BANNERS --- */
 .contact-banner {
 position: absolute; bottom: 100%; left: 12px; right: 12px;
 margin-bottom: 20px;
@@ -286,10 +277,8 @@ transform: translateY(16px) scale(0.98);
 }
 .contact-banner:hover { opacity: 0.98; transform: translateY(16px) scale(1); }
 
+/* Only Telegram Banner Style */
 #telegram-banner { background-color: #24A1DE; }
-#whatsapp-banner { background-color: var(--whatsapp-color); }
-#messenger-banner { background-color: var(--messenger-color); }
-#call-banner { background-color: var(--call-color); }
 
 .banner-icon-wrapper {
 margin: 0; background-color: rgba(255,255,255,0.2);
@@ -488,18 +477,7 @@ input:checked + .slider:before { transform: translateX(24px); }
 <span class="text-sm text-gray-600">Telegram</span>
 <label class="switch"><input type="checkbox" id="tg-toggle" checked><span class="slider"></span></label>
 </div>
-<div class="flex items-center justify-between mb-2">
-<span class="text-sm text-gray-600">WhatsApp</span>
-<label class="switch"><input type="checkbox" id="whatsapp-toggle" checked><span class="slider"></span></label>
-</div>
-<div class="flex items-center justify-between mb-2">
-<span class="text-sm text-gray-600">Messenger</span>
-<label class="switch"><input type="checkbox" id="messenger-toggle" checked><span class="slider"></span></label>
-</div>
-<div class="flex items-center justify-between">
-<span class="text-sm text-gray-600">Телефон</span>
-<label class="switch"><input type="checkbox" id="call-toggle" checked><span class="slider"></span></label>
-</div>
+<!-- Removed WhatsApp, Messenger, Call toggles -->
 </div>
 <div class="admin-control">
 <span class="admin-label">Тема оформлення</span>
@@ -570,78 +548,8 @@ input:checked + .slider:before { transform: translateX(24px); }
 </div>
 </div>
 
-<!-- WHATSAPP MODAL -->
-<div id="whatsapp-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
-<div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-<div class="mx-auto w-12 h-12 bg-[#25D366]/20 rounded-full flex items-center justify-center mb-4 text-[#25D366]">
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-</div>
-<h4 class="text-lg font-bold mb-2">Бажаєте перейти?</h4>
-<p class="modal-text-secondary text-sm text-gray-500 mb-6">Ви будете перенаправлені у зовнішній додаток.</p>
-<div class="flex flex-col gap-2">
-<button id="confirm-whatsapp-btn" class="w-full py-2.5 bg-[#25D366] hover:bg-[#20bd5a] text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Перейти</span></button>
-<button id="cancel-whatsapp-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
-</div>
-</div>
-</div>
-
-<!-- MESSENGER MODAL -->
-<div id="messenger-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
-<div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-<div class="mx-auto w-12 h-12 bg-[#0084FF]/20 rounded-full flex items-center justify-center mb-4 text-[#0084FF]">
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.24c1.093.301 2.246.464 3.443.464 6.627 0 12-4.975 12-11.11S18.627 0 12 0zm1.191 14.963l-3.056-3.246-5.963 3.246 6.559-6.963 3.13 3.245 5.89-3.245-6.56 6.963z"/></svg>
-</div>
-<h4 class="text-lg font-bold mb-2">Бажаєте перейти?</h4>
-<p class="modal-text-secondary text-sm text-gray-500 mb-6">Ви будете перенаправлені у зовнішній додаток.</p>
-<div class="flex flex-col gap-2">
-<button id="confirm-messenger-btn" class="w-full py-2.5 bg-[#0084FF] hover:bg-[#0078e7] text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Перейти</span></button>
-<button id="cancel-messenger-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
-</div>
-</div>
-</div>
-
-<!-- CALL MODAL -->
-<div id="call-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
-<div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-<div class="mx-auto w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mb-4 text-white">
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-</div>
-<h4 class="text-lg font-bold mb-2">Бажаєте поговорити?</h4>
-<p class="modal-text-secondary text-sm text-gray-500 mb-6">Дзвінок буде здійснено через ваш пристрій.</p>
-<div class="flex flex-col gap-2">
-<button id="confirm-call-btn" class="w-full py-2.5 bg-green-500 hover:bg-green-600 text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Зателефонувати</span></button>
-<button id="cancel-call-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
-</div>
-</div>
-</div>
-
 <!-- FOOTER -->
 <footer id="chat-footer" class="border-t border-gray-100 bg-gray-50 flex-shrink-0 flex flex-col relative z-20 transition-all">
-<!-- CALL BANNER -->
-<a href="javascript:void(0)" id="call-banner" class="contact-banner">
-<div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div>
-<div class="banner-content"><span class="banner-title">Зателефонувати</span></div>
-<svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-<button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-</a>
-
-<!-- MESSENGER BANNER -->
-<a href="javascript:void(0)" id="messenger-banner" class="contact-banner">
-<div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.24c1.093.301 2.246.464 3.443.464 6.627 0 12-4.975 12-11.11S18.627 0 12 0zm1.191 14.963l-3.056-3.246-5.963 3.246 6.559-6.963 3.13 3.245 5.89-3.245-6.56 6.963z"/></svg></div>
-<div class="banner-content"><span class="banner-title">Перейти в Messenger</span><span class="banner-subtitle">Швидше і зручніше</span></div>
-<svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-<button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-</a>
-
-<!-- WHATSAPP BANNER -->
-<a href="javascript:void(0)" id="whatsapp-banner" class="contact-banner">
-<div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-</div>
-<div class="banner-content"><span class="banner-title">Перейти в WhatsApp</span><span class="banner-subtitle">Швидше і зручніше</span></div>
-<svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-<button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-</a>
-
 <!-- TELEGRAM BANNER -->
 <a href="javascript:void(0)" id="telegram-banner" class="contact-banner">
 <div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg></div>
@@ -651,7 +559,8 @@ input:checked + .slider:before { transform: translateX(24px); }
 </a>
 
 <!-- INPUT AREA (SEPARATED LAYOUT) -->
-<div class="px-3 pb-2 pt-2 flex items-end gap-2">
+<!-- Added id="input-area-wrapper" and changed default pb-2 to pb-0 to match checked state -->
+<div id="input-area-wrapper" class="px-3 pb-0 pt-2 flex items-end gap-2 transition-all">
 <!-- Text Input Container -->
 <div class="input-container-bg flex-1 bg-gray-100 rounded-full h-11 flex items-center px-4 transition-colors">
 <input type="text" id="message-input" placeholder="Напишіть повідомлення..." class="w-full bg-transparent border-none focus:ring-0 p-0 text-base resize-none outline-none text-gray-700 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed" autocomplete="off">
@@ -688,6 +597,8 @@ const scrollToBottomBtn = document.getElementById('scroll-to-bottom-btn');
 const brandingToggle = document.getElementById('branding-toggle');
 const poweredByContainer = document.getElementById('powered-by-container');
 const chatFooter = document.getElementById('chat-footer');
+const inputAreaWrapper = document.getElementById('input-area-wrapper'); // Added this selector
+
 // Admin Elements
 const adminPanel = document.getElementById('admin-panel');
 const openAdminBtn = document.getElementById('open-admin-btn');
@@ -700,31 +611,22 @@ const logoUpload = document.getElementById('logo-upload');
 const hotelNameText = document.getElementById('hotel-name-text');
 const hotelLogoContainer = document.getElementById('hotel-logo-container');
 const buttonTextSelect = document.getElementById('button-text-select');
-const animationToggle = document.getElementById('animation-toggle'); // NEW
+const animationToggle = document.getElementById('animation-toggle');
 // Position Selector
 const positionSelect = document.getElementById('position-select');
 
-// Toggles
+// Toggles (Only Telegram Left)
 const tgToggle = document.getElementById('tg-toggle');
-const whatsappToggle = document.getElementById('whatsapp-toggle');
-const messengerToggle = document.getElementById('messenger-toggle');
-const callToggle = document.getElementById('call-toggle');
 
-// Banners
+// Banners (Only Telegram Left)
 const banners = {
-telegram: document.getElementById('telegram-banner'),
-whatsapp: document.getElementById('whatsapp-banner'),
-messenger: document.getElementById('messenger-banner'),
-call: document.getElementById('call-banner')
+telegram: document.getElementById('telegram-banner')
 };
 
-// Modals
+// Modals (Only Reset & Telegram Left)
 const modals = {
 reset: document.getElementById('reset-confirmation-modal'),
-telegram: document.getElementById('tg-confirmation-modal'),
-whatsapp: document.getElementById('whatsapp-confirmation-modal'),
-messenger: document.getElementById('messenger-confirmation-modal'),
-call: document.getElementById('call-confirmation-modal')
+telegram: document.getElementById('tg-confirmation-modal')
 };
 
 let welcomed = false;
@@ -775,7 +677,28 @@ buttonTextSelect.addEventListener('change', (e) => {
 chatButtonText.textContent = e.target.value;
 });
 themeToggle.addEventListener('change', (e) => { if (e.target.checked) { chatWindow.classList.add('dark-mode'); } else { chatWindow.classList.remove('dark-mode'); } });
-brandingToggle.addEventListener('change', (e) => { poweredByContainer.style.display = e.target.checked ? 'block' : 'none'; chatFooter.classList.toggle('pb-1', !e.target.checked); });
+
+// --- UPDATE FOOTER LAYOUT ---
+function updateFooterLayout() {
+const isBrandingVisible = brandingToggle.checked;
+poweredByContainer.style.display = isBrandingVisible ? 'block' : 'none';
+
+if (isBrandingVisible) {
+// Branding ON: Reduce gap (remove bottom padding from input container)
+inputAreaWrapper.classList.remove('pb-2');
+inputAreaWrapper.classList.add('pb-0');
+} else {
+// Branding OFF: Symmetric vertical centering (add bottom padding back)
+inputAreaWrapper.classList.remove('pb-0');
+inputAreaWrapper.classList.add('pb-2');
+}
+}
+
+brandingToggle.addEventListener('change', updateFooterLayout);
+
+// Call immediately to set initial state
+updateFooterLayout();
+
 
 // POSITION LOGIC
 positionSelect.addEventListener('change', (e) => {
@@ -791,19 +714,16 @@ widgetButton.classList.add(posClass);
 chatWindow.classList.add(posClass);
 });
 
-// --- SMART STACKING LOGIC ---
+// --- SMART STACKING LOGIC (UPDATED FOR SINGLE TELEGRAM BUTTON) ---
 function updateContactStack() {
 // Safely get checked state
 const isChecked = (el) => el && el.checked;
 
+// Order logic remains but only for Telegram
 const stackOrder = [
-{ el: banners.telegram, enabled: isChecked(tgToggle) },
-{ el: banners.whatsapp, enabled: isChecked(whatsappToggle) },
-{ el: banners.messenger, enabled: isChecked(messengerToggle) },
-{ el: banners.call, enabled: isChecked(callToggle) }
+{ el: banners.telegram, enabled: isChecked(tgToggle) }
 ];
 
-// UPDATED: Starting value increased from 20 to 32 to raise minimum allowed position
 let currentBottom = 32;
 stackOrder.forEach(item => {
 if (!item.el) return;
@@ -821,11 +741,10 @@ item.el.classList.remove('show-banner');
 });
 }
 
-[tgToggle, whatsappToggle, messengerToggle, callToggle].forEach(toggle => {
-if (toggle) {
-toggle.addEventListener('change', updateContactStack);
+// Only Telegram toggle listener remains
+if (tgToggle) {
+tgToggle.addEventListener('change', updateContactStack);
 }
-});
 
 // --- BANNER INTERACTIONS ---
 function setupBannerInteractions(bannerId, modalId, externalLink) {
@@ -849,11 +768,7 @@ modal.classList.remove('hidden');
 // --- UPDATED LOGIC FOR EXPANDED BANNER ---
 if (externalLink) {
 window.open(externalLink, '_blank');
-} else if (bannerId === 'call-banner') {
-// Direct Call Action when Expanded
-window.location.href = 'tel:+1234567890';
 } else {
-// Default behavior for other expanded banners without direct links
 modal.classList.remove('hidden');
 }
 }
@@ -868,7 +783,6 @@ updateContactStack();
 
 confirmBtn.addEventListener('click', () => {
 if (externalLink) window.open(externalLink, '_blank');
-else if (bannerId === 'call-banner') window.location.href = 'tel:+1234567890';
 modal.classList.add('hidden');
 });
 
@@ -877,10 +791,8 @@ modal.classList.add('hidden');
 });
 }
 
+// Only Telegram interaction setup remains
 setupBannerInteractions('telegram-banner', 'tg-confirmation-modal', 'https://t.me/hilton');
-setupBannerInteractions('whatsapp-banner', 'whatsapp-confirmation-modal', 'https://wa.me/1234567890');
-setupBannerInteractions('messenger-banner', 'messenger-confirmation-modal', 'https://m.me/hilton');
-setupBannerInteractions('call-banner', 'call-confirmation-modal', null);
 
 // --- CHAT CORE FUNCTIONS ---
 function toggleChat() {
@@ -902,7 +814,6 @@ if (!welcomed) { simulateWelcome(); welcomed = true; }
 function simulateWelcome() { showTyping(); setTimeout(() => { hideTyping(); addMessage(translations[currentLang].welcome, 'ai'); }, 1000); }
 function addMessage(text, sender) {
 const wrapper = document.createElement('div'); wrapper.className = `message-wrapper ${sender} animate-fade-in`;
-// UPDATED: Used text-base (16px) instead of text-sm
 const messageElement = document.createElement('div'); messageElement.className = `chat-message-${sender} text-base leading-relaxed`; messageElement.innerHTML = text.replace(/\n/g, '<br>');
 const timeElement = document.createElement('span'); timeElement.className = 'message-time'; timeElement.innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 if (sender === 'user') { wrapper.appendChild(timeElement); wrapper.appendChild(messageElement); } else { wrapper.appendChild(messageElement); wrapper.appendChild(timeElement); }
