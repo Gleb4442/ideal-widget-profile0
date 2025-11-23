@@ -1,959 +1,947 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hilton Chat Widget</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <style>
-        /*
-         * --- CSS VARIABLES & THEME ---
-         */
-        :root {
-            --accent-color: #2563eb;
-            --accent-hover: #1d4ed8;
-            --accent-rgb: 37, 99, 235;
-            --call-color: #22c55e;
-            --whatsapp-color: #25D366;
-            --messenger-color: #0084FF;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Hilton Chat Widget</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Font Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/*
+* --- CSS VARIABLES & THEME ---
+*/
+:root {
+--accent-color: #2563eb;
+--accent-hover: #1d4ed8;
+--accent-rgb: 37, 99, 235;
+--call-color: #22c55e;
+--whatsapp-color: #25D366;
+--messenger-color: #0084FF;
+}
 
-        body {
-            background-color: #ffffff;
-            font-family: 'Inter', sans-serif;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
+body {
+background-color: #ffffff;
+font-family: 'Inter', sans-serif;
+height: 100vh;
+display: flex;
+align-items: center;
+justify-content: center;
+overflow: hidden;
+}
 
-        /* --- DARK MODE STYLES --- */
-        #chat-window.dark-mode {
-            background-color: #1f2937; border-color: #374151;
-        }
-        #chat-window.dark-mode #chat-messages { background-color: #1f2937; }
-        #chat-window.dark-mode .chat-message-ai { background-color: #374151; color: #e5e7eb; }
-        #chat-window.dark-mode .typing-indicator-bubble { background-color: #374151; }
-        #chat-window.dark-mode footer { background-color: #111827; border-top-color: #374151; }
-        #chat-window.dark-mode #message-input { color: #f3f4f6; }
-        #chat-window.dark-mode #message-input::placeholder { color: #6b7280; }
-        #chat-window.dark-mode .input-wrapper-bg { background-color: #374151; border-color: #4b5563; }
-        #chat-window.dark-mode .message-time { color: #9ca3af; }
-        #chat-window.dark-mode #scroll-to-bottom-btn { background-color: #374151; color: #e5e7eb; border-color: #4b5563; }
-        #chat-window.dark-mode #scroll-to-bottom-btn:hover { background-color: #4b5563; }
-        #chat-window.dark-mode .modal-content { background-color: #374151; color: #f3f4f6; }
-        #chat-window.dark-mode .modal-text-secondary { color: #9ca3af; }
-        #chat-window.dark-mode .modal-btn-cancel { background-color: #4b5563; color: #e5e7eb; }
-        #chat-window.dark-mode .modal-btn-cancel:hover { background-color: #6b7280; }
+/* --- DARK MODE STYLES --- */
+#chat-window.dark-mode {
+background-color: #1f2937; border-color: #374151;
+}
+#chat-window.dark-mode #chat-messages { background-color: #1f2937; }
+#chat-window.dark-mode .chat-message-ai { background-color: #374151; color: #e5e7eb; }
+#chat-window.dark-mode .typing-indicator-bubble { background-color: #374151; }
+#chat-window.dark-mode footer { background-color: #111827; border-top-color: #374151; }
+/* Dark mode inputs update */
+#chat-window.dark-mode #message-input { color: #f3f4f6; }
+#chat-window.dark-mode #message-input::placeholder { color: #9ca3af; }
+/* Base Dark Mode Input Container */
+#chat-window.dark-mode .input-container-bg {
+background-color: #374151 !important;
+border-color: transparent;
+}
 
-        /* --- UTILITIES --- */
-        .accent-bg { background-color: var(--accent-color) !important; }
-        .accent-bg-hover:hover { background-color: var(--accent-hover) !important; }
-        .accent-text { color: var(--accent-color) !important; }
-        .accent-border { border-color: var(--accent-color) !important; }
-        .hidden-important { display: none !important; }
-        
-        /* No Animation Class */
-        .no-animation {
-            animation: none !important;
-            transform: none !important;
-        }
-        .no-animation:hover {
-            transform: scale(1.05) !important;
-        }
+/* Active Focus State in Dark Mode (UPDATED) */
+#chat-window.dark-mode .input-container-bg:focus-within {
+background-color: #374151 !important;
+border-color: var(--accent-color) !important;
+/* 1px border + 2px solid shadow = 3px total thickness, no blur */
+box-shadow: 0 0 0 2px var(--accent-color) !important; 
+}
+#chat-window.dark-mode .message-time { color: #9ca3af; }
+#chat-window.dark-mode #scroll-to-bottom-btn { background-color: #374151; color: #e5e7eb; border-color: #4b5563; }
+#chat-window.dark-mode #scroll-to-bottom-btn:hover { background-color: #4b5563; }
+#chat-window.dark-mode .modal-content { background-color: #374151; color: #f3f4f6; }
+#chat-window.dark-mode .modal-text-secondary { color: #9ca3af; }
+#chat-window.dark-mode .modal-btn-cancel { background-color: #4b5563; color: #e5e7eb; }
+#chat-window.dark-mode .modal-btn-cancel:hover { background-color: #6b7280; }
 
-        /* --- INPUT STYLES (CLEANED UP) --- */
-        /* Removed all dynamic focus border logic as requested */
-        .input-wrapper-bg {
-            border: 1px solid #e5e7eb; /* Static clean border */
-        }
-        
-        /* Ensure the inner input has absolutely no outline */
-        #message-input:focus {
-            outline: none !important;
-            box-shadow: none !important;
-        }
+/* --- UTILITIES --- */
+.accent-bg { background-color: var(--accent-color) !important; }
+.accent-bg-hover:hover { background-color: var(--accent-hover) !important; }
+.accent-text { color: var(--accent-color) !important; }
+.accent-border { border-color: var(--accent-color) !important; }
+.hidden-important { display: none !important; }
+/* No Animation Class */
+.no-animation {
+animation: none !important;
+transform: none !important;
+}
+.no-animation:hover {
+transform: scale(1.05) !important;
+}
 
-        /* --- WIDGET BUTTON --- */
-        #chat-widget-button {
-            position: fixed; 
-            bottom: 32px; 
-            width: auto; padding: 12px 24px;
-            border-radius: 30px; gap: 10px; background-color: var(--accent-color);
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); transition: all 0.3s ease; z-index: 1000; border: none;
-            animation: ripple 2s infinite, shake-interval 6s infinite ease-in-out;
-            right: 20px; left: auto; 
-        }
-        #chat-widget-button:hover { transform: scale(1.05); animation-play-state: paused; background-color: var(--accent-hover); }
-        .chat-button-text { color: white; font-weight: 600; font-size: 16px; line-height: 1; white-space: nowrap; font-family: 'Inter', sans-serif; }
+/* Ensure the inner input has absolutely no outline */
+#message-input:focus {
+outline: none !important;
+box-shadow: none !important;
+}
 
-        /* --- WIDGET POSITIONING CLASSES --- */
-        #chat-widget-button.widget-pos-right { right: 20px !important; left: auto !important; }
-        #chat-widget-button.widget-pos-left { left: 20px !important; right: auto !important; }
-        #chat-widget-button.widget-pos-center { 
-            left: 50% !important; 
-            right: auto !important; 
-            translate: -50% 0 !important; 
-        }
+/* --- INPUT HIGHLIGHT LOGIC (UPDATED) --- */
+/* Base state for input container */
+.input-container-bg {
+border: 1px solid transparent !important; /* Invisible border to prevent jumping */
+transition: all 0.2s ease-out !important; /* Slightly faster for crisp feel */
+}
 
-        @media (min-width: 768px) {
-            #chat-window.widget-pos-right { right: 20px; left: auto; transform-origin: bottom right; }
-            #chat-window.widget-pos-left { left: 20px; right: auto; transform-origin: bottom left; }
-            #chat-window.widget-pos-center { 
-                left: 50%; 
-                right: auto; 
-                translate: -50% 0; 
-                transform-origin: bottom center; 
-            }
-        }
+/* Active state when user clicks inside */
+.input-container-bg:focus-within {
+background-color: white !important;
+border-color: var(--accent-color) !important; /* 1px real border */
+/* Logic: 1px solid border + 2px solid shadow (0 blur) = 3px solid visual line.
+   Using var(--accent-color) directly ensures it is solid, not semi-transparent.
+*/
+box-shadow: 0 0 0 2px var(--accent-color) !important;
+}
 
-        @media (max-width: 767px) {
-            #chat-window {
-                left: 12px !important;
-                right: 12px !important;
-                bottom: 12px !important;
-                top: 12px !important;
-                width: auto !important;
-                height: auto !important;
-                translate: 0 0 !important;
-                transform-origin: bottom center !important;
-            }
-        }
+/* --- WIDGET BUTTON --- */
+#chat-widget-button {
+position: fixed;
+bottom: 32px;
+width: auto; padding: 12px 24px;
+border-radius: 30px; gap: 10px; background-color: var(--accent-color);
+display: flex; align-items: center; justify-content: center; cursor: pointer;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); transition: all 0.3s ease; z-index: 1000; border: none;
+animation: ripple 2s infinite, shake-interval 6s infinite ease-in-out;
+right: 20px; left: auto;
+}
+#chat-widget-button:hover { transform: scale(1.05); animation-play-state: paused; background-color: var(--accent-hover); }
+.chat-button-text { color: white; font-weight: 600; font-size: 16px; line-height: 1; white-space: nowrap; font-family: 'Inter', sans-serif; }
 
-        @keyframes ripple {
-            0% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(var(--accent-rgb), 0); }
-            100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0); }
-        }
-        @keyframes shake-interval {
-            0%, 85% { transform: rotate(0deg); }
-            87% { transform: rotate(-5deg); } 89% { transform: rotate(5deg); }
-            91% { transform: rotate(-5deg); } 93% { transform: rotate(5deg); }
-            95%, 100% { transform: rotate(0deg); }
-        }
-        @keyframes badge-pop {
-            0%, 100% { transform: scale(1) translateY(0); }
-            50% { transform: scale(1.1) translateY(-4px); }
-        }
-        
-        @keyframes slide-up {
-            from { transform: translateY(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .animate-slide-up {
-            animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+/* --- WIDGET POSITIONING CLASSES --- */
+#chat-widget-button.widget-pos-right { right: 20px !important; left: auto !important; }
+#chat-widget-button.widget-pos-left { left: 20px !important; right: auto !important; }
+#chat-widget-button.widget-pos-center {
+left: 50% !important;
+right: auto !important;
+translate: -50% 0 !important;
+}
 
-        #chat-notification-badge {
-            position: absolute; top: -5px; right: -5px; display: flex; align-items: center; justify-content: center;
-            width: 20px; height: 20px; background-color: #ef4444; color: white;
-            font-size: 11px; font-weight: bold; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            animation: badge-pop 2s infinite ease-in-out; z-index: 10;
-        }
+@media (min-width: 768px) {
+#chat-window.widget-pos-right { right: 20px; left: auto; transform-origin: bottom right; }
+#chat-window.widget-pos-left { left: 20px; right: auto; transform-origin: bottom left; }
+#chat-window.widget-pos-center {
+left: 50%;
+right: auto;
+translate: -50% 0;
+transform-origin: bottom center;
+}
+}
 
-        /* --- CHAT WINDOW CORE --- */
-        #chat-window {
-            position: fixed; 
-            top: 12px; left: 12px; right: 12px; bottom: 12px;
-            width: auto; height: auto;
-            background-color: white; display: flex; flex-direction: column; overflow: hidden; z-index: 1001;
-            border-radius: 20px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            opacity: 0; visibility: hidden; 
-            transform-origin: bottom center;
-            transform: scale(0.95) translateY(10px); 
-            transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-        }
+@media (max-width: 767px) {
+#chat-window {
+left: 12px !important;
+right: 12px !important;
+bottom: 12px !important;
+top: 12px !important;
+width: auto !important;
+height: auto !important;
+translate: 0 0 !important;
+transform-origin: bottom center !important;
+}
+}
 
-        @media (min-width: 768px) {
-            #chat-window {
-                top: auto; left: auto; bottom: 20px; right: 20px;
-                width: 418px; height: 812px; max-height: 90vh;
-                border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-                transform: scale(0.5) translateY(20px);
-            }
-        }
-        
-        #chat-window.open { opacity: 1; visibility: visible; transform: scale(1) translateY(0); }
+@keyframes ripple {
+0% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.7); }
+70% { box-shadow: 0 0 0 15px rgba(var(--accent-rgb), 0); }
+100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0); }
+}
+@keyframes shake-interval {
+0%, 85% { transform: rotate(0deg); }
+87% { transform: rotate(-5deg); } 89% { transform: rotate(5deg); }
+91% { transform: rotate(-5deg); } 93% { transform: rotate(5deg); }
+95%, 100% { transform: rotate(0deg); }
+}
+@keyframes badge-pop {
+0%, 100% { transform: scale(1) translateY(0); }
+50% { transform: scale(1.1) translateY(-4px); }
+}
+@keyframes slide-up {
+from { transform: translateY(100%); opacity: 0; }
+to { transform: translateY(0); opacity: 1; }
+}
+.animate-slide-up {
+animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
 
-        /* --- MESSAGE STYLING --- */
-        .message-wrapper { 
-            display: flex; 
-            width: 100%; 
-            margin-bottom: 8px; 
-            align-items: center; 
-            padding: 0 12px; 
-        }
-        .message-wrapper.user { justify-content: flex-end; }
-        .message-wrapper.ai { justify-content: flex-start; }
+#chat-notification-badge {
+position: absolute; top: -5px; right: -5px; display: flex; align-items: center; justify-content: center;
+width: 20px; height: 20px; background-color: #ef4444; color: white;
+font-size: 11px; font-weight: bold; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+animation: badge-pop 2s infinite ease-in-out; z-index: 10;
+}
 
-        .message-time {
-            font-size: 10px; color: #9ca3af; margin: 0 8px; white-space: nowrap;
-            opacity: 0; transition: opacity 0.2s ease; user-select: none;
-        }
-        @media (min-width: 769px) { .message-wrapper:hover .message-time { opacity: 1; } }
-        @media (max-width: 768px) { .message-time { opacity: 1 !important; } }
+/* --- CHAT WINDOW CORE --- */
+#chat-window {
+position: fixed;
+top: 12px; left: 12px; right: 12px; bottom: 12px;
+width: auto; height: auto;
+background-color: white; display: flex; flex-direction: column; overflow: hidden; z-index: 1001;
+border-radius: 20px;
+box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+opacity: 0; visibility: hidden;
+transform-origin: bottom center;
+transform: scale(0.95) translateY(10px);
+transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
 
-        /* SCROLL BTN */
-        #scroll-to-bottom-btn {
-            position: absolute; bottom: 130px; left: 50%; right: auto;
-            width: 36px; height: 36px; background-color: white; border: 1px solid #e5e7eb;
-            border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30;
-            opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: var(--accent-color);
-        }
-        #scroll-to-bottom-btn.visible { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
-        #scroll-to-bottom-btn.visible:hover { background-color: #f9fafb; transform: translateX(-50%) translateY(-2px); }
+@media (min-width: 768px) {
+#chat-window {
+top: auto; left: auto; bottom: 20px; right: 20px;
+width: 418px; height: 812px; max-height: 90vh;
+border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+transform: scale(0.5) translateY(20px);
+}
+}
+#chat-window.open { opacity: 1; visibility: visible; transform: scale(1) translateY(0); }
 
-        .chat-message-user {
-            background-color: var(--accent-color); color: white;
-            border-radius: 18px 18px 4px 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            padding: 12px; word-wrap: break-word; overflow-wrap: break-word; 
-            max-width: 75%; /* Increased width slightly for bigger text */
-            
-            /* UPDATED: Bigger Text */
-            font-size: 16px; 
-            line-height: 1.5;
-        }
-        .chat-message-ai {
-            background-color: #f3f4f6; color: #1f2937;
-            border-radius: 18px 18px 18px 4px;
-            padding: 12px; word-wrap: break-word; overflow-wrap: break-word; 
-            max-width: 75%; /* Increased width slightly for bigger text */
+/* --- MESSAGE STYLING --- */
+.message-wrapper {
+display: flex;
+width: 100%;
+margin-bottom: 8px;
+align-items: center;
+padding: 0 12px;
+}
+.message-wrapper.user { justify-content: flex-end; }
+.message-wrapper.ai { justify-content: flex-start; }
 
-            /* UPDATED: Bigger Text */
-            font-size: 16px;
-            line-height: 1.5;
-        }
+.message-time {
+font-size: 10px; color: #9ca3af; margin: 0 8px; white-space: nowrap;
+opacity: 0; transition: opacity 0.2s ease; user-select: none;
+}
+@media (min-width: 769px) { .message-wrapper:hover .message-time { opacity: 1; } }
+@media (max-width: 768px) { .message-time { opacity: 1 !important; } }
 
-        .typing-indicator-bubble {
-            display: flex; align-items: center; padding: 12px 16px; background-color: #f3f4f6;
-            border-radius: 18px 18px 18px 4px; align-self: flex-start; width: fit-content; margin-bottom: 4px;
-            margin-left: 12px;
-        }
-        .typing-indicator-bubble span {
-            height: 8px; width: 8px; background-color: #9ca3af; border-radius: 50%; display: inline-block; margin: 0 2px;
-            animation: typing-bounce 1.4s infinite ease-in-out both;
-        }
-        .typing-indicator-bubble span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator-bubble span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes typing-bounce { 0%, 80%, 100% { transform: scale(0); opacity: 0.6; } 40% { transform: scale(1); opacity: 1; } }
+/* SCROLL BTN */
+#scroll-to-bottom-btn {
+position: absolute; bottom: 130px; left: 50%; right: auto;
+width: 36px; height: 36px; background-color: white; border: 1px solid #e5e7eb;
+border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30;
+opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(10px);
+transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: var(--accent-color);
+}
+#scroll-to-bottom-btn.visible { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+#scroll-to-bottom-btn.visible:hover { background-color: #f9fafb; transform: translateX(-50%) translateY(-2px); }
 
-        #chat-messages::-webkit-scrollbar { width: 6px; }
-        #chat-messages::-webkit-scrollbar-track { background: transparent; }
-        #chat-messages::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.1); border-radius: 20px; }
+.chat-message-user {
+background-color: var(--accent-color); color: white;
+border-radius: 18px 18px 4px 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+padding: 12px; word-wrap: break-word; overflow-wrap: break-word;
+max-width: 75%;
+font-size: 16px;
+line-height: 1.5;
+}
+.chat-message-ai {
+background-color: #f3f4f6; color: #1f2937;
+border-radius: 18px 18px 18px 4px;
+padding: 12px; word-wrap: break-word; overflow-wrap: break-word;
+max-width: 75%;
+font-size: 16px;
+line-height: 1.5;
+}
 
-        /* --- CONTACT BANNERS (SHARED STYLES) --- */
-        .contact-banner {
-            position: absolute; bottom: 100%; left: 12px; right: 12px; 
-            margin-bottom: 20px; 
-            transform: translateY(0); overflow: hidden; white-space: nowrap; height: 64px; z-index: 50;
-            cursor: pointer;
-            border-radius: 24px;
-            justify-content: space-between;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-            display: flex; align-items: center; padding: 0 4px;
-            text-decoration: none;
-            opacity: 0; visibility: hidden; pointer-events: none;
-        }
-        
-        .contact-banner.show-banner {
-            opacity: 1; visibility: visible; pointer-events: auto;
-            transform: translateY(16px) scale(0.98);
-        }
-        .contact-banner:hover { opacity: 0.98; transform: translateY(16px) scale(1); }
+.typing-indicator-bubble {
+display: flex; align-items: center; padding: 12px 16px; background-color: #f3f4f6;
+border-radius: 18px 18px 18px 4px; align-self: flex-start; width: fit-content; margin-bottom: 4px;
+margin-left: 12px;
+}
+.typing-indicator-bubble span {
+height: 8px; width: 8px; background-color: #9ca3af; border-radius: 50%; display: inline-block; margin: 0 2px;
+animation: typing-bounce 1.4s infinite ease-in-out both;
+}
+.typing-indicator-bubble span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator-bubble span:nth-child(2) { animation-delay: -0.16s; }
+@keyframes typing-bounce { 0%, 80%, 100% { transform: scale(0); opacity: 0.6; } 40% { transform: scale(1); opacity: 1; } }
 
-        #telegram-banner { background-color: #24A1DE; }
-        #whatsapp-banner { background-color: var(--whatsapp-color); }
-        #messenger-banner { background-color: var(--messenger-color); }
-        #call-banner { background-color: var(--call-color); }
+#chat-messages::-webkit-scrollbar { width: 6px; }
+#chat-messages::-webkit-scrollbar-track { background: transparent; }
+#chat-messages::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.1); border-radius: 20px; }
 
-        .banner-icon-wrapper {
-            margin: 0; background-color: rgba(255,255,255,0.2);
-            width: 40px; height: 40px; 
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 50%; flex-shrink: 0; margin-left: 8px; color: white;
-            transition: all 0.3s ease;
-        }
-        .banner-content {
-            flex: 1; display: flex; flex-col; flex-direction: column; padding-left: 12px; padding-right: 30px;
-            transition: opacity 0.2s ease;
-        }
-        .banner-title { font-size: 14px; font-weight: bold; color: white; line-height: 1.2; }
-        .banner-subtitle { font-size: 11px; color: rgba(255,255,255,0.9); }
-        
-        .close-banner-btn {
-            position: relative; 
-            margin-left: auto; 
-            margin-right: 12px; 
-            width: 32px; 
-            height: 32px; 
-            display: flex; align-items: center; justify-content: center;
-            color: rgba(255,255,255,0.7); border-radius: 50%; 
-            transition: all 0.2s; z-index: 10;
-        }
-        .close-banner-btn:hover { background-color: rgba(0,0,0,0.1); color: white; }
+/* --- CONTACT BANNERS (SHARED STYLES) --- */
+.contact-banner {
+position: absolute; bottom: 100%; left: 12px; right: 12px;
+margin-bottom: 20px;
+transform: translateY(0); overflow: hidden; white-space: nowrap; height: 64px; z-index: 50;
+cursor: pointer;
+border-radius: 24px;
+justify-content: space-between;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+display: flex; align-items: center; padding: 0 4px;
+text-decoration: none;
+opacity: 0; visibility: hidden; pointer-events: none;
+}
+.contact-banner.show-banner {
+opacity: 1; visibility: visible; pointer-events: auto;
+transform: translateY(16px) scale(0.98);
+}
+.contact-banner:hover { opacity: 0.98; transform: translateY(16px) scale(1); }
 
-        /* COLLAPSED STATE */
-        .contact-banner.collapsed {
-            width: 60px; 
-            height: 40px; 
-            left: auto; 
-            right: -20px; 
-            border-radius: 24px 0 0 24px; 
-            padding: 0 0 0 10px; 
-            justify-content: flex-start; 
-            box-shadow: -2px 2px 8px rgba(0,0,0,0.15);
-        }
-        .contact-banner.collapsed:hover { right: -10px; }
+#telegram-banner { background-color: #24A1DE; }
+#whatsapp-banner { background-color: var(--whatsapp-color); }
+#messenger-banner { background-color: var(--messenger-color); }
+#call-banner { background-color: var(--call-color); }
 
-        .contact-banner.collapsed .banner-content, 
-        .contact-banner.collapsed .close-banner-btn { 
-            opacity: 0; pointer-events: none; position: absolute; 
-        }
-        
-        .contact-banner.collapsed .banner-icon-wrapper {
-            width: 28px; height: 28px; margin: 0;
-            background-color: transparent; 
-        }
-        .contact-banner.collapsed svg.main-icon { width: 16px; height: 16px; }
+.banner-icon-wrapper {
+margin: 0; background-color: rgba(255,255,255,0.2);
+width: 40px; height: 40px;
+display: flex; align-items: center; justify-content: center;
+border-radius: 50%; flex-shrink: 0; margin-left: 8px; color: white;
+transition: all 0.3s ease;
+}
+.banner-content {
+flex: 1; display: flex; flex-col; flex-direction: column; padding-left: 12px; padding-right: 30px;
+transition: opacity 0.2s ease;
+}
+.banner-title { font-size: 14px; font-weight: bold; color: white; line-height: 1.2; }
+.banner-subtitle { font-size: 11px; color: rgba(255,255,255,0.9); }
+.close-banner-btn {
+position: relative;
+margin-left: auto;
+margin-right: 12px;
+width: 32px;
+height: 32px;
+display: flex; align-items: center; justify-content: center;
+color: rgba(255,255,255,0.7); border-radius: 50%;
+transition: all 0.2s; z-index: 10;
+}
+.close-banner-btn:hover { background-color: rgba(0,0,0,0.1); color: white; }
 
-        .expand-arrow { 
-            display: none; width: 18px; height: 18px; margin-right: 6px; color: white; flex-shrink: 0; 
-        }
+/* COLLAPSED STATE */
+.contact-banner.collapsed {
+width: 60px;
+height: 40px;
+left: auto;
+right: -20px;
+border-radius: 24px 0 0 24px;
+padding: 0 0 0 10px;
+justify-content: flex-start;
+box-shadow: -2px 2px 8px rgba(0,0,0,0.15);
+}
+.contact-banner.collapsed:hover { right: -10px; }
 
-        /* --- ADMIN PANEL --- */
-        #admin-panel {
-            position: fixed; top: 20px; left: 20px; background: white; padding: 20px;
-            border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 2000;
-            width: 320px; font-family: 'Inter', sans-serif; border: 1px solid #e5e7eb;
-            max-height: 90vh; overflow-y: auto;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-        #admin-panel.hidden-panel { transform: translateX(-120%); opacity: 0; pointer-events: none; }
-        #admin-panel::-webkit-scrollbar { width: 4px; }
-        #admin-panel::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
-        
-        #open-admin-btn {
-            position: fixed; top: 20px; left: 20px;
-            width: 40px; height: 40px; background: white; border-radius: 50%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 1999;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; border: 1px solid #e5e7eb; color: #4b5563;
-            transition: all 0.3s ease;
-        }
-        #open-admin-btn:hover { transform: rotate(90deg); color: var(--accent-color); }
-        #open-admin-btn.hidden-btn { display: none !important; }
+.contact-banner.collapsed .banner-content,
+.contact-banner.collapsed .close-banner-btn {
+opacity: 0; pointer-events: none; position: absolute;
+}
+.contact-banner.collapsed .banner-icon-wrapper {
+width: 28px; height: 28px; margin: 0;
+background-color: transparent;
+}
+.contact-banner.collapsed svg.main-icon { width: 16px; height: 16px; }
 
-        .admin-control { margin-bottom: 16px; }
-        .admin-label {
-            display: block; font-size: 12px; font-weight: 600; text-transform: uppercase;
-            color: #6b7280; margin-bottom: 8px; letter-spacing: 0.05em;
-        }
-        .color-picker-wrapper { display: flex; align-items: center; gap: 10px; }
-        input[type="color"] {
-            -webkit-appearance: none; border: none; width: 40px; height: 40px; border-radius: 50%;
-            cursor: pointer; padding: 0; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
-        .admin-input {
-            width: 100%; padding: 8px 12px; border: 1px solid #d1d5db;
-            border-radius: 8px; font-size: 14px; color: #374151; outline: none;
-            transition: border-color 0.2s;
-        }
-        .admin-input:focus { border-color: var(--accent-color); }
-        .file-upload-btn {
-            display: block; width: 100%; padding: 8px; text-align: center;
-            background-color: #f3f4f6; border: 1px dashed #d1d5db;
-            border-radius: 8px; font-size: 13px; color: #6b7280; cursor: pointer;
-            transition: all 0.2s;
-        }
-        .file-upload-btn:hover { background-color: #e5e7eb; border-color: #9ca3af; }
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #ccc; transition: .4s; border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
-            background-color: white; transition: .4s; border-radius: 50%;
-        }
-        input:checked + .slider { background-color: var(--accent-color); }
-        input:checked + .slider:before { transform: translateX(24px); }
-    </style>
+.expand-arrow {
+display: none; width: 18px; height: 18px; margin-right: 6px; color: white; flex-shrink: 0;
+}
+
+/* --- ADMIN PANEL --- */
+#admin-panel {
+position: fixed; top: 20px; left: 20px; background: white; padding: 20px;
+border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 2000;
+width: 320px; font-family: 'Inter', sans-serif; border: 1px solid #e5e7eb;
+max-height: 90vh; overflow-y: auto;
+transition: transform 0.3s ease, opacity 0.3s ease;
+}
+#admin-panel.hidden-panel { transform: translateX(-120%); opacity: 0; pointer-events: none; }
+#admin-panel::-webkit-scrollbar { width: 4px; }
+#admin-panel::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
+#open-admin-btn {
+position: fixed; top: 20px; left: 20px;
+width: 40px; height: 40px; background: white; border-radius: 50%;
+box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 1999;
+display: flex; align-items: center; justify-content: center;
+cursor: pointer; border: 1px solid #e5e7eb; color: #4b5563;
+transition: all 0.3s ease;
+}
+#open-admin-btn:hover { transform: rotate(90deg); color: var(--accent-color); }
+#open-admin-btn.hidden-btn { display: none !important; }
+
+.admin-control { margin-bottom: 16px; }
+.admin-label {
+display: block; font-size: 12px; font-weight: 600; text-transform: uppercase;
+color: #6b7280; margin-bottom: 8px; letter-spacing: 0.05em;
+}
+.color-picker-wrapper { display: flex; align-items: center; gap: 10px; }
+input[type="color"] {
+-webkit-appearance: none; border: none; width: 40px; height: 40px; border-radius: 50%;
+cursor: pointer; padding: 0; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
+.admin-input {
+width: 100%; padding: 8px 12px; border: 1px solid #d1d5db;
+border-radius: 8px; font-size: 14px; color: #374151; outline: none;
+transition: border-color 0.2s;
+}
+.admin-input:focus { border-color: var(--accent-color); }
+.file-upload-btn {
+display: block; width: 100%; padding: 8px; text-align: center;
+background-color: #f3f4f6; border: 1px dashed #d1d5db;
+border-radius: 8px; font-size: 13px; color: #6b7280; cursor: pointer;
+transition: all 0.2s;
+}
+.file-upload-btn:hover { background-color: #e5e7eb; border-color: #9ca3af; }
+.switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+background-color: #ccc; transition: .4s; border-radius: 34px;
+}
+.slider:before {
+position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
+background-color: white; transition: .4s; border-radius: 50%;
+}
+input:checked + .slider { background-color: var(--accent-color); }
+input:checked + .slider:before { transform: translateX(24px); }
+</style>
 </head>
 <body>
 
-    <!-- ADMIN TOGGLE -->
-    <button id="open-admin-btn" class="hidden-btn" aria-label="Відкрити налаштування">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.35a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-    </button>
+<!-- ADMIN TOGGLE -->
+<button id="open-admin-btn" class="hidden-btn" aria-label="Відкрити налаштування">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.35a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+</button>
 
-    <!-- ADMIN PANEL -->
-    <div id="admin-panel">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-lg">⚙️ Адмін Панель</h3>
-            <button id="close-admin-btn" class="text-gray-400 hover:text-gray-600 p-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-        </div>
-        
-        <div class="admin-control">
-            <span class="admin-label">Назва готелю</span>
-            <input type="text" id="hotel-name-input" class="admin-input" placeholder="Введіть назву" value="Hilton">
-        </div>
-        <div class="admin-control">
-            <span class="admin-label">Логотип (Фото)</span>
-            <label class="file-upload-btn">Обрати файл<input type="file" id="logo-upload" accept="image/*" style="display: none;"></label>
-        </div>
-        <div class="admin-control">
-            <span class="admin-label">Акцентний колір</span>
-            <div class="color-picker-wrapper">
-                <input type="color" id="accent-color-picker" value="#2563eb">
-                <span id="color-value-text" class="text-sm font-mono opacity-70">#2563eb</span>
-            </div>
-        </div>
-        
-        <!-- Widget Position Section -->
-        <div class="admin-control">
-            <span class="admin-label">Розташування віджета</span>
-            <select id="position-select" class="admin-input">
-                <option value="widget-pos-right" selected>Справа знизу</option>
-                <option value="widget-pos-center">По центру знизу</option>
-                <option value="widget-pos-left">Зліва знизу</option>
-            </select>
-        </div>
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-bold text-lg">⚙️ Адмін Панель</h3>
+<button id="close-admin-btn" class="text-gray-400 hover:text-gray-600 p-1">
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+</button>
+</div>
+<div class="admin-control">
+<span class="admin-label">Назва готелю</span>
+<input type="text" id="hotel-name-input" class="admin-input" placeholder="Введіть назву" value="Hilton">
+</div>
+<div class="admin-control">
+<span class="admin-label">Логотип (Фото)</span>
+<label class="file-upload-btn">Обрати файл<input type="file" id="logo-upload" accept="image/*" style="display: none;"></label>
+</div>
+<div class="admin-control">
+<span class="admin-label">Акцентний колір</span>
+<div class="color-picker-wrapper">
+<input type="color" id="accent-color-picker" value="#2563eb">
+<span id="color-value-text" class="text-sm font-mono opacity-70">#2563eb</span>
+</div>
+</div>
+<!-- Widget Position Section -->
+<div class="admin-control">
+<span class="admin-label">Розташування віджета</span>
+<select id="position-select" class="admin-input">
+<option value="widget-pos-right" selected>Справа знизу</option>
+<option value="widget-pos-center">По центру знизу</option>
+<option value="widget-pos-left">Зліва знизу</option>
+</select>
+</div>
 
-        <!-- Animation Toggle -->
-        <div class="admin-control">
-            <span class="admin-label">Анимация кнопки</span>
-            <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-600">Включена</span>
-                <label class="switch"><input type="checkbox" id="animation-toggle" checked><span class="slider"></span></label>
-            </div>
-        </div>
+<!-- Animation Toggle -->
+<div class="admin-control">
+<span class="admin-label">Анимация кнопки</span>
+<div class="flex items-center justify-between">
+<span class="text-sm text-gray-600">Включена</span>
+<label class="switch"><input type="checkbox" id="animation-toggle" checked><span class="slider"></span></label>
+</div>
+</div>
 
-        <div class="admin-control">
-            <span class="admin-label">Текст кнопки</span>
-            <select id="button-text-select" class="admin-input">
-                <!-- NEW OPTIONS ADDED HERE -->
-                <option value="Чат">Чат</option>
-                <option value="Спросить Roomie">Спросить Roomie</option>
-                <option value="Спросить">Спросить</option>
-                <option value="Помощь">Помощь</option>
-                <!-- EXISTING OPTIONS -->
-                <option value="Спросите наш ИИ">Спросите наш ИИ</option>
-                <option value="Онлайн ассистент">Онлайн ассистент</option>
-                <option value="Чат с отелем" selected>Чат с отелем</option>
-                <option value="Свяжитесь с нами">Свяжитесь с нами</option>
-                <option value="Быстрая поддержка">Быстрая поддержка</option>
-                <option value="Быстрая связь">Быстрая связь</option>
-                <option value="Быстрая помощь">Быстрая помощь</option>
-                <option value="Мгновенная помощь">Мгновенная помощь</option>
-                <option value="Нужна помощь?">Нужна помощь?</option>
-                <option value="Хотите забронировать?">Хотите забронировать?</option>
-                <option value="Задать вопрос">Задать вопрос</option>
-                <option value="Вопросы? Мы онлайн">Вопросы? Мы онлайн</option>
-                <option value="Поддержка 24/7">Поддержка 24/7</option>
-            </select>
-        </div>
-        
-        <div class="admin-control">
-            <span class="admin-label">Підпис Powered by</span>
-            <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-600">Показувати</span>
-                <label class="switch"><input type="checkbox" id="branding-toggle" checked><span class="slider"></span></label>
-            </div>
-        </div>
-        
-        <div class="admin-control">
-            <span class="admin-label">Кнопки контактів</span>
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-sm text-gray-600">Telegram</span>
-                <label class="switch"><input type="checkbox" id="tg-toggle" checked><span class="slider"></span></label>
-            </div>
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-sm text-gray-600">WhatsApp</span>
-                <label class="switch"><input type="checkbox" id="whatsapp-toggle" checked><span class="slider"></span></label>
-            </div>
-             <div class="flex items-center justify-between mb-2">
-                <span class="text-sm text-gray-600">Messenger</span>
-                <label class="switch"><input type="checkbox" id="messenger-toggle" checked><span class="slider"></span></label>
-            </div>
-            <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-600">Телефон</span>
-                <label class="switch"><input type="checkbox" id="call-toggle" checked><span class="slider"></span></label>
-            </div>
-        </div>
-        <div class="admin-control">
-            <span class="admin-label">Тема оформлення</span>
-            <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-600">Темна тема</span>
-                <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider"></span></label>
-            </div>
-        </div>
-    </div>
+<div class="admin-control">
+<span class="admin-label">Текст кнопки</span>
+<select id="button-text-select" class="admin-input">
+<option value="Спросите наш ИИ">Спросите наш ИИ</option>
+<option value="Онлайн ассистент">Онлайн ассистент</option>
+<option value="Чат с отелем" selected>Чат с отелем</option>
+<option value="Свяжитесь с нами">Свяжитесь с нами</option>
+<option value="Быстрая поддержка">Быстрая поддержка</option>
+<option value="Быстрая связь">Быстрая связь</option>
+<option value="Быстрая помощь">Быстрая помощь</option>
+<option value="Мгновенная помощь">Мгновенная помощь</option>
+<option value="Нужна помощь?">Нужна помощь?</option>
+<option value="Хотите забронировать?">Хотите забронировать?</option>
+<option value="Задать вопрос">Задать вопрос</option>
+<option value="Вопросы? Мы онлайн">Вопросы? Мы онлайн</option>
+<option value="Поддержка 24/7">Поддержка 24/7</option>
+<option value="Чат">Чат</option>
+<option value="Спросить Roomie">Спросить Roomie</option>
+<option value="Спросить">Спросить</option>
+<option value="Помощь">Помощь</option>
+</select>
+</div>
+<div class="admin-control">
+<span class="admin-label">Підпис Powered by</span>
+<div class="flex items-center justify-between">
+<span class="text-sm text-gray-600">Показувати</span>
+<label class="switch"><input type="checkbox" id="branding-toggle" checked><span class="slider"></span></label>
+</div>
+</div>
+<div class="admin-control">
+<span class="admin-label">Кнопки контактів</span>
+<div class="flex items-center justify-between mb-2">
+<span class="text-sm text-gray-600">Telegram</span>
+<label class="switch"><input type="checkbox" id="tg-toggle" checked><span class="slider"></span></label>
+</div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-sm text-gray-600">WhatsApp</span>
+<label class="switch"><input type="checkbox" id="whatsapp-toggle" checked><span class="slider"></span></label>
+</div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-sm text-gray-600">Messenger</span>
+<label class="switch"><input type="checkbox" id="messenger-toggle" checked><span class="slider"></span></label>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-sm text-gray-600">Телефон</span>
+<label class="switch"><input type="checkbox" id="call-toggle" checked><span class="slider"></span></label>
+</div>
+</div>
+<div class="admin-control">
+<span class="admin-label">Тема оформлення</span>
+<div class="flex items-center justify-between">
+<span class="text-sm text-gray-600">Темна тема</span>
+<label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider"></span></label>
+</div>
+</div>
+</div>
 
-    <!-- WIDGET BUTTON -->
-    <button id="chat-widget-button" aria-label="Відкрити чат">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-        <span class="chat-button-text">Чат с отелем</span>
-        <span id="chat-notification-badge">1</span>
-    </button>
+<!-- WIDGET BUTTON -->
+<button id="chat-widget-button" aria-label="Відкрити чат">
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+<span class="chat-button-text">Чат с отелем</span>
+<span id="chat-notification-badge">1</span>
+</button>
 
-    <!-- CHAT WINDOW -->
-    <div id="chat-window">
-        <!-- HEADER -->
-        <header class="accent-bg text-white p-4 flex justify-between items-center shadow-md flex-shrink-0 z-20 relative">
-            <div class="flex items-center gap-3">
-                <div class="relative">
-                    <div id="hotel-logo-container" class="w-12 h-12 rounded-full bg-white accent-text flex items-center justify-center shadow-sm overflow-hidden">
-                        <span class="text-2xl font-bold accent-text">H</span>
-                    </div>
-                    <div class="absolute bottom-0 right-0 w-[14px] h-[14px] bg-green-400 border-2 accent-border rounded-full" title="Онлайн"></div>
-                </div>
-                <div><h3 id="hotel-name-text" class="text-lg font-bold leading-tight tracking-wide">Hilton</h3></div>
-            </div>
-            <div class="flex items-center gap-1 relative">
-                <button id="reset-chat-btn" class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white" title="Перезапустити чат">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
-                </button>
-                <button id="chat-close-button" class="text-white/80 hover:text-white hover:bg-white/10 rounded-full p-2 transition ml-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
-            </div>
-        </header>
+<!-- CHAT WINDOW -->
+<div id="chat-window">
+<!-- HEADER -->
+<header class="accent-bg text-white p-4 flex justify-between items-center shadow-md flex-shrink-0 z-20 relative">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div id="hotel-logo-container" class="w-12 h-12 rounded-full bg-white accent-text flex items-center justify-center shadow-sm overflow-hidden">
+<span class="text-2xl font-bold accent-text">H</span>
+</div>
+<div class="absolute bottom-0 right-0 w-[14px] h-[14px] bg-green-400 border-2 accent-border rounded-full" title="Онлайн"></div>
+</div>
+<div><h3 id="hotel-name-text" class="text-lg font-bold leading-tight tracking-wide">Hilton</h3></div>
+</div>
+<div class="flex items-center gap-1 relative">
+<button id="reset-chat-btn" class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white" title="Перезапустити чат">
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+</button>
+<button id="chat-close-button" class="text-white/80 hover:text-white hover:bg-white/10 rounded-full p-2 transition ml-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+</div>
+</header>
 
-        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto flex flex-col bg-white relative">
-            <div id="typing-indicator" class="hidden" aria-hidden="true"><div class="typing-indicator-bubble"><span></span><span></span><span></span></div></div>
-        </div>
-        
-        <button id="scroll-to-bottom-btn" aria-label="Прокрутити вниз" title="До нових повідомлень">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </button>
-        
-        <!-- RESET MODAL -->
-        <div id="reset-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
-             <div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-                <div class="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg></div>
-                <h4 class="text-lg font-bold mb-2">Розпочати новий чат?</h4>
-                <p class="modal-text-secondary text-sm text-gray-500 mb-6">Поточну історію листування буде видалено безповоротно.</p>
-                <div class="flex flex-col gap-2">
-                    <button id="confirm-reset-btn" class="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Розпочати</span></button>
-                    <button id="cancel-reset-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
-                </div>
-            </div>
-        </div>
+<div id="chat-messages" class="flex-1 p-4 overflow-y-auto flex flex-col bg-white relative">
+<div id="typing-indicator" class="hidden" aria-hidden="true"><div class="typing-indicator-bubble"><span></span><span></span><span></span></div></div>
+</div>
+<button id="scroll-to-bottom-btn" aria-label="Прокрутити вниз" title="До нових повідомлень">
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+</button>
+<!-- RESET MODAL -->
+<div id="reset-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
+<div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
+<div class="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg></div>
+<h4 class="text-lg font-bold mb-2">Розпочати новий чат?</h4>
+<p class="modal-text-secondary text-sm text-gray-500 mb-6">Поточну історію листування буде видалено безповоротно.</p>
+<div class="flex flex-col gap-2">
+<button id="confirm-reset-btn" class="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Розпочати</span></button>
+<button id="cancel-reset-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
+</div>
+</div>
+</div>
 
-        <!-- TELEGRAM MODAL -->
-        <div id="tg-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
-             <div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-                <div class="mx-auto w-12 h-12 bg-[#24A1DE]/20 rounded-full flex items-center justify-center mb-4 text-[#24A1DE]"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg></div>
-                <h4 class="text-lg font-bold mb-2">Бажаєте перейти?</h4>
-                <p class="modal-text-secondary text-sm text-gray-500 mb-6">Ви будете перенаправлені у зовнішній додаток.</p>
-                <div class="flex flex-col gap-2">
-                    <button id="confirm-tg-btn" class="w-full py-2.5 bg-[#24A1DE] hover:bg-[#1e88bd] text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Перейти</span></button>
-                    <button id="cancel-tg-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
-                </div>
-            </div>
-        </div>
+<!-- TELEGRAM MODAL -->
+<div id="tg-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
+<div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
+<div class="mx-auto w-12 h-12 bg-[#24A1DE]/20 rounded-full flex items-center justify-center mb-4 text-[#24A1DE]"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg></div>
+<h4 class="text-lg font-bold mb-2">Бажаєте перейти?</h4>
+<p class="modal-text-secondary text-sm text-gray-500 mb-6">Ви будете перенаправлені у зовнішній додаток.</p>
+<div class="flex flex-col gap-2">
+<button id="confirm-tg-btn" class="w-full py-2.5 bg-[#24A1DE] hover:bg-[#1e88bd] text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Перейти</span></button>
+<button id="cancel-tg-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
+</div>
+</div>
+</div>
 
-        <!-- WHATSAPP MODAL -->
-        <div id="whatsapp-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
-             <div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-                <div class="mx-auto w-12 h-12 bg-[#25D366]/20 rounded-full flex items-center justify-center mb-4 text-[#25D366]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-                </div>
-                <h4 class="text-lg font-bold mb-2">Бажаєте перейти?</h4>
-                <p class="modal-text-secondary text-sm text-gray-500 mb-6">Ви будете перенаправлені у зовнішній додаток.</p>
-                <div class="flex flex-col gap-2">
-                    <button id="confirm-whatsapp-btn" class="w-full py-2.5 bg-[#25D366] hover:bg-[#20bd5a] text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Перейти</span></button>
-                    <button id="cancel-whatsapp-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
-                </div>
-            </div>
-        </div>
+<!-- WHATSAPP MODAL -->
+<div id="whatsapp-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
+<div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
+<div class="mx-auto w-12 h-12 bg-[#25D366]/20 rounded-full flex items-center justify-center mb-4 text-[#25D366]">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+</div>
+<h4 class="text-lg font-bold mb-2">Бажаєте перейти?</h4>
+<p class="modal-text-secondary text-sm text-gray-500 mb-6">Ви будете перенаправлені у зовнішній додаток.</p>
+<div class="flex flex-col gap-2">
+<button id="confirm-whatsapp-btn" class="w-full py-2.5 bg-[#25D366] hover:bg-[#20bd5a] text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Перейти</span></button>
+<button id="cancel-whatsapp-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
+</div>
+</div>
+</div>
 
-        <!-- MESSENGER MODAL -->
-        <div id="messenger-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
-             <div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-                <div class="mx-auto w-12 h-12 bg-[#0084FF]/20 rounded-full flex items-center justify-center mb-4 text-[#0084FF]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.24c1.093.301 2.246.464 3.443.464 6.627 0 12-4.975 12-11.11S18.627 0 12 0zm1.191 14.963l-3.056-3.246-5.963 3.246 6.559-6.963 3.13 3.245 5.89-3.245-6.56 6.963z"/></svg>
-                </div>
-                <h4 class="text-lg font-bold mb-2">Бажаєте перейти?</h4>
-                <p class="modal-text-secondary text-sm text-gray-500 mb-6">Ви будете перенаправлені у зовнішній додаток.</p>
-                <div class="flex flex-col gap-2">
-                    <button id="confirm-messenger-btn" class="w-full py-2.5 bg-[#0084FF] hover:bg-[#0078e7] text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Перейти</span></button>
-                    <button id="cancel-messenger-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
-                </div>
-            </div>
-        </div>
+<!-- MESSENGER MODAL -->
+<div id="messenger-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
+<div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
+<div class="mx-auto w-12 h-12 bg-[#0084FF]/20 rounded-full flex items-center justify-center mb-4 text-[#0084FF]">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.24c1.093.301 2.246.464 3.443.464 6.627 0 12-4.975 12-11.11S18.627 0 12 0zm1.191 14.963l-3.056-3.246-5.963 3.246 6.559-6.963 3.13 3.245 5.89-3.245-6.56 6.963z"/></svg>
+</div>
+<h4 class="text-lg font-bold mb-2">Бажаєте перейти?</h4>
+<p class="modal-text-secondary text-sm text-gray-500 mb-6">Ви будете перенаправлені у зовнішній додаток.</p>
+<div class="flex flex-col gap-2">
+<button id="confirm-messenger-btn" class="w-full py-2.5 bg-[#0084FF] hover:bg-[#0078e7] text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Перейти</span></button>
+<button id="cancel-messenger-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
+</div>
+</div>
+</div>
 
-        <!-- CALL MODAL -->
-        <div id="call-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
-             <div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-                <div class="mx-auto w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mb-4 text-white">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                </div>
-                <h4 class="text-lg font-bold mb-2">Бажаєте поговорити?</h4>
-                <p class="modal-text-secondary text-sm text-gray-500 mb-6">Дзвінок буде здійснено через ваш пристрій.</p>
-                <div class="flex flex-col gap-2">
-                    <button id="confirm-call-btn" class="w-full py-2.5 bg-green-500 hover:bg-green-600 text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Зателефонувати</span></button>
-                    <button id="cancel-call-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
-                </div>
-            </div>
-        </div>
+<!-- CALL MODAL -->
+<div id="call-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
+<div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
+<div class="mx-auto w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mb-4 text-white">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+</div>
+<h4 class="text-lg font-bold mb-2">Бажаєте поговорити?</h4>
+<p class="modal-text-secondary text-sm text-gray-500 mb-6">Дзвінок буде здійснено через ваш пристрій.</p>
+<div class="flex flex-col gap-2">
+<button id="confirm-call-btn" class="w-full py-2.5 bg-green-500 hover:bg-green-600 text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Зателефонувати</span></button>
+<button id="cancel-call-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
+</div>
+</div>
+</div>
 
-        <!-- FOOTER -->
-        <footer id="chat-footer" class="border-t border-gray-100 bg-gray-50 flex-shrink-0 flex flex-col relative z-20 transition-all">
-            <!-- CALL BANNER -->
-            <a href="javascript:void(0)" id="call-banner" class="contact-banner">
-                <div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div>
-                <div class="banner-content"><span class="banner-title">Зателефонувати</span></div>
-                <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-            </a>
+<!-- FOOTER -->
+<footer id="chat-footer" class="border-t border-gray-100 bg-gray-50 flex-shrink-0 flex flex-col relative z-20 transition-all">
+<!-- CALL BANNER -->
+<a href="javascript:void(0)" id="call-banner" class="contact-banner">
+<div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div>
+<div class="banner-content"><span class="banner-title">Зателефонувати</span></div>
+<svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+<button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+</a>
 
-            <!-- MESSENGER BANNER -->
-            <a href="javascript:void(0)" id="messenger-banner" class="contact-banner">
-                <div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.24c1.093.301 2.246.464 3.443.464 6.627 0 12-4.975 12-11.11S18.627 0 12 0zm1.191 14.963l-3.056-3.246-5.963 3.246 6.559-6.963 3.13 3.245 5.89-3.245-6.56 6.963z"/></svg></div>
-                <div class="banner-content"><span class="banner-title">Перейти в Messenger</span><span class="banner-subtitle">Швидше і зручніше</span></div>
-                <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-            </a>
+<!-- MESSENGER BANNER -->
+<a href="javascript:void(0)" id="messenger-banner" class="contact-banner">
+<div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.24c1.093.301 2.246.464 3.443.464 6.627 0 12-4.975 12-11.11S18.627 0 12 0zm1.191 14.963l-3.056-3.246-5.963 3.246 6.559-6.963 3.13 3.245 5.89-3.245-6.56 6.963z"/></svg></div>
+<div class="banner-content"><span class="banner-title">Перейти в Messenger</span><span class="banner-subtitle">Швидше і зручніше</span></div>
+<svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+<button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+</a>
 
-            <!-- WHATSAPP BANNER -->
-            <a href="javascript:void(0)" id="whatsapp-banner" class="contact-banner">
-                <div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-                </div>
-                <div class="banner-content"><span class="banner-title">Перейти в WhatsApp</span><span class="banner-subtitle">Швидше і зручніше</span></div>
-                <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-            </a>
+<!-- WHATSAPP BANNER -->
+<a href="javascript:void(0)" id="whatsapp-banner" class="contact-banner">
+<div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+</div>
+<div class="banner-content"><span class="banner-title">Перейти в WhatsApp</span><span class="banner-subtitle">Швидше і зручніше</span></div>
+<svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+<button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+</a>
 
-            <!-- TELEGRAM BANNER -->
-            <a href="javascript:void(0)" id="telegram-banner" class="contact-banner">
-                <div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg></div>
-                <div class="banner-content"><span class="banner-title">Перейти в Telegram</span><span class="banner-subtitle">Швидше і зручніше</span></div>
-                <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-            </a>
+<!-- TELEGRAM BANNER -->
+<a href="javascript:void(0)" id="telegram-banner" class="contact-banner">
+<div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg></div>
+<div class="banner-content"><span class="banner-title">Перейти в Telegram</span><span class="banner-subtitle">Швидше і зручніше</span></div>
+<svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+<button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+</a>
 
-            <!-- INPUT AREA -->
-            <div class="px-3 pb-1 pt-2">
-                <!-- UPDATED: Removed 'input-focus-dynamic' class and related logic -->
-                <div class="input-wrapper-bg flex items-center gap-2 bg-white border border-gray-200 rounded-3xl pl-3 pr-1 py-1 transition-shadow transition-colors">
-                    <input type="text" id="message-input" placeholder="Напишіть повідомлення..." class="flex-1 bg-transparent border-none focus:ring-0 p-1 text-base max-h-20 overflow-y-auto resize-none outline-none text-gray-700 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed" autocomplete="off">
-                    <!-- FIX: Removed mb-0.5 to center the button perfectly -->
-                    <button id="send-button" class="w-10 h-10 rounded-full accent-bg text-white flex items-center justify-center accent-bg-hover transition transform hover:scale-105 flex-shrink-0 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed">
-                        <svg id="btn-icon-send" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                        <svg id="btn-icon-loading" class="hidden animate-spin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
-                    </button>
-                </div>
-            </div>
+<!-- INPUT AREA (SEPARATED LAYOUT) -->
+<div class="px-3 pb-2 pt-2 flex items-end gap-2">
+<!-- Text Input Container -->
+<div class="input-container-bg flex-1 bg-gray-100 rounded-full h-11 flex items-center px-4 transition-colors">
+<input type="text" id="message-input" placeholder="Напишіть повідомлення..." class="w-full bg-transparent border-none focus:ring-0 p-0 text-base resize-none outline-none text-gray-700 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed" autocomplete="off">
+</div>
+<!-- Send Button (Separate) -->
+<button id="send-button" class="w-11 h-11 rounded-full accent-bg text-white flex items-center justify-center accent-bg-hover transition transform hover:scale-105 flex-shrink-0 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed">
+<svg id="btn-icon-send" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+<svg id="btn-icon-loading" class="hidden animate-spin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+</button>
+</div>
 
-            <div id="powered-by-container" class="text-center pb-2 pt-1"> 
-                <span class="text-sm text-gray-400 font-medium">powered by <a href="https://hotelmol.com" target="_blank" class="accent-text hover:underline cursor-pointer">hotelmol.com</a></span>
-            </div>
-        </footer>
-    </div>
+<div id="powered-by-container" class="text-center pb-2 pt-1">
+<span class="text-sm text-gray-400 font-medium">powered by <a href="https://hotelmol.com" target="_blank" class="accent-text hover:underline cursor-pointer">hotelmol.com</a></span>
+</div>
+</footer>
+</div>
 
-    <!-- JS LOGIC -->
-    <script>
-        // Elements
-        const widgetButton = document.getElementById('chat-widget-button');
-        const chatWindow = document.getElementById('chat-window');
-        const closeButton = document.getElementById('chat-close-button');
-        const messagesContainer = document.getElementById('chat-messages');
-        const messageInput = document.getElementById('message-input');
-        const sendButton = document.getElementById('send-button');
-        let typingIndicator = document.getElementById('typing-indicator');
-        const notificationBadge = document.getElementById('chat-notification-badge');
-        const btnIconSend = document.getElementById('btn-icon-send');
-        const btnIconLoading = document.getElementById('btn-icon-loading');
-        const resetChatBtn = document.getElementById('reset-chat-btn'); 
-        const chatButtonText = document.querySelector('.chat-button-text');
-        const scrollToBottomBtn = document.getElementById('scroll-to-bottom-btn');
-        const brandingToggle = document.getElementById('branding-toggle');
-        const poweredByContainer = document.getElementById('powered-by-container');
-        const chatFooter = document.getElementById('chat-footer');
-        
-        // Admin Elements
-        const adminPanel = document.getElementById('admin-panel');
-        const openAdminBtn = document.getElementById('open-admin-btn');
-        const closeAdminBtn = document.getElementById('close-admin-btn');
-        const accentColorPicker = document.getElementById('accent-color-picker');
-        const colorValueText = document.getElementById('color-value-text');
-        const themeToggle = document.getElementById('theme-toggle');
-        const hotelNameInput = document.getElementById('hotel-name-input');
-        const logoUpload = document.getElementById('logo-upload');
-        const hotelNameText = document.getElementById('hotel-name-text');
-        const hotelLogoContainer = document.getElementById('hotel-logo-container');
-        const buttonTextSelect = document.getElementById('button-text-select');
-        const animationToggle = document.getElementById('animation-toggle'); // NEW
-        
-        // Position Selector
-        const positionSelect = document.getElementById('position-select');
+<!-- JS LOGIC -->
+<script>
+// Elements
+const widgetButton = document.getElementById('chat-widget-button');
+const chatWindow = document.getElementById('chat-window');
+const closeButton = document.getElementById('chat-close-button');
+const messagesContainer = document.getElementById('chat-messages');
+const messageInput = document.getElementById('message-input');
+const sendButton = document.getElementById('send-button');
+let typingIndicator = document.getElementById('typing-indicator');
+const notificationBadge = document.getElementById('chat-notification-badge');
+const btnIconSend = document.getElementById('btn-icon-send');
+const btnIconLoading = document.getElementById('btn-icon-loading');
+const resetChatBtn = document.getElementById('reset-chat-btn');
+const chatButtonText = document.querySelector('.chat-button-text');
+const scrollToBottomBtn = document.getElementById('scroll-to-bottom-btn');
+const brandingToggle = document.getElementById('branding-toggle');
+const poweredByContainer = document.getElementById('powered-by-container');
+const chatFooter = document.getElementById('chat-footer');
+// Admin Elements
+const adminPanel = document.getElementById('admin-panel');
+const openAdminBtn = document.getElementById('open-admin-btn');
+const closeAdminBtn = document.getElementById('close-admin-btn');
+const accentColorPicker = document.getElementById('accent-color-picker');
+const colorValueText = document.getElementById('color-value-text');
+const themeToggle = document.getElementById('theme-toggle');
+const hotelNameInput = document.getElementById('hotel-name-input');
+const logoUpload = document.getElementById('logo-upload');
+const hotelNameText = document.getElementById('hotel-name-text');
+const hotelLogoContainer = document.getElementById('hotel-logo-container');
+const buttonTextSelect = document.getElementById('button-text-select');
+const animationToggle = document.getElementById('animation-toggle'); // NEW
+// Position Selector
+const positionSelect = document.getElementById('position-select');
 
-        // Toggles
-        const tgToggle = document.getElementById('tg-toggle');
-        const whatsappToggle = document.getElementById('whatsapp-toggle');
-        const messengerToggle = document.getElementById('messenger-toggle');
-        const callToggle = document.getElementById('call-toggle');
+// Toggles
+const tgToggle = document.getElementById('tg-toggle');
+const whatsappToggle = document.getElementById('whatsapp-toggle');
+const messengerToggle = document.getElementById('messenger-toggle');
+const callToggle = document.getElementById('call-toggle');
 
-        // Banners
-        const banners = {
-            telegram: document.getElementById('telegram-banner'),
-            whatsapp: document.getElementById('whatsapp-banner'),
-            messenger: document.getElementById('messenger-banner'),
-            call: document.getElementById('call-banner')
-        };
+// Banners
+const banners = {
+telegram: document.getElementById('telegram-banner'),
+whatsapp: document.getElementById('whatsapp-banner'),
+messenger: document.getElementById('messenger-banner'),
+call: document.getElementById('call-banner')
+};
 
-        // Modals
-        const modals = {
-            reset: document.getElementById('reset-confirmation-modal'),
-            telegram: document.getElementById('tg-confirmation-modal'),
-            whatsapp: document.getElementById('whatsapp-confirmation-modal'),
-            messenger: document.getElementById('messenger-confirmation-modal'),
-            call: document.getElementById('call-confirmation-modal')
-        };
+// Modals
+const modals = {
+reset: document.getElementById('reset-confirmation-modal'),
+telegram: document.getElementById('tg-confirmation-modal'),
+whatsapp: document.getElementById('whatsapp-confirmation-modal'),
+messenger: document.getElementById('messenger-confirmation-modal'),
+call: document.getElementById('call-confirmation-modal')
+};
 
-        let welcomed = false;
-        let currentLang = 'ua'; 
-        let isGenerating = false;
+let welcomed = false;
+let currentLang = 'ua';
+let isGenerating = false;
 
-        // --- INITIALIZATION & EVENT LISTENERS ---
+// --- INITIALIZATION & EVENT LISTENERS ---
 
-        const translations = {
-            ru: { buttonText: "Чат с отелем", placeholder: "Напишите сообщение...", welcome: "Здравствуйте! Добро пожаловать в Hilton. Чем могу помочь с вашим бронированием?", defaultAI: "Извините, я пока учусь. Могу ли я помочь вам забронировать номер?", keywords: { hello: /(привет|здравствуй|hello|hi)/, book: /(бронь|забронировать|номер|book|reservation)/, price: /(цена|стоимость|сколько стоит|price)/, thanks: /(спасибо|благодарю|thanks)/ }, answers: { hello: "Добрый день! Рад вас видеть в Hilton. Планируете поездку к нам?", book: "С удовольствием помогу с бронированием! 📅 \nНа какие даты вы планируете заезд?", price: "💰 **Наши тарифы:**\n• King Room: от $180/ночь\n• Executive Suite: от $350/ночь. Подсказать свободные даты?", thanks: "Всегда пожалуйста! Хорошего дня! ☀️" } },
-            ua: { buttonText: "Чат з готелем", placeholder: "Напишіть повідомлення...", welcome: "Вітаємо! Ласкаво просимо до Hilton. Чим можу допомогти з вашим бронюванням?", defaultAI: "Вибачте, я поки що вчуся. Чи можу я допомогти вам забронювати номер?", keywords: { hello: /(привіт|вітаю|hello|hi)/, book: /(бронь|забронювати|номер|book|reservation)/, price: /(ціна|вартість|скільки коштує|price)/, thanks: /(дякую|спасибі|thanks)/ }, answers: { hello: "Добрий день! Радий бачити вас у Hilton. Плануєте поїздку до нас?", book: "Із задоволенням допоможу з бронюванням! 📅 \nНа які дати ви плануєте заїзд?", price: "💰 **Наші тарифи:**\n• King Room: від $180/ніч\n• Executive Suite: від $350/ніч. Підказати вільні дати?", thanks: "Завжди будь ласка! Гарного дня! ☀️" } },
-            en: { buttonText: "Chat with Hotel", placeholder: "Type a message...", welcome: "Hello! Welcome to Hilton. How can I help you with your reservation?", defaultAI: "Sorry, I am still learning. Can I help you book a room?", keywords: { hello: /(hello|hi|greetings|hey)/, book: /(book|reserve|room|reservation)/, price: /(price|cost|rates|much)/, thanks: /(thanks|thank you)/ }, answers: { hello: "Good afternoon! Glad to see you at Hilton. Planning a trip to us?", book: "I'd be happy to help with your booking! 📅 \nWhat dates are you planning to check in?", price: "💰 **Our Rates:**\n• King Room: from $180/night\n• Executive Suite: from $350/night. Should I check availability?", thanks: "You are always welcome! Have a nice day! ☀️" } }
-        };
+const translations = {
+ru: { buttonText: "Чат с отелем", placeholder: "Напишите сообщение...", welcome: "Здравствуйте! Добро пожаловать в Hilton. Чем могу помочь с вашим бронированием?", defaultAI: "Извините, я пока учусь. Могу ли я помочь вам забронировать номер?", keywords: { hello: /(привет|здравствуй|hello|hi)/, book: /(бронь|забронировать|номер|book|reservation)/, price: /(цена|стоимость|сколько стоит|price)/, thanks: /(спасибо|благодарю|thanks)/ }, answers: { hello: "Добрый день! Рад вас видеть в Hilton. Планируете поездку к нам?", book: "С удовольствием помогу с бронированием! 📅 \nНа какие даты вы планируете заезд?", price: "💰 **Наши тарифы:**\n• King Room: от $180/ночь\n• Executive Suite: от $350/ночь. Подсказать свободные даты?", thanks: "Всегда пожалуйста! Хорошего дня! ☀️" } },
+ua: { buttonText: "Чат з готелем", placeholder: "Напишіть повідомлення...", welcome: "Вітаємо! Ласкаво просимо до Hilton. Чим можу допомогти з вашим бронюванням?", defaultAI: "Вибачте, я поки що вчуся. Чи можу я допомогти вам забронювати номер?", keywords: { hello: /(привіт|вітаю|hello|hi)/, book: /(бронь|забронювати|номер|book|reservation)/, price: /(ціна|вартість|скільки коштує|price)/, thanks: /(дякую|спасибі|thanks)/ }, answers: { hello: "Добрий день! Радий бачити вас у Hilton. Плануєте поїздку до нас?", book: "Із задоволенням допоможу з бронюванням! 📅 \nНа які дати ви плануєте заїзд?", price: "💰 **Наші тарифи:**\n• King Room: від $180/ніч\n• Executive Suite: від $350/ніч. Підказати вільні дати?", thanks: "Завжди будь ласка! Гарного дня! ☀️" } },
+en: { buttonText: "Chat with Hotel", placeholder: "Type a message...", welcome: "Hello! Welcome to Hilton. How can I help you with your reservation?", defaultAI: "Sorry, I am still learning. Can I help you book a room?", keywords: { hello: /(hello|hi|greetings|hey)/, book: /(book|reserve|room|reservation)/, price: /(price|cost|rates|much)/, thanks: /(thanks|thank you)/ }, answers: { hello: "Good afternoon! Glad to see you at Hilton. Planning a trip to us?", book: "I'd be happy to help with your booking! 📅 \nWhat dates are you planning to check in?", price: "💰 **Our Rates:**\n• King Room: from $180/night\n• Executive Suite: from $350/night. Should I check availability?", thanks: "You are always welcome! Have a nice day! ☀️" } }
+};
 
-        function initLanguage() {
-            const t = translations[currentLang];
-            messageInput.placeholder = t.placeholder;
-            chatButtonText.textContent = buttonTextSelect.value;
-        }
-        initLanguage();
+function initLanguage() {
+const t = translations[currentLang];
+messageInput.placeholder = t.placeholder;
+chatButtonText.textContent = buttonTextSelect.value;
+}
+initLanguage();
 
-        // Admin Panel Logic
-        closeAdminBtn.addEventListener('click', () => { adminPanel.classList.add('hidden-panel'); openAdminBtn.classList.remove('hidden-btn'); });
-        openAdminBtn.addEventListener('click', () => { adminPanel.classList.remove('hidden-panel'); openAdminBtn.classList.add('hidden-btn'); });
-        hotelNameInput.addEventListener('input', (e) => { hotelNameText.textContent = e.target.value || "Hilton"; });
-        logoUpload.addEventListener('change', function(e) { if (this.files && this.files[0]) { const reader = new FileReader(); reader.onload = function(e) { hotelLogoContainer.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full" alt="Logo">`; }; reader.readAsDataURL(this.files[0]); } });
-        
-        // Animation Toggle Logic
-        animationToggle.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                widgetButton.classList.remove('no-animation');
-            } else {
-                widgetButton.classList.add('no-animation');
-            }
-        });
+// Admin Panel Logic
+closeAdminBtn.addEventListener('click', () => { adminPanel.classList.add('hidden-panel'); openAdminBtn.classList.remove('hidden-btn'); });
+openAdminBtn.addEventListener('click', () => { adminPanel.classList.remove('hidden-panel'); openAdminBtn.classList.add('hidden-btn'); });
+hotelNameInput.addEventListener('input', (e) => { hotelNameText.textContent = e.target.value || "Hilton"; });
+logoUpload.addEventListener('change', function(e) { if (this.files && this.files[0]) { const reader = new FileReader(); reader.onload = function(e) { hotelLogoContainer.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full" alt="Logo">`; }; reader.readAsDataURL(this.files[0]); } });
+// Animation Toggle Logic
+animationToggle.addEventListener('change', (e) => {
+if (e.target.checked) {
+widgetButton.classList.remove('no-animation');
+} else {
+widgetButton.classList.add('no-animation');
+}
+});
 
-        // Updated Accent Color Logic
-        accentColorPicker.addEventListener('input', (e) => { 
-            const color = e.target.value; 
-            colorValueText.textContent = color; 
-            document.documentElement.style.setProperty('--accent-color', color); 
-            const hexToRgb = (hex) => { let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '37, 99, 235'; }; 
-            document.documentElement.style.setProperty('--accent-rgb', hexToRgb(color)); 
-            const darkenColor = (hex, percent) => { let num = parseInt(hex.replace("#",""), 16), amt = Math.round(2.55 * percent), R = (num >> 16) - amt, G = (num >> 8 & 0x00FF) - amt, B = (num & 0x0000FF) - amt; return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1); }; 
-            document.documentElement.style.setProperty('--accent-hover', darkenColor(color, 20)); 
-        });
-        
-        // Button Text Listener (Dropdown Change)
-        buttonTextSelect.addEventListener('change', (e) => {
-            chatButtonText.textContent = e.target.value;
-        });
-        
-        themeToggle.addEventListener('change', (e) => { if (e.target.checked) { chatWindow.classList.add('dark-mode'); } else { chatWindow.classList.remove('dark-mode'); } });
-        brandingToggle.addEventListener('change', (e) => { poweredByContainer.style.display = e.target.checked ? 'block' : 'none'; chatFooter.classList.toggle('pb-1', !e.target.checked); });
+// Updated Accent Color Logic
+accentColorPicker.addEventListener('input', (e) => {
+const color = e.target.value;
+colorValueText.textContent = color;
+document.documentElement.style.setProperty('--accent-color', color);
+const hexToRgb = (hex) => { let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '37, 99, 235'; };
+document.documentElement.style.setProperty('--accent-rgb', hexToRgb(color));
+const darkenColor = (hex, percent) => { let num = parseInt(hex.replace("#",""), 16), amt = Math.round(2.55 * percent), R = (num >> 16) - amt, G = (num >> 8 & 0x00FF) - amt, B = (num & 0x0000FF) - amt; return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1); };
+document.documentElement.style.setProperty('--accent-hover', darkenColor(color, 20));
+});
+// Button Text Listener (Dropdown Change)
+buttonTextSelect.addEventListener('change', (e) => {
+chatButtonText.textContent = e.target.value;
+});
+themeToggle.addEventListener('change', (e) => { if (e.target.checked) { chatWindow.classList.add('dark-mode'); } else { chatWindow.classList.remove('dark-mode'); } });
+brandingToggle.addEventListener('change', (e) => { poweredByContainer.style.display = e.target.checked ? 'block' : 'none'; chatFooter.classList.toggle('pb-1', !e.target.checked); });
 
-        // POSITION LOGIC
-        positionSelect.addEventListener('change', (e) => {
-            const posClass = e.target.value;
-            
-            // Clean up all classes
-            ['widget-pos-right', 'widget-pos-center', 'widget-pos-left'].forEach(cls => {
-                widgetButton.classList.remove(cls);
-                chatWindow.classList.remove(cls);
-            });
+// POSITION LOGIC
+positionSelect.addEventListener('change', (e) => {
+const posClass = e.target.value;
+// Clean up all classes
+['widget-pos-right', 'widget-pos-center', 'widget-pos-left'].forEach(cls => {
+widgetButton.classList.remove(cls);
+chatWindow.classList.remove(cls);
+});
 
-            // Add selected class
-            widgetButton.classList.add(posClass);
-            chatWindow.classList.add(posClass);
-        });
+// Add selected class
+widgetButton.classList.add(posClass);
+chatWindow.classList.add(posClass);
+});
 
-        // --- SMART STACKING LOGIC ---
-        function updateContactStack() {
-            // Safely get checked state
-            const isChecked = (el) => el && el.checked;
+// --- SMART STACKING LOGIC ---
+function updateContactStack() {
+// Safely get checked state
+const isChecked = (el) => el && el.checked;
 
-            const stackOrder = [
-                { el: banners.telegram, enabled: isChecked(tgToggle) },
-                { el: banners.whatsapp, enabled: isChecked(whatsappToggle) },
-                { el: banners.messenger, enabled: isChecked(messengerToggle) },
-                { el: banners.call, enabled: isChecked(callToggle) }
-            ];
+const stackOrder = [
+{ el: banners.telegram, enabled: isChecked(tgToggle) },
+{ el: banners.whatsapp, enabled: isChecked(whatsappToggle) },
+{ el: banners.messenger, enabled: isChecked(messengerToggle) },
+{ el: banners.call, enabled: isChecked(callToggle) }
+];
 
-            // UPDATED: Starting value increased from 20 to 32 to raise minimum allowed position
-            let currentBottom = 32; 
-            
-            stackOrder.forEach(item => {
-                if (!item.el) return;
+// UPDATED: Starting value increased from 20 to 32 to raise minimum allowed position
+let currentBottom = 32;
+stackOrder.forEach(item => {
+if (!item.el) return;
 
-                if (item.enabled) {
-                    item.el.classList.add('show-banner');
-                    item.el.style.marginBottom = `${currentBottom}px`;
-                    
-                    const isCollapsed = item.el.classList.contains('collapsed');
-                    const spacing = isCollapsed ? 45 : 75;
+if (item.enabled) {
+item.el.classList.add('show-banner');
+item.el.style.marginBottom = `${currentBottom}px`;
+const isCollapsed = item.el.classList.contains('collapsed');
+const spacing = isCollapsed ? 45 : 75;
 
-                    currentBottom += spacing; 
-                } else {
-                    item.el.classList.remove('show-banner');
-                }
-            });
-        }
+currentBottom += spacing;
+} else {
+item.el.classList.remove('show-banner');
+}
+});
+}
 
-        [tgToggle, whatsappToggle, messengerToggle, callToggle].forEach(toggle => {
-            if (toggle) {
-                toggle.addEventListener('change', updateContactStack);
-            }
-        });
+[tgToggle, whatsappToggle, messengerToggle, callToggle].forEach(toggle => {
+if (toggle) {
+toggle.addEventListener('change', updateContactStack);
+}
+});
 
-        // --- BANNER INTERACTIONS ---
-        function setupBannerInteractions(bannerId, modalId, externalLink) {
-            const banner = document.getElementById(bannerId);
-            const modal = document.getElementById(modalId);
-            
-            if (!banner || !modal) return;
+// --- BANNER INTERACTIONS ---
+function setupBannerInteractions(bannerId, modalId, externalLink) {
+const banner = document.getElementById(bannerId);
+const modal = document.getElementById(modalId);
+if (!banner || !modal) return;
 
-            const closeBtn = banner.querySelector('.close-banner-btn');
-            const confirmBtn = modal.querySelector('button:first-child');
-            const cancelBtn = modal.querySelector('.modal-btn-cancel');
+const closeBtn = banner.querySelector('.close-banner-btn');
+const confirmBtn = modal.querySelector('button:first-child');
+const cancelBtn = modal.querySelector('.modal-btn-cancel');
 
-            banner.addEventListener('click', function(e) {
-                if (e.target.closest('.close-banner-btn')) return;
+banner.addEventListener('click', function(e) {
+if (e.target.closest('.close-banner-btn')) return;
 
-                // Check if the banner is currently collapsed (side button)
-                if (this.classList.contains('collapsed')) {
-                    // Prevent default to ensure no accidental navigation, show confirmation modal
-                    e.preventDefault();
-                    modal.classList.remove('hidden');
-                } else {
-                    // --- UPDATED LOGIC FOR EXPANDED BANNER ---
-                    if (externalLink) {
-                        window.open(externalLink, '_blank');
-                    } else if (bannerId === 'call-banner') {
-                         // Direct Call Action when Expanded
-                         window.location.href = 'tel:+1234567890';
-                    } else {
-                         // Default behavior for other expanded banners without direct links
-                         modal.classList.remove('hidden');
-                    }
-                }
-            });
+// Check if the banner is currently collapsed (side button)
+if (this.classList.contains('collapsed')) {
+// Prevent default to ensure no accidental navigation, show confirmation modal
+e.preventDefault();
+modal.classList.remove('hidden');
+} else {
+// --- UPDATED LOGIC FOR EXPANDED BANNER ---
+if (externalLink) {
+window.open(externalLink, '_blank');
+} else if (bannerId === 'call-banner') {
+// Direct Call Action when Expanded
+window.location.href = 'tel:+1234567890';
+} else {
+// Default behavior for other expanded banners without direct links
+modal.classList.remove('hidden');
+}
+}
+});
 
-            closeBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                banner.classList.add('collapsed');
-                updateContactStack();
-            });
+closeBtn.addEventListener('click', (e) => {
+e.preventDefault();
+e.stopPropagation();
+banner.classList.add('collapsed');
+updateContactStack();
+});
 
-            confirmBtn.addEventListener('click', () => {
-                if (externalLink) window.open(externalLink, '_blank');
-                else if (bannerId === 'call-banner') window.location.href = 'tel:+1234567890';
-                modal.classList.add('hidden');
-            });
+confirmBtn.addEventListener('click', () => {
+if (externalLink) window.open(externalLink, '_blank');
+else if (bannerId === 'call-banner') window.location.href = 'tel:+1234567890';
+modal.classList.add('hidden');
+});
 
-            cancelBtn.addEventListener('click', () => {
-                modal.classList.add('hidden');
-            });
-        }
+cancelBtn.addEventListener('click', () => {
+modal.classList.add('hidden');
+});
+}
 
-        setupBannerInteractions('telegram-banner', 'tg-confirmation-modal', 'https://t.me/hilton');
-        setupBannerInteractions('whatsapp-banner', 'whatsapp-confirmation-modal', 'https://wa.me/1234567890');
-        setupBannerInteractions('messenger-banner', 'messenger-confirmation-modal', 'https://m.me/hilton');
-        setupBannerInteractions('call-banner', 'call-confirmation-modal', null);
+setupBannerInteractions('telegram-banner', 'tg-confirmation-modal', 'https://t.me/hilton');
+setupBannerInteractions('whatsapp-banner', 'whatsapp-confirmation-modal', 'https://wa.me/1234567890');
+setupBannerInteractions('messenger-banner', 'messenger-confirmation-modal', 'https://m.me/hilton');
+setupBannerInteractions('call-banner', 'call-confirmation-modal', null);
 
-        // --- CHAT CORE FUNCTIONS ---
-        function toggleChat() { 
-            const isOpen = chatWindow.classList.contains('open'); 
-            const isMobile = window.innerWidth < 768; 
-            if (isOpen) { 
-                chatWindow.classList.remove('open'); 
-                widgetButton.style.display = 'flex'; 
-                if (isMobile) { openAdminBtn.style.display = ''; adminPanel.classList.add('hidden-panel'); openAdminBtn.classList.remove('hidden-btn'); } 
-            } else { 
-                chatWindow.classList.add('open'); 
-                widgetButton.style.display = 'none'; 
-                if(notificationBadge) notificationBadge.style.display = 'none'; 
-                messageInput.focus(); 
-                if (isMobile) { adminPanel.classList.add('hidden-panel'); openAdminBtn.style.display = 'none'; } 
-                if (!welcomed) { simulateWelcome(); welcomed = true; } 
-            } 
-        } 
-        
-        function simulateWelcome() { showTyping(); setTimeout(() => { hideTyping(); addMessage(translations[currentLang].welcome, 'ai'); }, 1000); }
-        
-        function addMessage(text, sender) { 
-            const wrapper = document.createElement('div'); wrapper.className = `message-wrapper ${sender} animate-fade-in`;
-            // UPDATED: Used text-base (16px) instead of text-sm
-            const messageElement = document.createElement('div'); messageElement.className = `chat-message-${sender} text-base leading-relaxed`; messageElement.innerHTML = text.replace(/\n/g, '<br>'); 
-            const timeElement = document.createElement('span'); timeElement.className = 'message-time'; timeElement.innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            if (sender === 'user') { wrapper.appendChild(timeElement); wrapper.appendChild(messageElement); } else { wrapper.appendChild(messageElement); wrapper.appendChild(timeElement); }
-            messagesContainer.insertBefore(wrapper, typingIndicator); messagesContainer.scrollTop = messagesContainer.scrollHeight; 
-        }
-        
-        function showTyping() { typingIndicator.classList.remove('hidden'); messagesContainer.scrollTop = messagesContainer.scrollHeight; }
-        function hideTyping() { typingIndicator.classList.add('hidden'); }
-        
-        function setButtonLoading(isLoading) { if (isLoading) { btnIconSend.classList.add('hidden'); btnIconLoading.classList.remove('hidden'); sendButton.disabled = true; messageInput.disabled = true; } else { btnIconSend.classList.remove('hidden'); btnIconLoading.classList.add('hidden'); sendButton.disabled = false; messageInput.disabled = false; messageInput.focus(); } }
-        
-        function getAIResponse(userMessage) {
-            const lowerMessage = userMessage.toLowerCase(); const t = translations[currentLang]; let aiResponse = t.defaultAI;
-            if (lowerMessage.match(t.keywords.hello)) aiResponse = t.answers.hello; else if (lowerMessage.match(t.keywords.book)) aiResponse = t.answers.book;
-            else if (lowerMessage.match(t.keywords.price)) aiResponse = t.answers.price; else if (lowerMessage.match(t.keywords.thanks)) aiResponse = t.answers.thanks;
-            setTimeout(() => { hideTyping(); isGenerating = false; setButtonLoading(false); addMessage(aiResponse, 'ai'); }, 2000);
-        }
+// --- CHAT CORE FUNCTIONS ---
+function toggleChat() {
+const isOpen = chatWindow.classList.contains('open');
+const isMobile = window.innerWidth < 768;
+if (isOpen) {
+chatWindow.classList.remove('open');
+widgetButton.style.display = 'flex';
+if (isMobile) { openAdminBtn.style.display = ''; adminPanel.classList.add('hidden-panel'); openAdminBtn.classList.remove('hidden-btn'); }
+} else {
+chatWindow.classList.add('open');
+widgetButton.style.display = 'none';
+if(notificationBadge) notificationBadge.style.display = 'none';
+messageInput.focus();
+if (isMobile) { adminPanel.classList.add('hidden-panel'); openAdminBtn.style.display = 'none'; }
+if (!welcomed) { simulateWelcome(); welcomed = true; }
+}
+}
+function simulateWelcome() { showTyping(); setTimeout(() => { hideTyping(); addMessage(translations[currentLang].welcome, 'ai'); }, 1000); }
+function addMessage(text, sender) {
+const wrapper = document.createElement('div'); wrapper.className = `message-wrapper ${sender} animate-fade-in`;
+// UPDATED: Used text-base (16px) instead of text-sm
+const messageElement = document.createElement('div'); messageElement.className = `chat-message-${sender} text-base leading-relaxed`; messageElement.innerHTML = text.replace(/\n/g, '<br>');
+const timeElement = document.createElement('span'); timeElement.className = 'message-time'; timeElement.innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+if (sender === 'user') { wrapper.appendChild(timeElement); wrapper.appendChild(messageElement); } else { wrapper.appendChild(messageElement); wrapper.appendChild(timeElement); }
+messagesContainer.insertBefore(wrapper, typingIndicator); messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+function showTyping() { typingIndicator.classList.remove('hidden'); messagesContainer.scrollTop = messagesContainer.scrollHeight; }
+function hideTyping() { typingIndicator.classList.add('hidden'); }
+function setButtonLoading(isLoading) { if (isLoading) { btnIconSend.classList.add('hidden'); btnIconLoading.classList.remove('hidden'); sendButton.disabled = true; messageInput.disabled = true; } else { btnIconSend.classList.remove('hidden'); btnIconLoading.classList.add('hidden'); sendButton.disabled = false; messageInput.disabled = false; messageInput.focus(); } }
+function getAIResponse(userMessage) {
+const lowerMessage = userMessage.toLowerCase(); const t = translations[currentLang]; let aiResponse = t.defaultAI;
+if (lowerMessage.match(t.keywords.hello)) aiResponse = t.answers.hello; else if (lowerMessage.match(t.keywords.book)) aiResponse = t.answers.book;
+else if (lowerMessage.match(t.keywords.price)) aiResponse = t.answers.price; else if (lowerMessage.match(t.keywords.thanks)) aiResponse = t.answers.thanks;
+setTimeout(() => { hideTyping(); isGenerating = false; setButtonLoading(false); addMessage(aiResponse, 'ai'); }, 2000);
+}
 
-        function handleSendMessage() { if (isGenerating) return; const text = messageInput.value.trim(); if (text === '') return; isGenerating = true; addMessage(text, 'user'); messageInput.value = ''; setButtonLoading(true); showTyping(); getAIResponse(text); }
-        
-        function resetChat() {
-            const indicatorHTML = typingIndicator.outerHTML; messagesContainer.innerHTML = ''; messagesContainer.innerHTML = indicatorHTML;
-            typingIndicator = document.getElementById('typing-indicator');
-            welcomed = false; isGenerating = false; setButtonLoading(false); simulateWelcome();
-        }
+function handleSendMessage() { if (isGenerating) return; const text = messageInput.value.trim(); if (text === '') return; isGenerating = true; addMessage(text, 'user'); messageInput.value = ''; setButtonLoading(true); showTyping(); getAIResponse(text); }
+function resetChat() {
+const indicatorHTML = typingIndicator.outerHTML; messagesContainer.innerHTML = ''; messagesContainer.innerHTML = indicatorHTML;
+typingIndicator = document.getElementById('typing-indicator');
+welcomed = false; isGenerating = false; setButtonLoading(false); simulateWelcome();
+}
 
-        resetChatBtn.addEventListener('click', () => modals.reset.classList.remove('hidden'));
-        document.getElementById('confirm-reset-btn').addEventListener('click', () => { resetChat(); modals.reset.classList.add('hidden'); });
-        document.getElementById('cancel-reset-btn').addEventListener('click', () => modals.reset.classList.add('hidden'));
+resetChatBtn.addEventListener('click', () => modals.reset.classList.remove('hidden'));
+document.getElementById('confirm-reset-btn').addEventListener('click', () => { resetChat(); modals.reset.classList.add('hidden'); });
+document.getElementById('cancel-reset-btn').addEventListener('click', () => modals.reset.classList.add('hidden'));
 
-        messagesContainer.addEventListener('scroll', () => {
-            const distanceToBottom = messagesContainer.scrollHeight - (messagesContainer.scrollTop + messagesContainer.clientHeight);
-            scrollToBottomBtn.classList.toggle('visible', distanceToBottom > 100);
-        });
-        scrollToBottomBtn.addEventListener('click', () => messagesContainer.scrollTo({ top: messagesContainer.scrollHeight, behavior: 'smooth' }));
+messagesContainer.addEventListener('scroll', () => {
+const distanceToBottom = messagesContainer.scrollHeight - (messagesContainer.scrollTop + messagesContainer.clientHeight);
+scrollToBottomBtn.classList.toggle('visible', distanceToBottom > 100);
+});
+scrollToBottomBtn.addEventListener('click', () => messagesContainer.scrollTo({ top: messagesContainer.scrollHeight, behavior: 'smooth' }));
 
-        widgetButton.addEventListener('click', toggleChat); closeButton.addEventListener('click', toggleChat); sendButton.addEventListener('click', handleSendMessage);
-        messageInput.addEventListener('keydown', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); handleSendMessage(); } });
+widgetButton.addEventListener('click', toggleChat); closeButton.addEventListener('click', toggleChat); sendButton.addEventListener('click', handleSendMessage);
+messageInput.addEventListener('keydown', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); handleSendMessage(); } });
 
-        updateContactStack();
-        
-        // Init default positioning
-        widgetButton.classList.add('widget-pos-right');
-        chatWindow.classList.add('widget-pos-right');
-    </script>
+updateContactStack();
+// Init default positioning
+widgetButton.classList.add('widget-pos-right');
+chatWindow.classList.add('widget-pos-right');
+</script>
 </body>
 </html>
