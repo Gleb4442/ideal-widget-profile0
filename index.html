@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Hilton Chat Widget</title>
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
@@ -93,7 +93,8 @@ body {
 /* --- WIDGET BUTTON --- */
 #chat-widget-button {
   position: fixed;
-  bottom: calc(32px + var(--widget-offset-y));
+  /* Add safe area support for button */
+  bottom: calc(32px + var(--widget-offset-y) + env(safe-area-inset-bottom, 0px));
   width: auto;
   padding: var(--widget-padding);
   border-radius: var(--widget-border-radius);
@@ -140,24 +141,30 @@ body {
   transform: translateX(calc(-50% + var(--widget-offset-x))) scale(calc(var(--widget-scale) * 1.05));
 }
 
-/* --- CHAT WINDOW RESPONSIVE LOGIC (FIXED & EXPANDED) --- */
+/* --- CHAT WINDOW RESPONSIVE LOGIC (FIXED FOR IPAD) --- */
 
 /* DESKTOP & TABLETS (iPad portrait and up)
    Trigger: min-width 768px
    Style: "Full Height Widget"
-   Width: 420px (Expanded from 375px for better readability)
-   Height: calc(100vh - 40px) -> Takes full height minus 20px top/bottom margins
+   Width: 420px (With max-width constraint for narrow iPads)
+   Height: Dynamic viewport height (dvh) to fix iPad scrolling bug
 */
 @media (min-width: 768px) {
   #chat-window {
     top: auto; left: auto;
-    /* Bottom margin 20px + user offset */
-    bottom: calc(20px + var(--widget-offset-y)) !important;
+    /* Bottom margin 20px + user offset + safe area */
+    bottom: calc(20px + var(--widget-offset-y) + env(safe-area-inset-bottom, 0px)) !important;
     
     /* Dimensions */
-    width: 420px !important; /* Wider */
-    height: calc(100vh - 40px) !important; /* Almost full height with small margins */
-    max-height: none !important; /* Remove previous restrictions */
+    width: 420px !important;
+    /* CRITICAL FIX: Prevent horizontal overflow on narrow iPad screens/split view */
+    max-width: calc(100vw - 40px) !important; 
+    
+    /* CRITICAL FIX: Use dvh (dynamic viewport height) for iOS Safari address bar handling */
+    height: calc(100vh - 40px) !important; /* Fallback */
+    height: calc(100dvh - 40px) !important; /* Modern browsers */
+    
+    max-height: none !important; 
     
     border-radius: 24px; 
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
@@ -193,6 +200,8 @@ body {
     top: 12px !important;
     width: auto !important;
     height: auto !important;
+    /* Use dvh here too for mobile safari */
+    height: calc(100dvh - 24px) !important; 
     border-radius: 20px;
     transform: translateY(20px);
     margin: 0 !important;
@@ -407,7 +416,7 @@ input[type=range]::-webkit-slider-thumb {
 input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #e5e7eb; border-radius: 2px; }
 
 /* Icon Grid */
-.icon-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.icon-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
 .icon-option {
   width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
   background: #f3f4f6; border-radius: 8px; cursor: pointer; color: #6b7280;
@@ -735,11 +744,10 @@ const fontsList = [
 
 const iconsList = [
   { id: 'chat', svg: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>' },
-  { id: 'mail', svg: '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline>' },
-  { id: 'headset', svg: '<path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>' },
-  { id: 'sparkles', svg: '<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>' },
   { id: 'message-circle', svg: '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>' },
-  { id: 'user', svg: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>' }
+  { id: 'user', svg: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>' },
+  { id: 'robot', svg: '<path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>' },
+  { id: 'star', svg: '<path d="M12 2L14.5 9.5 22 12 14.5 14.5 12 22 9.5 14.5 2 12 9.5 9.5 12 2z"/>' }
 ];
 
 // --- INIT FUNCTIONS ---
