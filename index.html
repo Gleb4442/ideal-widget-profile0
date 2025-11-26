@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
@@ -6,50 +6,55 @@
 <title>Hilton Chat Widget</title>
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
-<!-- Font Inter -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- Font Inter (Base) & 50+ Other Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto:wght@400;500&family=Open+Sans:wght@400;600&family=Lato&family=Montserrat&family=Poppins&family=Oswald&family=Raleway&family=Nunito&family=Merriweather&family=Playfair+Display&family=Rubik&family=Ubuntu&family=Dancing+Script&family=Pacifico&family=Exo+2&family=Quicksand&family=Work+Sans&family=Fira+Sans&family=Josefin+Sans&family=Anton&family=Manrope&family=Mulish&family=Titillium+Web&family=PT+Sans&family=PT+Serif&family=Lora&family=Mukta&family=Karla&family=Dosis&family=Inconsolata&family=Cabin&family=Bitter&family=Oxygen&family=Arvo&family=Hind&family=Crimson+Text&family=Abel&family=Libre+Baskerville&family=Bebas+Neue&family=Abril+Fatface&family=Lobster&family=Shadows+Into+Light&family=Comfortaa&family=Righteous&family=Russo+One&family=Press+Start+2P&family=Permanent+Marker&family=Fjalla+One&family=Indie+Flower&family=Asap&family=Cairo&family=Varela+Round&family=Source+Code+Pro&family=Maven+Pro&family=Bree+Serif&display=swap" rel="stylesheet">
 <style>
 /*
 * --- CSS VARIABLES & THEME ---
 */
 :root {
---accent-color: #2563eb;
---accent-hover: #1d4ed8;
---accent-rgb: 37, 99, 235;
+  --accent-color: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-rgb: 37, 99, 235;
+  --font-main: 'Inter', sans-serif;
+  --widget-offset-x: 0px;
+  --widget-offset-y: 0px;
+  --widget-scale: 1;
+  --widget-border-radius: 30px;
+  --widget-padding: 12px 24px;
 }
 
 body {
-background-color: #ffffff;
-font-family: 'Inter', sans-serif;
-height: 100vh;
-display: flex;
-align-items: center;
-justify-content: center;
-overflow: hidden;
+  background-color: #f0f2f5;
+  font-family: var(--font-main);
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Apply Font Variable Globally within Widget */
+#chat-widget-button, #chat-window, .font-dynamic {
+  font-family: var(--font-main) !important;
 }
 
 /* --- DARK MODE STYLES --- */
-#chat-window.dark-mode {
-background-color: #1f2937; border-color: #374151;
-}
+#chat-window.dark-mode { background-color: #1f2937; border-color: #374151; }
 #chat-window.dark-mode #chat-messages { background-color: #1f2937; }
 #chat-window.dark-mode .chat-message-ai { background-color: #374151; color: #e5e7eb; }
 #chat-window.dark-mode .typing-indicator-bubble { background-color: #374151; }
 #chat-window.dark-mode footer { background-color: #111827; border-top-color: #374151; }
-/* Dark mode inputs update */
 #chat-window.dark-mode #message-input { color: #f3f4f6; }
 #chat-window.dark-mode #message-input::placeholder { color: #9ca3af; }
-/* Base Dark Mode Input Container */
-#chat-window.dark-mode .input-container-bg {
-background-color: #374151 !important;
-border-color: transparent;
-}
-
-/* Active Focus State in Dark Mode */
+#chat-window.dark-mode .input-container-bg { background-color: #374151 !important; border-color: transparent; }
 #chat-window.dark-mode .input-container-bg:focus-within {
-background-color: #374151 !important;
-border-color: var(--accent-color) !important;
-box-shadow: 0 0 0 2px var(--accent-color) !important; 
+  background-color: #374151 !important;
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 2px var(--accent-color) !important;
 }
 #chat-window.dark-mode .message-time { color: #9ca3af; }
 #chat-window.dark-mode #scroll-to-bottom-btn { background-color: #374151; color: #e5e7eb; border-color: #4b5563; }
@@ -65,189 +70,216 @@ box-shadow: 0 0 0 2px var(--accent-color) !important;
 .accent-text { color: var(--accent-color) !important; }
 .accent-border { border-color: var(--accent-color) !important; }
 .hidden-important { display: none !important; }
-/* No Animation Class */
 .no-animation {
-animation: none !important;
-transform: none !important;
+  animation: none !important;
+  transform: scale(var(--widget-scale)) !important;
 }
 .no-animation:hover {
-transform: scale(1.05) !important;
+  transform: scale(calc(var(--widget-scale) * 1.05)) !important;
 }
 
-/* Ensure the inner input has absolutely no outline */
-#message-input:focus {
-outline: none !important;
-box-shadow: none !important;
-}
+#message-input:focus { outline: none !important; box-shadow: none !important; }
 
-/* --- INPUT HIGHLIGHT LOGIC --- */
 .input-container-bg {
-border: 1px solid transparent !important;
-transition: all 0.2s ease-out !important;
+  border: 1px solid transparent !important;
+  transition: all 0.2s ease-out !important;
 }
-
 .input-container-bg:focus-within {
-background-color: white !important;
-border-color: var(--accent-color) !important;
-box-shadow: 0 0 0 2px var(--accent-color) !important;
+  background-color: white !important;
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 2px var(--accent-color) !important;
 }
 
 /* --- WIDGET BUTTON --- */
 #chat-widget-button {
-position: fixed;
-bottom: 32px;
-width: auto; padding: 12px 24px;
-border-radius: 30px; gap: 10px; background-color: var(--accent-color);
-display: flex; align-items: center; justify-content: center; cursor: pointer;
-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); transition: all 0.3s ease; z-index: 1000; border: none;
-animation: ripple 2s infinite, shake-interval 6s infinite ease-in-out;
-right: 20px; left: auto;
+  position: fixed;
+  bottom: calc(32px + var(--widget-offset-y));
+  width: auto;
+  padding: var(--widget-padding);
+  border-radius: var(--widget-border-radius);
+  gap: 10px; background-color: var(--accent-color);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); transition: all 0.3s ease; z-index: 1000; border: none;
+  transform: scale(var(--widget-scale));
+  animation: ripple 2s infinite, shake-interval 6s infinite ease-in-out;
 }
-#chat-widget-button:hover { transform: scale(1.05); animation-play-state: paused; background-color: var(--accent-hover); }
-.chat-button-text { color: white; font-weight: 600; font-size: 16px; line-height: 1; white-space: nowrap; font-family: 'Inter', sans-serif; }
+#chat-widget-button:hover { 
+  transform: scale(calc(var(--widget-scale) * 1.05)); 
+  animation-play-state: paused; 
+  background-color: var(--accent-hover); 
+}
+.chat-button-text { color: white; font-weight: 600; font-size: 16px; line-height: 1; white-space: nowrap; }
 
-/* --- WIDGET POSITIONING CLASSES --- */
-#chat-widget-button.widget-pos-right { right: 20px !important; left: auto !important; }
-#chat-widget-button.widget-pos-left { left: 20px !important; right: auto !important; }
+/* Shape Variants */
+.shape-pill { --widget-border-radius: 30px; --widget-padding: 12px 24px; }
+.shape-rounded { --widget-border-radius: 12px; --widget-padding: 12px 20px; }
+.shape-circle {
+  --widget-border-radius: 50%;
+  --widget-padding: 0;
+  width: 56px !important;
+  height: 56px !important;
+  justify-content: center;
+  padding: 0 !important;
+}
+.shape-circle .chat-button-text { display: none; }
+.shape-circle #chat-notification-badge { top: 0; right: 0; }
+
+/* Positioning Logic */
+#chat-widget-button.widget-pos-right {
+  right: calc(20px + var(--widget-offset-x)) !important; left: auto !important;
+}
+#chat-widget-button.widget-pos-left {
+  left: calc(20px + var(--widget-offset-x)) !important; right: auto !important;
+}
 #chat-widget-button.widget-pos-center {
-left: 50% !important;
-right: auto !important;
-translate: -50% 0 !important;
+  left: 50% !important; right: auto !important;
+  transform: translateX(calc(-50% + var(--widget-offset-x))) scale(var(--widget-scale));
+  animation: ripple 2s infinite, shake-interval-center 6s infinite ease-in-out;
+}
+#chat-widget-button.widget-pos-center:hover {
+  transform: translateX(calc(-50% + var(--widget-offset-x))) scale(calc(var(--widget-scale) * 1.05));
 }
 
+/* --- TABLET & DESKTOP ADAPTATION --- */
 @media (min-width: 768px) {
-#chat-window.widget-pos-right { right: 20px; left: auto; transform-origin: bottom right; }
-#chat-window.widget-pos-left { left: 20px; right: auto; transform-origin: bottom left; }
-#chat-window.widget-pos-center {
-left: 50%;
-right: auto;
-translate: -50% 0;
-transform-origin: bottom center;
-}
+  #chat-window {
+    top: auto; left: auto;
+    bottom: calc(20px + var(--widget-offset-y));
+    width: 380px;
+    height: 700px;
+    max-height: 85vh;
+    border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: scale(0.5) translateY(20px);
+  }
+  #chat-window.widget-pos-right {
+    right: calc(20px + var(--widget-offset-x)); left: auto; transform-origin: bottom right;
+  }
+  #chat-window.widget-pos-left {
+    left: calc(20px + var(--widget-offset-x)); right: auto; transform-origin: bottom left;
+  }
+  #chat-window.widget-pos-center {
+    left: 50%; right: auto;
+    transform: translateX(calc(-50% + var(--widget-offset-x))) scale(0.5) translateY(20px);
+    transform-origin: bottom center;
+  }
+  #chat-window.widget-pos-center.open {
+    transform: translateX(calc(-50% + var(--widget-offset-x))) scale(1) translateY(0);
+  }
 }
 
-@media (max-width: 767px) {
-#chat-window {
-left: 12px !important;
-right: 12px !important;
-bottom: 12px !important;
-top: 12px !important;
-width: auto !important;
-height: auto !important;
-translate: 0 0 !important;
-transform-origin: bottom center !important;
+@media (min-width: 1024px) {
+  #chat-window { width: 418px; height: 812px; }
 }
+
+/* MOBILE ONLY (<768px) */
+@media (max-width: 767px) {
+  #chat-window {
+    position: fixed; left: 0 !important; right: 0 !important; bottom: 0 !important; top: 0 !important;
+    width: 100% !important; height: 100% !important;
+    border-radius: 0;
+    transform: translateY(20px);
+    margin: 0 !important;
+  }
+  #chat-window.open { transform: translateY(0); }
 }
 
 @keyframes ripple {
-0% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.7); }
-70% { box-shadow: 0 0 0 15px rgba(var(--accent-rgb), 0); }
-100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0); }
-}
-@keyframes shake-interval {
-0%, 85% { transform: rotate(0deg); }
-87% { transform: rotate(-5deg); } 89% { transform: rotate(5deg); }
-91% { transform: rotate(-5deg); } 93% { transform: rotate(5deg); }
-95%, 100% { transform: rotate(0deg); }
-}
-@keyframes badge-pop {
-0%, 100% { transform: scale(1) translateY(0); }
-50% { transform: scale(1.1) translateY(-4px); }
-}
-@keyframes slide-up {
-from { transform: translateY(100%); opacity: 0; }
-to { transform: translateY(0); opacity: 1; }
-}
-.animate-slide-up {
-animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  0% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.7); }
+  70% { box-shadow: 0 0 0 15px rgba(var(--accent-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0); }
 }
 
+@keyframes shake-interval {
+  0%, 85% { transform: scale(var(--widget-scale)) rotate(0deg); }
+  87% { transform: scale(var(--widget-scale)) rotate(-5deg); } 
+  89% { transform: scale(var(--widget-scale)) rotate(5deg); }
+  91% { transform: scale(var(--widget-scale)) rotate(-5deg); } 
+  93% { transform: scale(var(--widget-scale)) rotate(5deg); }
+  95%, 100% { transform: scale(var(--widget-scale)) rotate(0deg); }
+}
+
+@keyframes shake-interval-center {
+  0%, 85% { transform: translateX(calc(-50% + var(--widget-offset-x))) scale(var(--widget-scale)) rotate(0deg); }
+  87% { transform: translateX(calc(-50% + var(--widget-offset-x))) scale(var(--widget-scale)) rotate(-5deg); }
+  89% { transform: translateX(calc(-50% + var(--widget-offset-x))) scale(var(--widget-scale)) rotate(5deg); }
+  91% { transform: translateX(calc(-50% + var(--widget-offset-x))) scale(var(--widget-scale)) rotate(-5deg); }
+  93% { transform: translateX(calc(-50% + var(--widget-offset-x))) scale(var(--widget-scale)) rotate(5deg); }
+  95%, 100% { transform: translateX(calc(-50% + var(--widget-offset-x))) scale(var(--widget-scale)) rotate(0deg); }
+}
+
+@keyframes badge-pop {
+  0%, 100% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.1) translateY(-4px); }
+}
+@keyframes slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.animate-slide-up { animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
 #chat-notification-badge {
-position: absolute; top: -5px; right: -5px; display: flex; align-items: center; justify-content: center;
-width: 20px; height: 20px; background-color: #ef4444; color: white;
-font-size: 11px; font-weight: bold; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-animation: badge-pop 2s infinite ease-in-out; z-index: 10;
+  position: absolute; top: -5px; right: -5px; display: flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; background-color: #ef4444; color: white;
+  font-size: 11px; font-weight: bold; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  animation: badge-pop 2s infinite ease-in-out; z-index: 10;
 }
 
 /* --- CHAT WINDOW CORE --- */
 #chat-window {
-position: fixed;
-top: 12px; left: 12px; right: 12px; bottom: 12px;
-width: auto; height: auto;
-background-color: white; display: flex; flex-direction: column; overflow: hidden; z-index: 1001;
-border-radius: 20px;
-box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-opacity: 0; visibility: hidden;
-transform-origin: bottom center;
-transform: scale(0.95) translateY(10px);
-transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-}
-
-@media (min-width: 768px) {
-#chat-window {
-top: auto; left: auto; bottom: 20px; right: 20px;
-width: 418px; height: 812px; max-height: 90vh;
-border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-transform: scale(0.5) translateY(20px);
-}
+  position: fixed; top: 12px; left: 12px; right: 12px; bottom: 12px;
+  width: auto; height: auto;
+  background-color: white; display: flex; flex-direction: column; overflow: hidden; z-index: 1001;
+  border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  opacity: 0; visibility: hidden;
+  transform-origin: bottom center;
+  transform: scale(0.95) translateY(10px);
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
 }
 #chat-window.open { opacity: 1; visibility: visible; transform: scale(1) translateY(0); }
 
 /* --- MESSAGE STYLING --- */
-.message-wrapper {
-display: flex;
-width: 100%;
-margin-bottom: 8px;
-align-items: center;
-padding: 0 12px;
-}
+.message-wrapper { display: flex; width: 100%; margin-bottom: 8px; align-items: center; padding: 0 12px; }
 .message-wrapper.user { justify-content: flex-end; }
 .message-wrapper.ai { justify-content: flex-start; }
 
 .message-time {
-font-size: 10px; color: #9ca3af; margin: 0 8px; white-space: nowrap;
-opacity: 0; transition: opacity 0.2s ease; user-select: none;
+  font-size: 10px; color: #9ca3af; margin: 0 8px; white-space: nowrap;
+  opacity: 0; transition: opacity 0.2s ease; user-select: none;
 }
 @media (min-width: 769px) { .message-wrapper:hover .message-time { opacity: 1; } }
 @media (max-width: 768px) { .message-time { opacity: 1 !important; } }
 
-/* SCROLL BTN */
 #scroll-to-bottom-btn {
-position: absolute; bottom: 130px; left: 50%; right: auto;
-width: 36px; height: 36px; background-color: white; border: 1px solid #e5e7eb;
-border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30;
-opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(10px);
-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: var(--accent-color);
+  position: absolute; bottom: 130px; left: 50%; right: auto;
+  width: 36px; height: 36px; background-color: white; border: 1px solid #e5e7eb;
+  border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30;
+  opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: var(--accent-color);
 }
 #scroll-to-bottom-btn.visible { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
 #scroll-to-bottom-btn.visible:hover { background-color: #f9fafb; transform: translateX(-50%) translateY(-2px); }
 
 .chat-message-user {
-background-color: var(--accent-color); color: white;
-border-radius: 18px 18px 4px 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-padding: 12px; word-wrap: break-word; overflow-wrap: break-word;
-max-width: 75%;
-font-size: 16px;
-line-height: 1.5;
+  background-color: var(--accent-color); color: white;
+  border-radius: 18px 18px 4px 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  padding: 12px; word-wrap: break-word; overflow-wrap: break-word;
+  max-width: 75%; font-size: 16px; line-height: 1.5;
 }
 .chat-message-ai {
-background-color: #f3f4f6; color: #1f2937;
-border-radius: 18px 18px 18px 4px;
-padding: 12px; word-wrap: break-word; overflow-wrap: break-word;
-max-width: 75%;
-font-size: 16px;
-line-height: 1.5;
+  background-color: #f3f4f6; color: #1f2937;
+  border-radius: 18px 18px 18px 4px;
+  padding: 12px; word-wrap: break-word; overflow-wrap: break-word;
+  max-width: 75%; font-size: 16px; line-height: 1.5;
 }
 
 .typing-indicator-bubble {
-display: flex; align-items: center; padding: 12px 16px; background-color: #f3f4f6;
-border-radius: 18px 18px 18px 4px; align-self: flex-start; width: fit-content; margin-bottom: 4px;
-margin-left: 12px;
+  display: flex; align-items: center; padding: 12px 16px; background-color: #f3f4f6;
+  border-radius: 18px 18px 18px 4px; align-self: flex-start; width: fit-content; margin-bottom: 4px; margin-left: 12px;
 }
 .typing-indicator-bubble span {
-height: 8px; width: 8px; background-color: #9ca3af; border-radius: 50%; display: inline-block; margin: 0 2px;
-animation: typing-bounce 1.4s infinite ease-in-out both;
+  height: 8px; width: 8px; background-color: #9ca3af; border-radius: 50%; display: inline-block; margin: 0 2px;
+  animation: typing-bounce 1.4s infinite ease-in-out both;
 }
 .typing-indicator-bubble span:nth-child(1) { animation-delay: -0.32s; }
 .typing-indicator-bubble span:nth-child(2) { animation-delay: -0.16s; }
@@ -259,323 +291,352 @@ animation: typing-bounce 1.4s infinite ease-in-out both;
 
 /* --- CONTACT BANNERS --- */
 .contact-banner {
-position: absolute; bottom: 100%; left: 12px; right: 12px;
-margin-bottom: 20px;
-transform: translateY(0); overflow: hidden; white-space: nowrap; height: 64px; z-index: 50;
-cursor: pointer;
-border-radius: 24px;
-justify-content: space-between;
-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-display: flex; align-items: center; padding: 0 4px;
-text-decoration: none;
-opacity: 0; visibility: hidden; pointer-events: none;
+  position: absolute; bottom: 100%; left: 12px; right: 12px; margin-bottom: 20px;
+  transform: translateY(0); overflow: hidden; white-space: nowrap; height: 64px; z-index: 50;
+  cursor: pointer; border-radius: 24px; justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  display: flex; align-items: center; padding: 0 4px; text-decoration: none; opacity: 0; visibility: hidden; pointer-events: none;
 }
-.contact-banner.show-banner {
-opacity: 1; visibility: visible; pointer-events: auto;
-transform: translateY(16px) scale(0.98);
-}
+.contact-banner.show-banner { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(16px) scale(0.98); }
 .contact-banner:hover { opacity: 0.98; transform: translateY(16px) scale(1); }
-
-/* Only Telegram Banner Style */
 #telegram-banner { background-color: #24A1DE; }
-
 .banner-icon-wrapper {
-margin: 0; background-color: rgba(255,255,255,0.2);
-width: 40px; height: 40px;
-display: flex; align-items: center; justify-content: center;
-border-radius: 50%; flex-shrink: 0; margin-left: 8px; color: white;
-transition: all 0.3s ease;
+  margin: 0; background-color: rgba(255,255,255,0.2); width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; flex-shrink: 0; margin-left: 8px; color: white; transition: all 0.3s ease;
 }
-.banner-content {
-flex: 1; display: flex; flex-col; flex-direction: column; padding-left: 12px; padding-right: 30px;
-transition: opacity 0.2s ease;
-}
+.banner-content { flex: 1; display: flex; flex-col; flex-direction: column; padding-left: 12px; padding-right: 30px; transition: opacity 0.2s ease; }
 .banner-title { font-size: 14px; font-weight: bold; color: white; line-height: 1.2; }
 .banner-subtitle { font-size: 11px; color: rgba(255,255,255,0.9); }
 .close-banner-btn {
-position: relative;
-margin-left: auto;
-margin-right: 12px;
-width: 32px;
-height: 32px;
-display: flex; align-items: center; justify-content: center;
-color: rgba(255,255,255,0.7); border-radius: 50%;
-transition: all 0.2s; z-index: 10;
+  position: relative; margin-left: auto; margin-right: 12px; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.7); border-radius: 50%; transition: all 0.2s; z-index: 10;
 }
 .close-banner-btn:hover { background-color: rgba(0,0,0,0.1); color: white; }
-
-/* COLLAPSED STATE */
 .contact-banner.collapsed {
-width: 60px;
-height: 40px;
-left: auto;
-right: -20px;
-border-radius: 24px 0 0 24px;
-padding: 0 0 0 10px;
-justify-content: flex-start;
-box-shadow: -2px 2px 8px rgba(0,0,0,0.15);
+  width: 60px; height: 40px; left: auto; right: -20px; border-radius: 24px 0 0 24px;
+  padding: 0 0 0 10px; justify-content: flex-start; box-shadow: -2px 2px 8px rgba(0,0,0,0.15);
 }
 .contact-banner.collapsed:hover { right: -10px; }
-
-.contact-banner.collapsed .banner-content,
-.contact-banner.collapsed .close-banner-btn {
-opacity: 0; pointer-events: none; position: absolute;
-}
-.contact-banner.collapsed .banner-icon-wrapper {
-width: 28px; height: 28px; margin: 0;
-background-color: transparent;
-}
+.contact-banner.collapsed .banner-content, .contact-banner.collapsed .close-banner-btn { opacity: 0; pointer-events: none; position: absolute; }
+.contact-banner.collapsed .banner-icon-wrapper { width: 28px; height: 28px; margin: 0; background-color: transparent; }
 .contact-banner.collapsed svg.main-icon { width: 16px; height: 16px; }
-
-.expand-arrow {
-display: none; width: 18px; height: 18px; margin-right: 6px; color: white; flex-shrink: 0;
-}
+.expand-arrow { display: none; width: 18px; height: 18px; margin-right: 6px; color: white; flex-shrink: 0; }
 
 /* --- ADMIN PANEL --- */
 #admin-panel {
-position: fixed; top: 20px; left: 20px; background: white; padding: 20px;
-border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 2000;
-width: 320px; font-family: 'Inter', sans-serif; border: 1px solid #e5e7eb;
-max-height: 90vh; overflow-y: auto;
-transition: transform 0.3s ease, opacity 0.3s ease;
+  position: fixed; top: 20px; left: 20px; background: white; padding: 20px;
+  border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 2000;
+  width: 340px; font-family: 'Inter', sans-serif; border: 1px solid #e5e7eb;
+  max-height: 90vh; overflow-y: auto; transition: transform 0.3s ease, opacity 0.3s ease;
 }
 #admin-panel.hidden-panel { transform: translateX(-120%); opacity: 0; pointer-events: none; }
 #admin-panel::-webkit-scrollbar { width: 4px; }
 #admin-panel::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
 #open-admin-btn {
-position: fixed; top: 20px; left: 20px;
-width: 40px; height: 40px; background: white; border-radius: 50%;
-box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 1999;
-display: flex; align-items: center; justify-content: center;
-cursor: pointer; border: 1px solid #e5e7eb; color: #4b5563;
-transition: all 0.3s ease;
+  position: fixed; top: 20px; left: 20px; width: 40px; height: 40px; background: white; border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 1999;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: 1px solid #e5e7eb; color: #4b5563; transition: all 0.3s ease;
 }
 #open-admin-btn:hover { transform: rotate(90deg); color: var(--accent-color); }
 #open-admin-btn.hidden-btn { display: none !important; }
 
 .admin-control { margin-bottom: 16px; }
 .admin-label {
-display: block; font-size: 12px; font-weight: 600; text-transform: uppercase;
-color: #6b7280; margin-bottom: 8px; letter-spacing: 0.05em;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  color: #6b7280; margin-bottom: 8px; letter-spacing: 0.05em;
 }
 .color-picker-wrapper { display: flex; align-items: center; gap: 10px; }
 input[type="color"] {
--webkit-appearance: none; border: none; width: 40px; height: 40px; border-radius: 50%;
-cursor: pointer; padding: 0; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  -webkit-appearance: none; border: none; width: 40px; height: 40px; border-radius: 50%;
+  cursor: pointer; padding: 0; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
 input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
 .admin-input {
-width: 100%; padding: 8px 12px; border: 1px solid #d1d5db;
-border-radius: 8px; font-size: 14px; color: #374151; outline: none;
-transition: border-color 0.2s;
+  width: 100%; padding: 8px 12px; border: 1px solid #d1d5db;
+  border-radius: 8px; font-size: 14px; color: #374151; outline: none; transition: border-color 0.2s;
 }
 .admin-input:focus { border-color: var(--accent-color); }
 .file-upload-btn {
-display: block; width: 100%; padding: 8px; text-align: center;
-background-color: #f3f4f6; border: 1px dashed #d1d5db;
-border-radius: 8px; font-size: 13px; color: #6b7280; cursor: pointer;
-transition: all 0.2s;
+  display: block; width: 100%; padding: 8px; text-align: center;
+  background-color: #f3f4f6; border: 1px dashed #d1d5db;
+  border-radius: 8px; font-size: 13px; color: #6b7280; cursor: pointer; transition: all 0.2s;
 }
 .file-upload-btn:hover { background-color: #e5e7eb; border-color: #9ca3af; }
 .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider {
-position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-background-color: #ccc; transition: .4s; border-radius: 34px;
+  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc; transition: .4s; border-radius: 34px;
 }
 .slider:before {
-position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
-background-color: white; transition: .4s; border-radius: 50%;
+  position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
+  background-color: white; transition: .4s; border-radius: 50%;
 }
 input:checked + .slider { background-color: var(--accent-color); }
 input:checked + .slider:before { transform: translateX(24px); }
+
+/* Range Slider */
+input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
+  background: var(--accent-color); cursor: pointer; margin-top: -6px; box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #e5e7eb; border-radius: 2px; }
+
+/* Icon Grid */
+.icon-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.icon-option {
+  width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  background: #f3f4f6; border-radius: 8px; cursor: pointer; color: #6b7280;
+  transition: all 0.2s; border: 2px solid transparent;
+}
+.icon-option:hover { background: #e5e7eb; }
+.icon-option.active { background: #eff6ff; border-color: var(--accent-color); color: var(--accent-color); }
+
+/* Shape Grid */
+.shape-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.shape-option {
+  padding: 8px; text-align: center; background: #f3f4f6; border-radius: 8px; cursor: pointer;
+  font-size: 12px; color: #6b7280; border: 2px solid transparent; transition: all 0.2s;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.shape-option:hover { background: #e5e7eb; }
+.shape-option.active { background: #eff6ff; border-color: var(--accent-color); color: var(--accent-color); }
+.shape-preview { background: #d1d5db; height: 12px; width: 24px; }
+.shape-option:nth-child(1) .shape-preview { border-radius: 10px; width: 30px; } /* Pill */
+.shape-option:nth-child(2) .shape-preview { border-radius: 4px; width: 24px; } /* Squareish */
+.shape-option:nth-child(3) .shape-preview { border-radius: 50%; width: 12px; height: 12px; } /* Circle */
 </style>
 </head>
 <body>
 
 <!-- ADMIN TOGGLE -->
 <button id="open-admin-btn" class="hidden-btn" aria-label="Відкрити налаштування">
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.35a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.35a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
 </button>
 
 <!-- ADMIN PANEL -->
 <div id="admin-panel">
-<div class="flex justify-between items-center mb-4">
-<h3 class="font-bold text-lg">⚙️ Адмін Панель</h3>
-<button id="close-admin-btn" class="text-gray-400 hover:text-gray-600 p-1">
-<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-</button>
-</div>
-<div class="admin-control">
-<span class="admin-label">Назва готелю</span>
-<input type="text" id="hotel-name-input" class="admin-input" placeholder="Введіть назву" value="Hilton">
-</div>
-<div class="admin-control">
-<span class="admin-label">Логотип (Фото)</span>
-<label class="file-upload-btn">Обрати файл<input type="file" id="logo-upload" accept="image/*" style="display: none;"></label>
-</div>
-<div class="admin-control">
-<span class="admin-label">Акцентний колір</span>
-<div class="color-picker-wrapper">
-<input type="color" id="accent-color-picker" value="#2563eb">
-<span id="color-value-text" class="text-sm font-mono opacity-70">#2563eb</span>
-</div>
-</div>
-<!-- Widget Position Section -->
-<div class="admin-control">
-<span class="admin-label">Розташування віджета</span>
-<select id="position-select" class="admin-input">
-<option value="widget-pos-right" selected>Справа знизу</option>
-<option value="widget-pos-center">По центру знизу</option>
-<option value="widget-pos-left">Зліва знизу</option>
-</select>
-</div>
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="font-bold text-lg">⚙️ Налаштування</h3>
+    <button id="close-admin-btn" class="text-gray-400 hover:text-gray-600 p-1">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+  </div>
 
-<!-- Animation Toggle -->
-<div class="admin-control">
-<span class="admin-label">Анимация кнопки</span>
-<div class="flex items-center justify-between">
-<span class="text-sm text-gray-600">Включена</span>
-<label class="switch"><input type="checkbox" id="animation-toggle" checked><span class="slider"></span></label>
-</div>
-</div>
+  <!-- 1. FONT SELECTION -->
+  <div class="admin-control">
+    <span class="admin-label">Шрифт (50+)</span>
+    <select id="font-select" class="admin-input" style="font-family: inherit;">
+      <!-- Populated by JS -->
+    </select>
+  </div>
 
-<div class="admin-control">
-<span class="admin-label">Текст кнопки</span>
-<select id="button-text-select" class="admin-input">
-<option value="Спросите наш ИИ">Спросите наш ИИ</option>
-<option value="Онлайн ассистент">Онлайн ассистент</option>
-<option value="Чат с отелем" selected>Чат с отелем</option>
-<option value="Свяжитесь с нами">Свяжитесь с нами</option>
-<option value="Быстрая поддержка">Быстрая поддержка</option>
-<option value="Быстрая связь">Быстрая связь</option>
-<option value="Быстрая помощь">Быстрая помощь</option>
-<option value="Мгновенная помощь">Мгновенная помощь</option>
-<option value="Нужна помощь?">Нужна помощь?</option>
-<option value="Хотите забронировать?">Хотите забронировать?</option>
-<option value="Задать вопрос">Задать вопрос</option>
-<option value="Вопросы? Мы онлайн">Вопросы? Мы онлайн</option>
-<option value="Поддержка 24/7">Поддержка 24/7</option>
-<option value="Чат">Чат</option>
-<option value="Спросить Roomie">Спросить Roomie</option>
-<option value="Спросить">Спросить</option>
-<option value="Помощь">Помощь</option>
-</select>
-</div>
-<div class="admin-control">
-<span class="admin-label">Підпис Powered by</span>
-<div class="flex items-center justify-between">
-<span class="text-sm text-gray-600">Показувати</span>
-<label class="switch"><input type="checkbox" id="branding-toggle" checked><span class="slider"></span></label>
-</div>
-</div>
-<div class="admin-control">
-<span class="admin-label">Кнопки контактів</span>
-<div class="flex items-center justify-between mb-2">
-<span class="text-sm text-gray-600">Telegram</span>
-<label class="switch"><input type="checkbox" id="tg-toggle" checked><span class="slider"></span></label>
-</div>
-<!-- Removed WhatsApp, Messenger, Call toggles -->
-</div>
-<div class="admin-control">
-<span class="admin-label">Тема оформлення</span>
-<div class="flex items-center justify-between">
-<span class="text-sm text-gray-600">Темна тема</span>
-<label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider"></span></label>
-</div>
-</div>
+  <!-- 2. SHAPE & ICON -->
+  <div class="admin-control">
+    <span class="admin-label">Форма кнопки</span>
+    <div class="shape-grid" id="shape-selector">
+      <div class="shape-option active" data-shape="shape-pill">
+        <div class="shape-preview"></div><span>Овал</span>
+      </div>
+      <div class="shape-option" data-shape="shape-rounded">
+        <div class="shape-preview"></div><span>Квадрат</span>
+      </div>
+      <div class="shape-option" data-shape="shape-circle">
+        <div class="shape-preview"></div><span>Круг</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-control">
+    <span class="admin-label">Иконка</span>
+    <div class="icon-grid" id="icon-selector">
+      <!-- Generated by JS -->
+    </div>
+  </div>
+
+  <!-- NEW SIZE CONTROL -->
+  <div class="admin-control">
+    <span class="admin-label">Размер кнопки <span id="val-scale" class="text-xs font-normal lowercase">1.0</span></span>
+    <input type="range" id="input-scale" min="0.5" max="1.5" step="0.1" value="1">
+  </div>
+
+  <!-- 3. POSITIONING -->
+  <div class="admin-control">
+    <span class="admin-label">Позиция X (Смещение) <span id="val-offset-x" class="text-xs font-normal lowercase">0px</span></span>
+    <input type="range" id="input-offset-x" min="-100" max="100" value="0">
+  </div>
+  <div class="admin-control">
+    <span class="admin-label">Позиция Y (Смещение) <span id="val-offset-y" class="text-xs font-normal lowercase">0px</span></span>
+    <input type="range" id="input-offset-y" min="0" max="200" value="0">
+  </div>
+
+  <div class="admin-control">
+    <span class="admin-label">Сторона</span>
+    <select id="position-select" class="admin-input">
+      <option value="widget-pos-right" selected>Справа</option>
+      <option value="widget-pos-center">Центр</option>
+      <option value="widget-pos-left">Зліва</option>
+    </select>
+  </div>
+
+  <hr class="border-gray-200 my-4">
+
+  <!-- EXISTING CONTROLS -->
+  <div class="admin-control">
+    <span class="admin-label">Назва готелю</span>
+    <input type="text" id="hotel-name-input" class="admin-input" placeholder="Введіть назву" value="Hilton">
+  </div>
+  <div class="admin-control">
+    <span class="admin-label">Логотип</span>
+    <label class="file-upload-btn">Обрати файл<input type="file" id="logo-upload" accept="image/*" style="display: none;"></label>
+  </div>
+  <div class="admin-control">
+    <span class="admin-label">Колір</span>
+    <div class="color-picker-wrapper">
+      <input type="color" id="accent-color-picker" value="#2563eb">
+      <span id="color-value-text" class="text-sm font-mono opacity-70">#2563eb</span>
+    </div>
+  </div>
+
+  <div class="admin-control">
+    <span class="admin-label">Текст кнопки</span>
+    <select id="button-text-select" class="admin-input">
+      <option value="Спросите наш ИИ">Спросите наш ИИ</option>
+      <option value="Онлайн ассистент">Онлайн ассистент</option>
+      <option value="Чат с отелем" selected>Чат с отелем</option>
+      <option value="Свяжитесь с нами">Свяжитесь с нами</option>
+      <option value="Help">Help</option>
+      <option value="Чат">Чат</option>
+      <option value="Спросить">Спросить</option>
+    </select>
+  </div>
+
+  <div class="admin-control">
+    <span class="admin-label">Powered by</span>
+    <div class="flex items-center justify-between">
+      <span class="text-sm text-gray-600">Показать</span>
+      <label class="switch"><input type="checkbox" id="branding-toggle" checked><span class="slider"></span></label>
+    </div>
+  </div>
+
+  <div class="admin-control">
+    <span class="admin-label">Telegram</span>
+    <div class="flex items-center justify-between">
+      <span class="text-sm text-gray-600">Показувати</span>
+      <label class="switch"><input type="checkbox" id="tg-toggle" checked><span class="slider"></span></label>
+    </div>
+  </div>
+
+  <div class="admin-control">
+    <span class="admin-label">Анимация кнопки</span>
+    <div class="flex items-center justify-between">
+      <span class="text-sm text-gray-600">Включена</span>
+      <label class="switch"><input type="checkbox" id="animation-toggle" checked><span class="slider"></span></label>
+    </div>
+  </div>
+
+  <div class="admin-control">
+    <span class="admin-label">Темна тема</span>
+    <div class="flex items-center justify-between">
+      <span class="text-sm text-gray-600">Увімкнути</span>
+      <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider"></span></label>
+    </div>
+  </div>
 </div>
 
 <!-- WIDGET BUTTON -->
-<button id="chat-widget-button" aria-label="Відкрити чат">
-<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-<span class="chat-button-text">Чат с отелем</span>
-<span id="chat-notification-badge">1</span>
+<button id="chat-widget-button" class="shape-pill" aria-label="Відкрити чат">
+  <div id="widget-icon-container">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+  </div>
+  <span class="chat-button-text">Чат с отелем</span>
+  <span id="chat-notification-badge">1</span>
 </button>
 
 <!-- CHAT WINDOW -->
 <div id="chat-window">
-<!-- HEADER -->
-<header class="accent-bg text-white p-4 flex justify-between items-center shadow-md flex-shrink-0 z-20 relative">
-<div class="flex items-center gap-3">
-<div class="relative">
-<div id="hotel-logo-container" class="w-12 h-12 rounded-full bg-white accent-text flex items-center justify-center shadow-sm overflow-hidden">
-<span class="text-2xl font-bold accent-text">H</span>
-</div>
-<div class="absolute bottom-0 right-0 w-[14px] h-[14px] bg-green-400 border-2 accent-border rounded-full" title="Онлайн"></div>
-</div>
-<div><h3 id="hotel-name-text" class="text-lg font-bold leading-tight tracking-wide">Hilton</h3></div>
-</div>
-<div class="flex items-center gap-1 relative">
-<button id="reset-chat-btn" class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white" title="Перезапустити чат">
-<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
-</button>
-<button id="chat-close-button" class="text-white/80 hover:text-white hover:bg-white/10 rounded-full p-2 transition ml-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
-</div>
-</header>
+  <!-- HEADER -->
+  <header class="accent-bg text-white p-4 flex justify-between items-center shadow-md flex-shrink-0 z-20 relative">
+    <div class="flex items-center gap-3">
+      <div class="relative">
+        <div id="hotel-logo-container" class="w-12 h-12 rounded-full bg-white accent-text flex items-center justify-center shadow-sm overflow-hidden">
+          <span class="text-2xl font-bold accent-text">H</span>
+        </div>
+        <div class="absolute bottom-0 right-0 w-[14px] h-[14px] bg-green-400 border-2 accent-border rounded-full" title="Онлайн"></div>
+      </div>
+      <div><h3 id="hotel-name-text" class="text-lg font-bold leading-tight tracking-wide">Hilton</h3></div>
+    </div>
+    <div class="flex items-center gap-1 relative">
+      <button id="reset-chat-btn" class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white" title="Перезапустити чат">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+      </button>
+      <button id="chat-close-button" class="text-white/80 hover:text-white hover:bg-white/10 rounded-full p-2 transition ml-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+    </div>
+  </header>
 
-<div id="chat-messages" class="flex-1 p-4 overflow-y-auto flex flex-col bg-white relative">
-<div id="typing-indicator" class="hidden" aria-hidden="true"><div class="typing-indicator-bubble"><span></span><span></span><span></span></div></div>
-</div>
-<button id="scroll-to-bottom-btn" aria-label="Прокрутити вниз" title="До нових повідомлень">
-<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-</button>
-<!-- RESET MODAL -->
-<div id="reset-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
-<div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-<div class="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg></div>
-<h4 class="text-lg font-bold mb-2">Розпочати новий чат?</h4>
-<p class="modal-text-secondary text-sm text-gray-500 mb-6">Поточну історію листування буде видалено безповоротно.</p>
-<div class="flex flex-col gap-2">
-<button id="confirm-reset-btn" class="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Розпочати</span></button>
-<button id="cancel-reset-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
-</div>
-</div>
-</div>
+  <div id="chat-messages" class="flex-1 p-4 overflow-y-auto flex flex-col bg-white relative">
+    <div id="typing-indicator" class="hidden" aria-hidden="true"><div class="typing-indicator-bubble"><span></span><span></span><span></span></div></div>
+  </div>
+  <button id="scroll-to-bottom-btn" aria-label="Прокрутити вниз" title="До нових повідомлень">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+  </button>
+  <!-- RESET MODAL -->
+  <div id="reset-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
+    <div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
+      <div class="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg></div>
+      <h4 class="text-lg font-bold mb-2">Розпочати новий чат?</h4>
+      <p class="modal-text-secondary text-sm text-gray-500 mb-6">Поточну історію листування буде видалено безповоротно.</p>
+      <div class="flex flex-col gap-2">
+        <button id="confirm-reset-btn" class="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Розпочати</span></button>
+        <button id="cancel-reset-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
+      </div>
+    </div>
+  </div>
 
-<!-- TELEGRAM MODAL -->
-<div id="tg-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
-<div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-<div class="mx-auto w-12 h-12 bg-[#24A1DE]/20 rounded-full flex items-center justify-center mb-4 text-[#24A1DE]"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg></div>
-<h4 class="text-lg font-bold mb-2">Бажаєте перейти?</h4>
-<p class="modal-text-secondary text-sm text-gray-500 mb-6">Ви будете перенаправлені у зовнішній додаток.</p>
-<div class="flex flex-col gap-2">
-<button id="confirm-tg-btn" class="w-full py-2.5 bg-[#24A1DE] hover:bg-[#1e88bd] text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Перейти</span></button>
-<button id="cancel-tg-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
-</div>
-</div>
-</div>
+  <!-- TELEGRAM MODAL -->
+  <div id="tg-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
+    <div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
+      <div class="mx-auto w-12 h-12 bg-[#24A1DE]/20 rounded-full flex items-center justify-center mb-4 text-[#24A1DE]"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg></div>
+      <h4 class="text-lg font-bold mb-2">Бажаєте перейти?</h4>
+      <p class="modal-text-secondary text-sm text-gray-500 mb-6">Ви будете перенаправлені у зовнішній додаток.</p>
+      <div class="flex flex-col gap-2">
+        <button id="confirm-tg-btn" class="w-full py-2.5 bg-[#24A1DE] hover:bg-[#1e88bd] text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"><span>Перейти</span></button>
+        <button id="cancel-tg-btn" class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
+      </div>
+    </div>
+  </div>
 
-<!-- FOOTER -->
-<footer id="chat-footer" class="border-t border-gray-100 bg-gray-50 flex-shrink-0 flex flex-col relative z-20 transition-all">
-<!-- TELEGRAM BANNER -->
-<a href="javascript:void(0)" id="telegram-banner" class="contact-banner">
-<div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg></div>
-<div class="banner-content"><span class="banner-title">Перейти в Telegram</span><span class="banner-subtitle">Швидше і зручніше</span></div>
-<svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-<button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-</a>
+  <!-- FOOTER -->
+  <footer id="chat-footer" class="border-t border-gray-100 bg-gray-50 flex-shrink-0 flex flex-col relative z-20 transition-all">
+    <!-- TELEGRAM BANNER -->
+    <a href="javascript:void(0)" id="telegram-banner" class="contact-banner">
+      <div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg></div>
+      <div class="banner-content"><span class="banner-title">Перейти в Telegram</span><span class="banner-subtitle">Швидше і зручніше</span></div>
+      <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </a>
 
-<!-- INPUT AREA (SEPARATED LAYOUT) -->
-<!-- Added id="input-area-wrapper" and changed default pb-2 to pb-0 to match checked state -->
-<div id="input-area-wrapper" class="px-3 pb-0 pt-2 flex items-end gap-2 transition-all">
-<!-- Text Input Container -->
-<div class="input-container-bg flex-1 bg-gray-100 rounded-full h-11 flex items-center px-4 transition-colors">
-<input type="text" id="message-input" placeholder="Напишіть повідомлення..." class="w-full bg-transparent border-none focus:ring-0 p-0 text-base resize-none outline-none text-gray-700 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed" autocomplete="off">
-</div>
-<!-- Send Button (Separate) -->
-<button id="send-button" class="w-11 h-11 rounded-full accent-bg text-white flex items-center justify-center accent-bg-hover transition transform hover:scale-105 flex-shrink-0 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed">
-<svg id="btn-icon-send" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-<svg id="btn-icon-loading" class="hidden animate-spin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
-</button>
-</div>
+    <!-- INPUT AREA -->
+    <div id="input-area-wrapper" class="px-3 pb-0 pt-2 flex items-end gap-2 transition-all">
+      <div class="input-container-bg flex-1 bg-gray-100 rounded-full h-11 flex items-center px-4 transition-colors">
+        <input type="text" id="message-input" placeholder="Напишіть повідомлення..." class="w-full bg-transparent border-none focus:ring-0 p-0 text-base resize-none outline-none text-gray-700 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed" autocomplete="off">
+      </div>
+      <button id="send-button" class="w-11 h-11 rounded-full accent-bg text-white flex items-center justify-center accent-bg-hover transition transform hover:scale-105 flex-shrink-0 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed">
+        <svg id="btn-icon-send" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+        <svg id="btn-icon-loading" class="hidden animate-spin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+      </button>
+    </div>
 
-<div id="powered-by-container" class="text-center pb-2 pt-1">
-<span class="text-sm text-gray-400 font-medium">powered by <a href="https://hotelmol.com" target="_blank" class="accent-text hover:underline cursor-pointer">hotelmol.com</a></span>
-</div>
-</footer>
+    <div id="powered-by-container" class="text-center pb-2 pt-1">
+      <span class="text-sm text-gray-400 font-medium">powered by <a href="https://hotelmol.com" target="_blank" class="accent-text hover:underline cursor-pointer">hotelmol.com</a></span>
+    </div>
+  </footer>
 </div>
 
 <!-- JS LOGIC -->
@@ -597,7 +658,7 @@ const scrollToBottomBtn = document.getElementById('scroll-to-bottom-btn');
 const brandingToggle = document.getElementById('branding-toggle');
 const poweredByContainer = document.getElementById('powered-by-container');
 const chatFooter = document.getElementById('chat-footer');
-const inputAreaWrapper = document.getElementById('input-area-wrapper'); // Added this selector
+const inputAreaWrapper = document.getElementById('input-area-wrapper');
 
 // Admin Elements
 const adminPanel = document.getElementById('admin-panel');
@@ -612,39 +673,116 @@ const hotelNameText = document.getElementById('hotel-name-text');
 const hotelLogoContainer = document.getElementById('hotel-logo-container');
 const buttonTextSelect = document.getElementById('button-text-select');
 const animationToggle = document.getElementById('animation-toggle');
-// Position Selector
 const positionSelect = document.getElementById('position-select');
+// NEW ADMIN ELEMENTS
+const inputOffsetX = document.getElementById('input-offset-x');
+const inputOffsetY = document.getElementById('input-offset-y');
+const valOffsetX = document.getElementById('val-offset-x');
+const valOffsetY = document.getElementById('val-offset-y');
+const inputScale = document.getElementById('input-scale');
+const valScale = document.getElementById('val-scale');
+const fontSelect = document.getElementById('font-select');
+const shapeSelector = document.getElementById('shape-selector');
+const iconSelector = document.getElementById('icon-selector');
+const widgetIconContainer = document.getElementById('widget-icon-container');
 
-// Toggles (Only Telegram Left)
+// Toggles
 const tgToggle = document.getElementById('tg-toggle');
-
-// Banners (Only Telegram Left)
-const banners = {
-telegram: document.getElementById('telegram-banner')
-};
-
-// Modals (Only Reset & Telegram Left)
-const modals = {
-reset: document.getElementById('reset-confirmation-modal'),
-telegram: document.getElementById('tg-confirmation-modal')
-};
+const banners = { telegram: document.getElementById('telegram-banner') };
+const modals = { reset: document.getElementById('reset-confirmation-modal'), telegram: document.getElementById('tg-confirmation-modal') };
 
 let welcomed = false;
 let currentLang = 'ua';
 let isGenerating = false;
 
-// --- INITIALIZATION & EVENT LISTENERS ---
+// --- DATA: FONTS & ICONS ---
+const fontsList = [
+  "Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Poppins", "Oswald", "Raleway", "Nunito", "Merriweather", "Playfair Display",
+  "Rubik", "Ubuntu", "Dancing Script", "Pacifico", "Exo 2", "Quicksand", "Work Sans", "Fira Sans", "Josefin Sans", "Anton", "Manrope",
+  "Mulish", "Titillium Web", "PT Sans", "PT Serif", "Lora", "Mukta", "Karla", "Dosis", "Inconsolata", "Cabin", "Bitter", "Oxygen",
+  "Arvo", "Hind", "Crimson Text", "Abel", "Libre Baskerville", "Bebas Neue", "Abril Fatface", "Lobster", "Shadows Into Light",
+  "Comfortaa", "Righteous", "Russo One", "Press Start 2P", "Permanent Marker", "Fjalla One", "Indie Flower", "Asap", "Cairo",
+  "Varela Round", "Source Code Pro", "Maven Pro", "Bree Serif"
+].sort();
 
+const iconsList = [
+  { id: 'chat', svg: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>' },
+  { id: 'mail', svg: '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline>' },
+  { id: 'headset', svg: '<path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>' },
+  { id: 'sparkles', svg: '<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>' },
+  { id: 'message-circle', svg: '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>' },
+  { id: 'user', svg: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>' }
+];
+
+// --- INIT FUNCTIONS ---
+
+// 1. Populate Fonts
+fontsList.forEach(font => {
+  const option = document.createElement('option');
+  option.value = font;
+  option.textContent = font;
+  option.style.fontFamily = font;
+  if (font === 'Inter') option.selected = true;
+  fontSelect.appendChild(option);
+});
+fontSelect.addEventListener('change', (e) => {
+  document.documentElement.style.setProperty('--font-main', e.target.value);
+});
+
+// 2. Populate Icons
+iconsList.forEach((icon, index) => {
+  const div = document.createElement('div');
+  div.className = `icon-option ${index === 0 ? 'active' : ''}`;
+  div.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon.svg}</svg>`;
+  div.onclick = () => {
+    document.querySelectorAll('.icon-option').forEach(el => el.classList.remove('active'));
+    div.classList.add('active');
+    widgetIconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon.svg}</svg>`;
+  };
+  iconSelector.appendChild(div);
+});
+
+// 3. Shape Selection - FIXED: Uses classList.remove instead of wiping className
+shapeSelector.querySelectorAll('.shape-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    shapeSelector.querySelectorAll('.shape-option').forEach(el => el.classList.remove('active'));
+    opt.classList.add('active');
+    const shapeClass = opt.dataset.shape;
+    // CRITICAL FIX: Only remove specific shape classes, preserving position/scale classes
+    widgetButton.classList.remove('shape-pill', 'shape-rounded', 'shape-circle');
+    widgetButton.classList.add(shapeClass);
+  });
+});
+
+// 4. Position Offsets & SCALE
+const updateOffset = () => {
+  const x = inputOffsetX.value;
+  const y = inputOffsetY.value;
+  document.documentElement.style.setProperty('--widget-offset-x', `${x}px`);
+  document.documentElement.style.setProperty('--widget-offset-y', `${y}px`);
+  valOffsetX.textContent = `${x}px`;
+  valOffsetY.textContent = `${y}px`;
+};
+inputOffsetX.addEventListener('input', updateOffset);
+inputOffsetY.addEventListener('input', updateOffset);
+
+inputScale.addEventListener('input', (e) => {
+  const val = e.target.value;
+  document.documentElement.style.setProperty('--widget-scale', val);
+  valScale.textContent = parseFloat(val).toFixed(1);
+});
+
+// Existing Logic
 const translations = {
-ru: { buttonText: "Чат с отелем", placeholder: "Напишите сообщение...", welcome: "Здравствуйте! Добро пожаловать в Hilton. Чем могу помочь с вашим бронированием?", defaultAI: "Извините, я пока учусь. Могу ли я помочь вам забронировать номер?", keywords: { hello: /(привет|здравствуй|hello|hi)/, book: /(бронь|забронировать|номер|book|reservation)/, price: /(цена|стоимость|сколько стоит|price)/, thanks: /(спасибо|благодарю|thanks)/ }, answers: { hello: "Добрый день! Рад вас видеть в Hilton. Планируете поездку к нам?", book: "С удовольствием помогу с бронированием! 📅 \nНа какие даты вы планируете заезд?", price: "💰 **Наши тарифы:**\n• King Room: от $180/ночь\n• Executive Suite: от $350/ночь. Подсказать свободные даты?", thanks: "Всегда пожалуйста! Хорошего дня! ☀️" } },
-ua: { buttonText: "Чат з готелем", placeholder: "Напишіть повідомлення...", welcome: "Вітаємо! Ласкаво просимо до Hilton. Чим можу допомогти з вашим бронюванням?", defaultAI: "Вибачте, я поки що вчуся. Чи можу я допомогти вам забронювати номер?", keywords: { hello: /(привіт|вітаю|hello|hi)/, book: /(бронь|забронювати|номер|book|reservation)/, price: /(ціна|вартість|скільки коштує|price)/, thanks: /(дякую|спасибі|thanks)/ }, answers: { hello: "Добрий день! Радий бачити вас у Hilton. Плануєте поїздку до нас?", book: "Із задоволенням допоможу з бронюванням! 📅 \nНа які дати ви плануєте заїзд?", price: "💰 **Наші тарифи:**\n• King Room: від $180/ніч\n• Executive Suite: від $350/ніч. Підказати вільні дати?", thanks: "Завжди будь ласка! Гарного дня! ☀️" } },
-en: { buttonText: "Chat with Hotel", placeholder: "Type a message...", welcome: "Hello! Welcome to Hilton. How can I help you with your reservation?", defaultAI: "Sorry, I am still learning. Can I help you book a room?", keywords: { hello: /(hello|hi|greetings|hey)/, book: /(book|reserve|room|reservation)/, price: /(price|cost|rates|much)/, thanks: /(thanks|thank you)/ }, answers: { hello: "Good afternoon! Glad to see you at Hilton. Planning a trip to us?", book: "I'd be happy to help with your booking! 📅 \nWhat dates are you planning to check in?", price: "💰 **Our Rates:**\n• King Room: from $180/night\n• Executive Suite: from $350/night. Should I check availability?", thanks: "You are always welcome! Have a nice day! ☀️" } }
+  ru: { buttonText: "Чат с отелем", placeholder: "Напишите сообщение...", welcome: "Здравствуйте! Добро пожаловать в Hilton. Чем могу помочь с вашим бронированием?", defaultAI: "Извините, я пока учусь. Могу ли я помочь вам забронировать номер?", keywords: { hello: /(привет|здравствуй|hello|hi)/, book: /(бронь|забронировать|номер|book|reservation)/, price: /(цена|стоимость|сколько стоит|price)/, thanks: /(спасибо|благодарю|thanks)/ }, answers: { hello: "Добрый день! Рад вас видеть в Hilton. Планируете поездку к нам?", book: "С удовольствием помогу с бронированием! 📅 \nНа какие даты вы планируете заезд?", price: "💰 **Наши тарифы:**\n• King Room: от $180/ночь\n• Executive Suite: от $350/ночь. Подсказать свободные даты?", thanks: "Всегда пожалуйста! Хорошего дня! ☀️" } },
+  ua: { buttonText: "Чат з готелем", placeholder: "Напишіть повідомлення...", welcome: "Вітаємо! Ласкаво просимо до Hilton. Чим можу допомогти з вашим бронюванням?", defaultAI: "Вибачте, я поки що вчуся. Чи можу я допомогти вам забронювати номер?", keywords: { hello: /(привіт|вітаю|hello|hi)/, book: /(бронь|забронювати|номер|book|reservation)/, price: /(ціна|вартість|скільки коштує|price)/, thanks: /(дякую|спасибі|thanks)/ }, answers: { hello: "Добрий день! Радий бачити вас у Hilton. Плануєте поїздку до нас?", book: "Із задоволенням допоможу з бронюванням! 📅 \nНа які дати ви плануєте заїзд?", price: "💰 **Наші тарифи:**\n• King Room: від $180/ніч\n• Executive Suite: від $350/ніч. Підказати вільні дати?", thanks: "Завжди будь ласка! Гарного дня! ☀️" } },
+  en: { buttonText: "Chat with Hotel", placeholder: "Type a message...", welcome: "Hello! Welcome to Hilton. How can I help you with your reservation?", defaultAI: "Sorry, I am still learning. Can I help you book a room?", keywords: { hello: /(hello|hi|greetings|hey)/, book: /(book|reserve|room|reservation)/, price: /(price|cost|rates|much)/, thanks: /(thanks|thank you)/ }, answers: { hello: "Good afternoon! Glad to see you at Hilton. Planning a trip to us?", book: "I'd be happy to help with your booking! 📅 \nWhat dates are you planning to check in?", price: "💰 **Our Rates:**\n• King Room: from $180/night\n• Executive Suite: from $350/night. Should I check availability?", thanks: "You are always welcome! Have a nice day! ☀️" } }
 };
 
 function initLanguage() {
-const t = translations[currentLang];
-messageInput.placeholder = t.placeholder;
-chatButtonText.textContent = buttonTextSelect.value;
+  const t = translations[currentLang];
+  messageInput.placeholder = t.placeholder;
+  chatButtonText.textContent = buttonTextSelect.value;
 }
 initLanguage();
 
@@ -655,185 +793,143 @@ hotelNameInput.addEventListener('input', (e) => { hotelNameText.textContent = e.
 logoUpload.addEventListener('change', function(e) { if (this.files && this.files[0]) { const reader = new FileReader(); reader.onload = function(e) { hotelLogoContainer.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full" alt="Logo">`; }; reader.readAsDataURL(this.files[0]); } });
 // Animation Toggle Logic
 animationToggle.addEventListener('change', (e) => {
-if (e.target.checked) {
-widgetButton.classList.remove('no-animation');
-} else {
-widgetButton.classList.add('no-animation');
-}
+  if (e.target.checked) { widgetButton.classList.remove('no-animation'); } else { widgetButton.classList.add('no-animation'); }
 });
 
 // Updated Accent Color Logic
 accentColorPicker.addEventListener('input', (e) => {
-const color = e.target.value;
-colorValueText.textContent = color;
-document.documentElement.style.setProperty('--accent-color', color);
-const hexToRgb = (hex) => { let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '37, 99, 235'; };
-document.documentElement.style.setProperty('--accent-rgb', hexToRgb(color));
-const darkenColor = (hex, percent) => { let num = parseInt(hex.replace("#",""), 16), amt = Math.round(2.55 * percent), R = (num >> 16) - amt, G = (num >> 8 & 0x00FF) - amt, B = (num & 0x0000FF) - amt; return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1); };
-document.documentElement.style.setProperty('--accent-hover', darkenColor(color, 20));
+  const color = e.target.value;
+  colorValueText.textContent = color;
+  document.documentElement.style.setProperty('--accent-color', color);
+  const hexToRgb = (hex) => { let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '37, 99, 235'; };
+  document.documentElement.style.setProperty('--accent-rgb', hexToRgb(color));
+  const darkenColor = (hex, percent) => { let num = parseInt(hex.replace("#",""), 16), amt = Math.round(2.55 * percent), R = (num >> 16) - amt, G = (num >> 8 & 0x00FF) - amt, B = (num & 0x0000FF) - amt; return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1); };
+  document.documentElement.style.setProperty('--accent-hover', darkenColor(color, 20));
 });
-// Button Text Listener (Dropdown Change)
+// Button Text Listener
 buttonTextSelect.addEventListener('change', (e) => {
-chatButtonText.textContent = e.target.value;
+  chatButtonText.textContent = e.target.value;
 });
 themeToggle.addEventListener('change', (e) => { if (e.target.checked) { chatWindow.classList.add('dark-mode'); } else { chatWindow.classList.remove('dark-mode'); } });
 
 // --- UPDATE FOOTER LAYOUT ---
 function updateFooterLayout() {
-const isBrandingVisible = brandingToggle.checked;
-poweredByContainer.style.display = isBrandingVisible ? 'block' : 'none';
-
-if (isBrandingVisible) {
-// Branding ON: Reduce gap (remove bottom padding from input container)
-inputAreaWrapper.classList.remove('pb-2');
-inputAreaWrapper.classList.add('pb-0');
-} else {
-// Branding OFF: Symmetric vertical centering (add bottom padding back)
-inputAreaWrapper.classList.remove('pb-0');
-inputAreaWrapper.classList.add('pb-2');
+  if (!brandingToggle) return; // Security check
+  const isBrandingVisible = brandingToggle.checked;
+  poweredByContainer.style.display = isBrandingVisible ? 'block' : 'none';
+  if (isBrandingVisible) {
+    inputAreaWrapper.classList.remove('pb-2'); inputAreaWrapper.classList.add('pb-0');
+  } else {
+    inputAreaWrapper.classList.remove('pb-0'); inputAreaWrapper.classList.add('pb-2');
+  }
 }
+if (brandingToggle) {
+  brandingToggle.addEventListener('change', updateFooterLayout);
+  updateFooterLayout();
 }
 
-brandingToggle.addEventListener('change', updateFooterLayout);
-
-// Call immediately to set initial state
-updateFooterLayout();
-
-
-// POSITION LOGIC
+// POSITION LOGIC - FIXED: Strictly updates classes without wiping all state
 positionSelect.addEventListener('change', (e) => {
-const posClass = e.target.value;
-// Clean up all classes
-['widget-pos-right', 'widget-pos-center', 'widget-pos-left'].forEach(cls => {
-widgetButton.classList.remove(cls);
-chatWindow.classList.remove(cls);
+  const posClass = e.target.value;
+  ['widget-pos-right', 'widget-pos-center', 'widget-pos-left'].forEach(cls => {
+    widgetButton.classList.remove(cls);
+    chatWindow.classList.remove(cls);
+  });
+  widgetButton.classList.add(posClass);
+  chatWindow.classList.add(posClass);
 });
 
-// Add selected class
-widgetButton.classList.add(posClass);
-chatWindow.classList.add(posClass);
-});
-
-// --- SMART STACKING LOGIC (UPDATED FOR SINGLE TELEGRAM BUTTON) ---
+// --- SMART STACKING LOGIC ---
 function updateContactStack() {
-// Safely get checked state
-const isChecked = (el) => el && el.checked;
-
-// Order logic remains but only for Telegram
-const stackOrder = [
-{ el: banners.telegram, enabled: isChecked(tgToggle) }
-];
-
-let currentBottom = 32;
-stackOrder.forEach(item => {
-if (!item.el) return;
-
-if (item.enabled) {
-item.el.classList.add('show-banner');
-item.el.style.marginBottom = `${currentBottom}px`;
-const isCollapsed = item.el.classList.contains('collapsed');
-const spacing = isCollapsed ? 45 : 75;
-
-currentBottom += spacing;
-} else {
-item.el.classList.remove('show-banner');
+  const isChecked = (el) => el && el.checked;
+  const stackOrder = [ { el: banners.telegram, enabled: isChecked(tgToggle) } ];
+  let currentBottom = 32 + parseInt(inputOffsetY.value); // Add Y offset to stack logic
+  stackOrder.forEach(item => {
+    if (!item.el) return;
+    if (item.enabled) {
+      item.el.classList.add('show-banner');
+      item.el.style.marginBottom = `${currentBottom}px`;
+      const isCollapsed = item.el.classList.contains('collapsed');
+      const spacing = isCollapsed ? 45 : 75;
+      currentBottom += spacing;
+    } else {
+      item.el.classList.remove('show-banner');
+    }
+  });
 }
-});
-}
-
-// Only Telegram toggle listener remains
-if (tgToggle) {
-tgToggle.addEventListener('change', updateContactStack);
-}
+// Update stack when Y offset changes
+inputOffsetY.addEventListener('input', updateContactStack);
+if (tgToggle) tgToggle.addEventListener('change', updateContactStack);
 
 // --- BANNER INTERACTIONS ---
 function setupBannerInteractions(bannerId, modalId, externalLink) {
-const banner = document.getElementById(bannerId);
-const modal = document.getElementById(modalId);
-if (!banner || !modal) return;
+  const banner = document.getElementById(bannerId);
+  const modal = document.getElementById(modalId);
+  if (!banner || !modal) return;
+  const closeBtn = banner.querySelector('.close-banner-btn');
+  const confirmBtn = modal.querySelector('button:first-child');
+  const cancelBtn = modal.querySelector('.modal-btn-cancel');
 
-const closeBtn = banner.querySelector('.close-banner-btn');
-const confirmBtn = modal.querySelector('button:first-child');
-const cancelBtn = modal.querySelector('.modal-btn-cancel');
-
-banner.addEventListener('click', function(e) {
-if (e.target.closest('.close-banner-btn')) return;
-
-// Check if the banner is currently collapsed (side button)
-if (this.classList.contains('collapsed')) {
-// Prevent default to ensure no accidental navigation, show confirmation modal
-e.preventDefault();
-modal.classList.remove('hidden');
-} else {
-// --- UPDATED LOGIC FOR EXPANDED BANNER ---
-if (externalLink) {
-window.open(externalLink, '_blank');
-} else {
-modal.classList.remove('hidden');
+  banner.addEventListener('click', function(e) {
+    if (e.target.closest('.close-banner-btn')) return;
+    if (this.classList.contains('collapsed')) {
+      e.preventDefault(); modal.classList.remove('hidden');
+    } else {
+      if (externalLink) { window.open(externalLink, '_blank'); } else { modal.classList.remove('hidden'); }
+    }
+  });
+  closeBtn.addEventListener('click', (e) => {
+    e.preventDefault(); e.stopPropagation();
+    banner.classList.add('collapsed'); updateContactStack();
+  });
+  confirmBtn.addEventListener('click', () => {
+    if (externalLink) window.open(externalLink, '_blank');
+    modal.classList.add('hidden');
+  });
+  cancelBtn.addEventListener('click', () => { modal.classList.add('hidden'); });
 }
-}
-});
-
-closeBtn.addEventListener('click', (e) => {
-e.preventDefault();
-e.stopPropagation();
-banner.classList.add('collapsed');
-updateContactStack();
-});
-
-confirmBtn.addEventListener('click', () => {
-if (externalLink) window.open(externalLink, '_blank');
-modal.classList.add('hidden');
-});
-
-cancelBtn.addEventListener('click', () => {
-modal.classList.add('hidden');
-});
-}
-
-// Only Telegram interaction setup remains
 setupBannerInteractions('telegram-banner', 'tg-confirmation-modal', 'https://t.me/hilton');
 
 // --- CHAT CORE FUNCTIONS ---
 function toggleChat() {
-const isOpen = chatWindow.classList.contains('open');
-const isMobile = window.innerWidth < 768;
-if (isOpen) {
-chatWindow.classList.remove('open');
-widgetButton.style.display = 'flex';
-if (isMobile) { openAdminBtn.style.display = ''; adminPanel.classList.add('hidden-panel'); openAdminBtn.classList.remove('hidden-btn'); }
-} else {
-chatWindow.classList.add('open');
-widgetButton.style.display = 'none';
-if(notificationBadge) notificationBadge.style.display = 'none';
-messageInput.focus();
-if (isMobile) { adminPanel.classList.add('hidden-panel'); openAdminBtn.style.display = 'none'; }
-if (!welcomed) { simulateWelcome(); welcomed = true; }
-}
+  const isOpen = chatWindow.classList.contains('open');
+  const isMobile = window.innerWidth < 768;
+  if (isOpen) {
+    chatWindow.classList.remove('open');
+    widgetButton.style.display = 'flex';
+    if (isMobile) { openAdminBtn.style.display = ''; adminPanel.classList.add('hidden-panel'); openAdminBtn.classList.remove('hidden-btn'); }
+  } else {
+    chatWindow.classList.add('open');
+    widgetButton.style.display = 'none';
+    if(notificationBadge) notificationBadge.style.display = 'none';
+    messageInput.focus();
+    if (isMobile) { adminPanel.classList.add('hidden-panel'); openAdminBtn.style.display = 'none'; }
+    if (!welcomed) { simulateWelcome(); welcomed = true; }
+  }
 }
 function simulateWelcome() { showTyping(); setTimeout(() => { hideTyping(); addMessage(translations[currentLang].welcome, 'ai'); }, 1000); }
 function addMessage(text, sender) {
-const wrapper = document.createElement('div'); wrapper.className = `message-wrapper ${sender} animate-fade-in`;
-const messageElement = document.createElement('div'); messageElement.className = `chat-message-${sender} text-base leading-relaxed`; messageElement.innerHTML = text.replace(/\n/g, '<br>');
-const timeElement = document.createElement('span'); timeElement.className = 'message-time'; timeElement.innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-if (sender === 'user') { wrapper.appendChild(timeElement); wrapper.appendChild(messageElement); } else { wrapper.appendChild(messageElement); wrapper.appendChild(timeElement); }
-messagesContainer.insertBefore(wrapper, typingIndicator); messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  const wrapper = document.createElement('div'); wrapper.className = `message-wrapper ${sender} animate-fade-in`;
+  const messageElement = document.createElement('div'); messageElement.className = `chat-message-${sender} text-base leading-relaxed`; messageElement.innerHTML = text.replace(/\n/g, '<br>');
+  const timeElement = document.createElement('span'); timeElement.className = 'message-time'; timeElement.innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  if (sender === 'user') { wrapper.appendChild(timeElement); wrapper.appendChild(messageElement); } else { wrapper.appendChild(messageElement); wrapper.appendChild(timeElement); }
+  messagesContainer.insertBefore(wrapper, typingIndicator); messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 function showTyping() { typingIndicator.classList.remove('hidden'); messagesContainer.scrollTop = messagesContainer.scrollHeight; }
 function hideTyping() { typingIndicator.classList.add('hidden'); }
 function setButtonLoading(isLoading) { if (isLoading) { btnIconSend.classList.add('hidden'); btnIconLoading.classList.remove('hidden'); sendButton.disabled = true; messageInput.disabled = true; } else { btnIconSend.classList.remove('hidden'); btnIconLoading.classList.add('hidden'); sendButton.disabled = false; messageInput.disabled = false; messageInput.focus(); } }
 function getAIResponse(userMessage) {
-const lowerMessage = userMessage.toLowerCase(); const t = translations[currentLang]; let aiResponse = t.defaultAI;
-if (lowerMessage.match(t.keywords.hello)) aiResponse = t.answers.hello; else if (lowerMessage.match(t.keywords.book)) aiResponse = t.answers.book;
-else if (lowerMessage.match(t.keywords.price)) aiResponse = t.answers.price; else if (lowerMessage.match(t.keywords.thanks)) aiResponse = t.answers.thanks;
-setTimeout(() => { hideTyping(); isGenerating = false; setButtonLoading(false); addMessage(aiResponse, 'ai'); }, 2000);
+  const lowerMessage = userMessage.toLowerCase(); const t = translations[currentLang]; let aiResponse = t.defaultAI;
+  if (lowerMessage.match(t.keywords.hello)) aiResponse = t.answers.hello; else if (lowerMessage.match(t.keywords.book)) aiResponse = t.answers.book;
+  else if (lowerMessage.match(t.keywords.price)) aiResponse = t.answers.price; else if (lowerMessage.match(t.keywords.thanks)) aiResponse = t.answers.thanks;
+  setTimeout(() => { hideTyping(); isGenerating = false; setButtonLoading(false); addMessage(aiResponse, 'ai'); }, 2000);
 }
 
 function handleSendMessage() { if (isGenerating) return; const text = messageInput.value.trim(); if (text === '') return; isGenerating = true; addMessage(text, 'user'); messageInput.value = ''; setButtonLoading(true); showTyping(); getAIResponse(text); }
 function resetChat() {
-const indicatorHTML = typingIndicator.outerHTML; messagesContainer.innerHTML = ''; messagesContainer.innerHTML = indicatorHTML;
-typingIndicator = document.getElementById('typing-indicator');
-welcomed = false; isGenerating = false; setButtonLoading(false); simulateWelcome();
+  const indicatorHTML = typingIndicator.outerHTML; messagesContainer.innerHTML = ''; messagesContainer.innerHTML = indicatorHTML;
+  typingIndicator = document.getElementById('typing-indicator');
+  welcomed = false; isGenerating = false; setButtonLoading(false); simulateWelcome();
 }
 
 resetChatBtn.addEventListener('click', () => modals.reset.classList.remove('hidden'));
@@ -841,8 +937,8 @@ document.getElementById('confirm-reset-btn').addEventListener('click', () => { r
 document.getElementById('cancel-reset-btn').addEventListener('click', () => modals.reset.classList.add('hidden'));
 
 messagesContainer.addEventListener('scroll', () => {
-const distanceToBottom = messagesContainer.scrollHeight - (messagesContainer.scrollTop + messagesContainer.clientHeight);
-scrollToBottomBtn.classList.toggle('visible', distanceToBottom > 100);
+  const distanceToBottom = messagesContainer.scrollHeight - (messagesContainer.scrollTop + messagesContainer.clientHeight);
+  scrollToBottomBtn.classList.toggle('visible', distanceToBottom > 100);
 });
 scrollToBottomBtn.addEventListener('click', () => messagesContainer.scrollTo({ top: messagesContainer.scrollHeight, behavior: 'smooth' }));
 
