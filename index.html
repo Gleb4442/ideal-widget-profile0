@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
@@ -140,17 +140,31 @@ body {
   transform: translateX(calc(-50% + var(--widget-offset-x))) scale(calc(var(--widget-scale) * 1.05));
 }
 
-/* --- TABLET & DESKTOP ADAPTATION --- */
+/* --- CHAT WINDOW RESPONSIVE LOGIC (FIXED & EXPANDED) --- */
+
+/* DESKTOP & TABLETS (iPad portrait and up)
+   Trigger: min-width 768px
+   Style: "Full Height Widget"
+   Width: 420px (Expanded from 375px for better readability)
+   Height: calc(100vh - 40px) -> Takes full height minus 20px top/bottom margins
+*/
 @media (min-width: 768px) {
   #chat-window {
     top: auto; left: auto;
-    bottom: calc(20px + var(--widget-offset-y));
-    width: 380px;
-    height: 700px;
-    max-height: 85vh;
-    border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    /* Bottom margin 20px + user offset */
+    bottom: calc(20px + var(--widget-offset-y)) !important;
+    
+    /* Dimensions */
+    width: 420px !important; /* Wider */
+    height: calc(100vh - 40px) !important; /* Almost full height with small margins */
+    max-height: none !important; /* Remove previous restrictions */
+    
+    border-radius: 24px; 
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
     transform: scale(0.5) translateY(20px);
   }
+  
+  /* Positioning overrides for desktop mode */
   #chat-window.widget-pos-right {
     right: calc(20px + var(--widget-offset-x)); left: auto; transform-origin: bottom right;
   }
@@ -167,18 +181,22 @@ body {
   }
 }
 
-@media (min-width: 1024px) {
-  #chat-window { width: 418px; height: 812px; }
-}
-
-/* MOBILE ONLY (<768px) */
+/* MOBILE PHONES ONLY (Strictly < 768px)
+   Style: "Almost Fullscreen" with margins
+*/
 @media (max-width: 767px) {
   #chat-window {
-    position: fixed; left: 0 !important; right: 0 !important; bottom: 0 !important; top: 0 !important;
-    width: 100% !important; height: 100% !important;
-    border-radius: 0;
+    position: fixed;
+    left: 12px !important; 
+    right: 12px !important; 
+    bottom: 12px !important; 
+    top: 12px !important;
+    width: auto !important;
+    height: auto !important;
+    border-radius: 20px;
     transform: translateY(20px);
     margin: 0 !important;
+    transform-origin: bottom center;
   }
   #chat-window.open { transform: translateY(0); }
 }
@@ -511,6 +529,15 @@ input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cur
       <option value="Онлайн ассистент">Онлайн ассистент</option>
       <option value="Чат с отелем" selected>Чат с отелем</option>
       <option value="Свяжитесь с нами">Свяжитесь с нами</option>
+      <option value="Связь">Связь</option>
+      <option value="Поддержка 24/7">Поддержка 24/7</option>
+      <option value="Консультант">Консультант</option>
+      <option value="Вопрос?">Вопрос?</option>
+      <option value="Онлайн-помощь">Онлайн-помощь</option>
+      <option value="Забронировать номер">Забронировать номер</option>
+      <option value="Уточнить детали">Уточнить детали</option>
+      <option value="Онлайн ассистент">Онлайн ассистент</option>
+      <option value="Спросить Roomie">Спросить Roomie</option>
       <option value="Help">Help</option>
       <option value="Чат">Чат</option>
       <option value="Спросить">Спросить</option>
@@ -553,7 +580,8 @@ input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cur
 <!-- WIDGET BUTTON -->
 <button id="chat-widget-button" class="shape-pill" aria-label="Відкрити чат">
   <div id="widget-icon-container">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    <!-- SVG size increased to 24x24 -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
   </div>
   <span class="chat-button-text">Чат с отелем</span>
   <span id="chat-notification-badge">1</span>
@@ -729,15 +757,15 @@ fontSelect.addEventListener('change', (e) => {
   document.documentElement.style.setProperty('--font-main', e.target.value);
 });
 
-// 2. Populate Icons
+// 2. Populate Icons (Increased Size to 24x24)
 iconsList.forEach((icon, index) => {
   const div = document.createElement('div');
   div.className = `icon-option ${index === 0 ? 'active' : ''}`;
-  div.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon.svg}</svg>`;
+  div.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon.svg}</svg>`;
   div.onclick = () => {
     document.querySelectorAll('.icon-option').forEach(el => el.classList.remove('active'));
     div.classList.add('active');
-    widgetIconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon.svg}</svg>`;
+    widgetIconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon.svg}</svg>`;
   };
   iconSelector.appendChild(div);
 });
