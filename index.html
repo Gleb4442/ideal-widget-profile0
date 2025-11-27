@@ -6,8 +6,8 @@
 <title>Hilton Chat Widget</title>
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
-<!-- Font Inter (Base) & 50+ Other Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto:wght@400;500&family=Open+Sans:wght@400;600&family=Lato&family=Montserrat&family=Poppins&family=Oswald&family=Raleway&family=Nunito&family=Merriweather&family=Playfair+Display&family=Rubik&family=Ubuntu&family=Dancing+Script&family=Pacifico&family=Exo+2&family=Quicksand&family=Work+Sans&family=Fira+Sans&family=Josefin+Sans&family=Anton&family=Manrope&family=Mulish&family=Titillium+Web&family=PT+Sans&family=PT+Serif&family=Lora&family=Mukta&family=Karla&family=Dosis&family=Inconsolata&family=Cabin&family=Bitter&family=Oxygen&family=Arvo&family=Hind&family=Crimson+Text&family=Abel&family=Libre+Baskerville&family=Bebas+Neue&family=Abril+Fatface&family=Lobster&family=Shadows+Into+Light&family=Comfortaa&family=Righteous&family=Russo+One&family=Press+Start+2P&family=Permanent+Marker&family=Fjalla+One&family=Indie+Flower&family=Asap&family=Cairo&family=Varela+Round&family=Source+Code+Pro&family=Maven+Pro&family=Bree+Serif&display=swap" rel="stylesheet">
+<!-- Font Inter (Base) & Selected Bold/Display Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto:wght@400;500&family=Lato&family=Montserrat&family=Poppins&family=Oswald&family=Nunito&family=Rubik&family=Ubuntu&family=Exo+2&family=Work+Sans&family=Fira+Sans&family=Anton&family=Manrope&family=Mulish&family=Titillium+Web&family=PT+Sans&family=Bebas+Neue&family=Abril+Fatface&family=Lobster&family=Righteous&family=Russo+One&family=Permanent+Marker&family=Fjalla+One&family=Asap&family=Cairo&display=swap" rel="stylesheet">
 <style>
 /*
 * --- CSS VARIABLES & THEME ---
@@ -90,10 +90,10 @@ body {
   box-shadow: 0 0 0 2px var(--accent-color) !important;
 }
 
-/* --- WIDGET BUTTON --- */
+/* --- WIDGET BUTTON (Responsive to X/Y Offsets) --- */
 #chat-widget-button {
   position: fixed;
-  /* Add safe area support for button */
+  /* Button USES the Y offset variable */
   bottom: calc(32px + var(--widget-offset-y) + env(safe-area-inset-bottom, 0px));
   width: auto;
   padding: var(--widget-padding);
@@ -125,7 +125,7 @@ body {
 .shape-circle .chat-button-text { display: none; }
 .shape-circle #chat-notification-badge { top: 0; right: 0; }
 
-/* Positioning Logic */
+/* Positioning Logic for Button (USES Offsets) */
 #chat-widget-button.widget-pos-right {
   right: calc(20px + var(--widget-offset-x)) !important; left: auto !important;
 }
@@ -141,15 +141,16 @@ body {
   transform: translateX(calc(-50% + var(--widget-offset-x))) scale(calc(var(--widget-scale) * 1.05));
 }
 
-/* --- CHAT WINDOW RESPONSIVE LOGIC --- */
+/* --- CHAT WINDOW RESPONSIVE LOGIC (UNIFIED FOR ALL LARGE SCREENS) --- */
 
-/* 1. DESKTOP / BASE TABLET LOGIC ( > 768px) */
-/* This sets the "PC" baseline: Top 75px, Bottom 14px */
+/* 1. DESKTOP & TABLETS (Everything > 768px) */
 @media (min-width: 768px) {
   #chat-window {
     left: auto;
-    top: 75px !important;
-    bottom: calc(14px + var(--widget-offset-y) + env(safe-area-inset-bottom, 0px)) !important;
+    /* UNIFIED OFFSET: 20px Top / 20px Bottom */
+    top: 20px !important;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+    
     height: auto !important;
     max-height: none !important; 
     
@@ -158,45 +159,41 @@ body {
     
     border-radius: 24px; 
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-    transform: scale(0.5) translateY(20px);
+    transform: scale(0.5) translateY(20px); /* Animation start state */
   }
   
-  /* Positioning overrides for desktop mode */
+  /* Positioning overrides for desktop mode - FIX: Removed X offsets */
   #chat-window.widget-pos-right {
-    right: calc(20px + var(--widget-offset-x)); left: auto; transform-origin: bottom right;
+    right: 20px; /* Fixed right margin */
+    left: auto; 
+    transform-origin: bottom right;
   }
   #chat-window.widget-pos-left {
-    left: calc(20px + var(--widget-offset-x)); right: auto; transform-origin: bottom left;
+    left: 20px; /* Fixed left margin */
+    right: auto; 
+    transform-origin: bottom left;
   }
   #chat-window.widget-pos-center {
-    left: 50%; right: auto;
-    transform: translateX(calc(-50% + var(--widget-offset-x))) scale(0.5) translateY(20px);
+    left: 50%; 
+    right: auto;
+    /* Only X translate to center, no offset variable */
+    transform: translateX(-50%) scale(0.5) translateY(20px);
     transform-origin: bottom center;
   }
   #chat-window.widget-pos-center.open {
-    transform: translateX(calc(-50% + var(--widget-offset-x))) scale(1) translateY(0);
+    /* Only X translate to center, no offset variable */
+    transform: translateX(-50%) scale(1) translateY(0);
   }
 }
 
-/* 2. IPAD / TABLET OVERRIDES (768px - 1024px) */
-/* This OVERRIDES the Desktop logic specifically for standard iPads */
-/* Top 20px, Bottom 20px */
-@media (min-width: 768px) and (max-width: 1024px) {
-  #chat-window {
-    top: 20px !important;
-    bottom: calc(20px + var(--widget-offset-y) + env(safe-area-inset-bottom, 0px)) !important;
-    /* Height remains auto, so it stretches comfortably between 20px top and 20px bottom */
-  }
-}
-
-/* 3. MOBILE PHONES ONLY (Strictly < 768px) */
-/* Top 12px, Bottom 12px */
+/* 2. MOBILE PHONES ONLY (Strictly < 768px) */
 @media (max-width: 767px) {
   #chat-window {
     position: fixed;
     left: 12px !important; 
     right: 12px !important;
     
+    /* Standard Mobile Margins */
     top: 12px !important;
     bottom: 12px !important;
     height: auto !important;
@@ -554,18 +551,17 @@ input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cur
   <div class="admin-control">
     <span class="admin-label">Текст кнопки</span>
     <select id="button-text-select" class="admin-input">
-      <option value="Спросите наш ИИ">Спросите наш ИИ</option>
-      <option value="Онлайн ассистент">Онлайн ассистент</option>
-      <option value="Чат с отелем" selected>Чат с отелем</option>
-      <option value="Свяжитесь с нами">Свяжитесь с нами</option>
+      <option value="Спросите Наш ИИ">Спросите Наш ИИ</option>
+      <option value="Онлайн Ассистент">Онлайн Ассистент</option>
+      <option value="Чат с Отелем" selected>Чат с Отелем</option>
+      <option value="Свяжитесь с Нами">Свяжитесь с Нами</option>
       <option value="Связь">Связь</option>
       <option value="Поддержка 24/7">Поддержка 24/7</option>
       <option value="Консультант">Консультант</option>
       <option value="Вопрос?">Вопрос?</option>
-      <option value="Онлайн-помощь">Онлайн-помощь</option>
-      <option value="Забронировать номер">Забронировать номер</option>
-      <option value="Уточнить детали">Уточнить детали</option>
-      <option value="Онлайн ассистент">Онлайн ассистент</option>
+      <option value="Онлайн-Помощь">Онлайн-Помощь</option>
+      <option value="Забронировать Номер">Забронировать Номер</option>
+      <option value="Уточнить Детали">Уточнить Детали</option>
       <option value="Спросить Roomie">Спросить Roomie</option>
       <option value="Help">Help</option>
       <option value="Чат">Чат</option>
@@ -754,12 +750,9 @@ let isGenerating = false;
 
 // --- DATA: FONTS & ICONS ---
 const fontsList = [
-  "Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Poppins", "Oswald", "Raleway", "Nunito", "Merriweather", "Playfair Display",
-  "Rubik", "Ubuntu", "Dancing Script", "Pacifico", "Exo 2", "Quicksand", "Work Sans", "Fira Sans", "Josefin Sans", "Anton", "Manrope",
-  "Mulish", "Titillium Web", "PT Sans", "PT Serif", "Lora", "Mukta", "Karla", "Dosis", "Inconsolata", "Cabin", "Bitter", "Oxygen",
-  "Arvo", "Hind", "Crimson Text", "Abel", "Libre Baskerville", "Bebas Neue", "Abril Fatface", "Lobster", "Shadows Into Light",
-  "Comfortaa", "Righteous", "Russo One", "Press Start 2P", "Permanent Marker", "Fjalla One", "Indie Flower", "Asap", "Cairo",
-  "Varela Round", "Source Code Pro", "Maven Pro", "Bree Serif"
+  "Inter", "Roboto", "Montserrat", "Poppins", "Oswald", "Rubik", "Ubuntu", "Exo 2", "Work Sans", "Fira Sans",
+  "Anton", "Nunito", "Manrope", "Mulish", "Titillium Web", "PT Sans", "Bebas Neue", "Abril Fatface", "Lobster",
+  "Righteous", "Russo One", "Permanent Marker", "Fjalla One", "Asap", "Cairo"
 ].sort();
 
 const iconsList = [
