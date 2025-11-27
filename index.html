@@ -142,30 +142,15 @@ body {
 }
 
 /* --- CHAT WINDOW RESPONSIVE LOGIC (FIXED FOR IPAD) --- */
-
-/* DESKTOP & TABLETS (iPad portrait and up)
-   Trigger: min-width 768px
-   Style: "Full Height Widget"
-   Width: 420px (With max-width constraint for narrow iPads)
-   Height: Dynamic viewport height (dvh) to fix iPad scrolling bug
-*/
 @media (min-width: 768px) {
   #chat-window {
     top: auto; left: auto;
-    /* Bottom margin 20px + user offset + safe area */
     bottom: calc(20px + var(--widget-offset-y) + env(safe-area-inset-bottom, 0px)) !important;
-    
-    /* Dimensions */
     width: 420px !important;
-    /* CRITICAL FIX: Prevent horizontal overflow on narrow iPad screens/split view */
     max-width: calc(100vw - 40px) !important; 
-    
-    /* CRITICAL FIX: Use dvh (dynamic viewport height) for iOS Safari address bar handling */
     height: calc(100vh - 40px) !important; /* Fallback */
     height: calc(100dvh - 40px) !important; /* Modern browsers */
-    
     max-height: none !important; 
-    
     border-radius: 24px; 
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
     transform: scale(0.5) translateY(20px);
@@ -188,9 +173,7 @@ body {
   }
 }
 
-/* MOBILE PHONES ONLY (Strictly < 768px)
-   Style: "Almost Fullscreen" with margins
-*/
+/* MOBILE PHONES ONLY (Strictly < 768px) */
 @media (max-width: 767px) {
   #chat-window {
     position: fixed;
@@ -200,7 +183,6 @@ body {
     top: 12px !important;
     width: auto !important;
     height: auto !important;
-    /* Use dvh here too for mobile safari */
     height: calc(100dvh - 24px) !important; 
     border-radius: 20px;
     transform: translateY(20px);
@@ -316,16 +298,35 @@ body {
 #chat-messages::-webkit-scrollbar-track { background: transparent; }
 #chat-messages::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.1); border-radius: 20px; }
 
-/* --- CONTACT BANNERS --- */
+/* --- CONTACT BANNERS (FIXED POSITIONING) --- */
 .contact-banner {
-  position: absolute; bottom: 100%; left: 12px; right: 12px; margin-bottom: 40px;
-  transform: translateY(0); overflow: hidden; white-space: nowrap; height: 64px; z-index: 50;
+  position: absolute; 
+  bottom: 100%; /* Anchored to the top of the footer */
+  left: 12px; 
+  right: 12px; 
+  margin-bottom: 40px;
+  /* Start hidden and slightly down to slide up */
+  transform: translateY(10px); 
+  overflow: hidden; white-space: nowrap; height: 64px; z-index: 50;
   cursor: pointer; border-radius: 24px; justify-content: space-between;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
   display: flex; align-items: center; padding: 0 4px; text-decoration: none; opacity: 0; visibility: hidden; pointer-events: none;
 }
-.contact-banner.show-banner { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(16px) scale(0.98); }
-.contact-banner:hover { opacity: 0.98; transform: translateY(16px) scale(1); }
+
+/* FIX: Changed translateY to negative to lift UP from the bottom line, instead of pushing DOWN */
+.contact-banner.show-banner { 
+  opacity: 1; 
+  visibility: visible; 
+  pointer-events: auto; 
+  transform: translateY(-8px) scale(0.98); 
+}
+
+.contact-banner:hover { 
+  opacity: 1; 
+  transform: translateY(-12px) scale(1); /* Lift slightly on hover */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
 #telegram-banner { background-color: #24A1DE; }
 .banner-icon-wrapper {
   margin: 0; background-color: rgba(255,255,255,0.2); width: 40px; height: 40px;
@@ -880,10 +881,8 @@ function updateContactStack() {
   const isChecked = (el) => el && el.checked;
   const stackOrder = [ { el: banners.telegram, enabled: isChecked(tgToggle) } ];
   
-  // FIX: REMOVED inputOffsetY DEPENDENCY
-  // Previously: let currentBottom = 32 + parseInt(inputOffsetY.value);
-  // Now fixed to 0 so it stays relative to the footer regardless of widget position
-  let currentBottom = 0; 
+  // FIX: Starting value set to 12px so it doesn't touch the footer top line
+  let currentBottom = 12; 
   
   stackOrder.forEach(item => {
     if (!item.el) return;
