@@ -141,16 +141,21 @@ body {
   transform: translateX(calc(-50% + var(--widget-offset-x))) scale(calc(var(--widget-scale) * 1.05));
 }
 
-/* --- CHAT WINDOW RESPONSIVE LOGIC (FIXED FOR IPAD) --- */
+/* --- CHAT WINDOW RESPONSIVE LOGIC --- */
+
+/* 1. DESKTOP / BASE TABLET LOGIC ( > 768px) */
+/* This sets the "PC" baseline: Top 75px, Bottom 14px */
 @media (min-width: 768px) {
   #chat-window {
-    top: auto; left: auto;
-    bottom: calc(20px + var(--widget-offset-y) + env(safe-area-inset-bottom, 0px)) !important;
+    left: auto;
+    top: 75px !important;
+    bottom: calc(14px + var(--widget-offset-y) + env(safe-area-inset-bottom, 0px)) !important;
+    height: auto !important;
+    max-height: none !important; 
+    
     width: 420px !important;
     max-width: calc(100vw - 40px) !important; 
-    height: calc(100vh - 40px) !important; /* Fallback */
-    height: calc(100dvh - 40px) !important; /* Modern browsers */
-    max-height: none !important; 
+    
     border-radius: 24px; 
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
     transform: scale(0.5) translateY(20px);
@@ -173,17 +178,31 @@ body {
   }
 }
 
-/* MOBILE PHONES ONLY (Strictly < 768px) */
+/* 2. IPAD / TABLET OVERRIDES (768px - 1024px) */
+/* This OVERRIDES the Desktop logic specifically for standard iPads */
+/* Top 20px, Bottom 20px */
+@media (min-width: 768px) and (max-width: 1024px) {
+  #chat-window {
+    top: 20px !important;
+    bottom: calc(20px + var(--widget-offset-y) + env(safe-area-inset-bottom, 0px)) !important;
+    /* Height remains auto, so it stretches comfortably between 20px top and 20px bottom */
+  }
+}
+
+/* 3. MOBILE PHONES ONLY (Strictly < 768px) */
+/* Top 12px, Bottom 12px */
 @media (max-width: 767px) {
   #chat-window {
     position: fixed;
     left: 12px !important; 
-    right: 12px !important; 
-    bottom: 12px !important; 
+    right: 12px !important;
+    
     top: 12px !important;
-    width: auto !important;
+    bottom: 12px !important;
     height: auto !important;
-    height: calc(100dvh - 24px) !important; 
+    height: calc(100dvh - 24px) !important;
+    
+    width: auto !important;
     border-radius: 20px;
     transform: translateY(20px);
     margin: 0 !important;
