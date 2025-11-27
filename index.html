@@ -318,7 +318,7 @@ body {
 
 /* --- CONTACT BANNERS --- */
 .contact-banner {
-  position: absolute; bottom: 100%; left: 12px; right: 12px; margin-bottom: 20px;
+  position: absolute; bottom: 100%; left: 12px; right: 12px; margin-bottom: 40px;
   transform: translateY(0); overflow: hidden; white-space: nowrap; height: 64px; z-index: 50;
   cursor: pointer; border-radius: 24px; justify-content: space-between;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
@@ -879,7 +879,12 @@ positionSelect.addEventListener('change', (e) => {
 function updateContactStack() {
   const isChecked = (el) => el && el.checked;
   const stackOrder = [ { el: banners.telegram, enabled: isChecked(tgToggle) } ];
-  let currentBottom = 32 + parseInt(inputOffsetY.value); // Add Y offset to stack logic
+  
+  // FIX: REMOVED inputOffsetY DEPENDENCY
+  // Previously: let currentBottom = 32 + parseInt(inputOffsetY.value);
+  // Now fixed to 0 so it stays relative to the footer regardless of widget position
+  let currentBottom = 0; 
+  
   stackOrder.forEach(item => {
     if (!item.el) return;
     if (item.enabled) {
@@ -893,8 +898,8 @@ function updateContactStack() {
     }
   });
 }
-// Update stack when Y offset changes
-inputOffsetY.addEventListener('input', updateContactStack);
+// Removed: inputOffsetY.addEventListener('input', updateContactStack);
+// Only update when toggle changes, not when position changes
 if (tgToggle) tgToggle.addEventListener('change', updateContactStack);
 
 // --- BANNER INTERACTIONS ---
