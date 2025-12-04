@@ -275,7 +275,10 @@ body {
 @media (max-width: 768px) { .message-time { opacity: 1 !important; } }
 
 #scroll-to-bottom-btn {
-  position: absolute; bottom: 130px; left: 50%; right: auto;
+  position: absolute; 
+  /* UPDATED: Raised to 105px to clear the input area and align with telegram */
+  bottom: 105px; 
+  left: 50%; right: auto;
   width: 36px; height: 36px; background-color: white; border: 1px solid #e5e7eb;
   border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30;
@@ -908,6 +911,9 @@ function updateContactStack() {
       item.el.classList.remove('show-banner');
     }
   });
+  
+  // Update scroll button visibility when stack changes (e.g. toggling banner)
+  checkScrollButtonVisibility();
 }
 // Removed: inputOffsetY.addEventListener('input', updateContactStack);
 // Only update when toggle changes, not when position changes
@@ -932,7 +938,10 @@ function setupBannerInteractions(bannerId, modalId, externalLink) {
   });
   closeBtn.addEventListener('click', (e) => {
     e.preventDefault(); e.stopPropagation();
-    banner.classList.add('collapsed'); updateContactStack();
+    banner.classList.add('collapsed'); 
+    updateContactStack();
+    // Re-check scroll button when banner collapses
+    checkScrollButtonVisibility();
   });
   confirmBtn.addEventListener('click', () => {
     if (externalLink) window.open(externalLink, '_blank');
@@ -988,10 +997,29 @@ resetChatBtn.addEventListener('click', () => modals.reset.classList.remove('hidd
 document.getElementById('confirm-reset-btn').addEventListener('click', () => { resetChat(); modals.reset.classList.add('hidden'); });
 document.getElementById('cancel-reset-btn').addEventListener('click', () => modals.reset.classList.add('hidden'));
 
-messagesContainer.addEventListener('scroll', () => {
+// --- UPDATED SCROLL BUTTON LOGIC ---
+function checkScrollButtonVisibility() {
   const distanceToBottom = messagesContainer.scrollHeight - (messagesContainer.scrollTop + messagesContainer.clientHeight);
-  scrollToBottomBtn.classList.toggle('visible', distanceToBottom > 100);
-});
+  const isScrolledUp = distanceToBottom > 100;
+
+  // Check TG Banner state
+  // Banner is "Expanded" if it has class 'show-banner' AND does NOT have class 'collapsed'
+  const tgBanner = document.getElementById('telegram-banner');
+  const isTgEnabled = document.getElementById('tg-toggle').checked;
+  
+  const isBannerExpanded = isTgEnabled && tgBanner &&
+                           tgBanner.classList.contains('show-banner') &&
+                           !tgBanner.classList.contains('collapsed');
+
+  // SHOW only if Scrolled Up AND Banner is NOT Expanded (i.e., collapsed or hidden)
+  if (isScrolledUp && !isBannerExpanded) {
+    scrollToBottomBtn.classList.add('visible');
+  } else {
+    scrollToBottomBtn.classList.remove('visible');
+  }
+}
+
+messagesContainer.addEventListener('scroll', checkScrollButtonVisibility);
 scrollToBottomBtn.addEventListener('click', () => messagesContainer.scrollTo({ top: messagesContainer.scrollHeight, behavior: 'smooth' }));
 
 widgetButton.addEventListener('click', toggleChat); closeButton.addEventListener('click', toggleChat); sendButton.addEventListener('click', handleSendMessage);
