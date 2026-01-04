@@ -54,6 +54,7 @@ body {
 #chat-window.dark-mode .input-container-bg:focus-within {
   background-color: #374151 !important;
   border-color: var(--accent-color) !important;
+  /* UPDATED: Reverted highlight width to 2px */
   box-shadow: 0 0 0 2px var(--accent-color) !important;
 }
 #chat-window.dark-mode .message-time { color: #9ca3af; }
@@ -80,6 +81,10 @@ body {
 
 #message-input:focus { outline: none !important; box-shadow: none !important; }
 
+/* Custom scrollbar for textarea */
+textarea#message-input::-webkit-scrollbar { display: none; }
+textarea#message-input { -ms-overflow-style: none; scrollbar-width: none; }
+
 .input-container-bg {
   border: 1px solid transparent !important;
   transition: all 0.2s ease-out !important;
@@ -87,6 +92,7 @@ body {
 .input-container-bg:focus-within {
   background-color: white !important;
   border-color: var(--accent-color) !important;
+  /* UPDATED: Reverted highlight width to 2px */
   box-shadow: 0 0 0 2px var(--accent-color) !important;
 }
 
@@ -267,8 +273,9 @@ body {
 .message-wrapper.user { justify-content: flex-end; }
 .message-wrapper.ai { justify-content: flex-start; }
 
+/* UPDATED: Decreased font size to 12px */
 .message-time {
-  font-size: 10px; color: #9ca3af; margin: 0 8px; white-space: nowrap;
+  font-size: 12px; color: #9ca3af; margin: 0 8px; white-space: nowrap;
   opacity: 0; transition: opacity 0.2s ease; user-select: none;
 }
 @media (min-width: 769px) { .message-wrapper:hover .message-time { opacity: 1; } }
@@ -313,9 +320,9 @@ body {
 .typing-indicator-bubble span:nth-child(2) { animation-delay: -0.16s; }
 @keyframes typing-bounce { 0%, 80%, 100% { transform: scale(0); opacity: 0.6; } 40% { transform: scale(1); opacity: 1; } }
 
-#chat-messages::-webkit-scrollbar { width: 6px; }
-#chat-messages::-webkit-scrollbar-track { background: transparent; }
-#chat-messages::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.1); border-radius: 20px; }
+/* --- SCROLLBAR HIDDEN --- */
+#chat-messages::-webkit-scrollbar { display: none; }
+#chat-messages { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* --- CONTACT BANNERS (FIXED POSITIONING) --- */
 .contact-banner {
@@ -346,11 +353,18 @@ body {
   box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 
-#telegram-banner { background-color: #24A1DE; }
+/* UPDATE: Gradient background to match Telegram icon colors seamlessy */
+#telegram-banner { 
+  background: linear-gradient(180deg, #2AABEE 0%, #229ED9 100%);
+}
+
 .banner-icon-wrapper {
-  margin: 0; background-color: rgba(255,255,255,0.2); width: 40px; height: 40px;
+  margin: 0; 
+  background-color: transparent; /* UPDATE: Transparent to remove "pale blue frame" */
+  width: 40px; height: 40px;
   display: flex; align-items: center; justify-content: center;
   border-radius: 50%; flex-shrink: 0; margin-left: 8px; color: white; transition: all 0.3s ease;
+  overflow: hidden; 
 }
 .banner-content { flex: 1; display: flex; flex-col; flex-direction: column; padding-left: 12px; padding-right: 30px; transition: opacity 0.2s ease; }
 .banner-title { font-size: 14px; font-weight: bold; color: white; line-height: 1.2; }
@@ -368,7 +382,8 @@ body {
 .contact-banner.collapsed:hover { right: -10px; }
 .contact-banner.collapsed .banner-content, .contact-banner.collapsed .close-banner-btn { opacity: 0; pointer-events: none; position: absolute; }
 .contact-banner.collapsed .banner-icon-wrapper { width: 28px; height: 28px; margin: 0; background-color: transparent; }
-.contact-banner.collapsed svg.main-icon { width: 16px; height: 16px; }
+/* Override wrapper size for collapsed state to fit larger icon cleanly */
+.contact-banner.collapsed svg.main-icon { width: 100% !important; height: 100% !important; }
 .expand-arrow { display: none; width: 18px; height: 18px; margin-right: 6px; color: white; flex-shrink: 0; }
 
 /* --- ADMIN PANEL --- */
@@ -658,7 +673,14 @@ input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cur
   <!-- TELEGRAM MODAL -->
   <div id="tg-confirmation-modal" class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
     <div class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-      <div class="mx-auto w-12 h-12 bg-[#24A1DE]/20 rounded-full flex items-center justify-center mb-4 text-[#24A1DE]"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg></div>
+      <!-- UPDATED ICON: Now using colored SVG, sized w-8 h-8 -->
+      <div class="mx-auto w-12 h-12 flex items-center justify-center mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" viewBox="0 0 240.1 240.1">
+          <linearGradient id="Oval_1_modal" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581" x2="-838.041" y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)"> <stop offset="0" style="stop-color:#2AABEE"/> <stop offset="1" style="stop-color:#229ED9"/></linearGradient>
+          <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#Oval_1_modal)" cx="120.1" cy="120.1" r="120.1"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF" d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z"/>
+        </svg>
+      </div>
       <h4 class="text-lg font-bold mb-2">Бажаєте перейти?</h4>
       <p class="modal-text-secondary text-sm text-gray-500 mb-6">Ви будете перенаправлені у зовнішній додаток.</p>
       <div class="flex flex-col gap-2">
@@ -672,24 +694,42 @@ input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cur
   <footer id="chat-footer" class="border-t border-gray-100 bg-gray-50 flex-shrink-0 flex flex-col relative z-20 transition-all">
     <!-- TELEGRAM BANNER -->
     <a href="javascript:void(0)" id="telegram-banner" class="contact-banner">
-      <div class="banner-icon-wrapper"><svg class="main-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg></div>
+      <!-- UPDATED ICON WRAPPER: Added clip and centered SVG -->
+      <div class="banner-icon-wrapper flex items-center justify-center overflow-hidden">
+        <!-- NEW TELEGRAM ICON -->
+        <svg class="main-icon w-full h-full scale-110" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240.1 240.1">
+          <linearGradient id="Oval_1_" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581" x2="-838.041" y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)"> <stop offset="0" style="stop-color:#2AABEE"/> <stop offset="1" style="stop-color:#229ED9"/></linearGradient>
+          <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#Oval_1_)" cx="120.1" cy="120.1" r="120.1"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF" d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z"/>
+        </svg>
+      </div>
       <div class="banner-content"><span class="banner-title">Перейти в Telegram</span><span class="banner-subtitle">Швидше і зручніше</span></div>
       <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
       <button class="close-banner-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
     </a>
 
-    <!-- INPUT AREA -->
+    <!-- INPUT AREA (MODIFIED FOR MULTILINE AND INSIDE BUTTON) -->
     <div id="input-area-wrapper" class="px-3 pb-0 pt-2 flex items-end gap-2 transition-all">
-      <div class="input-container-bg flex-1 bg-gray-100 rounded-full h-11 flex items-center px-4 transition-colors">
-        <input type="text" id="message-input" placeholder="Напишіть повідомлення..." class="w-full bg-transparent border-none focus:ring-0 p-0 text-base resize-none outline-none text-gray-700 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed" autocomplete="off">
+      <!-- Container padding reduced to p-1 (4px) to create equal frame -->
+      <div class="input-container-bg w-full bg-gray-100 rounded-[24px] flex items-end p-1 transition-colors relative border border-transparent focus-within:border-blue-600 focus-within:bg-white shadow-sm gap-[1px]">
+        <!-- Textarea height 34px matches button height + spacing -->
+        <!-- Update: pt-[5px] -> pt-[6px], pl-3 -> pl-3 -->
+        <textarea id="message-input" rows="1" placeholder="Напишіть повідомлення..." class="w-full bg-transparent border-none focus:ring-0 text-base resize-none text-gray-700 placeholder-gray-400 pl-3 max-h-[120px] overflow-y-auto leading-normal pt-[6px] pb-[3px]" autocomplete="off" style="min-height: 34px;"></textarea>
+        
+        <!-- Button Wrapper: Removed margins and mb-[3px] to align perfectly with gap-[1px] -->
+        <div class="flex gap-1 items-end mb-0 mr-0">
+            <!-- Send Button -->
+            <!-- UPDATED: w-8 h-8 -> w-[34px] h-[34px] to match textarea height exactly -->
+            <button id="send-button" class="w-[34px] h-[34px] rounded-full accent-bg text-white flex items-center justify-center accent-bg-hover transition transform hover:scale-105 flex-shrink-0 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed">
+            <svg id="btn-icon-send" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+            <svg id="btn-icon-loading" class="hidden animate-spin" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+            </button>
+        </div>
       </div>
-      <button id="send-button" class="w-11 h-11 rounded-full accent-bg text-white flex items-center justify-center accent-bg-hover transition transform hover:scale-105 flex-shrink-0 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed">
-        <svg id="btn-icon-send" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-        <svg id="btn-icon-loading" class="hidden animate-spin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
-      </button>
     </div>
 
-    <div id="powered-by-container" class="text-center pb-2 pt-1">
+    <!-- UPDATED: Added pt-[5px] to shift down slightly -->
+    <div id="powered-by-container" class="text-center pb-2 pt-[5px]">
       <span class="text-sm text-gray-400 font-medium">powered by <a href="https://hotelmol.com" target="_blank" class="accent-text hover:underline cursor-pointer">hotelmol.com</a></span>
     </div>
   </footer>
@@ -704,6 +744,7 @@ const closeButton = document.getElementById('chat-close-button');
 const messagesContainer = document.getElementById('chat-messages');
 const messageInput = document.getElementById('message-input');
 const sendButton = document.getElementById('send-button');
+// Removed micButton
 let typingIndicator = document.getElementById('typing-indicator');
 const notificationBadge = document.getElementById('chat-notification-badge');
 const btnIconSend = document.getElementById('btn-icon-send');
@@ -750,6 +791,15 @@ const modals = { reset: document.getElementById('reset-confirmation-modal'), tel
 let welcomed = false;
 let currentLang = 'ua';
 let isGenerating = false;
+// Removed isRecording
+
+// --- AUTO RESIZE TEXTAREA LOGIC ---
+const autoResize = () => {
+  messageInput.style.height = 'auto'; // Reset height
+  messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px'; // Set new height, max 120px
+};
+
+messageInput.addEventListener('input', autoResize);
 
 // --- DATA: FONTS & ICONS ---
 const fontsList = [
@@ -951,6 +1001,8 @@ function setupBannerInteractions(bannerId, modalId, externalLink) {
 }
 setupBannerInteractions('telegram-banner', 'tg-confirmation-modal', 'https://t.me/hilton');
 
+// --- REMOVED MIC BUTTON LISTENER ---
+
 // --- CHAT CORE FUNCTIONS ---
 function toggleChat() {
   const isOpen = chatWindow.classList.contains('open');
@@ -978,7 +1030,21 @@ function addMessage(text, sender) {
 }
 function showTyping() { typingIndicator.classList.remove('hidden'); messagesContainer.scrollTop = messagesContainer.scrollHeight; }
 function hideTyping() { typingIndicator.classList.add('hidden'); }
-function setButtonLoading(isLoading) { if (isLoading) { btnIconSend.classList.add('hidden'); btnIconLoading.classList.remove('hidden'); sendButton.disabled = true; messageInput.disabled = true; } else { btnIconSend.classList.remove('hidden'); btnIconLoading.classList.add('hidden'); sendButton.disabled = false; messageInput.disabled = false; messageInput.focus(); } }
+function setButtonLoading(isLoading) { 
+  if (isLoading) { 
+    btnIconSend.classList.add('hidden'); 
+    btnIconLoading.classList.remove('hidden'); 
+    sendButton.disabled = true; 
+    messageInput.disabled = true; 
+  } else { 
+    btnIconSend.classList.remove('hidden'); 
+    btnIconLoading.classList.add('hidden'); 
+    sendButton.disabled = false; 
+    messageInput.disabled = false; 
+    messageInput.focus(); 
+    autoResize(); // Reset size after sending
+  } 
+}
 function getAIResponse(userMessage) {
   const lowerMessage = userMessage.toLowerCase(); const t = translations[currentLang]; let aiResponse = t.defaultAI;
   if (lowerMessage.match(t.keywords.hello)) aiResponse = t.answers.hello; else if (lowerMessage.match(t.keywords.book)) aiResponse = t.answers.book;
@@ -986,7 +1052,18 @@ function getAIResponse(userMessage) {
   setTimeout(() => { hideTyping(); isGenerating = false; setButtonLoading(false); addMessage(aiResponse, 'ai'); }, 2000);
 }
 
-function handleSendMessage() { if (isGenerating) return; const text = messageInput.value.trim(); if (text === '') return; isGenerating = true; addMessage(text, 'user'); messageInput.value = ''; setButtonLoading(true); showTyping(); getAIResponse(text); }
+function handleSendMessage() { 
+  if (isGenerating) return; 
+  const text = messageInput.value.trim(); 
+  if (text === '') return; 
+  isGenerating = true; 
+  addMessage(text, 'user'); 
+  messageInput.value = ''; 
+  messageInput.style.height = 'auto'; // Reset height instantly
+  setButtonLoading(true); 
+  showTyping(); 
+  getAIResponse(text); 
+}
 function resetChat() {
   const indicatorHTML = typingIndicator.outerHTML; messagesContainer.innerHTML = ''; messagesContainer.innerHTML = indicatorHTML;
   typingIndicator = document.getElementById('typing-indicator');
@@ -1023,7 +1100,13 @@ messagesContainer.addEventListener('scroll', checkScrollButtonVisibility);
 scrollToBottomBtn.addEventListener('click', () => messagesContainer.scrollTo({ top: messagesContainer.scrollHeight, behavior: 'smooth' }));
 
 widgetButton.addEventListener('click', toggleChat); closeButton.addEventListener('click', toggleChat); sendButton.addEventListener('click', handleSendMessage);
-messageInput.addEventListener('keydown', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); handleSendMessage(); } });
+// UPDATED KEYDOWN LISTENER FOR TEXTAREA
+messageInput.addEventListener('keydown', (event) => { 
+  if (event.key === 'Enter' && !event.shiftKey) { 
+    event.preventDefault(); 
+    handleSendMessage(); 
+  } 
+});
 
 updateContactStack();
 // Init default positioning
