@@ -50,13 +50,14 @@ body {
 #chat-window.dark-mode footer { background-color: #111827; border-top-color: #374151; }
 #chat-window.dark-mode #message-input { color: #f3f4f6; }
 #chat-window.dark-mode #message-input::placeholder { color: #9ca3af; }
-#chat-window.dark-mode .input-container-bg { background-color: #374151 !important; border-color: transparent; }
-#chat-window.dark-mode .input-container-bg:focus-within {
-  background-color: #374151 !important;
+
+/* UPDATED DARK MODE INPUT: Always lit */
+#chat-window.dark-mode .input-container-bg { 
+  background-color: #374151 !important; 
   border-color: var(--accent-color) !important;
-  /* UPDATED: Reverted highlight width to 2px */
   box-shadow: 0 0 0 2px var(--accent-color) !important;
 }
+
 #chat-window.dark-mode .message-time { color: #9ca3af; }
 #chat-window.dark-mode #scroll-to-bottom-btn { background-color: #374151; color: #e5e7eb; border-color: #4b5563; }
 #chat-window.dark-mode #scroll-to-bottom-btn:hover { background-color: #4b5563; }
@@ -85,14 +86,17 @@ body {
 textarea#message-input::-webkit-scrollbar { display: none; }
 textarea#message-input { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* UPDATED INPUT CONTAINER: ALWAYS LIT */
 .input-container-bg {
-  border: 1px solid transparent !important;
+  border: 1px solid var(--accent-color) !important; /* Always accent border */
+  box-shadow: 0 0 0 2px var(--accent-color) !important; /* Always burning */
+  background-color: white !important;
   transition: all 0.2s ease-out !important;
 }
+/* Focus state just maintains the look */
 .input-container-bg:focus-within {
   background-color: white !important;
   border-color: var(--accent-color) !important;
-  /* UPDATED: Reverted highlight width to 2px */
   box-shadow: 0 0 0 2px var(--accent-color) !important;
 }
 
@@ -118,7 +122,8 @@ textarea#message-input { -ms-overflow-style: none; scrollbar-width: none; }
 .chat-button-text { color: white; font-weight: 600; font-size: 16px; line-height: 1; white-space: nowrap; }
 
 /* Shape Variants */
-.shape-pill { --widget-border-radius: 30px; --widget-padding: 12px 24px; }
+/* UPDATED: Increased border-radius to 9999px for pill shape to maintain curve with larger icons */
+.shape-pill { --widget-border-radius: 9999px; --widget-padding: 12px 24px; }
 .shape-rounded { --widget-border-radius: 12px; --widget-padding: 12px 20px; }
 .shape-circle {
   --widget-border-radius: 50%;
@@ -128,6 +133,12 @@ textarea#message-input { -ms-overflow-style: none; scrollbar-width: none; }
   justify-content: center;
   padding: 0 !important;
 }
+/* UPDATED: Special override for Custom Logo inside Circle Button */
+.shape-circle.custom-logo-selected svg {
+  width: 52px !important;  /* Force larger size (almost fills 56px) */
+  height: 52px !important;
+}
+
 .shape-circle .chat-button-text { display: none; }
 .shape-circle #chat-notification-badge { top: 0; right: 0; }
 
@@ -473,6 +484,39 @@ input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cur
 .shape-option:nth-child(1) .shape-preview { border-radius: 10px; width: 30px; } /* Pill */
 .shape-option:nth-child(2) .shape-preview { border-radius: 4px; width: 24px; } /* Squareish */
 .shape-option:nth-child(3) .shape-preview { border-radius: 50%; width: 12px; height: 12px; } /* Circle */
+
+/* --- SEND BUTTON STATE LOGIC --- */
+#send-button {
+  background-color: var(--accent-color);
+  /* Hidden State by default */
+  width: 0;
+  height: 34px; /* FIXED: Enforce height to prevent deformation */
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.5);
+  pointer-events: none;
+  margin: 0;
+  border-radius: 50%; /* Ensure it stays circular */
+  overflow: hidden; /* Clip content during animation */
+  
+  /* Bouncy Transition */
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Active state (toggled by JS) */
+#send-button.is-active {
+  width: 34px; /* Matches height for perfect circle */
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+#send-button.is-active:hover {
+  background-color: var(--accent-hover);
+  transform: scale(1.1);
+}
 </style>
 </head>
 <body>
@@ -719,10 +763,10 @@ input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cur
         <!-- Button Wrapper: Removed margins and mb-[3px] to align perfectly with gap-[1px] -->
         <div class="flex gap-1 items-end mb-0 mr-0">
             <!-- Send Button -->
-            <!-- UPDATED: w-8 h-8 -> w-[34px] h-[34px] to match textarea height exactly -->
-            <button id="send-button" class="w-[34px] h-[34px] rounded-full accent-bg text-white flex items-center justify-center accent-bg-hover transition transform hover:scale-105 flex-shrink-0 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed">
+            <!-- UPDATED: Removed loading SVG completely -->
+            <!-- Size kept at w-[34px] h-[34px] -->
+            <button id="send-button" class="rounded-full text-white flex items-center justify-center flex-shrink-0 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed">
             <svg id="btn-icon-send" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-            <svg id="btn-icon-loading" class="hidden animate-spin" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
             </button>
         </div>
       </div>
@@ -748,7 +792,7 @@ const sendButton = document.getElementById('send-button');
 let typingIndicator = document.getElementById('typing-indicator');
 const notificationBadge = document.getElementById('chat-notification-badge');
 const btnIconSend = document.getElementById('btn-icon-send');
-const btnIconLoading = document.getElementById('btn-icon-loading');
+// Removed btnIconLoading reference
 const resetChatBtn = document.getElementById('reset-chat-btn');
 const chatButtonText = document.querySelector('.chat-button-text');
 const scrollToBottomBtn = document.getElementById('scroll-to-bottom-btn');
@@ -799,7 +843,20 @@ const autoResize = () => {
   messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px'; // Set new height, max 120px
 };
 
-messageInput.addEventListener('input', autoResize);
+// --- NEW BUTTON STATE LOGIC ---
+const updateSendButtonState = () => {
+  const hasText = messageInput.value.trim().length > 0;
+  if (hasText) {
+    sendButton.classList.add('is-active');
+  } else {
+    sendButton.classList.remove('is-active');
+  }
+};
+
+messageInput.addEventListener('input', () => {
+  autoResize();
+  updateSendButtonState();
+});
 
 // --- DATA: FONTS & ICONS ---
 const fontsList = [
@@ -811,7 +868,15 @@ const fontsList = [
 const iconsList = [
   { id: 'chat', svg: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>' },
   { id: 'message-circle', svg: '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>' },
-  { id: 'user', svg: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>' },
+  // UPDATED: Custom logo now has a specific 'size' property to make it bigger (40px)
+  { 
+    id: 'custom-logo', 
+    svg: '<path fill-rule="evenodd" clip-rule="evenodd" d="M106.13 53.03c22.55,2.08 40.65,19.52 43.75,41.75l-96.58 0c3.18,-22.75 22.05,-40.47 45.33,-41.87l0 -4.17 -2.36 0c-2.32,0 -4.23,-1.91 -4.23,-4.23l0 0c0,-2.33 1.91,-4.23 4.23,-4.23l12.4 0c2.33,0 4.23,1.9 4.23,4.23l0 0c0,2.32 -1.9,4.23 -4.23,4.23l-2.54 0 0 4.29zm15.16 63.75c1.5,-1.94 4.29,-2.3 6.23,-0.8 1.94,1.5 2.3,4.29 0.8,6.23 -3.14,4.07 -7.19,7.4 -11.86,9.7 -4.51,2.21 -9.56,3.46 -14.87,3.46 -5.31,0 -10.36,-1.25 -14.87,-3.46 -4.67,-2.3 -8.72,-5.63 -11.86,-9.7 -1.5,-1.94 -1.14,-4.73 0.8,-6.23 1.94,-1.5 4.73,-1.14 6.23,0.8 2.33,3.01 5.31,5.47 8.74,7.15 3.28,1.62 7,2.52 10.96,2.52 3.96,0 7.68,-0.9 10.96,-2.52 3.43,-1.68 6.41,-4.14 8.74,-7.15zm-10.04 39.85c-1.68,1.41 -4.25,2.17 -4.31,-1.17 -0.02,-0.99 -0.04,-1.26 -0.06,-2.26 -0.81,-2.45 -3.2,-2.84 -5.68,-2.84l0 -0.01c-25.76,-0.2 -46.76,-20.38 -48.29,-45.8l97.36 0c-0.71,11.75 -5.05,23.66 -13.15,30.44l-25.87 21.64z"/>',
+    viewBox: '0 0 203.18 203.18', 
+    fill: 'currentColor', 
+    stroke: 'none',
+    size: '40' // <--- Explicitly increased size
+  },
   { id: 'robot', svg: '<path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>' },
   { id: 'star', svg: '<path d="M12 2L14.5 9.5 22 12 14.5 14.5 12 22 9.5 14.5 2 12 9.5 9.5 12 2z"/>' }
 ];
@@ -831,15 +896,51 @@ fontSelect.addEventListener('change', (e) => {
   document.documentElement.style.setProperty('--font-main', e.target.value);
 });
 
-// 2. Populate Icons (Increased Size to 24x24)
+// 2. Populate Icons (Updated to support custom properties)
 iconsList.forEach((icon, index) => {
   const div = document.createElement('div');
   div.className = `icon-option ${index === 0 ? 'active' : ''}`;
-  div.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon.svg}</svg>`;
+  
+  // Use custom properties if available, otherwise default standard icon props
+  const vb = icon.viewBox || "0 0 24 24";
+  const str = icon.stroke || "currentColor";
+  const strW = icon.strokeWidth || "2";
+  const fl = icon.fill || "none";
+  
+  // Admin panel preview always uses 24x24 or fits container
+  div.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="${vb}" fill="${fl}" stroke="${str}" stroke-width="${strW}" stroke-linecap="round" stroke-linejoin="round">${icon.svg}</svg>`;
+  
   div.onclick = () => {
     document.querySelectorAll('.icon-option').forEach(el => el.classList.remove('active'));
     div.classList.add('active');
-    widgetIconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon.svg}</svg>`;
+    
+    // Toggle class for custom logo special styling
+    if (icon.id === 'custom-logo') {
+        widgetButton.classList.add('custom-logo-selected');
+    } else {
+        widgetButton.classList.remove('custom-logo-selected');
+    }
+    
+    // Update main widget icon - using white for stroke/fill depending on type
+    const mainStr = icon.stroke === 'none' ? 'none' : 'white';
+    const mainFill = icon.fill === 'currentColor' ? 'white' : 'none';
+    
+    // Use custom size if defined (e.g. 40), otherwise default 24
+    const mainSize = icon.size || "24";
+    
+    // COMPENSATE PADDING FOR LARGE CUSTOM LOGO
+    if (icon.id === 'custom-logo') {
+       // UPDATED: Right padding increased by 3px (14px -> 17px).
+       // Format: top right bottom left => 4px 17px 4px 14px
+       widgetButton.style.setProperty('--widget-padding', '4px 17px 4px 14px');
+    } else {
+       widgetButton.style.removeProperty('--widget-padding');
+    }
+    
+    // Always use standard gap (10px) defined in CSS
+    widgetButton.style.removeProperty('gap');
+    
+    widgetIconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${mainSize}" height="${mainSize}" viewBox="${vb}" fill="${mainFill}" stroke="${mainStr}" stroke-width="${strW}" stroke-linecap="round" stroke-linejoin="round">${icon.svg}</svg>`;
   };
   iconSelector.appendChild(div);
 });
@@ -1032,13 +1133,11 @@ function showTyping() { typingIndicator.classList.remove('hidden'); messagesCont
 function hideTyping() { typingIndicator.classList.add('hidden'); }
 function setButtonLoading(isLoading) { 
   if (isLoading) { 
-    btnIconSend.classList.add('hidden'); 
-    btnIconLoading.classList.remove('hidden'); 
+    // LOADING LOGIC REMOVED: Simply disable input to prevent double submit
+    // But button is hidden anyway because text is cleared
     sendButton.disabled = true; 
     messageInput.disabled = true; 
   } else { 
-    btnIconSend.classList.remove('hidden'); 
-    btnIconLoading.classList.add('hidden'); 
     sendButton.disabled = false; 
     messageInput.disabled = false; 
     messageInput.focus(); 
@@ -1060,6 +1159,7 @@ function handleSendMessage() {
   addMessage(text, 'user'); 
   messageInput.value = ''; 
   messageInput.style.height = 'auto'; // Reset height instantly
+  updateSendButtonState(); // Reset button state (make pale)
   setButtonLoading(true); 
   showTyping(); 
   getAIResponse(text); 
@@ -1068,6 +1168,7 @@ function resetChat() {
   const indicatorHTML = typingIndicator.outerHTML; messagesContainer.innerHTML = ''; messagesContainer.innerHTML = indicatorHTML;
   typingIndicator = document.getElementById('typing-indicator');
   welcomed = false; isGenerating = false; setButtonLoading(false); simulateWelcome();
+  updateSendButtonState(); // Ensure button is reset
 }
 
 resetChatBtn.addEventListener('click', () => modals.reset.classList.remove('hidden'));
@@ -1109,6 +1210,7 @@ messageInput.addEventListener('keydown', (event) => {
 });
 
 updateContactStack();
+updateSendButtonState(); // Init button state
 // Init default positioning
 widgetButton.classList.add('widget-pos-right');
 chatWindow.classList.add('widget-pos-right');
