@@ -579,7 +579,7 @@ input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cur
   </div>
   <div class="admin-control">
     <span class="admin-label">Позиция Y (Смещение) <span id="val-offset-y" class="text-xs font-normal lowercase">0px</span></span>
-    <input type="range" id="input-offset-y" min="0" max="200" value="0">
+    <input type="range" id="input-offset-y" min="-100" max="200" value="0">
   </div>
 
   <div class="admin-control">
@@ -930,15 +930,16 @@ iconsList.forEach((icon, index) => {
     
     // COMPENSATE PADDING FOR LARGE CUSTOM LOGO
     if (icon.id === 'custom-logo') {
-       // UPDATED: Right padding increased by 3px (14px -> 17px).
-       // Format: top right bottom left => 4px 17px 4px 14px
-       widgetButton.style.setProperty('--widget-padding', '4px 17px 4px 14px');
+       // UPDATED:
+       // 1. Reduced GAP from 5px to 4px (moves text 1px further left).
+       // 2. Increased Right Padding from 17px to 18px (compensates width).
+       // Format: top right bottom left => 4px 18px 4px 11px
+       widgetButton.style.setProperty('--widget-padding', '4px 18px 4px 11px');
+       widgetButton.style.gap = '4px';
     } else {
        widgetButton.style.removeProperty('--widget-padding');
+       widgetButton.style.removeProperty('gap');
     }
-    
-    // Always use standard gap (10px) defined in CSS
-    widgetButton.style.removeProperty('gap');
     
     widgetIconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${mainSize}" height="${mainSize}" viewBox="${vb}" fill="${mainFill}" stroke="${mainStr}" stroke-width="${strW}" stroke-linecap="round" stroke-linejoin="round">${icon.svg}</svg>`;
   };
