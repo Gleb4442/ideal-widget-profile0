@@ -1,0 +1,74 @@
+/*
+ * Dark Mode Styles
+ * Hilton Chat Widget
+ */
+
+#chat-window.dark-mode {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+#chat-window.dark-mode #chat-messages {
+  background-color: #1f2937;
+}
+
+#chat-window.dark-mode .chat-message-ai {
+  background-color: #374151;
+  color: #e5e7eb;
+}
+
+#chat-window.dark-mode .typing-indicator-bubble {
+  background-color: #374151;
+}
+
+#chat-window.dark-mode footer {
+  background-color: #111827;
+  border-top-color: #374151;
+}
+
+#chat-window.dark-mode #message-input {
+  color: #f3f4f6;
+}
+
+#chat-window.dark-mode #message-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Dark mode input - always lit */
+#chat-window.dark-mode .input-container-bg {
+  background-color: #374151 !important;
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 2px var(--accent-color) !important;
+}
+
+#chat-window.dark-mode .message-time {
+  color: #9ca3af;
+}
+
+#chat-window.dark-mode #scroll-to-bottom-btn {
+  background-color: #374151;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+#chat-window.dark-mode #scroll-to-bottom-btn:hover {
+  background-color: #4b5563;
+}
+
+#chat-window.dark-mode .modal-content {
+  background-color: #374151;
+  color: #f3f4f6;
+}
+
+#chat-window.dark-mode .modal-text-secondary {
+  color: #9ca3af;
+}
+
+#chat-window.dark-mode .modal-btn-cancel {
+  background-color: #4b5563;
+  color: #e5e7eb;
+}
+
+#chat-window.dark-mode .modal-btn-cancel:hover {
+  background-color: #6b7280;
+}

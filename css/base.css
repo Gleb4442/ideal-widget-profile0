@@ -1,0 +1,60 @@
+/*
+ * Base Styles
+ * Hilton Chat Widget
+ */
+
+body {
+  background-color: #f0f2f5;
+  font-family: var(--font-main);
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Apply Font Variable Globally within Widget */
+#chat-widget-button, #chat-window, .font-dynamic {
+  font-family: var(--font-main) !important;
+}
+
+/* Utilities */
+.accent-bg { background-color: var(--accent-color) !important; }
+.accent-bg-hover:hover { background-color: var(--accent-hover) !important; }
+.accent-text { color: var(--accent-color) !important; }
+.accent-border { border-color: var(--accent-color) !important; }
+.hidden-important { display: none !important; }
+
+.no-animation {
+  animation: none !important;
+  transform: scale(var(--widget-scale)) !important;
+}
+.no-animation:hover {
+  transform: scale(calc(var(--widget-scale) * 1.05)) !important;
+}
+
+#message-input:focus { outline: none !important; box-shadow: none !important; }
+
+/* Custom scrollbar for textarea */
+textarea#message-input::-webkit-scrollbar { display: none; }
+textarea#message-input { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Input container - always lit */
+.input-container-bg {
+  border: 1px solid var(--accent-color) !important;
+  box-shadow: 0 0 0 2px var(--accent-color) !important;
+  background-color: white !important;
+  transition: all 0.2s ease-out !important;
+}
+.input-container-bg:focus-within {
+  background-color: white !important;
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 2px var(--accent-color) !important;
+}
+
+/* Scrollbar hidden for messages */
+#chat-messages::-webkit-scrollbar { display: none; }
+#chat-messages { -ms-overflow-style: none; scrollbar-width: none; }

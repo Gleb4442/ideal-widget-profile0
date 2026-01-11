@@ -1,0 +1,114 @@
+/*
+ * Widget Button Styles
+ * Hilton Chat Widget
+ */
+
+#chat-widget-button {
+  position: fixed;
+  bottom: calc(32px + var(--widget-offset-y) + env(safe-area-inset-bottom, 0px));
+  width: auto;
+  padding: var(--widget-padding);
+  border-radius: var(--widget-border-radius);
+  gap: 10px;
+  background-color: var(--accent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  border: none;
+  transform: scale(var(--widget-scale));
+  animation: ripple 2s infinite, shake-interval 6s infinite ease-in-out;
+}
+
+#chat-widget-button:hover {
+  transform: scale(calc(var(--widget-scale) * 1.05));
+  animation-play-state: paused;
+  background-color: var(--accent-hover);
+}
+
+.chat-button-text {
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Shape Variants */
+.shape-pill {
+  --widget-border-radius: 9999px;
+  --widget-padding: 12px 24px;
+}
+
+.shape-rounded {
+  --widget-border-radius: 12px;
+  --widget-padding: 12px 20px;
+}
+
+.shape-circle {
+  --widget-border-radius: 50%;
+  --widget-padding: 0;
+  width: 56px !important;
+  height: 56px !important;
+  justify-content: center;
+  padding: 0 !important;
+}
+
+.shape-circle.custom-logo-selected svg {
+  width: 52px !important;
+  height: 52px !important;
+}
+
+.shape-circle .chat-button-text {
+  display: none;
+}
+
+.shape-circle #chat-notification-badge {
+  top: 0;
+  right: 0;
+}
+
+/* Positioning Logic */
+#chat-widget-button.widget-pos-right {
+  right: calc(20px + var(--widget-offset-x)) !important;
+  left: auto !important;
+}
+
+#chat-widget-button.widget-pos-left {
+  left: calc(20px + var(--widget-offset-x)) !important;
+  right: auto !important;
+}
+
+#chat-widget-button.widget-pos-center {
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(calc(-50% + var(--widget-offset-x))) scale(var(--widget-scale));
+  animation: ripple 2s infinite, shake-interval-center 6s infinite ease-in-out;
+}
+
+#chat-widget-button.widget-pos-center:hover {
+  transform: translateX(calc(-50% + var(--widget-offset-x))) scale(calc(var(--widget-scale) * 1.05));
+}
+
+/* Notification Badge */
+#chat-notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background-color: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  animation: badge-pop 2s infinite ease-in-out;
+  z-index: 10;
+}

@@ -1,0 +1,148 @@
+/*
+ * Contact Banners Styles
+ * Hilton Chat Widget
+ */
+
+.contact-banner {
+  position: absolute;
+  bottom: 100%;
+  left: 12px;
+  right: 12px;
+  margin-bottom: 40px;
+  transform: translateY(10px);
+  overflow: hidden;
+  white-space: nowrap;
+  height: 64px;
+  z-index: 50;
+  cursor: pointer;
+  border-radius: 24px;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  text-decoration: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.contact-banner.show-banner {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(-8px) scale(0.98);
+}
+
+.contact-banner:hover {
+  opacity: 1;
+  transform: translateY(-12px) scale(1);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* Telegram Banner */
+#telegram-banner {
+  background: linear-gradient(180deg, #2AABEE 0%, #229ED9 100%);
+}
+
+.banner-icon-wrapper {
+  margin: 0;
+  background-color: transparent;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-left: 8px;
+  color: white;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.banner-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-left: 12px;
+  padding-right: 30px;
+  transition: opacity 0.2s ease;
+}
+
+.banner-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  line-height: 1.2;
+}
+
+.banner-subtitle {
+  font-size: 11px;
+  color: rgba(255,255,255,0.9);
+}
+
+.close-banner-btn {
+  position: relative;
+  margin-left: auto;
+  margin-right: 12px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.7);
+  border-radius: 50%;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.close-banner-btn:hover {
+  background-color: rgba(0,0,0,0.1);
+  color: white;
+}
+
+/* Collapsed State */
+.contact-banner.collapsed {
+  width: 60px;
+  height: 40px;
+  left: auto;
+  right: -20px;
+  border-radius: 24px 0 0 24px;
+  padding: 0 0 0 10px;
+  justify-content: flex-start;
+  box-shadow: -2px 2px 8px rgba(0,0,0,0.15);
+}
+
+.contact-banner.collapsed:hover {
+  right: -10px;
+}
+
+.contact-banner.collapsed .banner-content,
+.contact-banner.collapsed .close-banner-btn {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.contact-banner.collapsed .banner-icon-wrapper {
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  background-color: transparent;
+}
+
+.contact-banner.collapsed svg.main-icon {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.expand-arrow {
+  display: none;
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+  color: white;
+  flex-shrink: 0;
+}

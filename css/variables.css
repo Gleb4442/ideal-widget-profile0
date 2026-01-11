@@ -1,0 +1,16 @@
+/*
+ * CSS Variables & Theme Configuration
+ * Hilton Chat Widget
+ */
+
+:root {
+  --accent-color: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-rgb: 37, 99, 235;
+  --font-main: 'Inter', sans-serif;
+  --widget-offset-x: 0px;
+  --widget-offset-y: 0px;
+  --widget-scale: 1;
+  --widget-border-radius: 30px;
+  --widget-padding: 12px 24px;
+}

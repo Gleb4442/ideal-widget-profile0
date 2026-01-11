@@ -1,0 +1,47 @@
+/*
+ * Animation Keyframes
+ * Hilton Chat Widget
+ */
+
+@keyframes ripple {
+  0% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.7); }
+  70% { box-shadow: 0 0 0 15px rgba(var(--accent-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0); }
+}
+
+@keyframes shake-interval {
+  0%, 85% { transform: scale(var(--widget-scale)) rotate(0deg); }
+  87% { transform: scale(var(--widget-scale)) rotate(-5deg); }
+  89% { transform: scale(var(--widget-scale)) rotate(5deg); }
+  91% { transform: scale(var(--widget-scale)) rotate(-5deg); }
+  93% { transform: scale(var(--widget-scale)) rotate(5deg); }
+  95%, 100% { transform: scale(var(--widget-scale)) rotate(0deg); }
+}
+
+@keyframes shake-interval-center {
+  0%, 85% { transform: translateX(calc(-50% + var(--widget-offset-x))) scale(var(--widget-scale)) rotate(0deg); }
+  87% { transform: translateX(calc(-50% + var(--widget-offset-x))) scale(var(--widget-scale)) rotate(-5deg); }
+  89% { transform: translateX(calc(-50% + var(--widget-offset-x))) scale(var(--widget-scale)) rotate(5deg); }
+  91% { transform: translateX(calc(-50% + var(--widget-offset-x))) scale(var(--widget-scale)) rotate(-5deg); }
+  93% { transform: translateX(calc(-50% + var(--widget-offset-x))) scale(var(--widget-scale)) rotate(5deg); }
+  95%, 100% { transform: translateX(calc(-50% + var(--widget-offset-x))) scale(var(--widget-scale)) rotate(0deg); }
+}
+
+@keyframes badge-pop {
+  0%, 100% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.1) translateY(-4px); }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes typing-bounce {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.6; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

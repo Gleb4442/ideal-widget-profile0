@@ -1,0 +1,70 @@
+/*
+ * DOM Element References
+ * Hilton Chat Widget
+ */
+
+// Main Widget Elements
+export const widgetButton = document.getElementById('chat-widget-button');
+export const chatWindow = document.getElementById('chat-window');
+export const closeButton = document.getElementById('chat-close-button');
+export const messagesContainer = document.getElementById('chat-messages');
+export const messageInput = document.getElementById('message-input');
+export const sendButton = document.getElementById('send-button');
+export const notificationBadge = document.getElementById('chat-notification-badge');
+export const btnIconSend = document.getElementById('btn-icon-send');
+export const resetChatBtn = document.getElementById('reset-chat-btn');
+export const chatButtonText = document.querySelector('.chat-button-text');
+export const scrollToBottomBtn = document.getElementById('scroll-to-bottom-btn');
+export const brandingToggle = document.getElementById('branding-toggle');
+export const poweredByContainer = document.getElementById('powered-by-container');
+export const chatFooter = document.getElementById('chat-footer');
+export const inputAreaWrapper = document.getElementById('input-area-wrapper');
+
+// Admin Panel Elements
+export const adminPanel = document.getElementById('admin-panel');
+export const openAdminBtn = document.getElementById('open-admin-btn');
+export const closeAdminBtn = document.getElementById('close-admin-btn');
+export const accentColorPicker = document.getElementById('accent-color-picker');
+export const colorValueText = document.getElementById('color-value-text');
+export const themeToggle = document.getElementById('theme-toggle');
+export const hotelNameInput = document.getElementById('hotel-name-input');
+export const logoUpload = document.getElementById('logo-upload');
+export const hotelNameText = document.getElementById('hotel-name-text');
+export const hotelLogoContainer = document.getElementById('hotel-logo-container');
+export const buttonTextSelect = document.getElementById('button-text-select');
+export const animationToggle = document.getElementById('animation-toggle');
+export const positionSelect = document.getElementById('position-select');
+
+// Offset & Scale Controls
+export const inputOffsetX = document.getElementById('input-offset-x');
+export const inputOffsetY = document.getElementById('input-offset-y');
+export const valOffsetX = document.getElementById('val-offset-x');
+export const valOffsetY = document.getElementById('val-offset-y');
+export const inputScale = document.getElementById('input-scale');
+export const valScale = document.getElementById('val-scale');
+export const fontSelect = document.getElementById('font-select');
+export const shapeSelector = document.getElementById('shape-selector');
+export const iconSelector = document.getElementById('icon-selector');
+export const widgetIconContainer = document.getElementById('widget-icon-container');
+
+// Toggles
+export const tgToggle = document.getElementById('tg-toggle');
+
+// Banners
+export const banners = {
+  telegram: document.getElementById('telegram-banner')
+};
+
+// Modals
+export const modals = {
+  reset: document.getElementById('reset-confirmation-modal'),
+  telegram: document.getElementById('tg-confirmation-modal')
+};
+
+// Mutable reference for typing indicator (needs re-assignment after reset)
+export let typingIndicator = document.getElementById('typing-indicator');
+
+export function updateTypingIndicator() {
+  typingIndicator = document.getElementById('typing-indicator');
+  return typingIndicator;
+}

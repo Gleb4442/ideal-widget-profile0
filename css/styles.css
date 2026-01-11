@@ -1,0 +1,18 @@
+/*
+ * Main Stylesheet
+ * Hilton Chat Widget
+ *
+ * This file imports all CSS modules
+ */
+
+@import 'variables.css';
+@import 'base.css';
+@import 'dark-mode.css';
+@import 'animations.css';
+@import 'widget-button.css';
+@import 'chat-window.css';
+@import 'messages.css';
+@import 'banners.css';
+@import 'admin-panel.css';
+@import 'send-button.css';
+@import 'rooms.css';
