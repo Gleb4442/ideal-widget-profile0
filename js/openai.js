@@ -6,9 +6,25 @@
 import { getAllRooms } from './rooms.js';
 
 // API Configuration
-const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY_HERE';
+let OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY_HERE';
 const API_URL = 'https://api.openai.com/v1/chat/completions';
+const PROXY_URL = '/api/chat'; // Vercel Serverless Function
 const MODEL = 'gpt-4o-mini';
+
+// Try to load local config if available
+async function initConfig() {
+  try {
+    const { LOCAL_CONFIG } = await import('./config-local.js');
+    if (LOCAL_CONFIG && LOCAL_CONFIG.OPENAI_API_KEY) {
+      OPENAI_API_KEY = LOCAL_CONFIG.OPENAI_API_KEY;
+    }
+  } catch (e) {
+    // config-local.js doesn't exist or isn't a module, fallback to proxy/placeholder
+  }
+}
+
+// Initialize config
+const configPromise = initConfig();
 
 // Room intent keywords for detecting when user wants to see rooms
 const ROOM_INTENT_PATTERNS = [
@@ -69,13 +85,24 @@ export function hasRoomIntent(message) {
 
 // Call OpenAI API
 async function callOpenAI(messages) {
+  await configPromise;
+
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const useDirect = isLocal && OPENAI_API_KEY && OPENAI_API_KEY !== 'YOUR_OPENAI_API_KEY_HERE';
+
   try {
-    const response = await fetch(API_URL, {
+    const url = useDirect ? API_URL : PROXY_URL;
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+
+    if (useDirect) {
+      headers['Authorization'] = `Bearer ${OPENAI_API_KEY}`;
+    }
+
+    const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`
-      },
+      headers: headers,
       body: JSON.stringify({
         model: MODEL,
         messages: messages,
@@ -86,14 +113,14 @@ async function callOpenAI(messages) {
 
     if (!response.ok) {
       const error = await response.json();
-      console.error('OpenAI API error:', error);
+      console.error('API error:', error);
       throw new Error(error.error?.message || 'API request failed');
     }
 
     const data = await response.json();
     return data.choices[0]?.message?.content || 'Вибачте, не вдалося отримати відповідь.';
   } catch (error) {
-    console.error('OpenAI request error:', error);
+    console.error('Request error:', error);
     throw error;
   }
 }

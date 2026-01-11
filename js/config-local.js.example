@@ -1,0 +1,6 @@
+// Copy this file to config-local.js and add your API key
+// This file is ignored by git
+
+export const LOCAL_CONFIG = {
+    OPENAI_API_KEY: 'your-api-key-here'
+};
