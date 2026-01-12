@@ -3,13 +3,25 @@
  * Hilton Chat Widget
  */
 
-import { getAllRooms } from './rooms.js';
+import { getAllRooms, isRangeAvailable, getAvailableRoomsForRange } from './rooms.js';
 
 // API Configuration
 let OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY_HERE';
 const API_URL = 'https://api.openai.com/v1/chat/completions';
 const PROXY_URL = '/api/chat'; // Vercel Serverless Function
 const MODEL = 'gpt-4o-mini';
+
+// Hotel info storage key
+const HOTEL_INFO_KEY = 'hotel_info';
+
+// Get hotel info from localStorage
+function getHotelInfo() {
+  try {
+    return localStorage.getItem(HOTEL_INFO_KEY) || '';
+  } catch (e) {
+    return '';
+  }
+}
 
 // Try to load local config if available
 async function initConfig() {
@@ -75,34 +87,91 @@ const GENERAL_TOPIC_PATTERNS = [
   /какие услуги/i
 ];
 
-// Build system prompt for general chat
-function buildGeneralSystemPrompt(hotelName = 'Hilton') {
+// Build system prompt for general chat with booking funnel
+function buildGeneralSystemPrompt(hotelName = 'Hilton', bookingState = null) {
   const rooms = getAllRooms();
+  const hotelInfo = getHotelInfo();
+
   const roomsList = rooms.length > 0
-    ? rooms.map(r => `- ${r.name}: ${r.area}м², $${r.pricePerNight}/ніч`).join('\n')
+    ? rooms.map(r => {
+        const bookedCount = (r.bookedDates || []).length;
+        return `- ${r.name}: ${r.area}м², $${r.pricePerNight}/ніч`;
+      }).join('\n')
     : 'Номери ще не додані.';
 
-  return `Ти ввічливий асистент готелю ${hotelName}. Відповідай коротко та інформативно українською мовою.
+  // Build booking state description
+  let stateDescription = '';
+  if (bookingState && bookingState.collectedData) {
+    const data = bookingState.collectedData;
+    const parts = [];
+    if (data.checkIn) parts.push(`Дата заїзду: ${data.checkIn}`);
+    if (data.checkOut) parts.push(`Дата виїзду: ${data.checkOut}`);
+    if (data.guests) parts.push(`Гостей: ${data.guests}`);
+    if (data.selectedRoom) parts.push(`Обраний номер: ${data.selectedRoom}`);
+    stateDescription = parts.length > 0 ? parts.join(', ') : 'Дані ще не зібрані';
+  }
 
-Доступні номери:
+  // Build availability info if dates are provided
+  let availabilityInfo = '';
+  if (bookingState?.collectedData?.checkIn && bookingState?.collectedData?.checkOut) {
+    const availableRooms = getAvailableRoomsForRange(
+      bookingState.collectedData.checkIn,
+      bookingState.collectedData.checkOut
+    );
+    if (availableRooms.length > 0) {
+      availabilityInfo = `\n\nДОСТУПНІ НОМЕРИ на вказані дати:\n${availableRooms.map(r => `- ${r.name}: $${r.pricePerNight}/ніч`).join('\n')}`;
+    } else {
+      availabilityInfo = '\n\nНа вказані дати немає вільних номерів.';
+    }
+  }
+
+  return `Ти ввічливий асистент готелю ${hotelName}. Твоя головна мета - допомогти гостю забронювати номер.
+
+ІНФОРМАЦІЯ ПРО ГОТЕЛЬ:
+${hotelInfo || 'Інформація не вказана.'}
+
+ДОСТУПНІ НОМЕРИ:
 ${roomsList}
+${availabilityInfo}
 
-Якщо гість питає про номери або хоче подивитись варіанти, скажи що зараз покажеш доступні номери (система автоматично покаже карусель).
+ВОРОНКА БРОНЮВАННЯ (дотримуйся послідовності):
+1. Якщо гість не вказав дати заїзду/виїзду - уточни їх ненав'язливо
+2. Якщо є дати, але не вказана кількість гостей - уточни
+3. Коли є дати та кількість гостей - перевір доступність та запропонуй підходящі номери
+4. Після вибору номера - релевантно запропонуй додаткові послуги (SPA, ресторан і т.д.)
 
-Будь дружелюбним та допомагай з бронюванням.`;
+ПОТОЧНИЙ СТАН БРОНЮВАННЯ:
+${stateDescription || 'Початок діалогу'}
+
+ВАЖЛИВІ ПРАВИЛА:
+- Якщо гість задає конкретне питання (про WiFi, сніданок, трансфер) - СПОЧАТКУ відповідай на нього, потім плавно повертайся до воронки
+- Будь дружелюбним та не нав'язливим
+- Відповідай коротко (2-4 речення)
+- Відповідай українською мовою
+- Якщо гість питає про номери або хоче подивитись варіанти - скажи що зараз покажеш доступні номери`;
 }
 
 // Build system prompt for room-specific chat
-function buildRoomSystemPrompt(room, hotelName = 'Hilton') {
-  return `Ти асистент готелю ${hotelName}. Зараз гість цікавиться конкретним номером. Відповідай на питання тільки про цей номер.
+function buildRoomSystemPrompt(room, hotelName = 'Hilton', bookingState = null) {
+  const hotelInfo = getHotelInfo();
 
-Інформація про номер:
+  return `Ти асистент готелю ${hotelName}. Зараз гість цікавиться конкретним номером.
+
+ІНФОРМАЦІЯ ПРО НОМЕР:
 - Назва: ${room.name}
 - Опис: ${room.description || 'Опис не вказано'}
 - Площа: ${room.area} м²
 - Ціна: $${room.pricePerNight} за ніч
 
-Відповідай коротко, інформативно, українською мовою. Якщо питання виходить за межі інформації про номер, ввічливо запропонуй звернутись до персоналу готелю.`;
+ІНФОРМАЦІЯ ПРО ГОТЕЛЬ:
+${hotelInfo || 'Інформація не вказана.'}
+
+ПРАВИЛА:
+- Відповідай на питання про цей номер
+- Якщо гість готовий бронювати - запитай дати заїзду/виїзду
+- Після підтвердження номера можеш запропонувати додаткові послуги
+- Відповідай коротко, українською мовою
+- Якщо питання виходить за межі інформації - ввічливо запропонуй звернутись до персоналу`;
 }
 
 // Check if message indicates room intent
@@ -157,23 +226,34 @@ async function callOpenAI(messages) {
   }
 }
 
-// Get general AI response
-export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton') {
-  const systemPrompt = buildGeneralSystemPrompt(hotelName);
+// Get general AI response with booking funnel support
+export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bookingState = null, conversationHistory = []) {
+  const systemPrompt = buildGeneralSystemPrompt(hotelName, bookingState);
 
+  // Build messages with conversation history
   const messages = [
-    { role: 'system', content: systemPrompt },
-    { role: 'user', content: userMessage }
+    { role: 'system', content: systemPrompt }
   ];
+
+  // Add last 10 messages from history for context
+  const recentHistory = conversationHistory.slice(-10);
+  messages.push(...recentHistory);
+
+  // Add current user message
+  messages.push({ role: 'user', content: userMessage });
 
   // Check for room intent
   const showRooms = hasRoomIntent(userMessage);
+
+  // Extract booking data from user message
+  const extractedData = extractBookingData(userMessage);
 
   try {
     const response = await callOpenAI(messages);
     return {
       text: response,
-      showRoomsCarousel: showRooms && getAllRooms().length > 0
+      showRoomsCarousel: showRooms && getAllRooms().length > 0,
+      extractedData: extractedData
     };
   } catch (error) {
     return {
@@ -185,18 +265,29 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton') {
 }
 
 // Get room-specific AI response
-export async function getRoomAIResponse(userMessage, room, hotelName = 'Hilton') {
-  const systemPrompt = buildRoomSystemPrompt(room, hotelName);
+export async function getRoomAIResponse(userMessage, room, hotelName = 'Hilton', bookingState = null, conversationHistory = []) {
+  const systemPrompt = buildRoomSystemPrompt(room, hotelName, bookingState);
 
+  // Build messages with conversation history
   const messages = [
-    { role: 'system', content: systemPrompt },
-    { role: 'user', content: userMessage }
+    { role: 'system', content: systemPrompt }
   ];
+
+  // Add last 10 messages from history for context
+  const recentHistory = conversationHistory.slice(-10);
+  messages.push(...recentHistory);
+
+  // Add current user message
+  messages.push({ role: 'user', content: userMessage });
+
+  // Extract booking data from user message
+  const extractedData = extractBookingData(userMessage);
 
   try {
     const response = await callOpenAI(messages);
     return {
       text: response,
+      extractedData: extractedData,
       error: false
     };
   } catch (error) {
@@ -205,6 +296,109 @@ export async function getRoomAIResponse(userMessage, room, hotelName = 'Hilton')
       error: true
     };
   }
+}
+
+// Extract booking data from user message (dates, guests count)
+export function extractBookingData(message) {
+  const data = {
+    checkIn: null,
+    checkOut: null,
+    guests: null
+  };
+
+  // Date patterns: DD.MM, DD/MM, DD-MM, DD.MM.YYYY, "15 січня", etc.
+  const datePatterns = [
+    /(\d{1,2})[./-](\d{1,2})(?:[./-](\d{2,4}))?/g,  // 15.01, 15/01/2026
+    /з?\s*(\d{1,2})\s+(січня|лютого|березня|квітня|травня|червня|липня|серпня|вересня|жовтня|листопада|грудня)/gi,
+    /по\s*(\d{1,2})\s+(січня|лютого|березня|квітня|травня|червня|липня|серпня|вересня|жовтня|листопада|грудня)/gi
+  ];
+
+  const monthMap = {
+    'січня': 1, 'лютого': 2, 'березня': 3, 'квітня': 4,
+    'травня': 5, 'червня': 6, 'липня': 7, 'серпня': 8,
+    'вересня': 9, 'жовтня': 10, 'листопада': 11, 'грудня': 12
+  };
+
+  // Try to find dates in DD.MM or DD.MM.YYYY format
+  const numericDateMatch = message.match(/(\d{1,2})[./-](\d{1,2})(?:[./-](\d{2,4}))?/g);
+  if (numericDateMatch) {
+    const dates = [];
+    numericDateMatch.forEach(dateStr => {
+      const parts = dateStr.split(/[./-]/);
+      if (parts.length >= 2) {
+        const day = parseInt(parts[0]);
+        const month = parseInt(parts[1]);
+        let year = parts[2] ? parseInt(parts[2]) : new Date().getFullYear();
+        if (year < 100) year += 2000;
+
+        if (day >= 1 && day <= 31 && month >= 1 && month <= 12) {
+          dates.push(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
+        }
+      }
+    });
+
+    if (dates.length >= 1) data.checkIn = dates[0];
+    if (dates.length >= 2) data.checkOut = dates[1];
+  }
+
+  // Try to find text dates like "15 січня"
+  const textDateMatches = message.match(/(\d{1,2})\s+(січня|лютого|березня|квітня|травня|червня|липня|серпня|вересня|жовтня|листопада|грудня)/gi);
+  if (textDateMatches && textDateMatches.length > 0) {
+    const dates = [];
+    textDateMatches.forEach(match => {
+      const parts = match.match(/(\d{1,2})\s+(\S+)/i);
+      if (parts) {
+        const day = parseInt(parts[1]);
+        const monthName = parts[2].toLowerCase();
+        const month = monthMap[monthName];
+        if (month) {
+          const year = new Date().getFullYear();
+          dates.push(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
+        }
+      }
+    });
+
+    if (!data.checkIn && dates.length >= 1) data.checkIn = dates[0];
+    if (!data.checkOut && dates.length >= 2) data.checkOut = dates[1];
+  }
+
+  // Extract guest count
+  const guestPatterns = [
+    /(\d+)\s*(гост|людин|персон|чоловік|осіб|человек)/i,
+    /на\s*(\d+)/i,
+    /(двоє|двох|троє|трьох|четверо|четирьох|п'ятеро|п'ятьох)/i
+  ];
+
+  const guestWordMap = {
+    'двоє': 2, 'двох': 2,
+    'троє': 3, 'трьох': 3,
+    'четверо': 4, 'четирьох': 4,
+    "п'ятеро": 5, "п'ятьох": 5
+  };
+
+  for (const pattern of guestPatterns) {
+    const match = message.match(pattern);
+    if (match) {
+      if (guestWordMap[match[1]?.toLowerCase()]) {
+        data.guests = guestWordMap[match[1].toLowerCase()];
+      } else if (!isNaN(parseInt(match[1]))) {
+        data.guests = parseInt(match[1]);
+      }
+      break;
+    }
+  }
+
+  return data;
+}
+
+// Check room availability for given dates
+export function checkRoomAvailability(roomId, checkIn, checkOut) {
+  return isRangeAvailable(roomId, checkIn, checkOut);
+}
+
+// Get available rooms for date range
+export function getAvailableRooms(checkIn, checkOut) {
+  return getAvailableRoomsForRange(checkIn, checkOut);
 }
 
 // Export for testing/debugging

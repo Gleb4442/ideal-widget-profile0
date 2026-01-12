@@ -11,6 +11,17 @@ import * as rooms from './rooms.js';
 let currentEditRoomId = null;
 let currentMainPhoto = '';
 let currentGallery = [];
+let currentBookedDates = [];
+let calendarCurrentMonth = new Date();
+
+// Hotel info storage key
+const HOTEL_INFO_KEY = 'hotel_info';
+
+// Russian month names
+const MONTH_NAMES_RU = [
+  'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+  'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+];
 
 // Initialize Font Selector
 export function initFontSelector() {
@@ -210,6 +221,199 @@ export function initFooterLayout() {
   }
 }
 
+// ============================================
+// HOTEL INFO FUNCTIONS
+// ============================================
+
+// Load hotel info from localStorage
+export function loadHotelInfo() {
+  try {
+    return localStorage.getItem(HOTEL_INFO_KEY) || '';
+  } catch (e) {
+    console.error('Error loading hotel info:', e);
+    return '';
+  }
+}
+
+// Save hotel info to localStorage
+export function saveHotelInfo(info) {
+  try {
+    localStorage.setItem(HOTEL_INFO_KEY, info);
+    return true;
+  } catch (e) {
+    console.error('Error saving hotel info:', e);
+    return false;
+  }
+}
+
+// Initialize hotel info input
+export function initHotelInfo() {
+  if (dom.hotelInfoInput) {
+    // Load saved value
+    dom.hotelInfoInput.value = loadHotelInfo();
+
+    // Save on change
+    dom.hotelInfoInput.addEventListener('input', (e) => {
+      saveHotelInfo(e.target.value);
+    });
+  }
+}
+
+// ============================================
+// CALENDAR FUNCTIONS
+// ============================================
+
+// Format date to YYYY-MM-DD
+function formatDateStr(date) {
+  const d = new Date(date);
+  return d.toISOString().split('T')[0];
+}
+
+// Render calendar for current month
+function renderCalendar() {
+  const calendarGrid = document.getElementById('room-calendar');
+  const monthLabel = document.getElementById('calendar-month-label');
+  if (!calendarGrid || !monthLabel) return;
+
+  const year = calendarCurrentMonth.getFullYear();
+  const month = calendarCurrentMonth.getMonth();
+
+  // Update month label
+  monthLabel.textContent = `${MONTH_NAMES_RU[month]} ${year}`;
+
+  // Get first day of month (0 = Sunday, we need Monday = 0)
+  const firstDay = new Date(year, month, 1);
+  let startDayOfWeek = firstDay.getDay() - 1;
+  if (startDayOfWeek < 0) startDayOfWeek = 6; // Sunday becomes 6
+
+  // Get number of days in month
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Get today's date
+  const today = formatDateStr(new Date());
+
+  // Clear grid
+  calendarGrid.innerHTML = '';
+
+  // Add empty cells for days before first day of month
+  for (let i = 0; i < startDayOfWeek; i++) {
+    const emptyCell = document.createElement('div');
+    emptyCell.className = 'calendar-day empty';
+    calendarGrid.appendChild(emptyCell);
+  }
+
+  // Add day cells
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const cell = document.createElement('div');
+    cell.className = 'calendar-day';
+    cell.textContent = day;
+    cell.dataset.date = dateStr;
+
+    // Check if date is booked
+    if (currentBookedDates.includes(dateStr)) {
+      cell.classList.add('booked');
+    }
+
+    // Check if today
+    if (dateStr === today) {
+      cell.classList.add('today');
+    }
+
+    // Check if in past
+    if (dateStr < today) {
+      cell.classList.add('past');
+    } else {
+      // Add click handler for future dates
+      cell.addEventListener('click', () => toggleCalendarDate(dateStr));
+    }
+
+    calendarGrid.appendChild(cell);
+  }
+}
+
+// Toggle date booking status
+function toggleCalendarDate(dateStr) {
+  const index = currentBookedDates.indexOf(dateStr);
+  if (index === -1) {
+    currentBookedDates.push(dateStr);
+  } else {
+    currentBookedDates.splice(index, 1);
+  }
+  renderCalendar();
+}
+
+// Navigate to previous month
+function prevMonth() {
+  calendarCurrentMonth.setMonth(calendarCurrentMonth.getMonth() - 1);
+  renderCalendar();
+}
+
+// Navigate to next month
+function nextMonth() {
+  calendarCurrentMonth.setMonth(calendarCurrentMonth.getMonth() + 1);
+  renderCalendar();
+}
+
+// Generate random availability
+function generateRandomCalendar() {
+  currentBookedDates = [];
+  const today = new Date();
+  const twoMonthsLater = new Date(today);
+  twoMonthsLater.setMonth(twoMonthsLater.getMonth() + 2);
+
+  let currentDate = new Date(today);
+
+  while (currentDate < twoMonthsLater) {
+    // Random chance to start a booking block (20% chance)
+    if (Math.random() < 0.2) {
+      // Random block length 2-5 days
+      const blockLength = Math.floor(Math.random() * 4) + 2;
+
+      for (let i = 0; i < blockLength && currentDate < twoMonthsLater; i++) {
+        currentBookedDates.push(formatDateStr(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      // Skip 1-3 days between blocks
+      const gap = Math.floor(Math.random() * 3) + 1;
+      currentDate.setDate(currentDate.getDate() + gap);
+    } else {
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+  }
+
+  renderCalendar();
+}
+
+// Initialize calendar controls
+function initCalendarControls() {
+  const prevBtn = document.getElementById('calendar-prev-month');
+  const nextBtn = document.getElementById('calendar-next-month');
+  const generateBtn = document.getElementById('calendar-generate-random');
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      prevMonth();
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      nextMonth();
+    });
+  }
+
+  if (generateBtn) {
+    generateBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      generateRandomCalendar();
+    });
+  }
+}
+
 // Render Rooms Grid in Admin Panel
 export function renderRoomsGrid() {
   const grid = document.getElementById('rooms-admin-grid');
@@ -247,6 +451,8 @@ export function openRoomModal(roomId = null) {
   currentEditRoomId = roomId;
   currentMainPhoto = '';
   currentGallery = [];
+  currentBookedDates = [];
+  calendarCurrentMonth = new Date(); // Reset to current month
 
   if (roomId) {
     const room = rooms.getRoom(roomId);
@@ -259,6 +465,7 @@ export function openRoomModal(roomId = null) {
       document.getElementById('room-ask-toggle').checked = room.askQuestionEnabled !== false;
       currentMainPhoto = room.mainPhoto || '';
       currentGallery = room.gallery ? [...room.gallery] : [];
+      currentBookedDates = room.bookedDates ? [...room.bookedDates] : [];
       deleteBtn.style.display = 'flex';
     }
   } else {
@@ -273,6 +480,7 @@ export function openRoomModal(roomId = null) {
 
   updateMainPhotoPreview();
   updateGalleryPreview();
+  renderCalendar();
   modal.classList.add('active');
 }
 
@@ -371,7 +579,8 @@ function saveRoom() {
     pricePerNight,
     mainPhoto: currentMainPhoto,
     gallery: currentGallery,
-    askQuestionEnabled
+    askQuestionEnabled,
+    bookedDates: currentBookedDates
   };
 
   if (currentEditRoomId) {
@@ -486,5 +695,7 @@ export function initAdmin() {
   initAdminPanelControls();
   initPositionSelector();
   initFooterLayout();
+  initHotelInfo();
+  initCalendarControls();
   initRoomManagement();
 }

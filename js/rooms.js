@@ -128,6 +128,7 @@ export function updateRoom(id, roomData) {
     mainPhoto: roomData.mainPhoto ?? rooms[index].mainPhoto,
     gallery: roomData.gallery ?? rooms[index].gallery,
     askQuestionEnabled: roomData.askQuestionEnabled ?? rooms[index].askQuestionEnabled,
+    bookedDates: roomData.bookedDates ?? rooms[index].bookedDates ?? [],
     updatedAt: Date.now()
   };
 
@@ -170,4 +171,146 @@ export function formatPrice(price) {
 // Format area for display
 export function formatArea(area) {
   return `${area} м²`;
+}
+
+// ============================================
+// CALENDAR / AVAILABILITY FUNCTIONS
+// ============================================
+
+// Format date to YYYY-MM-DD
+export function formatDate(date) {
+  const d = new Date(date);
+  return d.toISOString().split('T')[0];
+}
+
+// Parse date string to Date object
+export function parseDate(dateStr) {
+  return new Date(dateStr + 'T00:00:00');
+}
+
+// Check if a specific date is available for a room
+export function isDateAvailable(roomId, dateStr) {
+  const room = getRoom(roomId);
+  if (!room) return false;
+  const bookedDates = room.bookedDates || [];
+  return !bookedDates.includes(dateStr);
+}
+
+// Check if date range is available for a room
+export function isRangeAvailable(roomId, startDate, endDate) {
+  const room = getRoom(roomId);
+  if (!room) return false;
+
+  const bookedDates = room.bookedDates || [];
+  const start = parseDate(startDate);
+  const end = parseDate(endDate);
+
+  for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
+    const dateStr = formatDate(d);
+    if (bookedDates.includes(dateStr)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Get available rooms for a date range
+export function getAvailableRoomsForRange(startDate, endDate) {
+  const allRooms = getAllRooms();
+  return allRooms.filter(room => isRangeAvailable(room.id, startDate, endDate));
+}
+
+// Toggle date booking status
+export function toggleDateBooked(roomId, dateStr) {
+  const rooms = loadRooms();
+  const index = rooms.findIndex(room => room.id === roomId);
+  if (index === -1) return false;
+
+  if (!rooms[index].bookedDates) {
+    rooms[index].bookedDates = [];
+  }
+
+  const dateIndex = rooms[index].bookedDates.indexOf(dateStr);
+  if (dateIndex === -1) {
+    rooms[index].bookedDates.push(dateStr);
+  } else {
+    rooms[index].bookedDates.splice(dateIndex, 1);
+  }
+
+  return saveRooms(rooms);
+}
+
+// Set date as booked or available
+export function setDateBooked(roomId, dateStr, booked) {
+  const rooms = loadRooms();
+  const index = rooms.findIndex(room => room.id === roomId);
+  if (index === -1) return false;
+
+  if (!rooms[index].bookedDates) {
+    rooms[index].bookedDates = [];
+  }
+
+  const dateIndex = rooms[index].bookedDates.indexOf(dateStr);
+
+  if (booked && dateIndex === -1) {
+    rooms[index].bookedDates.push(dateStr);
+  } else if (!booked && dateIndex !== -1) {
+    rooms[index].bookedDates.splice(dateIndex, 1);
+  }
+
+  return saveRooms(rooms);
+}
+
+// Generate random availability for demo (2 months ahead)
+export function generateRandomAvailability(roomId) {
+  const rooms = loadRooms();
+  const index = rooms.findIndex(room => room.id === roomId);
+  if (index === -1) return false;
+
+  const bookedDates = [];
+  const today = new Date();
+  const twoMonthsLater = new Date(today);
+  twoMonthsLater.setMonth(twoMonthsLater.getMonth() + 2);
+
+  // Generate random booking blocks (30-40% occupancy)
+  let currentDate = new Date(today);
+
+  while (currentDate < twoMonthsLater) {
+    // Random chance to start a booking block (20% chance)
+    if (Math.random() < 0.2) {
+      // Random block length 2-5 days
+      const blockLength = Math.floor(Math.random() * 4) + 2;
+
+      for (let i = 0; i < blockLength && currentDate < twoMonthsLater; i++) {
+        bookedDates.push(formatDate(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      // Skip 1-3 days between blocks
+      const gap = Math.floor(Math.random() * 3) + 1;
+      currentDate.setDate(currentDate.getDate() + gap);
+    } else {
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+  }
+
+  rooms[index].bookedDates = bookedDates;
+  return saveRooms(rooms);
+}
+
+// Get booked dates for a room
+export function getBookedDates(roomId) {
+  const room = getRoom(roomId);
+  if (!room) return [];
+  return room.bookedDates || [];
+}
+
+// Update booked dates for a room (used when saving from calendar)
+export function updateBookedDates(roomId, bookedDates) {
+  const rooms = loadRooms();
+  const index = rooms.findIndex(room => room.id === roomId);
+  if (index === -1) return false;
+
+  rooms[index].bookedDates = bookedDates;
+  return saveRooms(rooms);
 }

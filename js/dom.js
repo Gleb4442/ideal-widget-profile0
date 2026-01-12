@@ -34,6 +34,7 @@ export const hotelLogoContainer = document.getElementById('hotel-logo-container'
 export const buttonTextSelect = document.getElementById('button-text-select');
 export const animationToggle = document.getElementById('animation-toggle');
 export const positionSelect = document.getElementById('position-select');
+export const hotelInfoInput = document.getElementById('hotel-info-input');
 
 // Offset & Scale Controls
 export const inputOffsetX = document.getElementById('input-offset-x');

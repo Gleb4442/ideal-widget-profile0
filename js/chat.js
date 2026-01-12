@@ -16,6 +16,123 @@ let isGenerating = false;
 let selectedRoom = null;
 let chatMode = 'general'; // 'general' | 'room-context'
 
+// Booking state storage key
+const BOOKING_STATE_KEY = 'booking_state';
+
+// Booking funnel state (persisted to localStorage)
+let bookingState = {
+  step: 'initial', // 'initial' | 'gathering_info' | 'suggesting_rooms' | 'upselling' | 'completed'
+  collectedData: {
+    checkIn: null,
+    checkOut: null,
+    guests: null,
+    preferences: [],
+    selectedRoom: null
+  },
+  conversationHistory: [] // Last 10 messages for AI context
+};
+
+// Load booking state from localStorage
+function loadBookingState() {
+  try {
+    const saved = localStorage.getItem(BOOKING_STATE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      bookingState = {
+        ...bookingState,
+        ...parsed,
+        collectedData: {
+          ...bookingState.collectedData,
+          ...(parsed.collectedData || {})
+        },
+        conversationHistory: parsed.conversationHistory || []
+      };
+    }
+  } catch (e) {
+    console.error('Error loading booking state:', e);
+  }
+}
+
+// Save booking state to localStorage
+function saveBookingState() {
+  try {
+    localStorage.setItem(BOOKING_STATE_KEY, JSON.stringify(bookingState));
+  } catch (e) {
+    console.error('Error saving booking state:', e);
+  }
+}
+
+// Update booking state with extracted data
+function updateBookingStateWithExtracted(extractedData) {
+  if (!extractedData) return;
+
+  let updated = false;
+
+  if (extractedData.checkIn && !bookingState.collectedData.checkIn) {
+    bookingState.collectedData.checkIn = extractedData.checkIn;
+    updated = true;
+  }
+  if (extractedData.checkOut && !bookingState.collectedData.checkOut) {
+    bookingState.collectedData.checkOut = extractedData.checkOut;
+    updated = true;
+  }
+  if (extractedData.guests && !bookingState.collectedData.guests) {
+    bookingState.collectedData.guests = extractedData.guests;
+    updated = true;
+  }
+
+  // Update step based on collected data
+  if (bookingState.collectedData.checkIn && bookingState.collectedData.checkOut) {
+    if (bookingState.collectedData.guests) {
+      bookingState.step = 'suggesting_rooms';
+    } else {
+      bookingState.step = 'gathering_info';
+    }
+  }
+
+  if (updated) {
+    saveBookingState();
+  }
+}
+
+// Add message to conversation history
+function addToConversationHistory(role, content) {
+  bookingState.conversationHistory.push({ role, content });
+
+  // Keep only last 10 messages
+  if (bookingState.conversationHistory.length > 10) {
+    bookingState.conversationHistory = bookingState.conversationHistory.slice(-10);
+  }
+
+  saveBookingState();
+}
+
+// Reset booking state
+function resetBookingState() {
+  bookingState = {
+    step: 'initial',
+    collectedData: {
+      checkIn: null,
+      checkOut: null,
+      guests: null,
+      preferences: [],
+      selectedRoom: null
+    },
+    conversationHistory: []
+  };
+  saveBookingState();
+}
+
+// Get booking state for external use
+export function getBookingState() {
+  return bookingState;
+}
+
+// Get conversation history for external use
+export function getConversationHistory() {
+  return bookingState.conversationHistory;
+}
+
 // Auto Resize Textarea
 export function autoResize() {
   dom.messageInput.style.height = 'auto';
@@ -55,6 +172,9 @@ export function toggleChat() {
     // Close room detail view if open
     closeRoomDetailView();
   } else {
+    // Load booking state when opening chat
+    loadBookingState();
+
     dom.chatWindow.classList.add('open');
     dom.widgetButton.style.display = 'none';
     if (dom.notificationBadge) dom.notificationBadge.style.display = 'none';
@@ -287,6 +407,9 @@ export function setButtonLoading(isLoading) {
 export async function getAIResponse(userMessage) {
   const hotelName = document.getElementById('hotel-name-input')?.value || 'Hilton';
 
+  // Add user message to conversation history
+  addToConversationHistory('user', userMessage);
+
   try {
     let response;
 
@@ -295,13 +418,26 @@ export async function getAIResponse(userMessage) {
       // Auto-break room context for general topics
       clearRoomContext(true); // silent - don't add message
       addMessage('Зрозуміло, повертаюсь до загальних питань.', 'ai');
+      addToConversationHistory('assistant', 'Зрозуміло, повертаюсь до загальних питань.');
 
       // Process as general response
-      response = await openai.getGeneralAIResponse(userMessage, hotelName);
+      response = await openai.getGeneralAIResponse(
+        userMessage,
+        hotelName,
+        bookingState,
+        bookingState.conversationHistory
+      );
       hideTyping();
       setButtonLoading(false);
       isGenerating = false;
+
+      // Update booking state with extracted data
+      if (response.extractedData) {
+        updateBookingStateWithExtracted(response.extractedData);
+      }
+
       addMessage(response.text, 'ai');
+      addToConversationHistory('assistant', response.text);
 
       // Show rooms carousel if intent detected
       if (response.showRoomsCarousel) {
@@ -309,18 +445,43 @@ export async function getAIResponse(userMessage) {
       }
     } else if (chatMode === 'room-context' && selectedRoom) {
       // Room-specific response
-      response = await openai.getRoomAIResponse(userMessage, selectedRoom, hotelName);
+      response = await openai.getRoomAIResponse(
+        userMessage,
+        selectedRoom,
+        hotelName,
+        bookingState,
+        bookingState.conversationHistory
+      );
       hideTyping();
       setButtonLoading(false);
       isGenerating = false;
+
+      // Update booking state with extracted data
+      if (response.extractedData) {
+        updateBookingStateWithExtracted(response.extractedData);
+      }
+
       addMessage(response.text, 'ai');
+      addToConversationHistory('assistant', response.text);
     } else {
       // General response
-      response = await openai.getGeneralAIResponse(userMessage, hotelName);
+      response = await openai.getGeneralAIResponse(
+        userMessage,
+        hotelName,
+        bookingState,
+        bookingState.conversationHistory
+      );
       hideTyping();
       setButtonLoading(false);
       isGenerating = false;
+
+      // Update booking state with extracted data
+      if (response.extractedData) {
+        updateBookingStateWithExtracted(response.extractedData);
+      }
+
       addMessage(response.text, 'ai');
+      addToConversationHistory('assistant', response.text);
 
       // Show rooms carousel if intent detected
       if (response.showRoomsCarousel) {
@@ -365,6 +526,9 @@ export function resetChat() {
   isGenerating = false;
   selectedRoom = null;
   chatMode = 'general';
+
+  // Reset booking state
+  resetBookingState();
 
   // Clear room context container
   const container = document.getElementById('room-context-container');

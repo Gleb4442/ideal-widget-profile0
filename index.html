@@ -105,6 +105,11 @@
       <input type="text" id="hotel-name-input" class="admin-input" placeholder="Введіть назву" value="Hilton">
     </div>
     <div class="admin-control">
+      <span class="admin-label">Информация об отеле</span>
+      <textarea id="hotel-info-input" class="admin-input admin-textarea" rows="4"
+        placeholder="Правила проживания, ресторан, SPA, услуги..."></textarea>
+    </div>
+    <div class="admin-control">
       <span class="admin-label">Логотип</span>
       <label class="file-upload-btn">
         Обрати файл
@@ -505,6 +510,37 @@
             <input type="checkbox" id="room-ask-toggle" checked>
             <span class="slider"></span>
           </label>
+        </div>
+
+        <!-- Calendar Section -->
+        <div class="room-form-group">
+          <label class="room-form-label">Календарь доступности</label>
+          <div class="calendar-controls">
+            <button type="button" id="calendar-prev-month" class="calendar-nav-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <span id="calendar-month-label" class="calendar-month-label">Январь 2026</span>
+            <button type="button" id="calendar-next-month" class="calendar-nav-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+            <button type="button" id="calendar-generate-random" class="room-btn room-btn-secondary calendar-generate-btn">
+              Сгенерировать
+            </button>
+          </div>
+          <div class="calendar-weekdays">
+            <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+          </div>
+          <div id="room-calendar" class="room-calendar-grid"></div>
+          <div class="calendar-legend">
+            <span class="legend-item legend-available"><span class="legend-dot"></span>Свободно</span>
+            <span class="legend-item legend-booked"><span class="legend-dot"></span>Занято</span>
+          </div>
         </div>
       </div>
       <div class="room-modal-footer">
