@@ -48,6 +48,33 @@ const ROOM_INTENT_PATTERNS = [
   /list/i
 ];
 
+// General topic patterns - topics that should break room-specific context
+const GENERAL_TOPIC_PATTERNS = [
+  /дат[аиы]/i,              // даты, дата
+  /доступн/i,               // доступність, доступно
+  /вільн/i,                 // вільний, вільні
+  /свобод/i,                // свободно, свободный
+  /коли\s/i,                // коли (когда)
+  /когда\s/i,               // когда
+  /інш(ий|і|ого|а)\s*(номер|кімнат)/i,  // інший номер
+  /друг(ой|ие|ого|ая)\s*(номер|комнат)/i, // другой номер
+  /всі номер/i,             // всі номери
+  /все номер/i,             // все номера
+  /all room/i,
+  /wifi|вай.?фай|інтернет|интернет/i,
+  /сніданок|завтрак|breakfast/i,
+  /парковк|parking/i,
+  /реєстрац|регистрац|check.?in|check.?out/i,
+  /загальн/i,               // загальні питання
+  /трансфер|transfer/i,
+  /басейн|бассейн|pool/i,
+  /спа|spa|масаж|массаж/i,
+  /ресторан|restaurant/i,
+  /скільки коштує проживання/i,  // general pricing
+  /які послуги/i,           // what services
+  /какие услуги/i
+];
+
 // Build system prompt for general chat
 function buildGeneralSystemPrompt(hotelName = 'Hilton') {
   const rooms = getAllRooms();
@@ -81,6 +108,11 @@ function buildRoomSystemPrompt(room, hotelName = 'Hilton') {
 // Check if message indicates room intent
 export function hasRoomIntent(message) {
   return ROOM_INTENT_PATTERNS.some(pattern => pattern.test(message));
+}
+
+// Check if message is about a general topic (should break room context)
+export function isGeneralTopic(message) {
+  return GENERAL_TOPIC_PATTERNS.some(pattern => pattern.test(message));
 }
 
 // Call OpenAI API

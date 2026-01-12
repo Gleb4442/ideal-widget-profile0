@@ -126,3 +126,64 @@
   background-color: #f9fafb;
   transform: translateX(-50%) translateY(-2px);
 }
+
+/* ===== Input Field Styles ===== */
+.input-container-bg {
+  display: flex;
+  align-items: flex-end;
+  background: #f3f4f6;
+  border-radius: 24px;
+  padding: 4px;
+  border: 2px solid transparent;
+  transition: border-color 0.2s, background-color 0.2s;
+  gap: 2px;
+}
+
+.input-container-bg:focus-within {
+  border-color: var(--accent-color, #2563eb);
+  background: white;
+}
+
+#message-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 6px 12px;
+  font-size: 16px;
+  line-height: 1.4;
+  min-height: 34px;
+  max-height: 120px;
+  overflow-y: auto;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  color: #374151;
+  font-family: inherit;
+}
+
+#message-input::placeholder {
+  color: #9ca3af;
+}
+
+#message-input::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+
+/* Dark mode support for input */
+.dark-mode .input-container-bg {
+  background: #374151;
+}
+
+.dark-mode .input-container-bg:focus-within {
+  background: #1f2937;
+}
+
+.dark-mode #message-input {
+  color: #f3f4f6;
+}
+
+.dark-mode #message-input::placeholder {
+  color: #9ca3af;
+}

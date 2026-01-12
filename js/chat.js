@@ -134,17 +134,44 @@ export function addRoomCarousel() {
     card.className = 'room-carousel-card';
     card.dataset.roomId = room.id;
 
+    const hasPhoto = !!room.mainPhoto;
+    const hasGallery = room.gallery && room.gallery.length > 0;
+
     card.innerHTML = `
-      ${room.mainPhoto
-        ? `<img class="room-carousel-image" src="${room.mainPhoto}" alt="${room.name}">`
-        : `<div class="room-carousel-image" style="display:flex;align-items:center;justify-content:center;color:#9ca3af;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-              <circle cx="8.5" cy="8.5" r="1.5"></circle>
-              <polyline points="21 15 16 10 5 21"></polyline>
-            </svg>
-          </div>`
-      }
+      <div class="room-carousel-image-container">
+        ${hasPhoto
+          ? `<img class="room-carousel-image" src="${room.mainPhoto}" alt="${room.name}">`
+          : `<div class="room-carousel-image" style="display:flex;align-items:center;justify-content:center;color:#9ca3af;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </div>`
+        }
+        <div class="room-carousel-overlay">
+          <div class="room-carousel-actions">
+            ${room.askQuestionEnabled !== false ? `
+              <button class="room-carousel-action-btn primary" data-action="ask" data-room-id="${room.id}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                Питання
+              </button>
+            ` : ''}
+            ${hasPhoto || hasGallery ? `
+              <button class="room-carousel-action-btn secondary" data-action="photos" data-room-id="${room.id}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                Фото
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      </div>
       <div class="room-carousel-info">
         <div class="room-carousel-name">${room.name || 'Без назви'}</div>
         <div class="room-carousel-price">${rooms.formatPrice(room.pricePerNight)}</div>
@@ -152,6 +179,21 @@ export function addRoomCarousel() {
       </div>
     `;
 
+    // Handle action button clicks
+    card.querySelectorAll('.room-carousel-action-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const action = btn.dataset.action;
+        const roomId = btn.dataset.roomId;
+        if (action === 'ask') {
+          enterRoomContext(roomId);
+        } else if (action === 'photos') {
+          viewRoomPhotos(roomId);
+        }
+      });
+    });
+
+    // Click on card opens detail view
     card.addEventListener('click', () => {
       openRoomDetailView(room.id);
     });
@@ -168,54 +210,72 @@ export function addRoomCarousel() {
 
 // Add Room Context Badge
 export function addRoomContextBadge(room) {
-  // Remove existing badge if any
-  const existingBadge = document.querySelector('.room-context-badge');
-  if (existingBadge) existingBadge.remove();
+  const container = document.getElementById('room-context-container');
+  if (!container) return;
+
+  // Clear container
+  container.innerHTML = '';
 
   const badge = document.createElement('div');
   badge.className = 'room-context-badge animate-fade-in';
   badge.innerHTML = `
     ${room.mainPhoto
       ? `<img src="${room.mainPhoto}" alt="${room.name}">`
-      : `<div style="width:28px;height:28px;background:#f3f4f6;border-radius:6px;display:flex;align-items:center;justify-content:center;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
+      : `<div style="width:40px;height:40px;background:#f3f4f6;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           </svg>
         </div>`
     }
     <div class="room-context-badge-info">
       <div class="room-context-badge-name">${room.name}</div>
-      <div class="room-context-badge-hint">Питання про цей номер</div>
+      <div class="room-context-badge-hint">Обговорюємо цей номер</div>
     </div>
-    <button class="room-context-clear" title="Вийти з контексту">&times;</button>
+    <div class="room-context-actions">
+      <button class="room-context-action room-context-book" data-action="book">Забронювати</button>
+      <button class="room-context-action room-context-change" data-action="change">Інший номер</button>
+    </div>
   `;
 
-  // Add clear button listener
-  badge.querySelector('.room-context-clear').addEventListener('click', () => {
-    clearRoomContext();
+  // Add action button listeners
+  badge.querySelector('[data-action="book"]').addEventListener('click', () => {
+    // Add booking message
+    addMessage('Чудово! Для бронювання номера, будь ласка, зверніться до нашого менеджера або залиште ваші контактні дані.', 'ai');
   });
 
-  dom.messagesContainer.insertBefore(badge, dom.typingIndicator);
-  dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+  badge.querySelector('[data-action="change"]').addEventListener('click', () => {
+    clearRoomContext();
+    setTimeout(() => addRoomCarousel(), 300);
+  });
+
+  container.appendChild(badge);
+  container.classList.remove('hidden');
 }
 
 // Clear room context
-export function clearRoomContext() {
+export function clearRoomContext(silent = false) {
   selectedRoom = null;
   chatMode = 'general';
 
-  const badge = document.querySelector('.room-context-badge');
-  if (badge) badge.remove();
+  const container = document.getElementById('room-context-container');
+  if (container) {
+    container.classList.add('hidden');
+    container.innerHTML = '';
+  }
 
-  addMessage('Повертаюсь до загального чату. Чим ще можу допомогти?', 'ai');
+  if (!silent) {
+    addMessage('Повертаюсь до загального чату. Чим ще можу допомогти?', 'ai');
+  }
 }
 
 // Set Button Loading State
 export function setButtonLoading(isLoading) {
   if (isLoading) {
+    dom.sendButton.classList.add('is-loading');
     dom.sendButton.disabled = true;
     dom.messageInput.disabled = true;
   } else {
+    dom.sendButton.classList.remove('is-loading');
     dom.sendButton.disabled = false;
     dom.messageInput.disabled = false;
     dom.messageInput.focus();
@@ -230,7 +290,24 @@ export async function getAIResponse(userMessage) {
   try {
     let response;
 
-    if (chatMode === 'room-context' && selectedRoom) {
+    // Check if we're in room context but user asks about general topic
+    if (chatMode === 'room-context' && selectedRoom && openai.isGeneralTopic(userMessage)) {
+      // Auto-break room context for general topics
+      clearRoomContext(true); // silent - don't add message
+      addMessage('Зрозуміло, повертаюсь до загальних питань.', 'ai');
+
+      // Process as general response
+      response = await openai.getGeneralAIResponse(userMessage, hotelName);
+      hideTyping();
+      setButtonLoading(false);
+      isGenerating = false;
+      addMessage(response.text, 'ai');
+
+      // Show rooms carousel if intent detected
+      if (response.showRoomsCarousel) {
+        setTimeout(() => addRoomCarousel(), 500);
+      }
+    } else if (chatMode === 'room-context' && selectedRoom) {
       // Room-specific response
       response = await openai.getRoomAIResponse(userMessage, selectedRoom, hotelName);
       hideTyping();
@@ -288,6 +365,13 @@ export function resetChat() {
   isGenerating = false;
   selectedRoom = null;
   chatMode = 'general';
+
+  // Clear room context container
+  const container = document.getElementById('room-context-container');
+  if (container) {
+    container.classList.add('hidden');
+    container.innerHTML = '';
+  }
 
   setButtonLoading(false);
   simulateWelcome();
