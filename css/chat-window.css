@@ -130,7 +130,7 @@
 /* ===== Input Field Styles ===== */
 .input-container-bg {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   background: #f3f4f6;
   border-radius: 20px;
   padding: 2px;
