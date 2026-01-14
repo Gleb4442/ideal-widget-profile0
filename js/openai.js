@@ -60,6 +60,46 @@ const ROOM_INTENT_PATTERNS = [
   /list/i
 ];
 
+// Complex booking patterns - triggers Special Booking mode
+const COMPLEX_REQUEST_PATTERNS = [
+  // Business trip / Командировка
+  /командировк|business\s*trip|деловая\s*поездка|тихий\s*номер|дальше\s*от\s*лифта|в\s*конце\s*коридора|рабочее\s*место|коворкинг|coworking|рум[\s-]*сервис|room[\s-]*service/i,
+  // With children / С детьми
+  /с\s*детьми|с\s*ребенком|з\s*дітьми|з\s*дитиною|малыш|дитя|комплимент\s*для\s*дет|детская\s*кроватка|дитяче\s*ліжко|kids|children/i,
+  // Romantic / Романтика
+  /романтич|годовщин|річниц|свадьб|весілл|медовый\s*месяц|медовий\s*місяць|honeymoon|свечи|свічки|candle|шампанское|шампанське|champagne|ванн|bathtub|jacuzzi|джакузі/i,
+  // Special needs / Особые требования
+  /аллерг|алерг|allerg|диет|diet|инвалид|інвалід|wheelchair|особые\s*потребности|особливі\s*потреби|special\s*need|accessibility/i,
+  // Multiple conditions
+  /несколько\s*условий|кілька\s*умов|много\s*пожеланий|багато\s*побажань|особые\s*предпочтения|особливі\s*вподобання/i,
+  // VIP / Premium
+  /vip|premium|эксклюзив|ексклюзив|exclusive|люкс\s*номер|suite|пентхаус|penthouse/i,
+  // Extended stay
+  /длительное\s*проживание|тривале\s*проживання|long\s*stay|месяц|місяць|month/i,
+  // Group booking
+  /группов|групов|group|компани|company|корпоратив|corporate|конференц|conference/i
+];
+
+// Requirement extraction patterns for Special Booking
+const REQUIREMENT_PATTERNS = [
+  { type: 'room_location', pattern: /тихий\s*номер|дальше\s*от\s*лифта|в\s*конце\s*коридора|quiet\s*room|away\s*from\s*elevator/i },
+  { type: 'workspace', pattern: /рабочее\s*место|робоче\s*місце|workspace|desk|коворкинг|coworking/i },
+  { type: 'room_service', pattern: /рум[\s-]*сервис|room[\s-]*service/i },
+  { type: 'children', pattern: /с\s*детьми|з\s*дітьми|детская\s*кроватка|дитяче\s*ліжко|kids|children/i },
+  { type: 'romantic', pattern: /романтич|свечи|свічки|шампанское|шампанське|champagne/i },
+  { type: 'bathtub', pattern: /ванн|bathtub|jacuzzi|джакузі/i },
+  { type: 'dietary', pattern: /диет|diet|вегетариан|vegetarian|веган|vegan/i },
+  { type: 'allergy', pattern: /аллерг|алерг|allerg/i },
+  { type: 'accessibility', pattern: /инвалид|інвалід|wheelchair|accessibility/i },
+  { type: 'view', pattern: /вид\s*на|view|панорам|panoram/i },
+  { type: 'floor', pattern: /высокий\s*этаж|високий\s*поверх|high\s*floor|верхний\s*этаж/i },
+  { type: 'early_checkin', pattern: /ранний\s*заезд|ранній\s*заїзд|early\s*check[\s-]*in/i },
+  { type: 'late_checkout', pattern: /поздний\s*выезд|пізній\s*виїзд|late\s*check[\s-]*out/i },
+  { type: 'transfer', pattern: /трансфер|transfer|встреча\s*в\s*аэропорт|airport\s*pickup/i },
+  { type: 'parking', pattern: /парковк|parking/i },
+  { type: 'pet', pattern: /питомец|домашнее\s*животное|pet|собак|dog|кот|кіт|cat/i }
+];
+
 // General topic patterns - topics that should break room-specific context
 const GENERAL_TOPIC_PATTERNS = [
   /дат[аиы]/i,              // даты, дата
@@ -87,6 +127,17 @@ const GENERAL_TOPIC_PATTERNS = [
   /какие услуги/i
 ];
 
+// Determine current step in booking funnel based on collected data
+function getCurrentBookingStep(collectedData) {
+  if (!collectedData) return 'collecting_name';
+  if (!collectedData.fullName) return 'collecting_name';
+  if (!collectedData.phone) return 'collecting_phone';
+  if (!collectedData.checkIn || !collectedData.checkOut) return 'collecting_dates';
+  if (!collectedData.email) return 'collecting_email';
+  if (!collectedData.selectedRoom) return 'suggesting_rooms';
+  return 'completed';
+}
+
 // Build system prompt for general chat with booking funnel
 function buildGeneralSystemPrompt(hotelName = 'Hilton', bookingState = null) {
   const rooms = getAllRooms();
@@ -99,16 +150,21 @@ function buildGeneralSystemPrompt(hotelName = 'Hilton', bookingState = null) {
       }).join('\n')
     : 'Номери ще не додані.';
 
-  // Build booking state description
+  // Build booking state description with all fields
   let stateDescription = '';
+  let currentStep = 'collecting_name';
   if (bookingState && bookingState.collectedData) {
     const data = bookingState.collectedData;
+    currentStep = getCurrentBookingStep(data);
     const parts = [];
-    if (data.checkIn) parts.push(`Дата заїзду: ${data.checkIn}`);
-    if (data.checkOut) parts.push(`Дата виїзду: ${data.checkOut}`);
+    if (data.fullName) parts.push(`ФИО: ${data.fullName}`);
+    if (data.phone) parts.push(`Телефон: ${data.phone}`);
+    if (data.checkIn) parts.push(`Дата заезда: ${data.checkIn}`);
+    if (data.checkOut) parts.push(`Дата выезда: ${data.checkOut}`);
+    if (data.email) parts.push(`Email: ${data.email}`);
     if (data.guests) parts.push(`Гостей: ${data.guests}`);
-    if (data.selectedRoom) parts.push(`Обраний номер: ${data.selectedRoom}`);
-    stateDescription = parts.length > 0 ? parts.join(', ') : 'Дані ще не зібрані';
+    if (data.selectedRoom) parts.push(`Выбранный номер: ${data.selectedRoom}`);
+    stateDescription = parts.length > 0 ? parts.join(', ') : 'Данные ещё не собраны';
   }
 
   // Build availability info if dates are provided
@@ -119,59 +175,136 @@ function buildGeneralSystemPrompt(hotelName = 'Hilton', bookingState = null) {
       bookingState.collectedData.checkOut
     );
     if (availableRooms.length > 0) {
-      availabilityInfo = `\n\nДОСТУПНІ НОМЕРИ на вказані дати:\n${availableRooms.map(r => `- ${r.name}: $${r.pricePerNight}/ніч`).join('\n')}`;
+      availabilityInfo = `\n\nДОСТУПНЫЕ НОМЕРА на указанные даты:\n${availableRooms.map(r => `- ${r.name}: $${r.pricePerNight}/ночь`).join('\n')}`;
     } else {
-      availabilityInfo = '\n\nНа вказані дати немає вільних номерів.';
+      availabilityInfo = '\n\nНа указанные даты нет свободных номеров.';
     }
   }
 
-  return `Ти ввічливий асистент готелю ${hotelName}. Твоя головна мета - допомогти гостю забронювати номер.
+  // Map step to next field to request
+  const stepToField = {
+    'collecting_name': 'fullName (ФИО гостя)',
+    'collecting_phone': 'phone (номер телефона)',
+    'collecting_dates': 'checkIn/checkOut (даты заезда и выезда)',
+    'collecting_email': 'email',
+    'suggesting_rooms': 'selectedRoom (выбор номера)',
+    'completed': 'все данные собраны'
+  };
 
-ІНФОРМАЦІЯ ПРО ГОТЕЛЬ:
-${hotelInfo || 'Інформація не вказана.'}
+  return `Ты Roomie — внутренний AI-сотрудник отеля "${hotelName}".
+Текущая дата: ${new Date().toISOString().split('T')[0]}.
 
-ДОСТУПНІ НОМЕРИ:
+### ОСНОВНЫЕ ПРАВИЛА
+1. **Язык общения**: СТРОГО общайся на языке гостя. Если гость пишет на русском — отвечай на русском. На украинском — на украинском. На английском — на английском. НЕ переключайся на другой язык без явного запроса гостя.
+2. **Идентичность**: Говори от лица "мы" (команда отеля). Будь тёплым (🌿, 😊), профессиональным и лаконичным. "Помогай, а не продавай."
+3. **Лояльность**: Представляй ТОЛЬКО этот отель. Если номера заняты — предложи альтернативные даты. НИКОГДА не рекомендуй конкурентов.
+4. **Объём**: Ты создаёшь бронирования напрямую. Без платежей. Без отправки email. Без изменения существующих бронирований.
+
+### ИНФОРМАЦИЯ ОБ ОТЕЛЕ
+${hotelInfo || 'Информация не указана.'}
+
+### ДОСТУПНЫЕ НОМЕРА
 ${roomsList}
 ${availabilityInfo}
 
-ВОРОНКА БРОНЮВАННЯ (дотримуйся послідовності):
-1. Якщо гість не вказав дати заїзду/виїзду - уточни їх ненав'язливо
-2. Якщо є дати, але не вказана кількість гостей - уточни
-3. Коли є дати та кількість гостей - перевір доступність та запропонуй підходящі номери
-4. Після вибору номера - релевантно запропонуй додаткові послуги (SPA, ресторан і т.д.)
+### ПОЭТАПНЫЙ СБОР ДАННЫХ ДЛЯ БРОНИРОВАНИЯ
+⚠️ КРИТИЧЕСКИ ВАЖНО: Запрашивай данные ПОЭТАПНО, по ОДНОМУ полю за раз!
+НЕ запрашивай несколько полей одновременно.
 
-ПОТОЧНИЙ СТАН БРОНЮВАННЯ:
-${stateDescription || 'Початок діалогу'}
+**Последовательность сбора данных (JSON-ключи):**
+1. \`fullName\` — ФИО гостя
+2. \`phone\` — Номер телефона
+3. \`checkIn\` / \`checkOut\` — Даты заезда и выезда
+4. \`email\` — Email адрес
+5. \`guests\` — Количество гостей (по необходимости)
+6. \`selectedRoom\` — Выбор номера
 
-ВАЖЛИВІ ПРАВИЛА:
-- Якщо гість задає конкретне питання (про WiFi, сніданок, трансфер) - СПОЧАТКУ відповідай на нього, потім плавно повертайся до воронки
-- Будь дружелюбним та не нав'язливим
-- Відповідай коротко (2-4 речення)
-- Відповідай українською мовою
-- Якщо гість питає про номери або хоче подивитись варіанти - скажи що зараз покажеш доступні номери`;
+**Текущий шаг:** ${currentStep}
+**Следующее поле для запроса:** ${stepToField[currentStep]}
+
+**Собранные данные:**
+${stateDescription || 'Начало диалога'}
+
+### ФОРМАТ ВЫВОДА ПОСЛЕ СБОРА ДАННЫХ
+Когда все обязательные данные собраны (fullName, phone, checkIn, checkOut, email):
+"✅ Отлично! Бронирование успешно сохранено.
+📞 **Наш менеджер свяжется с вами в ближайшее время для подтверждения деталей.**"
+
+### СЦЕНАРИИ
+1. **Изменения/Отмены**: "Я не могу изменять бронирования. Пожалуйста, обсудите это с менеджером при подтверждении или позвоните на ресепшн."
+2. **SPA/Ресторан**: "Я не могу забронировать это напрямую. Добавлю заметку для менеджера, или позвоните на ресепшн."
+3. **Нет доступности**: Извинись и предложи ближайшие доступные даты.
+
+### ВАЖНЫЕ ПРАВИЛА
+- Если гость задаёт конкретный вопрос (о WiFi, завтраке, трансфере) — СНАЧАЛА ответь на него, затем плавно возвращайся к воронке бронирования
+- Будь дружелюбным и ненавязчивым
+- Отвечай кратко (2-4 предложения)
+- Если гость спрашивает о номерах или хочет посмотреть варианты — скажи что сейчас покажешь доступные номера`;
 }
 
 // Build system prompt for room-specific chat
 function buildRoomSystemPrompt(room, hotelName = 'Hilton', bookingState = null) {
   const hotelInfo = getHotelInfo();
 
-  return `Ти асистент готелю ${hotelName}. Зараз гість цікавиться конкретним номером.
+  // Get current step
+  let currentStep = 'collecting_name';
+  let stateDescription = 'Данные ещё не собраны';
+  if (bookingState && bookingState.collectedData) {
+    currentStep = getCurrentBookingStep(bookingState.collectedData);
+    const data = bookingState.collectedData;
+    const parts = [];
+    if (data.fullName) parts.push(`ФИО: ${data.fullName}`);
+    if (data.phone) parts.push(`Телефон: ${data.phone}`);
+    if (data.checkIn) parts.push(`Дата заезда: ${data.checkIn}`);
+    if (data.checkOut) parts.push(`Дата выезда: ${data.checkOut}`);
+    if (data.email) parts.push(`Email: ${data.email}`);
+    if (data.guests) parts.push(`Гостей: ${data.guests}`);
+    stateDescription = parts.length > 0 ? parts.join(', ') : 'Данные ещё не собраны';
+  }
 
-ІНФОРМАЦІЯ ПРО НОМЕР:
-- Назва: ${room.name}
-- Опис: ${room.description || 'Опис не вказано'}
-- Площа: ${room.area} м²
-- Ціна: $${room.pricePerNight} за ніч
+  const stepToField = {
+    'collecting_name': 'fullName (ФИО гостя)',
+    'collecting_phone': 'phone (номер телефона)',
+    'collecting_dates': 'checkIn/checkOut (даты заезда и выезда)',
+    'collecting_email': 'email',
+    'suggesting_rooms': 'selectedRoom (выбор номера)',
+    'completed': 'все данные собраны'
+  };
 
-ІНФОРМАЦІЯ ПРО ГОТЕЛЬ:
-${hotelInfo || 'Інформація не вказана.'}
+  return `Ты Roomie — внутренний AI-сотрудник отеля "${hotelName}".
+Гость интересуется конкретным номером.
 
-ПРАВИЛА:
-- Відповідай на питання про цей номер
-- Якщо гість готовий бронювати - запитай дати заїзду/виїзду
-- Після підтвердження номера можеш запропонувати додаткові послуги
-- Відповідай коротко, українською мовою
-- Якщо питання виходить за межі інформації - ввічливо запропонуй звернутись до персоналу`;
+### ОСНОВНЫЕ ПРАВИЛА
+1. **Язык общения**: СТРОГО общайся на языке гостя. НЕ переключайся на другой язык без явного запроса.
+2. **Идентичность**: Говори от лица "мы" (команда отеля). Будь тёплым и профессиональным.
+
+### ИНФОРМАЦИЯ О НОМЕРЕ
+- Название: ${room.name}
+- Описание: ${room.description || 'Описание не указано'}
+- Площадь: ${room.area} м²
+- Цена: $${room.pricePerNight} за ночь
+
+### ИНФОРМАЦИЯ ОБ ОТЕЛЕ
+${hotelInfo || 'Информация не указана.'}
+
+### ПОЭТАПНЫЙ СБОР ДАННЫХ ДЛЯ БРОНИРОВАНИЯ
+⚠️ КРИТИЧЕСКИ ВАЖНО: Запрашивай данные ПОЭТАПНО, по ОДНОМУ полю за раз!
+
+**Последовательность:**
+1. \`fullName\` — ФИО гостя
+2. \`phone\` — Номер телефона
+3. \`checkIn\` / \`checkOut\` — Даты заезда и выезда
+4. \`email\` — Email адрес
+
+**Текущий шаг:** ${currentStep}
+**Следующее поле:** ${stepToField[currentStep]}
+**Собранные данные:** ${stateDescription}
+
+### ПРАВИЛА
+- Отвечай на вопросы об этом номере
+- Если гость готов бронировать — начни поэтапный сбор данных
+- Отвечай кратко (2-4 предложения)
+- Если вопрос выходит за рамки информации — предложи обратиться к персоналу`;
 }
 
 // Check if message indicates room intent
@@ -298,13 +431,52 @@ export async function getRoomAIResponse(userMessage, room, hotelName = 'Hilton',
   }
 }
 
-// Extract booking data from user message (dates, guests count)
+// Extract booking data from user message (name, phone, dates, email, guests)
 export function extractBookingData(message) {
   const data = {
+    fullName: null,
+    phone: null,
     checkIn: null,
     checkOut: null,
+    email: null,
     guests: null
   };
+
+  // Extract email
+  const emailMatch = message.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+  if (emailMatch) {
+    data.email = emailMatch[0];
+  }
+
+  // Extract phone number (various formats)
+  const phonePatterns = [
+    /\+?3?8?\s*\(?0?\d{2}\)?[\s.-]?\d{3}[\s.-]?\d{2}[\s.-]?\d{2}/,  // Ukrainian: +380, 0XX
+    /\+?\d{1,3}[\s.-]?\(?\d{2,4}\)?[\s.-]?\d{3}[\s.-]?\d{2}[\s.-]?\d{2}/, // International
+    /\d{10,12}/ // Simple 10-12 digits
+  ];
+
+  for (const pattern of phonePatterns) {
+    const phoneMatch = message.match(pattern);
+    if (phoneMatch) {
+      data.phone = phoneMatch[0].replace(/[\s.-]/g, '');
+      break;
+    }
+  }
+
+  // Extract full name (Cyrillic or Latin, 2-4 words starting with capital)
+  // Only if message looks like a name response (short, no questions, etc.)
+  const namePattern = /^([А-ЯЁA-Z][а-яёa-z]+(?:\s+[А-ЯЁA-Z][а-яёa-z]+){1,3})$/;
+  const trimmedMessage = message.trim();
+  if (namePattern.test(trimmedMessage) && trimmedMessage.length < 60) {
+    data.fullName = trimmedMessage;
+  }
+
+  // Also try to extract name from phrases like "Меня зовут Иван Петров"
+  const nameIntroPattern = /(?:меня зовут|мене звати|my name is|я|это)\s+([А-ЯЁA-Z][а-яёa-z]+(?:\s+[А-ЯЁA-Z][а-яёa-z]+){0,2})/i;
+  const nameIntroMatch = message.match(nameIntroPattern);
+  if (nameIntroMatch && !data.fullName) {
+    data.fullName = nameIntroMatch[1];
+  }
 
   // Date patterns: DD.MM, DD/MM, DD-MM, DD.MM.YYYY, "15 січня", etc.
   const datePatterns = [
@@ -407,4 +579,247 @@ export function getApiStatus() {
     configured: !!OPENAI_API_KEY,
     model: MODEL
   };
+}
+
+// ========================================
+// SPECIAL BOOKING MODE FUNCTIONS
+// ========================================
+
+// Detect if a request is complex and should trigger Special Booking mode
+export function detectComplexRequest(message, conversationHistory = []) {
+  // Check for complex patterns in current message
+  const hasComplexPattern = COMPLEX_REQUEST_PATTERNS.some(pattern => pattern.test(message));
+
+  if (hasComplexPattern) {
+    return { isComplex: true, reason: 'pattern_match' };
+  }
+
+  // Count unique requirements in conversation history
+  const allMessages = [...conversationHistory.map(m => m.content), message].join(' ');
+  const requirements = extractRequirements(allMessages);
+
+  if (requirements.length >= 3) {
+    return { isComplex: true, reason: 'multiple_requirements', count: requirements.length };
+  }
+
+  // Check for multiple questions from guest (indicating uncertainty/special needs)
+  const userMessages = conversationHistory.filter(m => m.role === 'user');
+  const questionCount = userMessages.filter(m =>
+    m.content.includes('?') || /можно|можна|есть\s*ли|чи\s*є|а\s*как|а\s*як/i.test(m.content)
+  ).length;
+
+  if (questionCount >= 3) {
+    return { isComplex: true, reason: 'many_questions', count: questionCount };
+  }
+
+  return { isComplex: false };
+}
+
+// Extract specific requirements from text
+export function extractRequirements(text) {
+  const requirements = [];
+
+  REQUIREMENT_PATTERNS.forEach(({ type, pattern }) => {
+    const match = text.match(pattern);
+    if (match) {
+      requirements.push({
+        type,
+        value: match[0],
+        label: getRequirementLabel(type)
+      });
+    }
+  });
+
+  return requirements;
+}
+
+// Get human-readable label for requirement type
+function getRequirementLabel(type) {
+  const labels = {
+    'room_location': 'Расположение номера',
+    'workspace': 'Рабочее место',
+    'room_service': 'Рум-сервис',
+    'children': 'Размещение с детьми',
+    'romantic': 'Романтическое оформление',
+    'bathtub': 'Ванна в номере',
+    'dietary': 'Диетическое питание',
+    'allergy': 'Учет аллергии',
+    'accessibility': 'Доступная среда',
+    'view': 'Вид из номера',
+    'floor': 'Высокий этаж',
+    'early_checkin': 'Ранний заезд',
+    'late_checkout': 'Поздний выезд',
+    'transfer': 'Трансфер',
+    'parking': 'Парковка',
+    'pet': 'Размещение с питомцем'
+  };
+  return labels[type] || type;
+}
+
+// Build system prompt for Special Booking mode
+export function buildSpecialBookingPrompt(hotelName = 'Hilton', requirements = [], bookingState = null, stage = 'collecting') {
+  const rooms = getAllRooms();
+  const hotelInfo = getHotelInfo();
+
+  const roomsList = rooms.length > 0
+    ? rooms.map(r => `- ${r.name}: ${r.area}м², $${r.pricePerNight}/ніч, ${r.description || 'без описания'}`).join('\n')
+    : 'Номери ще не додані.';
+
+  const requirementsList = requirements.length > 0
+    ? requirements.map(r => `- ${r.label}: ${r.value}`).join('\n')
+    : 'Требования ещё не определены';
+
+  let stateDescription = '';
+  if (bookingState && bookingState.collectedData) {
+    const data = bookingState.collectedData;
+    const parts = [];
+    if (data.fullName) parts.push(`ФИО: ${data.fullName}`);
+    if (data.phone) parts.push(`Телефон: ${data.phone}`);
+    if (data.checkIn) parts.push(`Дата заезда: ${data.checkIn}`);
+    if (data.checkOut) parts.push(`Дата выезда: ${data.checkOut}`);
+    if (data.email) parts.push(`Email: ${data.email}`);
+    if (data.guests) parts.push(`Гостей: ${data.guests}`);
+    stateDescription = parts.length > 0 ? parts.join(', ') : 'Начало диалога';
+  }
+
+  // Build availability info if dates are provided
+  let availabilityInfo = '';
+  if (bookingState?.collectedData?.checkIn && bookingState?.collectedData?.checkOut) {
+    const availableRooms = getAvailableRoomsForRange(
+      bookingState.collectedData.checkIn,
+      bookingState.collectedData.checkOut
+    );
+    if (availableRooms.length > 0) {
+      availabilityInfo = `\n\nДОСТУПНЫЕ НОМЕРА на указанные даты:\n${availableRooms.map(r => `- ${r.name}: $${r.pricePerNight}/ночь`).join('\n')}`;
+    } else {
+      availabilityInfo = '\n\nНа указанные даты нет свободных номеров.';
+    }
+  }
+
+  const stageInstructions = {
+    'collecting': `
+ТЕКУЩИЙ ЭТАП: Сбор информации
+- Уточни недостающие детали (не более 2 вопросов за раз)
+- Будь внимателен к особым пожеланиям
+- Подтверждай понимание требований`,
+    'analyzing': `
+ТЕКУЩИЙ ЭТАП: Анализ требований
+- Все основные данные собраны
+- Проанализируй требования и подбери лучший вариант
+- Объясни, почему этот номер подходит`,
+    'generating': `
+ТЕКУЩИЙ ЭТАП: Формирование предложения
+- Сформируй финальное персональное предложение
+- Включи все учтённые пожелания
+
+ОБЯЗАТЕЛЬНО в конце ответа добавь блок в формате:
+[OFFER_DATA]
+room_name: название рекомендуемого номера
+room_price: цена за ночь
+check_in: дата заезда
+check_out: дата выезда
+guests: количество гостей
+total_nights: количество ночей
+total_price: общая стоимость
+special_notes: пожелание1|пожелание2|пожелание3
+[/OFFER_DATA]`
+  };
+
+  return `Ты Roomie — персональный консьерж отеля "${hotelName}".
+Текущая дата: ${new Date().toISOString().split('T')[0]}.
+
+### РЕЖИМ: SPECIAL BOOKING (Персонализированное бронирование)
+
+Гость имеет особые требования. Твоя задача — создать идеальное персональное предложение.
+
+### ОСНОВНЫЕ ПРАВИЛА
+1. **Язык общения**: СТРОГО общайся на языке гостя.
+2. **Стиль**: Будь тёплым, внимательным и профессиональным. Ты персональный консьерж, не продавец.
+3. **Внимание к деталям**: Каждое пожелание важно. Подтверждай, что услышал и учёл.
+
+### ИНФОРМАЦИЯ ОБ ОТЕЛЕ
+${hotelInfo || 'Информация не указана.'}
+
+### ДОСТУПНЫЕ НОМЕРА
+${roomsList}
+${availabilityInfo}
+
+### ВЫЯВЛЕННЫЕ ОСОБЫЕ ТРЕБОВАНИЯ
+${requirementsList}
+
+### СОБРАННЫЕ ДАННЫЕ БРОНИРОВАНИЯ
+${stateDescription || 'Данные ещё не собраны'}
+
+${stageInstructions[stage] || stageInstructions['collecting']}
+
+### ВАЖНО
+- Будь эмпатичным и внимательным
+- Не спрашивай больше 2 вопросов за раз
+- Если чего-то не можешь обеспечить — честно скажи и предложи альтернативу
+- Подбирай номер с учётом ВСЕХ пожеланий`;
+}
+
+// Get Special Booking AI response
+export async function getSpecialBookingAIResponse(userMessage, requirements = [], bookingState = null, conversationHistory = [], stage = 'collecting') {
+  const hotelName = document.getElementById('hotel-name-input')?.value || 'Hilton';
+  const systemPrompt = buildSpecialBookingPrompt(hotelName, requirements, bookingState, stage);
+
+  const messages = [
+    { role: 'system', content: systemPrompt }
+  ];
+
+  // Add conversation history
+  const recentHistory = conversationHistory.slice(-10);
+  messages.push(...recentHistory);
+
+  // Add current message
+  messages.push({ role: 'user', content: userMessage });
+
+  // Extract booking data
+  const extractedData = extractBookingData(userMessage);
+
+  try {
+    const response = await callOpenAI(messages);
+
+    // Parse offer data if present
+    const offerData = parseOfferData(response);
+
+    return {
+      text: response.replace(/\[OFFER_DATA\][\s\S]*?\[\/OFFER_DATA\]/g, '').trim(),
+      extractedData,
+      offerData,
+      hasOffer: !!offerData
+    };
+  } catch (error) {
+    return {
+      text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
+      error: true
+    };
+  }
+}
+
+// Parse offer data from AI response
+function parseOfferData(response) {
+  const offerMatch = response.match(/\[OFFER_DATA\]([\s\S]*?)\[\/OFFER_DATA\]/);
+  if (!offerMatch) return null;
+
+  const offerText = offerMatch[1];
+  const data = {};
+
+  const lines = offerText.trim().split('\n');
+  lines.forEach(line => {
+    const colonIndex = line.indexOf(':');
+    if (colonIndex > -1) {
+      const key = line.substring(0, colonIndex).trim();
+      const value = line.substring(colonIndex + 1).trim();
+      data[key] = value;
+    }
+  });
+
+  // Parse special notes
+  if (data.special_notes) {
+    data.special_notes = data.special_notes.split('|').map(s => s.trim()).filter(Boolean);
+  }
+
+  return data;
 }

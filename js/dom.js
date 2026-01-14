@@ -62,6 +62,23 @@ export const modals = {
   telegram: document.getElementById('tg-confirmation-modal')
 };
 
+// Special Booking Elements
+export const headerMenuBtn = document.getElementById('header-menu-btn');
+export const headerMenuDropdown = document.getElementById('header-menu-dropdown');
+export const specialBookingBtn = document.getElementById('special-booking-btn');
+export const specialBookingStatus = document.getElementById('special-booking-status');
+export const cancelSpecialBookingBtn = document.getElementById('cancel-special-booking-btn');
+export const specialOfferCard = document.getElementById('special-offer-card');
+export const offerRoomImage = document.getElementById('offer-room-image');
+export const offerRoomName = document.getElementById('offer-room-name');
+export const offerRoomPrice = document.getElementById('offer-room-price');
+export const offerDates = document.getElementById('offer-dates');
+export const offerGuests = document.getElementById('offer-guests');
+export const offerTotal = document.getElementById('offer-total');
+export const offerNotesList = document.getElementById('offer-notes-list');
+export const offerConfirmBtn = document.getElementById('offer-confirm-btn');
+export const offerEditBtn = document.getElementById('offer-edit-btn');
+
 // Mutable reference for typing indicator (needs re-assignment after reset)
 export let typingIndicator = document.getElementById('typing-indicator');
 

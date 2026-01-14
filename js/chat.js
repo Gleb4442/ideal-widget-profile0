@@ -14,20 +14,41 @@ let welcomed = false;
 let currentLang = 'ua';
 let isGenerating = false;
 let selectedRoom = null;
-let chatMode = 'general'; // 'general' | 'room-context'
+let chatMode = 'general'; // 'general' | 'room-context' | 'special-booking'
+
+// Special Booking Mode State
+let specialBookingState = {
+  isActive: false,
+  activatedBy: null, // 'auto' | 'manual'
+  stage: 'collecting', // 'collecting' | 'analyzing' | 'finalizing' | 'offer_ready'
+  requirements: [],
+  currentOffer: null
+};
+
+// Status messages for Special Booking stages
+const SPECIAL_BOOKING_STATUSES = {
+  'checking': 'Проверяем доступность номеров…',
+  'collecting': 'Уточняем ваши пожелания…',
+  'analyzing': 'Учитываем ваши потребности…',
+  'finalizing': 'Уточняем финальные детали…',
+  'generating': 'Формируем персональное предложение…'
+};
 
 // Booking state storage key
 const BOOKING_STATE_KEY = 'booking_state';
 
 // Booking funnel state (persisted to localStorage)
 let bookingState = {
-  step: 'initial', // 'initial' | 'gathering_info' | 'suggesting_rooms' | 'upselling' | 'completed'
+  step: 'initial', // 'initial' | 'collecting_name' | 'collecting_phone' | 'collecting_dates' | 'collecting_email' | 'suggesting_rooms' | 'completed'
   collectedData: {
-    checkIn: null,
-    checkOut: null,
-    guests: null,
-    preferences: [],
-    selectedRoom: null
+    fullName: null,      // ФИО гостя
+    phone: null,         // Номер телефона
+    checkIn: null,       // Дата заезда
+    checkOut: null,      // Дата выезда
+    email: null,         // Email
+    guests: null,        // Количество гостей
+    preferences: [],     // Предпочтения
+    selectedRoom: null   // Выбранный номер
   },
   conversationHistory: [] // Last 10 messages for AI context
 };
@@ -62,12 +83,35 @@ function saveBookingState() {
   }
 }
 
+// Determine current booking step based on collected data
+function determineBookingStep(data) {
+  if (!data.fullName) return 'collecting_name';
+  if (!data.phone) return 'collecting_phone';
+  if (!data.checkIn || !data.checkOut) return 'collecting_dates';
+  if (!data.email) return 'collecting_email';
+  if (!data.selectedRoom) return 'suggesting_rooms';
+  return 'completed';
+}
+
 // Update booking state with extracted data
 function updateBookingStateWithExtracted(extractedData) {
   if (!extractedData) return;
 
   let updated = false;
 
+  // Update fullName
+  if (extractedData.fullName && !bookingState.collectedData.fullName) {
+    bookingState.collectedData.fullName = extractedData.fullName;
+    updated = true;
+  }
+
+  // Update phone
+  if (extractedData.phone && !bookingState.collectedData.phone) {
+    bookingState.collectedData.phone = extractedData.phone;
+    updated = true;
+  }
+
+  // Update dates
   if (extractedData.checkIn && !bookingState.collectedData.checkIn) {
     bookingState.collectedData.checkIn = extractedData.checkIn;
     updated = true;
@@ -76,19 +120,21 @@ function updateBookingStateWithExtracted(extractedData) {
     bookingState.collectedData.checkOut = extractedData.checkOut;
     updated = true;
   }
+
+  // Update email
+  if (extractedData.email && !bookingState.collectedData.email) {
+    bookingState.collectedData.email = extractedData.email;
+    updated = true;
+  }
+
+  // Update guests
   if (extractedData.guests && !bookingState.collectedData.guests) {
     bookingState.collectedData.guests = extractedData.guests;
     updated = true;
   }
 
   // Update step based on collected data
-  if (bookingState.collectedData.checkIn && bookingState.collectedData.checkOut) {
-    if (bookingState.collectedData.guests) {
-      bookingState.step = 'suggesting_rooms';
-    } else {
-      bookingState.step = 'gathering_info';
-    }
-  }
+  bookingState.step = determineBookingStep(bookingState.collectedData);
 
   if (updated) {
     saveBookingState();
@@ -112,8 +158,11 @@ function resetBookingState() {
   bookingState = {
     step: 'initial',
     collectedData: {
+      fullName: null,
+      phone: null,
       checkIn: null,
       checkOut: null,
+      email: null,
       guests: null,
       preferences: [],
       selectedRoom: null
@@ -126,6 +175,205 @@ function resetBookingState() {
 // Get booking state for external use
 export function getBookingState() {
   return bookingState;
+}
+
+// ========================================
+// SPECIAL BOOKING MODE FUNCTIONS
+// ========================================
+
+// Activate Special Booking mode
+export function activateSpecialBookingMode(activatedBy = 'manual') {
+  specialBookingState.isActive = true;
+  specialBookingState.activatedBy = activatedBy;
+  specialBookingState.stage = 'collecting';
+  specialBookingState.requirements = [];
+  specialBookingState.currentOffer = null;
+
+  chatMode = 'special-booking';
+
+  // Clear room context if active
+  if (selectedRoom) {
+    clearRoomContext(true);
+  }
+
+  // Show status indicator
+  showSpecialBookingStatus('checking');
+
+  // Add activation message
+  if (activatedBy === 'auto') {
+    setTimeout(() => {
+      updateSpecialBookingStatus('collecting');
+      addMessage('Вижу, что у вас особые пожелания. Позвольте помочь подобрать идеальный вариант. Расскажите подробнее о ваших требованиях — я учту каждую деталь.', 'ai');
+      addToConversationHistory('assistant', 'Вижу, что у вас особые пожелания. Позвольте помочь подобрать идеальный вариант. Расскажите подробнее о ваших требованиях — я учту каждую деталь.');
+    }, 1500);
+  } else {
+    setTimeout(() => {
+      updateSpecialBookingStatus('collecting');
+      addMessage('Режим персонального подбора активирован. Расскажите о ваших пожеланиях: тип поездки, особые требования к номеру, дополнительные услуги — я учту всё, чтобы сделать ваше пребывание идеальным.', 'ai');
+      addToConversationHistory('assistant', 'Режим персонального подбора активирован. Расскажите о ваших пожеланиях: тип поездки, особые требования к номеру, дополнительные услуги — я учту всё, чтобы сделать ваше пребывание идеальным.');
+    }, 1500);
+  }
+}
+
+// Deactivate Special Booking mode
+export function deactivateSpecialBookingMode(silent = false) {
+  specialBookingState.isActive = false;
+  specialBookingState.activatedBy = null;
+  specialBookingState.stage = 'collecting';
+  specialBookingState.requirements = [];
+  specialBookingState.currentOffer = null;
+
+  chatMode = 'general';
+
+  // Hide UI elements
+  hideSpecialBookingStatus();
+  hideSpecialOfferCard();
+
+  if (!silent) {
+    addMessage('Режим персонального подбора завершён. Чем ещё могу помочь?', 'ai');
+  }
+}
+
+// Show Special Booking status indicator
+export function showSpecialBookingStatus(stage) {
+  const statusContainer = dom.specialBookingStatus;
+  if (!statusContainer) return;
+
+  const statusText = statusContainer.querySelector('.status-text');
+  if (statusText) {
+    statusText.textContent = SPECIAL_BOOKING_STATUSES[stage] || SPECIAL_BOOKING_STATUSES['collecting'];
+    statusText.classList.add('status-text-transition');
+    setTimeout(() => statusText.classList.remove('status-text-transition'), 300);
+  }
+
+  statusContainer.classList.remove('hidden');
+}
+
+// Update Special Booking status
+export function updateSpecialBookingStatus(stage) {
+  specialBookingState.stage = stage;
+  showSpecialBookingStatus(stage);
+}
+
+// Hide Special Booking status indicator
+export function hideSpecialBookingStatus() {
+  const statusContainer = dom.specialBookingStatus;
+  if (statusContainer) {
+    statusContainer.classList.add('hidden');
+  }
+}
+
+// Show Special Offer Card
+export function showSpecialOfferCard(offerData) {
+  if (!offerData) return;
+
+  specialBookingState.currentOffer = offerData;
+  specialBookingState.stage = 'offer_ready';
+
+  // Hide status indicator
+  hideSpecialBookingStatus();
+
+  // Populate offer card
+  const card = dom.specialOfferCard;
+  if (!card) return;
+
+  // Find room by name
+  const allRooms = rooms.getAllRooms();
+  const matchedRoom = allRooms.find(r =>
+    r.name.toLowerCase().includes(offerData.room_name?.toLowerCase()) ||
+    offerData.room_name?.toLowerCase().includes(r.name.toLowerCase())
+  );
+
+  // Set room image
+  if (dom.offerRoomImage) {
+    if (matchedRoom?.mainPhoto) {
+      dom.offerRoomImage.src = matchedRoom.mainPhoto;
+      dom.offerRoomImage.style.display = 'block';
+    } else {
+      dom.offerRoomImage.src = '';
+      dom.offerRoomImage.style.display = 'none';
+    }
+  }
+
+  // Set room name and price
+  if (dom.offerRoomName) {
+    dom.offerRoomName.textContent = offerData.room_name || 'Номер';
+  }
+  if (dom.offerRoomPrice) {
+    dom.offerRoomPrice.textContent = offerData.room_price ? `$${offerData.room_price}/ночь` : '';
+  }
+
+  // Set dates
+  if (dom.offerDates) {
+    const checkIn = offerData.check_in || bookingState.collectedData.checkIn || '—';
+    const checkOut = offerData.check_out || bookingState.collectedData.checkOut || '—';
+    dom.offerDates.textContent = `${checkIn} — ${checkOut}`;
+  }
+
+  // Set guests
+  if (dom.offerGuests) {
+    dom.offerGuests.textContent = offerData.guests || bookingState.collectedData.guests || '—';
+  }
+
+  // Set total price
+  if (dom.offerTotal) {
+    dom.offerTotal.textContent = offerData.total_price ? `$${offerData.total_price}` : '—';
+  }
+
+  // Set special notes
+  if (dom.offerNotesList) {
+    dom.offerNotesList.innerHTML = '';
+    const notes = offerData.special_notes || specialBookingState.requirements.map(r => r.label);
+    notes.forEach(note => {
+      const li = document.createElement('li');
+      li.textContent = note;
+      dom.offerNotesList.appendChild(li);
+    });
+  }
+
+  // Show card
+  card.classList.remove('hidden');
+}
+
+// Hide Special Offer Card
+export function hideSpecialOfferCard() {
+  const card = dom.specialOfferCard;
+  if (card) {
+    card.classList.add('hidden');
+  }
+}
+
+// Determine Special Booking stage based on collected data
+function determineSpecialBookingStage() {
+  const data = bookingState.collectedData;
+  const requirements = specialBookingState.requirements;
+
+  // If we have dates, guests, and some requirements - ready for generating
+  if (data.checkIn && data.checkOut && requirements.length >= 1) {
+    return 'generating';
+  }
+
+  // If we have some data - analyzing
+  if (data.checkIn || data.checkOut || requirements.length > 0) {
+    return 'analyzing';
+  }
+
+  return 'collecting';
+}
+
+// Check if Special Booking mode should be activated
+function shouldActivateSpecialBooking(message, conversationHistory) {
+  // Don't activate if already in special mode
+  if (specialBookingState.isActive) return false;
+
+  // Use detector from openai module
+  const detection = openai.detectComplexRequest(message, conversationHistory);
+  return detection.isComplex;
+}
+
+// Get Special Booking state for external use
+export function getSpecialBookingState() {
+  return specialBookingState;
 }
 
 // Get conversation history for external use
@@ -413,6 +661,102 @@ export async function getAIResponse(userMessage) {
   try {
     let response;
 
+    // Check if we should auto-activate Special Booking mode
+    if (!specialBookingState.isActive && shouldActivateSpecialBooking(userMessage, bookingState.conversationHistory)) {
+      // Extract requirements from message
+      const requirements = openai.extractRequirements(userMessage);
+      specialBookingState.requirements = requirements;
+
+      activateSpecialBookingMode('auto');
+
+      // Process in special booking mode
+      updateSpecialBookingStatus('analyzing');
+      response = await openai.getSpecialBookingAIResponse(
+        userMessage,
+        specialBookingState.requirements,
+        bookingState,
+        bookingState.conversationHistory,
+        determineSpecialBookingStage()
+      );
+
+      hideTyping();
+      setButtonLoading(false);
+      isGenerating = false;
+
+      // Update booking state with extracted data
+      if (response.extractedData) {
+        updateBookingStateWithExtracted(response.extractedData);
+      }
+
+      // Update requirements
+      const newRequirements = openai.extractRequirements(userMessage);
+      newRequirements.forEach(req => {
+        if (!specialBookingState.requirements.find(r => r.type === req.type)) {
+          specialBookingState.requirements.push(req);
+        }
+      });
+
+      addMessage(response.text, 'ai');
+      addToConversationHistory('assistant', response.text);
+
+      // Check for offer data
+      if (response.hasOffer && response.offerData) {
+        showSpecialOfferCard(response.offerData);
+      } else {
+        // Update status based on progress
+        const newStage = determineSpecialBookingStage();
+        updateSpecialBookingStatus(newStage);
+      }
+
+      return;
+    }
+
+    // Handle Special Booking mode responses
+    if (chatMode === 'special-booking' && specialBookingState.isActive) {
+      // Update requirements from message
+      const newRequirements = openai.extractRequirements(userMessage);
+      newRequirements.forEach(req => {
+        if (!specialBookingState.requirements.find(r => r.type === req.type)) {
+          specialBookingState.requirements.push(req);
+        }
+      });
+
+      // Determine stage
+      const stage = determineSpecialBookingStage();
+      updateSpecialBookingStatus(stage === 'generating' ? 'generating' : 'analyzing');
+
+      response = await openai.getSpecialBookingAIResponse(
+        userMessage,
+        specialBookingState.requirements,
+        bookingState,
+        bookingState.conversationHistory,
+        stage
+      );
+
+      hideTyping();
+      setButtonLoading(false);
+      isGenerating = false;
+
+      // Update booking state with extracted data
+      if (response.extractedData) {
+        updateBookingStateWithExtracted(response.extractedData);
+      }
+
+      addMessage(response.text, 'ai');
+      addToConversationHistory('assistant', response.text);
+
+      // Check for offer data
+      if (response.hasOffer && response.offerData) {
+        showSpecialOfferCard(response.offerData);
+      } else {
+        // Update status based on new progress
+        const newStage = determineSpecialBookingStage();
+        updateSpecialBookingStatus(newStage);
+      }
+
+      return;
+    }
+
     // Check if we're in room context but user asks about general topic
     if (chatMode === 'room-context' && selectedRoom && openai.isGeneralTopic(userMessage)) {
       // Auto-break room context for general topics
@@ -529,6 +873,17 @@ export function resetChat() {
 
   // Reset booking state
   resetBookingState();
+
+  // Reset Special Booking state
+  specialBookingState = {
+    isActive: false,
+    activatedBy: null,
+    stage: 'collecting',
+    requirements: [],
+    currentOffer: null
+  };
+  hideSpecialBookingStatus();
+  hideSpecialOfferCard();
 
   // Clear room context container
   const container = document.getElementById('room-context-container');
@@ -705,6 +1060,102 @@ export function initChatListeners() {
 
   // Room detail listeners
   initRoomDetailListeners();
+
+  // Special Booking listeners
+  initSpecialBookingListeners();
+}
+
+// Initialize Special Booking Event Listeners
+export function initSpecialBookingListeners() {
+  // Header menu toggle
+  if (dom.headerMenuBtn) {
+    dom.headerMenuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleHeaderMenu();
+    });
+  }
+
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (dom.headerMenuDropdown && !dom.headerMenuDropdown.contains(e.target) && !dom.headerMenuBtn?.contains(e.target)) {
+      closeHeaderMenu();
+    }
+  });
+
+  // Special Booking button in menu
+  if (dom.specialBookingBtn) {
+    dom.specialBookingBtn.addEventListener('click', () => {
+      closeHeaderMenu();
+      activateSpecialBookingMode('manual');
+    });
+  }
+
+  // Cancel Special Booking button
+  if (dom.cancelSpecialBookingBtn) {
+    dom.cancelSpecialBookingBtn.addEventListener('click', () => {
+      deactivateSpecialBookingMode();
+    });
+  }
+
+  // Offer Confirm button
+  if (dom.offerConfirmBtn) {
+    dom.offerConfirmBtn.addEventListener('click', () => {
+      confirmSpecialOffer();
+    });
+  }
+
+  // Offer Edit button
+  if (dom.offerEditBtn) {
+    dom.offerEditBtn.addEventListener('click', () => {
+      editSpecialOffer();
+    });
+  }
+}
+
+// Toggle header menu
+function toggleHeaderMenu() {
+  if (dom.headerMenuDropdown) {
+    dom.headerMenuDropdown.classList.toggle('show');
+  }
+}
+
+// Close header menu
+function closeHeaderMenu() {
+  if (dom.headerMenuDropdown) {
+    dom.headerMenuDropdown.classList.remove('show');
+  }
+}
+
+// Confirm special offer
+function confirmSpecialOffer() {
+  hideSpecialOfferCard();
+
+  // Store the selected room
+  if (specialBookingState.currentOffer?.room_name) {
+    const allRooms = rooms.getAllRooms();
+    const matchedRoom = allRooms.find(r =>
+      r.name.toLowerCase().includes(specialBookingState.currentOffer.room_name.toLowerCase()) ||
+      specialBookingState.currentOffer.room_name.toLowerCase().includes(r.name.toLowerCase())
+    );
+    if (matchedRoom) {
+      bookingState.collectedData.selectedRoom = matchedRoom.name;
+      saveBookingState();
+    }
+  }
+
+  addMessage('Отлично! Ваше бронирование подтверждено. Наш менеджер свяжется с вами в ближайшее время для финального подтверждения деталей. Благодарим за выбор нашего отеля!', 'ai');
+
+  // Deactivate special mode
+  deactivateSpecialBookingMode(true);
+}
+
+// Edit special offer - return to chat for adjustments
+function editSpecialOffer() {
+  hideSpecialOfferCard();
+  updateSpecialBookingStatus('collecting');
+
+  addMessage('Конечно! Что именно вы хотели бы изменить? Расскажите о ваших пожеланиях, и я подготовлю обновлённое предложение.', 'ai');
+  addToConversationHistory('assistant', 'Конечно! Что именно вы хотели бы изменить? Расскажите о ваших пожеланиях, и я подготовлю обновлённое предложение.');
 }
 
 // Export state getters/setters

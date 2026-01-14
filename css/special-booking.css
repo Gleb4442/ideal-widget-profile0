@@ -1,0 +1,587 @@
+/*
+ * Special Booking Mode Styles
+ * Premium styling for personalized booking experience
+ */
+
+/* ============================
+   HEADER MENU (THREE DOTS)
+   ============================ */
+
+.header-menu-container {
+  position: relative;
+}
+
+.header-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 180px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-8px) scale(0.95);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.header-dropdown.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+.header-dropdown.hidden {
+  display: block;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-align: left;
+}
+
+.dropdown-item:hover {
+  background: #f3f4f6;
+}
+
+.dropdown-item:active {
+  background: #e5e7eb;
+}
+
+.dropdown-item svg {
+  color: var(--accent-color, #2563eb);
+  flex-shrink: 0;
+}
+
+/* ============================
+   SPECIAL BOOKING STATUS
+   ============================ */
+
+.special-booking-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-bottom: 1px solid rgba(14, 165, 233, 0.1);
+  animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.special-booking-status.hidden {
+  display: none;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mini-loader {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--accent-color, #2563eb);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.status-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0c4a6e;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.cancel-special-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(14, 165, 233, 0.1);
+  border-radius: 8px;
+  color: #0369a1;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cancel-special-btn:hover {
+  background: rgba(14, 165, 233, 0.2);
+  color: #075985;
+}
+
+/* ============================
+   SPECIAL OFFER CARD
+   ============================ */
+
+.special-offer-card {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  z-index: 50;
+  overflow: hidden;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 85%;
+  display: flex;
+  flex-direction: column;
+}
+
+.special-offer-card.hidden {
+  display: none;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Offer Header */
+.offer-header {
+  background: linear-gradient(135deg, var(--accent-color, #2563eb) 0%, var(--accent-hover, #1d4ed8) 100%);
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.offer-header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.offer-badge {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.offer-subtitle {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.offer-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+}
+
+.offer-icon svg {
+  stroke: white;
+  fill: rgba(255, 255, 255, 0.3);
+}
+
+/* Offer Content */
+.offer-content {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Room Section */
+.offer-room {
+  display: flex;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 16px;
+}
+
+.offer-room-image-container {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+  background: #f1f5f9;
+}
+
+.offer-room-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.offer-room-image-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+}
+
+.offer-room-image:not([src=""]) + .offer-room-image-placeholder {
+  display: none;
+}
+
+.offer-room-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.offer-room-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.offer-room-price {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Details Section */
+.offer-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.offer-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.offer-detail-item:last-of-type {
+  border-bottom: none;
+}
+
+.offer-detail-item.offer-total {
+  padding-top: 12px;
+  margin-top: 4px;
+  border-top: 2px solid #e5e7eb;
+  border-bottom: none;
+}
+
+.detail-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.detail-label svg {
+  color: #9ca3af;
+}
+
+.detail-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.detail-value.total-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent-color, #2563eb);
+}
+
+/* Special Notes */
+.offer-special-notes {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: 16px;
+}
+
+.notes-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #92400e;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.notes-label svg {
+  color: #d97706;
+}
+
+.notes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.notes-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: #78350f;
+  line-height: 1.4;
+}
+
+.notes-list li::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #d97706;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+/* Offer Actions */
+.offer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 20px 20px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.offer-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.offer-btn.primary {
+  background: linear-gradient(135deg, var(--accent-color, #2563eb) 0%, var(--accent-hover, #1d4ed8) 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.offer-btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+.offer-btn.primary:active {
+  transform: translateY(0);
+}
+
+.offer-btn.secondary {
+  background: white;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.offer-btn.secondary:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+/* ============================
+   DARK MODE SUPPORT
+   ============================ */
+
+.dark-mode .header-dropdown {
+  background: #1f2937;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.dark-mode .dropdown-item {
+  color: #e5e7eb;
+}
+
+.dark-mode .dropdown-item:hover {
+  background: #374151;
+}
+
+.dark-mode .special-booking-status {
+  background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%);
+  border-bottom-color: rgba(59, 130, 246, 0.2);
+}
+
+.dark-mode .status-text {
+  color: #bfdbfe;
+}
+
+.dark-mode .cancel-special-btn {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+}
+
+.dark-mode .special-offer-card {
+  background: #1f2937;
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.4);
+}
+
+.dark-mode .offer-room {
+  border-bottom-color: #374151;
+}
+
+.dark-mode .offer-room-image-container {
+  background: #374151;
+}
+
+.dark-mode .offer-room-name {
+  color: #f3f4f6;
+}
+
+.dark-mode .offer-room-price {
+  color: #9ca3af;
+}
+
+.dark-mode .offer-detail-item {
+  border-bottom-color: #374151;
+}
+
+.dark-mode .offer-detail-item.offer-total {
+  border-top-color: #4b5563;
+}
+
+.dark-mode .detail-label {
+  color: #9ca3af;
+}
+
+.dark-mode .detail-value {
+  color: #f3f4f6;
+}
+
+.dark-mode .offer-special-notes {
+  background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
+}
+
+.dark-mode .notes-label {
+  color: #fcd34d;
+}
+
+.dark-mode .notes-list li {
+  color: #fde68a;
+}
+
+.dark-mode .offer-actions {
+  background: #111827;
+  border-top-color: #374151;
+}
+
+.dark-mode .offer-btn.secondary {
+  background: #374151;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+.dark-mode .offer-btn.secondary:hover {
+  background: #4b5563;
+}
+
+/* ============================
+   ANIMATIONS
+   ============================ */
+
+.status-text-transition {
+  animation: fadeInText 0.3s ease;
+}
+
+@keyframes fadeInText {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Special mode indicator badge in messages */
+.special-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #92400e;
+  margin-bottom: 8px;
+}
+
+.special-mode-badge svg {
+  width: 12px;
+  height: 12px;
+}
+
+.dark-mode .special-mode-badge {
+  background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
+  color: #fcd34d;
+}
