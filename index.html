@@ -635,28 +635,36 @@
     </footer>
 
     <!-- Welcome Modal -->
-    <div id="welcome-modal" class="welcome-modal hidden">
-      <div class="welcome-content">
-        <div class="welcome-header">
-          <div class="welcome-logo">
+    <div id="welcome-modal"
+      class="welcome-modal hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
+      <div
+        class="welcome-content bg-white rounded-2xl p-6 w-full shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
+        <div class="welcome-header mb-4">
+          <div class="welcome-logo mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
             <span class="text-2xl font-bold accent-text">H</span>
           </div>
-          <h2 class="welcome-title">Привет! Я Roomie,<br>твой ИИ-консьерж в Hilton. 🏨</h2>
+          <h2 class="welcome-title text-xl font-bold text-gray-900 mb-2">Привет! Я Roomie,<br>твой ИИ-консьерж в Hilton.
+            🏨
+          </h2>
         </div>
-        <div class="welcome-body">
-          <p class="welcome-text">
-            Нажимая кнопку «Начать», вы принимаете наши <a href="#" class="legal-link"
+        <div class="welcome-body mb-6">
+          <p class="welcome-text text-sm text-gray-600 mb-4 leading-relaxed">
+            Нажимая кнопку «Начать», вы принимаете наши <a href="#" class="legal-link text-blue-600 hover:underline"
               data-url="https://roomie.user-agreement.hotelmol.com/">Условия использования</a> и <a href="#"
-              class="legal-link" data-url="https://roomie.privacy-policy.hotelmol.com/">Политику конфиденциальности</a>,
+              class="legal-link text-blue-600 hover:underline"
+              data-url="https://roomie.privacy-policy.hotelmol.com/">Политику конфиденциальности</a>,
             а также соглашаетесь получать от нас полезную информацию о своем проживании и спецпредложениях отеля.
           </p>
-          <p class="welcome-text-small">
+          <p class="welcome-text-small text-xs text-gray-400">
             Ты можешь в любой момент удалить все свои данные, просто написав на почту <a
-              href="mailto:legal@hotelmol.com">legal@hotelmol.com</a>
+              href="mailto:legal@hotelmol.com" class="text-gray-500 hover:underline">legal@hotelmol.com</a>
           </p>
         </div>
         <div class="welcome-footer">
-          <button id="welcome-start-btn" class="welcome-btn-primary">Начать работу</button>
+          <button id="welcome-start-btn"
+            class="w-full py-3 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-semibold rounded-xl transition-colors shadow-md text-base">
+            Начать работу
+          </button>
         </div>
       </div>
     </div>
