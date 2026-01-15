@@ -243,8 +243,8 @@
         </button>
         <!-- Header Menu (Three Dots) -->
         <div class="header-menu-container">
-          <button id="header-menu-btn" class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white"
-            title="Меню">
+          <button id="header-menu-btn"
+            class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white" title="Меню">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="1"></circle>
@@ -256,10 +256,71 @@
             <button id="special-booking-btn" class="dropdown-item">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                </polygon>
               </svg>
-              <span>Special Booking</span>
+              <span data-i18n="specialBooking">Special Booking</span>
             </button>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-submenu">
+              <button id="language-menu-btn" class="dropdown-item has-submenu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                  </path>
+                </svg>
+                <span data-i18n="language">Language</span>
+                <svg class="submenu-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+              <div id="language-submenu" class="submenu-content hidden">
+                <button class="language-option" data-lang="en">
+                  <span class="lang-flag">🇬🇧</span>
+                  <span class="lang-name">English</span>
+                </button>
+                <button class="language-option" data-lang="zh">
+                  <span class="lang-flag">🇨🇳</span>
+                  <span class="lang-name">中文</span>
+                </button>
+                <button class="language-option" data-lang="hi">
+                  <span class="lang-flag">🇮🇳</span>
+                  <span class="lang-name">हिन्दी</span>
+                </button>
+                <button class="language-option" data-lang="es">
+                  <span class="lang-flag">🇪🇸</span>
+                  <span class="lang-name">Español</span>
+                </button>
+                <button class="language-option" data-lang="ar">
+                  <span class="lang-flag">🇸🇦</span>
+                  <span class="lang-name">العربية</span>
+                </button>
+                <button class="language-option" data-lang="fr">
+                  <span class="lang-flag">🇫🇷</span>
+                  <span class="lang-name">Français</span>
+                </button>
+                <button class="language-option" data-lang="bn">
+                  <span class="lang-flag">🇧🇩</span>
+                  <span class="lang-name">বাংলা</span>
+                </button>
+                <button class="language-option" data-lang="pt">
+                  <span class="lang-flag">🇵🇹</span>
+                  <span class="lang-name">Português</span>
+                </button>
+                <button class="language-option" data-lang="ru">
+                  <span class="lang-flag">🇷🇺</span>
+                  <span class="lang-name">Русский</span>
+                </button>
+                <button class="language-option" data-lang="id">
+                  <span class="lang-flag">🇮🇩</span>
+                  <span class="lang-name">Indonesia</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         <button id="chat-close-button"
@@ -424,7 +485,9 @@
         <span class="offer-icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            <polygon
+              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+            </polygon>
           </svg>
         </span>
       </div>
@@ -570,6 +633,51 @@
             class="accent-text hover:underline cursor-pointer">hotelmol.com</a></span>
       </div>
     </footer>
+
+    <!-- Welcome Modal -->
+    <div id="welcome-modal" class="welcome-modal hidden">
+      <div class="welcome-content">
+        <div class="welcome-header">
+          <div class="welcome-logo">
+            <span class="text-2xl font-bold accent-text">H</span>
+          </div>
+          <h2 class="welcome-title">Привет! Я Roomie,<br>твой ИИ-консьерж в Hilton. 🏨</h2>
+        </div>
+        <div class="welcome-body">
+          <p class="welcome-text">
+            Нажимая кнопку «Начать», вы принимаете наши <a href="#" class="legal-link"
+              data-url="https://roomie.user-agreement.hotelmol.com/">Условия использования</a> и <a href="#"
+              class="legal-link" data-url="https://roomie.privacy-policy.hotelmol.com/">Политику конфиденциальности</a>,
+            а также соглашаетесь получать от нас полезную информацию о своем проживании и спецпредложениях отеля.
+          </p>
+          <p class="welcome-text-small">
+            Ты можешь в любой момент удалить все свои данные, просто написав на почту <a
+              href="mailto:legal@hotelmol.com">legal@hotelmol.com</a>
+          </p>
+        </div>
+        <div class="welcome-footer">
+          <button id="welcome-start-btn" class="welcome-btn-primary">Начать работу</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legal Modal (Iframe) -->
+    <div id="legal-modal" class="legal-modal hidden">
+      <div class="legal-header">
+        <button id="legal-back-btn" class="legal-back-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Назад
+        </button>
+        <span class="legal-title">Документ</span>
+      </div>
+      <div class="legal-content">
+        <iframe id="legal-iframe" src="" frameborder="0"></iframe>
+      </div>
+    </div>
   </div>
 
   <!-- Room Edit Modal -->
@@ -666,7 +774,8 @@
                 <polyline points="9 18 15 12 9 6"></polyline>
               </svg>
             </button>
-            <button type="button" id="calendar-generate-random" class="room-btn room-btn-secondary calendar-generate-btn">
+            <button type="button" id="calendar-generate-random"
+              class="room-btn room-btn-secondary calendar-generate-btn">
               Сгенерировать
             </button>
           </div>

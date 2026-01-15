@@ -187,3 +187,201 @@
 .dark-mode #message-input::placeholder {
   color: #9ca3af;
 }
+
+/* Welcome Modal */
+.welcome-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  z-index: 50;
+  /* Above everything inside chat window */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.welcome-modal.hidden {
+  display: none;
+}
+
+.welcome-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 100%;
+}
+
+.welcome-logo {
+  width: 64px;
+  height: 64px;
+  background-color: #f3f4f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.welcome-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+.welcome-body {
+  margin-bottom: 32px;
+}
+
+.welcome-text {
+  font-size: 14px;
+  color: #4b5563;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.welcome-text a.legal-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.welcome-text a.legal-link:hover {
+  text-decoration: underline;
+}
+
+.welcome-text-small {
+  font-size: 11px;
+  color: #9ca3af;
+  line-height: 1.4;
+}
+
+.welcome-text-small a {
+  color: #6b7280;
+  text-decoration: underline;
+}
+
+.welcome-btn-primary {
+  width: 100%;
+  padding: 14px 24px;
+  background-color: var(--accent-color, #2563eb);
+  color: white;
+  font-weight: 600;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.2s;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.welcome-btn-primary:active {
+  transform: scale(0.98);
+}
+
+.welcome-btn-primary:hover {
+  opacity: 0.95;
+}
+
+/* Legal Modal */
+.legal-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  z-index: 60;
+  /* Above welcome modal */
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.3s ease-out;
+}
+
+.legal-modal.hidden {
+  display: none;
+}
+
+.legal-header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: white;
+  flex-shrink: 0;
+}
+
+.legal-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #4b5563;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 8px;
+  margin-left: -8px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.legal-back-btn:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.legal-title {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  color: #111827;
+  margin-right: 32px;
+  /* Balance the back button width roughly */
+}
+
+.legal-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+#legal-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}

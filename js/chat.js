@@ -3,15 +3,18 @@
  * Hilton Chat Widget
  */
 
-import { translations } from './config.js';
+import { translations, languagesList } from './config.js';
 import * as dom from './dom.js';
 import * as rooms from './rooms.js';
 import * as openai from './openai.js';
 import * as gallery from './gallery.js';
 
+// Language storage key
+const LANGUAGE_KEY = 'chat_language';
+
 // State
 let welcomed = false;
-let currentLang = 'ua';
+let currentLang = localStorage.getItem(LANGUAGE_KEY) || 'en'; // Default to English
 let isGenerating = false;
 let selectedRoom = null;
 let chatMode = 'general'; // 'general' | 'room-context' | 'special-booking'
@@ -239,11 +242,21 @@ export function showSpecialBookingStatus(stage) {
   const statusContainer = dom.specialBookingStatus;
   if (!statusContainer) return;
 
-  const statusText = statusContainer.querySelector('.status-text');
-  if (statusText) {
-    statusText.textContent = SPECIAL_BOOKING_STATUSES[stage] || SPECIAL_BOOKING_STATUSES['collecting'];
-    statusText.classList.add('status-text-transition');
-    setTimeout(() => statusText.classList.remove('status-text-transition'), 300);
+  // Get localized status text
+  const t = translations[currentLang] || translations['en'];
+  const statusTexts = {
+    'checking': t.checkingAvailability || 'Checking room availability...',
+    'collecting': t.analyzingNeeds || 'Analyzing your needs...',
+    'analyzing': t.analyzingNeeds || 'Analyzing your needs...',
+    'finalizing': t.finalizingDetails || 'Finalizing details...',
+    'generating': t.generatingOffer || 'Generating personal offer...'
+  };
+
+  const statusTextEl = statusContainer.querySelector('.status-text');
+  if (statusTextEl) {
+    statusTextEl.textContent = statusTexts[stage] || statusTexts['collecting'];
+    statusTextEl.classList.add('status-text-transition');
+    setTimeout(() => statusTextEl.classList.remove('status-text-transition'), 300);
   }
 
   statusContainer.classList.remove('hidden');
@@ -376,6 +389,133 @@ export function getSpecialBookingState() {
   return specialBookingState;
 }
 
+// ========================================
+// LANGUAGE FUNCTIONS
+// ========================================
+
+// Get current translation
+export function getTranslation(key) {
+  const t = translations[currentLang] || translations['en'];
+  return t[key] || translations['en'][key] || key;
+}
+
+// Switch language
+export function switchLanguage(langCode) {
+  if (!translations[langCode]) {
+    console.warn(`Language ${langCode} not found, falling back to English`);
+    langCode = 'en';
+  }
+
+  currentLang = langCode;
+  localStorage.setItem(LANGUAGE_KEY, langCode);
+
+  // Update UI texts
+  updateUITexts();
+
+  // Update active state in menu
+  updateLanguageMenuState();
+
+  // Set RTL for Arabic
+  if (langCode === 'ar') {
+    document.documentElement.setAttribute('dir', 'rtl');
+  } else {
+    document.documentElement.removeAttribute('dir');
+  }
+
+  // Close menu
+  closeHeaderMenu();
+  closeLanguageSubmenu();
+
+  // Send welcome message in new language
+  addMessage(getTranslation('welcome'), 'ai');
+  addToConversationHistory('assistant', getTranslation('welcome'));
+}
+
+// Update all UI texts based on current language
+export function updateUITexts() {
+  const t = translations[currentLang] || translations['en'];
+
+  // Update placeholder
+  if (dom.messageInput) {
+    dom.messageInput.placeholder = t.placeholder || 'Type a message...';
+  }
+
+  // Update data-i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key]) {
+      el.textContent = t[key];
+    }
+  });
+
+  // Update offer card texts
+  const offerBadge = document.querySelector('.offer-badge');
+  if (offerBadge) offerBadge.textContent = t.personalOffer || 'Personal Offer';
+
+  const offerSubtitle = document.querySelector('.offer-subtitle');
+  if (offerSubtitle) offerSubtitle.textContent = t.selectedForYou || 'Selected specially for you';
+
+  const confirmBtn = dom.offerConfirmBtn;
+  if (confirmBtn) {
+    const btnText = confirmBtn.querySelector('svg')?.nextSibling;
+    if (btnText) {
+      confirmBtn.innerHTML = confirmBtn.querySelector('svg').outerHTML + '\n          ' + (t.confirmBooking || 'Confirm Booking');
+    }
+  }
+
+  const editBtn = dom.offerEditBtn;
+  if (editBtn) {
+    const btnSvg = editBtn.querySelector('svg');
+    if (btnSvg) {
+      editBtn.innerHTML = btnSvg.outerHTML + '\n          ' + (t.editDetails || 'Edit Details');
+    }
+  }
+
+  // Update status texts
+  updateSpecialBookingStatusTexts();
+}
+
+// Update Special Booking status texts for current language
+function updateSpecialBookingStatusTexts() {
+  const t = translations[currentLang] || translations['en'];
+
+  // Update the SPECIAL_BOOKING_STATUSES object reference is not possible
+  // So we update directly in showSpecialBookingStatus
+}
+
+// Update language menu active state
+function updateLanguageMenuState() {
+  document.querySelectorAll('.language-option').forEach(option => {
+    if (option.dataset.lang === currentLang) {
+      option.classList.add('active');
+    } else {
+      option.classList.remove('active');
+    }
+  });
+}
+
+// Close language submenu
+function closeLanguageSubmenu() {
+  if (dom.languageSubmenu) {
+    dom.languageSubmenu.classList.remove('show');
+  }
+  const submenuContainer = document.querySelector('.dropdown-submenu');
+  if (submenuContainer) {
+    submenuContainer.classList.remove('open');
+  }
+}
+
+// Toggle language submenu
+function toggleLanguageSubmenu() {
+  if (dom.languageSubmenu) {
+    dom.languageSubmenu.classList.toggle('show');
+  }
+  const submenuContainer = document.querySelector('.dropdown-submenu');
+  if (submenuContainer) {
+    submenuContainer.classList.toggle('open');
+  }
+}
+
 // Get conversation history for external use
 export function getConversationHistory() {
   return bookingState.conversationHistory;
@@ -399,9 +539,15 @@ export function updateSendButtonState() {
 
 // Initialize Language
 export function initLanguage() {
-  const t = translations[currentLang];
-  dom.messageInput.placeholder = t.placeholder;
-  dom.chatButtonText.textContent = dom.buttonTextSelect.value;
+  const t = translations[currentLang] || translations['en'];
+  if (dom.messageInput) {
+    dom.messageInput.placeholder = t.placeholder || 'Type a message...';
+  }
+  if (dom.chatButtonText && dom.buttonTextSelect) {
+    dom.chatButtonText.textContent = dom.buttonTextSelect.value;
+  }
+  // Update language menu state
+  updateLanguageMenuState();
 }
 
 // Toggle Chat Window
@@ -431,10 +577,61 @@ export function toggleChat() {
       dom.adminPanel.classList.add('hidden-panel');
       dom.openAdminBtn.style.display = 'none';
     }
-    if (!welcomed) {
+
+    // Check welcome state
+    checkWelcomeState();
+
+    if (!welcomed && localStorage.getItem('roomie_onboarding_complete') === 'true') {
       simulateWelcome();
       welcomed = true;
     }
+  }
+}
+
+// Check Welcome State
+function checkWelcomeState() {
+  const onboardingComplete = localStorage.getItem('roomie_onboarding_complete');
+  if (onboardingComplete !== 'true' && dom.welcomeModal) {
+    dom.welcomeModal.classList.remove('hidden');
+  }
+}
+
+// Initialize Welcome Listeners
+export function initWelcomeListeners() {
+  if (dom.welcomeStartBtn) {
+    dom.welcomeStartBtn.addEventListener('click', () => {
+      localStorage.setItem('roomie_onboarding_complete', 'true');
+      if (dom.welcomeModal) dom.welcomeModal.classList.add('hidden');
+
+      // Trigger welcome message if not yet welcomed
+      if (!welcomed) {
+        simulateWelcome();
+        welcomed = true;
+      }
+    });
+  }
+
+  if (dom.legalLinks) {
+    dom.legalLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const url = link.dataset.url;
+        if (dom.legalIframe && dom.legalModal) {
+          dom.legalIframe.src = url;
+          dom.legalModal.classList.remove('hidden');
+        }
+      });
+    });
+  }
+
+  if (dom.legalBackBtn) {
+    dom.legalBackBtn.addEventListener('click', () => {
+      if (dom.legalModal) {
+        dom.legalModal.classList.add('hidden');
+        // Optional: clear iframe to stop playing video/audio etc if any
+        if (dom.legalIframe) setTimeout(() => { dom.legalIframe.src = ''; }, 300);
+      }
+    });
   }
 }
 
@@ -508,15 +705,15 @@ export function addRoomCarousel() {
     card.innerHTML = `
       <div class="room-carousel-image-container">
         ${hasPhoto
-          ? `<img class="room-carousel-image" src="${room.mainPhoto}" alt="${room.name}">`
-          : `<div class="room-carousel-image" style="display:flex;align-items:center;justify-content:center;color:#9ca3af;">
+        ? `<img class="room-carousel-image" src="${room.mainPhoto}" alt="${room.name}">`
+        : `<div class="room-carousel-image" style="display:flex;align-items:center;justify-content:center;color:#9ca3af;">
               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                 <circle cx="8.5" cy="8.5" r="1.5"></circle>
                 <polyline points="21 15 16 10 5 21"></polyline>
               </svg>
             </div>`
-        }
+      }
         <div class="room-carousel-overlay">
           <div class="room-carousel-actions">
             ${room.askQuestionEnabled !== false ? `
@@ -1063,6 +1260,9 @@ export function initChatListeners() {
 
   // Special Booking listeners
   initSpecialBookingListeners();
+
+  // Welcome modal listeners
+  initWelcomeListeners();
 }
 
 // Initialize Special Booking Event Listeners
@@ -1110,6 +1310,29 @@ export function initSpecialBookingListeners() {
       editSpecialOffer();
     });
   }
+
+  // Language menu button
+  if (dom.languageMenuBtn) {
+    dom.languageMenuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleLanguageSubmenu();
+    });
+  }
+
+  // Language options
+  document.querySelectorAll('.language-option').forEach(option => {
+    option.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const langCode = option.dataset.lang;
+      if (langCode) {
+        switchLanguage(langCode);
+      }
+    });
+  });
+
+  // Initialize language state on load
+  updateLanguageMenuState();
+  updateUITexts();
 }
 
 // Toggle header menu
@@ -1124,6 +1347,8 @@ function closeHeaderMenu() {
   if (dom.headerMenuDropdown) {
     dom.headerMenuDropdown.classList.remove('show');
   }
+  // Also close language submenu
+  closeLanguageSubmenu();
 }
 
 // Confirm special offer

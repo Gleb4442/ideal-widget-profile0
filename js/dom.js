@@ -62,6 +62,14 @@ export const modals = {
   telegram: document.getElementById('tg-confirmation-modal')
 };
 
+// Welcome & Legal Modals
+export const welcomeModal = document.getElementById('welcome-modal');
+export const welcomeStartBtn = document.getElementById('welcome-start-btn');
+export const legalModal = document.getElementById('legal-modal');
+export const legalBackBtn = document.getElementById('legal-back-btn');
+export const legalIframe = document.getElementById('legal-iframe');
+export const legalLinks = document.querySelectorAll('.legal-link');
+
 // Special Booking Elements
 export const headerMenuBtn = document.getElementById('header-menu-btn');
 export const headerMenuDropdown = document.getElementById('header-menu-dropdown');
@@ -78,6 +86,11 @@ export const offerTotal = document.getElementById('offer-total');
 export const offerNotesList = document.getElementById('offer-notes-list');
 export const offerConfirmBtn = document.getElementById('offer-confirm-btn');
 export const offerEditBtn = document.getElementById('offer-edit-btn');
+
+// Language Selector Elements
+export const languageMenuBtn = document.getElementById('language-menu-btn');
+export const languageSubmenu = document.getElementById('language-submenu');
+export const languageOptions = document.querySelectorAll('.language-option');
 
 // Mutable reference for typing indicator (needs re-assignment after reset)
 export let typingIndicator = document.getElementById('typing-indicator');
