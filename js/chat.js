@@ -581,17 +581,19 @@ export function toggleChat() {
     // Check welcome state
     checkWelcomeState();
 
-    if (!welcomed && localStorage.getItem('roomie_onboarding_complete') === 'true') {
+    if (!welcomed && sessionTermsAccepted) {
       simulateWelcome();
       welcomed = true;
     }
   }
 }
 
+// Session state for terms acceptance
+let sessionTermsAccepted = false;
+
 // Check Welcome State
 function checkWelcomeState() {
-  const onboardingComplete = localStorage.getItem('roomie_onboarding_complete');
-  if (onboardingComplete !== 'true' && dom.welcomeModal) {
+  if (!sessionTermsAccepted && dom.welcomeModal) {
     dom.welcomeModal.classList.remove('hidden');
   }
 }
@@ -600,7 +602,7 @@ function checkWelcomeState() {
 export function initWelcomeListeners() {
   if (dom.welcomeStartBtn) {
     dom.welcomeStartBtn.addEventListener('click', () => {
-      localStorage.setItem('roomie_onboarding_complete', 'true');
+      sessionTermsAccepted = true;
       if (dom.welcomeModal) dom.welcomeModal.classList.add('hidden');
 
       // Trigger welcome message if not yet welcomed
