@@ -73,7 +73,8 @@ export const translations = {
     checkingAvailability: "Checking room availability...",
     analyzingNeeds: "Analyzing your needs...",
     finalizingDetails: "Finalizing details...",
-    generatingOffer: "Generating personal offer..."
+    generatingOffer: "Generating personal offer...",
+    newChat: "New Chat"
   },
   zh: {
     buttonText: "与酒店聊天",
@@ -93,7 +94,8 @@ export const translations = {
     checkingAvailability: "正在检查房间可用性...",
     analyzingNeeds: "正在分析您的需求...",
     finalizingDetails: "正在最终确定细节...",
-    generatingOffer: "正在生成个人优惠..."
+    generatingOffer: "正在生成个人优惠...",
+    newChat: "新聊天"
   },
   hi: {
     buttonText: "होटल से चैट करें",
@@ -113,7 +115,8 @@ export const translations = {
     checkingAvailability: "कमरे की उपलब्धता जांच रहे हैं...",
     analyzingNeeds: "आपकी जरूरतों का विश्लेषण कर रहे हैं...",
     finalizingDetails: "अंतिम विवरण तैयार कर रहे हैं...",
-    generatingOffer: "व्यक्तिगत प्रस्ताव तैयार कर रहे हैं..."
+    generatingOffer: "व्यक्तिगत प्रस्ताव तैयार कर रहे हैं...",
+    newChat: "नई बातचीत"
   },
   es: {
     buttonText: "Chat con el Hotel",
@@ -133,7 +136,8 @@ export const translations = {
     checkingAvailability: "Verificando disponibilidad...",
     analyzingNeeds: "Analizando tus necesidades...",
     finalizingDetails: "Finalizando detalles...",
-    generatingOffer: "Generando oferta personal..."
+    generatingOffer: "Generando oferta personal...",
+    newChat: "Nueva conversación"
   },
   ar: {
     buttonText: "الدردشة مع الفندق",
@@ -153,7 +157,8 @@ export const translations = {
     checkingAvailability: "جاري التحقق من توفر الغرف...",
     analyzingNeeds: "جاري تحليل احتياجاتك...",
     finalizingDetails: "جاري إنهاء التفاصيل...",
-    generatingOffer: "جاري إنشاء العرض الشخصي..."
+    generatingOffer: "جاري إنشاء العرض الشخصي...",
+    newChat: "محادثة جديدة"
   },
   fr: {
     buttonText: "Chat avec l'Hôtel",
@@ -173,7 +178,8 @@ export const translations = {
     checkingAvailability: "Vérification de la disponibilité...",
     analyzingNeeds: "Analyse de vos besoins...",
     finalizingDetails: "Finalisation des détails...",
-    generatingOffer: "Génération de l'offre personnelle..."
+    generatingOffer: "Génération de l'offre personnelle...",
+    newChat: "Nouvelle discussion"
   },
   bn: {
     buttonText: "হোটেলের সাথে চ্যাট করুন",
@@ -193,7 +199,8 @@ export const translations = {
     checkingAvailability: "রুমের প্রাপ্যতা পরীক্ষা করা হচ্ছে...",
     analyzingNeeds: "আপনার চাহিদা বিশ্লেষণ করা হচ্ছে...",
     finalizingDetails: "চূড়ান্ত বিবরণ তৈরি করা হচ্ছে...",
-    generatingOffer: "ব্যক্তিগত অফার তৈরি করা হচ্ছে..."
+    generatingOffer: "ব্যক্তিগত অফার তৈরি করা হচ্ছে...",
+    newChat: "নতুন চ্যাট"
   },
   pt: {
     buttonText: "Chat com o Hotel",
@@ -213,7 +220,8 @@ export const translations = {
     checkingAvailability: "Verificando disponibilidade...",
     analyzingNeeds: "Analisando suas necessidades...",
     finalizingDetails: "Finalizando detalhes...",
-    generatingOffer: "Gerando oferta pessoal..."
+    generatingOffer: "Gerando oferta pessoal...",
+    newChat: "Novo chat"
   },
   ru: {
     buttonText: "Чат с отелем",
@@ -233,7 +241,8 @@ export const translations = {
     checkingAvailability: "Проверяем доступность номеров...",
     analyzingNeeds: "Учитываем ваши потребности...",
     finalizingDetails: "Уточняем финальные детали...",
-    generatingOffer: "Формируем персональное предложение..."
+    generatingOffer: "Формируем персональное предложение...",
+    newChat: "Новый чат"
   },
   id: {
     buttonText: "Chat dengan Hotel",
@@ -253,7 +262,8 @@ export const translations = {
     checkingAvailability: "Memeriksa ketersediaan kamar...",
     analyzingNeeds: "Menganalisis kebutuhan Anda...",
     finalizingDetails: "Menyelesaikan detail...",
-    generatingOffer: "Membuat penawaran pribadi..."
+    generatingOffer: "Membuat penawaran pribadi...",
+    newChat: "Obrolan Baru"
   },
   // Legacy support for Ukrainian
   ua: {
@@ -274,6 +284,7 @@ export const translations = {
     checkingAvailability: "Перевіряємо доступність номерів...",
     analyzingNeeds: "Враховуємо ваші потреби...",
     finalizingDetails: "Уточнюємо фінальні деталі...",
-    generatingOffer: "Формуємо персональну пропозицію..."
+    generatingOffer: "Формуємо персональну пропозицію...",
+    newChat: "Новий чат"
   }
 };
