@@ -76,7 +76,8 @@ function loadBookingState() {
           ...bookingState.collectedData,
           ...(parsed.collectedData || {})
         },
-        conversationHistory: parsed.conversationHistory || []
+        conversationHistory: parsed.conversationHistory || [],
+        hasActiveBooking: parsed.hasActiveBooking || false
       };
     }
   } catch (e) {
@@ -144,7 +145,14 @@ function updateBookingStateWithExtracted(extractedData) {
   }
 
   // Update step based on collected data
+  const previousStep = bookingState.step;
   bookingState.step = determineBookingStep(bookingState.collectedData);
+
+  // If booking is completed, mark as active
+  if (bookingState.step === 'completed' && previousStep !== 'completed') {
+    bookingState.hasActiveBooking = true;
+    console.log('✅ Booking completed! hasActiveBooking set to true');
+  }
 
   if (updated) {
     saveBookingState();
@@ -404,9 +412,17 @@ export function getSpecialBookingState() {
 function detectCancellationIntent(message) {
   const lowerMessage = message.toLowerCase();
   const cancellationKeywords = [
-    'отменить бронирование', 'отменить', 'cancel booking', 'cancel',
-    'изменить бронирование', 'изменить детали', 'edit booking', 'change booking',
-    'скасувати бронювання', 'змінити бронювання'
+    // Русский
+    'отменить бронирование', 'отменить броню', 'отмени бронирование', 'отменить резерв',
+    'изменить бронирование', 'изменить детали', 'изменить броню', 'поменять бронирование',
+    'отмена бронирования', 'хочу отменить', 'нужно отменить',
+    // English
+    'cancel booking', 'cancel reservation', 'cancel my booking', 'cancel the booking',
+    'edit booking', 'change booking', 'modify booking', 'update booking',
+    'want to cancel', 'need to cancel',
+    // Украинский
+    'скасувати бронювання', 'змінити бронювання', 'відмінити бронювання',
+    'скасувати резерв', 'хочу скасувати'
   ];
 
   return cancellationKeywords.some(keyword => lowerMessage.includes(keyword));
@@ -1024,7 +1040,14 @@ export async function getAIResponse(userMessage) {
   addToConversationHistory('user', userMessage);
 
   // Check if user wants to cancel/edit booking
-  if (bookingState.hasActiveBooking && detectCancellationIntent(userMessage)) {
+  const hasCancellationIntent = detectCancellationIntent(userMessage);
+  console.log('Cancellation check:', {
+    hasActiveBooking: bookingState.hasActiveBooking,
+    hasCancellationIntent: hasCancellationIntent,
+    userMessage: userMessage
+  });
+
+  if (bookingState.hasActiveBooking && hasCancellationIntent) {
     hideTyping();
     setButtonLoading(false);
     isGenerating = false;
