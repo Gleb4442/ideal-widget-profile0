@@ -8,9 +8,25 @@ import { initAdmin } from './admin.js';
 import { initLanguage, initChatListeners, updateSendButtonState } from './chat.js';
 import { initBanners } from './banners.js';
 import { initGallery } from './gallery.js';
+import * as bookings from './bookings.js';
 
 // Initialize Application
 function init() {
+  // Auto-load test bookings if database is empty
+  if (bookings.getAllBookings().length === 0) {
+    console.log('Loading test bookings...');
+    const generated = bookings.generateTestBookings();
+    console.log(`✓ ${generated.length} test bookings loaded`);
+
+    // Log guest names for easy reference
+    const guestList = generated
+      .filter(b => b.status === 'confirmed')
+      .slice(0, 10)
+      .map(b => `  • ${b.guestName} (${b.id})`)
+      .join('\n');
+    console.log('Sample guests for testing:\n' + guestList);
+  }
+
   // Initialize admin panel
   initAdmin();
 

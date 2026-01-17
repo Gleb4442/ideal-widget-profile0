@@ -1,0 +1,261 @@
+/* Bookings Section Styles */
+
+.bookings-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.bookings-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.bookings-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  color: #1f2937;
+}
+
+.bookings-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.bookings-search {
+  margin-bottom: 16px;
+}
+
+.bookings-search input {
+  width: 100%;
+}
+
+.bookings-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.booking-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.booking-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.booking-card:hover {
+  border-color: var(--accent-color, #2563eb);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.booking-card.cancelled {
+  opacity: 0.6;
+  background: #f9fafb;
+}
+
+.booking-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 8px;
+}
+
+.booking-guest-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.booking-id {
+  font-size: 11px;
+  color: #9ca3af;
+  font-family: monospace;
+}
+
+.booking-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.booking-status.confirmed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.booking-status.cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.booking-status.completed {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.booking-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.booking-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.booking-info-label {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.booking-info-value {
+  font-size: 13px;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.booking-room {
+  background: #f3f4f6;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #374151;
+  margin-bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.booking-room svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.6;
+}
+
+.booking-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.booking-action-btn {
+  flex: 1;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.booking-action-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.booking-action-btn.edit {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.booking-action-btn.edit:hover {
+  background: #bfdbfe;
+}
+
+.booking-action-btn.cancel {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.booking-action-btn.cancel:hover {
+  background: #fecaca;
+}
+
+.booking-action-btn.delete {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.booking-action-btn.delete:hover {
+  background: #e5e7eb;
+}
+
+.booking-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bookings-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #9ca3af;
+}
+
+.bookings-empty svg {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  opacity: 0.3;
+}
+
+.bookings-empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #6b7280;
+}
+
+.bookings-empty-text {
+  font-size: 13px;
+}

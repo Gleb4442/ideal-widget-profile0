@@ -8,6 +8,7 @@ import * as dom from './dom.js';
 import * as rooms from './rooms.js';
 import * as openai from './openai.js';
 import * as gallery from './gallery.js';
+import * as bookings from './bookings.js';
 
 // Language storage key
 const LANGUAGE_KEY = 'chat_language';
@@ -572,6 +573,354 @@ export function getCancellationState() {
 }
 
 // ========================================
+// BOOKING CANCELLATION BY NAME FUNCTIONS
+// ========================================
+
+// Extract search parameters from cancellation message
+function extractBookingSearchParams(message) {
+  const result = {
+    type: null,
+    value: null
+  };
+
+  // Check for booking ID (BKG-XXXXX format)
+  const bookingIdMatch = message.match(/BKG-[A-Z0-9]+/i);
+  if (bookingIdMatch) {
+    result.type = 'id';
+    result.value = bookingIdMatch[0].toUpperCase();
+    return result;
+  }
+
+  // Check for email
+  const emailMatch = message.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+  if (emailMatch) {
+    result.type = 'email';
+    result.value = emailMatch[1];
+    return result;
+  }
+
+  // Check for phone number
+  const phoneMatch = message.match(/(\+?\d{10,13})/);
+  if (phoneMatch) {
+    result.type = 'phone';
+    result.value = phoneMatch[1];
+    return result;
+  }
+
+  // Try to extract name after keywords
+  const namePatterns = [
+    /(?:для|на имя|на ім'я|for)\s+([А-ЯЁІЇҐа-яёіїґA-Z][А-ЯЁІЇҐа-яёіїґA-Za-z\s]+)/i,
+    /([А-ЯЁІЇҐа-яёіїґA-Z][А-ЯЁІЇҐа-яёіїґA-Za-z]+\s+[А-ЯЁІЇҐа-яёіїґA-Z][А-ЯЁІЇҐа-яёіїґA-Za-z]+(?:\s+[А-ЯЁІЇҐа-яёіїґA-Z][А-ЯЁІЇҐа-яёіїґA-Za-z]+)?)/
+  ];
+
+  for (const pattern of namePatterns) {
+    const match = message.match(pattern);
+    if (match) {
+      result.type = 'name';
+      result.value = match[1].trim();
+      return result;
+    }
+  }
+
+  return result;
+}
+
+// Handle booking cancellation by any parameter
+export function handleBookingCancellationByName(userMessage) {
+  // Extract search parameters from message
+  const searchParams = extractBookingSearchParams(userMessage);
+
+  // If no parameters found, ask for them
+  if (!searchParams.type) {
+    addMessage(
+      'Пожалуйста, укажите один из параметров для поиска бронирования:\n\n' +
+      '• ФИО гостя: "Отменить бронирование для Іванов Петро Сергійович"\n' +
+      '• Email: "Отменить бронирование ivanov@example.com"\n' +
+      '• Телефон: "Отменить бронирование +380501234567"\n' +
+      '• ID бронирования: "Отменить бронирование BKG-ABC123"',
+      'ai'
+    );
+    return;
+  }
+
+  // Search for bookings
+  let foundBookings = [];
+  let searchDescription = '';
+
+  switch (searchParams.type) {
+    case 'id':
+      const booking = bookings.getBookingById(searchParams.value);
+      if (booking) foundBookings = [booking];
+      searchDescription = `ID ${searchParams.value}`;
+      break;
+
+    case 'email':
+      foundBookings = bookings.searchBookings({ email: searchParams.value });
+      searchDescription = `email ${searchParams.value}`;
+      break;
+
+    case 'phone':
+      foundBookings = bookings.searchBookings({ phone: searchParams.value });
+      searchDescription = `телефону ${searchParams.value}`;
+      break;
+
+    case 'name':
+      foundBookings = bookings.findBookingsByName(searchParams.value);
+      searchDescription = `ПІБ "${searchParams.value}"`;
+      break;
+  }
+
+  if (foundBookings.length === 0) {
+    addMessage(
+      `Бронирования по параметру ${searchDescription} не найдены.\n\n` +
+      'Попробуйте указать другой параметр или проверьте правильность написания.',
+      'ai'
+    );
+    return;
+  }
+
+  // Filter only confirmed bookings
+  const confirmedBookings = foundBookings.filter(b => b.status === 'confirmed');
+
+  if (confirmedBookings.length === 0) {
+    addMessage(
+      `Найдены бронирования по параметру ${searchDescription}, но все они уже отменены или завершены.`,
+      'ai'
+    );
+    return;
+  }
+
+  // Show found bookings with action buttons
+  showBookingCancellationOptions(confirmedBookings, searchDescription);
+}
+
+// Show booking cancellation options
+function showBookingCancellationOptions(foundBookings, searchDescription = '') {
+  const container = document.createElement('div');
+  container.className = 'booking-cancellation-options animate-fade-in';
+  container.style.cssText = 'margin: 16px 0; display: flex; flex-direction: column; gap: 12px;';
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'ai-message';
+  header.style.cssText = 'background: #f3f4f6; padding: 12px; border-radius: 8px; margin-bottom: 8px;';
+
+  const searchInfo = searchDescription ? `<br><span style="font-size: 12px; color: #9ca3af;">Поиск по: ${searchDescription}</span>` : '';
+
+  header.innerHTML = `
+    <strong>✓ Найдено бронирований: ${foundBookings.length}</strong>${searchInfo}<br>
+    <span style="font-size: 13px; color: #6b7280;">Выберите бронирование для отмены или изменения:</span>
+  `;
+  container.appendChild(header);
+
+  // Booking cards
+  foundBookings.forEach(booking => {
+    const formatted = bookings.formatBooking(booking);
+    const card = document.createElement('div');
+    card.className = 'booking-option-card';
+    card.style.cssText = `
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    `;
+
+    card.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+        <div>
+          <div style="font-weight: 600; font-size: 15px; color: #1f2937; margin-bottom: 4px;">
+            ${booking.guestName}
+          </div>
+          <div style="font-size: 11px; color: #9ca3af; font-family: monospace;">
+            ${booking.id}
+          </div>
+        </div>
+        <div style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;">
+          ${formatted.statusText}
+        </div>
+      </div>
+
+      <div style="background: #f9fafb; padding: 8px 10px; border-radius: 8px; margin-bottom: 10px; font-size: 13px;">
+        <svg style="width: 14px; height: 14px; display: inline; vertical-align: middle; margin-right: 6px; opacity: 0.6;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <strong>${booking.roomName}</strong>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; font-size: 12px;">
+        <div>
+          <div style="color: #9ca3af; margin-bottom: 2px;">Заїзд</div>
+          <div style="font-weight: 600; color: #1f2937;">${formatted.checkInFormatted}</div>
+        </div>
+        <div>
+          <div style="color: #9ca3af; margin-bottom: 2px;">Виїзд</div>
+          <div style="font-weight: 600; color: #1f2937;">${formatted.checkOutFormatted}</div>
+        </div>
+        <div>
+          <div style="color: #9ca3af; margin-bottom: 2px;">Ночей</div>
+          <div style="font-weight: 600; color: #1f2937;">${booking.nights}</div>
+        </div>
+        <div>
+          <div style="color: #9ca3af; margin-bottom: 2px;">Гостей</div>
+          <div style="font-weight: 600; color: #1f2937;">${booking.guests}</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button class="booking-action-cancel-btn" data-booking-id="${booking.id}" style="
+          flex: 1;
+          background: #fee2e2;
+          color: #991b1b;
+          border: none;
+          padding: 10px;
+          border-radius: 8px;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+        ">
+          <svg style="width: 16px; height: 16px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Скасувати
+        </button>
+        <button class="booking-action-edit-btn" data-booking-id="${booking.id}" style="
+          flex: 1;
+          background: #dbeafe;
+          color: #1e40af;
+          border: none;
+          padding: 10px;
+          border-radius: 8px;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+        ">
+          <svg style="width: 16px; height: 16px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          Змінити
+        </button>
+      </div>
+    `;
+
+    // Add hover effect
+    card.addEventListener('mouseenter', () => {
+      card.style.borderColor = 'var(--accent-color, #2563eb)';
+      card.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.borderColor = '#e5e7eb';
+      card.style.boxShadow = 'none';
+    });
+
+    container.appendChild(card);
+  });
+
+  // Add to messages container
+  dom.messagesContainer.insertBefore(container, dom.typingIndicator);
+  dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+
+  // Add event listeners for buttons
+  container.querySelectorAll('.booking-action-cancel-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const bookingId = btn.dataset.bookingId;
+      confirmBookingCancellation(bookingId, container);
+    });
+
+    btn.addEventListener('mouseenter', () => {
+      btn.style.background = '#fecaca';
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.background = '#fee2e2';
+    });
+  });
+
+  container.querySelectorAll('.booking-action-edit-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const bookingId = btn.dataset.bookingId;
+      handleBookingEdit(bookingId, container);
+    });
+
+    btn.addEventListener('mouseenter', () => {
+      btn.style.background = '#bfdbfe';
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.background = '#dbeafe';
+    });
+  });
+}
+
+// Confirm booking cancellation
+function confirmBookingCancellation(bookingId, optionsContainer) {
+  const booking = bookings.getBookingById(bookingId);
+  if (!booking) return;
+
+  if (confirm(`Подтвердите отмену бронирования:\n\nГость: ${booking.guestName}\nНомер: ${booking.roomName}\nДаты: ${bookings.formatBooking(booking).checkInFormatted} - ${bookings.formatBooking(booking).checkOutFormatted}\n\nОтменить это бронирование?`)) {
+    // Cancel booking
+    bookings.cancelBooking(bookingId);
+
+    // Remove options container
+    optionsContainer.remove();
+
+    // Show success message
+    addMessage(`✓ Бронирование для ${booking.guestName} успешно отменено.\n\nНомер: ${booking.roomName}\nДаты: ${bookings.formatBooking(booking).checkInFormatted} - ${bookings.formatBooking(booking).checkOutFormatted}\n\nЕсли нужна помощь с новым бронированием, обращайтесь!`, 'ai');
+
+    // Update admin panel if open
+    if (typeof window.renderBookingsList === 'function') {
+      window.renderBookingsList();
+    }
+  }
+}
+
+// Handle booking edit (cancel and create new)
+function handleBookingEdit(bookingId, optionsContainer) {
+  const booking = bookings.getBookingById(bookingId);
+  if (!booking) return;
+
+  const formatted = bookings.formatBooking(booking);
+
+  if (confirm(`Редактирование бронирования для ${booking.guestName}\n\nТекущие данные:\n• Номер: ${booking.roomName}\n• Заїзд: ${formatted.checkInFormatted}\n• Виїзд: ${formatted.checkOutFormatted}\n• Гостей: ${booking.guests}\n\nДля редактирования:\n1. Текущее бронирование будет отменено\n2. Вы сможете создать новое с другими параметрами\n\nПродолжить?`)) {
+    // Cancel current booking
+    bookings.cancelBooking(bookingId);
+
+    // Remove options container
+    optionsContainer.remove();
+
+    // Show message
+    addMessage(`Бронирование для ${booking.guestName} отменено.\n\nТеперь расскажите о новых требованиях:\n• Желаемые даты заезда и выезда\n• Количество гостей\n• Тип номера\n• Особые пожелания`, 'ai');
+
+    // Reset booking state for new booking
+    resetBookingState();
+    bookingState.collectedData.fullName = booking.guestName;
+    bookingState.collectedData.phone = booking.phone;
+    bookingState.collectedData.email = booking.email;
+    bookingState.step = 'collecting_dates';
+    saveBookingState();
+
+    // Update admin panel if open
+    if (typeof window.renderBookingsList === 'function') {
+      window.renderBookingsList();
+    }
+  }
+}
+
+// ========================================
 // LANGUAGE FUNCTIONS
 // ========================================
 
@@ -1044,9 +1393,22 @@ export async function getAIResponse(userMessage) {
   console.log('Cancellation check:', {
     hasActiveBooking: bookingState.hasActiveBooking,
     hasCancellationIntent: hasCancellationIntent,
-    userMessage: userMessage
+    userMessage: userMessage,
+    totalBookings: bookings.getAllBookings().length
   });
 
+  // NEW: Handle cancellation by guest name (search in database)
+  if (hasCancellationIntent) {
+    hideTyping();
+    setButtonLoading(false);
+    isGenerating = false;
+
+    // Try to handle cancellation using the new system (by guest name)
+    handleBookingCancellationByName(userMessage);
+    return;
+  }
+
+  // OLD: Handle legacy single-booking cancellation (kept for compatibility)
   if (bookingState.hasActiveBooking && hasCancellationIntent) {
     hideTyping();
     setButtonLoading(false);

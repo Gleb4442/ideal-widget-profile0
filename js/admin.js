@@ -6,6 +6,7 @@
 import { fontsList, iconsList } from './config.js';
 import * as dom from './dom.js';
 import * as rooms from './rooms.js';
+import * as bookings from './bookings.js';
 
 // Room editing state
 let currentEditRoomId = null;
@@ -686,6 +687,231 @@ export function initRoomManagement() {
   renderRoomsGrid();
 }
 
+// ============================================
+// BOOKINGS MANAGEMENT FUNCTIONS
+// ============================================
+
+let bookingsSearchTerm = '';
+
+// Render bookings list
+export function renderBookingsList() {
+  const container = document.getElementById('bookings-list');
+  if (!container) return;
+
+  let allBookings = bookings.getAllBookings();
+
+  // Apply search filter
+  if (bookingsSearchTerm) {
+    allBookings = bookings.findBookingsByName(bookingsSearchTerm);
+  }
+
+  // Sort by check-in date (newest first)
+  allBookings.sort((a, b) => b.checkIn.localeCompare(a.checkIn));
+
+  // Update stats
+  updateBookingsStats();
+
+  // Render bookings
+  if (allBookings.length === 0) {
+    container.innerHTML = `
+      <div class="bookings-empty">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        <div class="bookings-empty-title">Немає бронювань</div>
+        <div class="bookings-empty-text">${bookingsSearchTerm ? 'Нічого не знайдено за вашим запитом' : 'Натисніть "Тестові" для генерації демо-даних'}</div>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = allBookings.map(booking => {
+    const formatted = bookings.formatBooking(booking);
+    return `
+      <div class="booking-card ${booking.status}" data-booking-id="${booking.id}">
+        <div class="booking-card-header">
+          <div>
+            <div class="booking-guest-name">${booking.guestName}</div>
+            <div class="booking-id">${booking.id}</div>
+          </div>
+          <div class="booking-status ${booking.status}">${formatted.statusText}</div>
+        </div>
+
+        <div class="booking-room">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          ${booking.roomName}
+        </div>
+
+        <div class="booking-info">
+          <div class="booking-info-item">
+            <div class="booking-info-label">Заїзд</div>
+            <div class="booking-info-value">${formatted.checkInFormatted}</div>
+          </div>
+          <div class="booking-info-item">
+            <div class="booking-info-label">Виїзд</div>
+            <div class="booking-info-value">${formatted.checkOutFormatted}</div>
+          </div>
+          <div class="booking-info-item">
+            <div class="booking-info-label">Ночей</div>
+            <div class="booking-info-value">${booking.nights}</div>
+          </div>
+          <div class="booking-info-item">
+            <div class="booking-info-label">Гостей</div>
+            <div class="booking-info-value">${booking.guests}</div>
+          </div>
+          <div class="booking-info-item">
+            <div class="booking-info-label">Телефон</div>
+            <div class="booking-info-value">${booking.phone}</div>
+          </div>
+          <div class="booking-info-item">
+            <div class="booking-info-label">Ціна</div>
+            <div class="booking-info-value">${formatted.totalPriceFormatted}</div>
+          </div>
+        </div>
+
+        <div class="booking-actions">
+          ${booking.status === 'confirmed' ? `
+            <button class="booking-action-btn edit" onclick="window.editBooking('${booking.id}')">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              Редагувати
+            </button>
+            <button class="booking-action-btn cancel" onclick="window.cancelBookingConfirm('${booking.id}')">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+              Скасувати
+            </button>
+          ` : ''}
+          <button class="booking-action-btn delete" onclick="window.deleteBookingConfirm('${booking.id}')">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Видалити
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Update bookings statistics
+function updateBookingsStats() {
+  const stats = bookings.getBookingStats();
+
+  const totalEl = document.getElementById('stat-total');
+  const activeEl = document.getElementById('stat-active');
+  const cancelledEl = document.getElementById('stat-cancelled');
+
+  if (totalEl) totalEl.textContent = stats.total;
+  if (activeEl) activeEl.textContent = stats.active;
+  if (cancelledEl) cancelledEl.textContent = stats.cancelled;
+}
+
+// Cancel booking with confirmation
+window.cancelBookingConfirm = function(bookingId) {
+  const booking = bookings.getBookingById(bookingId);
+  if (!booking) return;
+
+  if (confirm(`Скасувати бронювання для ${booking.guestName}?`)) {
+    bookings.cancelBooking(bookingId);
+    renderBookingsList();
+  }
+};
+
+// Delete booking permanently
+window.deleteBookingConfirm = function(bookingId) {
+  const booking = bookings.getBookingById(bookingId);
+  if (!booking) return;
+
+  if (confirm(`Видалити бронювання для ${booking.guestName} назавжди?\nЦю дію неможливо скасувати.`)) {
+    bookings.deleteBooking(bookingId);
+    renderBookingsList();
+  }
+};
+
+// Edit booking (cancel and recreate approach)
+window.editBooking = function(bookingId) {
+  const booking = bookings.getBookingById(bookingId);
+  if (!booking) return;
+
+  const message = `Редагування бронювання для ${booking.guestName}\n\n` +
+    `Поточні дані:\n` +
+    `• Заїзд: ${bookings.formatBooking(booking).checkInFormatted}\n` +
+    `• Виїзд: ${bookings.formatBooking(booking).checkOutFormatted}\n` +
+    `• Номер: ${booking.roomName}\n` +
+    `• Гостей: ${booking.guests}\n\n` +
+    `Для редагування бронювання:\n` +
+    `1. Поточне бронювання буде скасовано\n` +
+    `2. Гість зможе створити нове бронювання через чат\n\n` +
+    `Продовжити?`;
+
+  if (confirm(message)) {
+    // Cancel current booking
+    bookings.cancelBooking(bookingId);
+    renderBookingsList();
+
+    alert(`Бронювання скасовано.\n\nТепер гість ${booking.guestName} може створити нове бронювання через чат з оновленими даними.`);
+  }
+};
+
+// Generate test bookings
+function generateTestBookingsHandler() {
+  if (bookings.getAllBookings().length > 0) {
+    if (!confirm('Вже є бронювання в базі. Додати ще тестові дані?')) {
+      return;
+    }
+  }
+
+  const generated = bookings.generateTestBookings();
+  renderBookingsList();
+
+  // Show guest names for easy testing
+  const guestNames = generated
+    .filter(b => b.status === 'confirmed')
+    .slice(0, 5)
+    .map(b => b.guestName)
+    .join('\n• ');
+
+  alert(`Згенеровано ${generated.length} тестових бронювань!\n\nПриклади гостей для тестування скасування:\n• ${guestNames}\n\nВи можете знайти бронювання через пошук за ПІБ.`);
+}
+
+// Initialize bookings search
+function initBookingsSearch() {
+  const searchInput = document.getElementById('booking-search-input');
+  if (!searchInput) return;
+
+  searchInput.addEventListener('input', (e) => {
+    bookingsSearchTerm = e.target.value.trim();
+    renderBookingsList();
+  });
+}
+
+// Initialize bookings management
+export function initBookingsManagement() {
+  const generateBtn = document.getElementById('generate-test-bookings-btn');
+
+  if (generateBtn) {
+    generateBtn.addEventListener('click', generateTestBookingsHandler);
+  }
+
+  initBookingsSearch();
+  renderBookingsList();
+
+  // Make renderBookingsList available globally for chat integration
+  window.renderBookingsList = renderBookingsList;
+}
+
 // Initialize All Admin Functions
 export function initAdmin() {
   initFontSelector();
@@ -698,4 +924,5 @@ export function initAdmin() {
   initHotelInfo();
   initCalendarControls();
   initRoomManagement();
+  initBookingsManagement();
 }
