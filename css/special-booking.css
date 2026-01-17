@@ -749,3 +749,250 @@
 [dir="rtl"] .submenu-content.show {
   transform: translateX(-4px);
 }
+
+/* ============================
+   CANCELLATION COMPONENTS
+   ============================ */
+
+/* Cancellation Options Container */
+.cancellation-options-container {
+  width: 100%;
+  padding: 16px 0;
+  animation: fadeIn 0.3s ease;
+}
+
+.cancellation-options-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+}
+
+.cancellation-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: #f59e0b;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.cancellation-header svg {
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.cancellation-description {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+
+.cancellation-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cancellation-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancellation-btn.primary {
+  background: linear-gradient(135deg, var(--accent-color, #2563eb) 0%, var(--accent-hover, #1d4ed8) 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.cancellation-btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+.cancellation-btn.primary:active {
+  transform: translateY(0);
+}
+
+.cancellation-btn.secondary {
+  background: white;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.cancellation-btn.secondary:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.cancellation-btn svg {
+  flex-shrink: 0;
+}
+
+/* Cancellation Confirmation Container */
+.cancellation-confirmation-container {
+  width: 100%;
+  padding: 16px 0;
+  animation: fadeIn 0.3s ease;
+}
+
+.cancellation-confirmation-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.confirmation-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border-radius: 50%;
+}
+
+.confirmation-icon svg {
+  color: #dc2626;
+}
+
+.confirmation-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.confirmation-text {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.confirmation-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.confirmation-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.confirmation-btn.confirm {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+.confirmation-btn.confirm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+}
+
+.confirmation-btn.confirm:active {
+  transform: translateY(0);
+}
+
+.confirmation-btn.cancel {
+  background: white;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.confirmation-btn.cancel:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.confirmation-btn svg {
+  flex-shrink: 0;
+}
+
+/* Dark Mode Support for Cancellation Components */
+.dark-mode .cancellation-options-card,
+.dark-mode .cancellation-confirmation-card {
+  background: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .cancellation-header {
+  color: #fbbf24;
+}
+
+.dark-mode .cancellation-header svg {
+  color: #fbbf24;
+}
+
+.dark-mode .cancellation-description {
+  color: #9ca3af;
+}
+
+.dark-mode .cancellation-btn.secondary {
+  background: #374151;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+.dark-mode .cancellation-btn.secondary:hover {
+  background: #4b5563;
+}
+
+.dark-mode .confirmation-title {
+  color: #f3f4f6;
+}
+
+.dark-mode .confirmation-text {
+  color: #9ca3af;
+}
+
+.dark-mode .confirmation-btn.cancel {
+  background: #374151;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+.dark-mode .confirmation-btn.cancel:hover {
+  background: #4b5563;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

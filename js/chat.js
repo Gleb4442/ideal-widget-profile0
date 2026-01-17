@@ -53,7 +53,14 @@ let bookingState = {
     preferences: [],     // Предпочтения
     selectedRoom: null   // Выбранный номер
   },
-  conversationHistory: [] // Last 10 messages for AI context
+  conversationHistory: [], // Last 10 messages for AI context
+  hasActiveBooking: false  // Флаг наличия активного бронирования
+};
+
+// Cancellation state
+let cancellationState = {
+  isActive: false,
+  action: null // 'cancel_only' | 'cancel_and_rebook'
 };
 
 // Load booking state from localStorage
@@ -387,6 +394,165 @@ function shouldActivateSpecialBooking(message, conversationHistory) {
 // Get Special Booking state for external use
 export function getSpecialBookingState() {
   return specialBookingState;
+}
+
+// ========================================
+// CANCELLATION FUNCTIONS
+// ========================================
+
+// Detect if user wants to cancel or edit booking
+function detectCancellationIntent(message) {
+  const lowerMessage = message.toLowerCase();
+  const cancellationKeywords = [
+    'отменить бронирование', 'отменить', 'cancel booking', 'cancel',
+    'изменить бронирование', 'изменить детали', 'edit booking', 'change booking',
+    'скасувати бронювання', 'змінити бронювання'
+  ];
+
+  return cancellationKeywords.some(keyword => lowerMessage.includes(keyword));
+}
+
+// Show cancellation options
+export function showCancellationOptions() {
+  const optionsContainer = document.createElement('div');
+  optionsContainer.className = 'cancellation-options-container animate-fade-in';
+  optionsContainer.id = 'cancellation-options';
+
+  optionsContainer.innerHTML = `
+    <div class="cancellation-options-card">
+      <div class="cancellation-header">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>Отмена бронирования</span>
+      </div>
+      <p class="cancellation-description">Выберите действие:</p>
+      <div class="cancellation-actions">
+        <button class="cancellation-btn primary" data-action="cancel_and_rebook">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          Отменить и создать новое
+        </button>
+        <button class="cancellation-btn secondary" data-action="cancel_only">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Просто отменить
+        </button>
+      </div>
+    </div>
+  `;
+
+  // Add to messages container
+  dom.messagesContainer.insertBefore(optionsContainer, dom.typingIndicator);
+  dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+
+  // Add event listeners
+  const buttons = optionsContainer.querySelectorAll('.cancellation-btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const action = btn.dataset.action;
+      cancellationState.action = action;
+
+      // Hide options
+      optionsContainer.remove();
+
+      // Show confirmation
+      showCancellationConfirmation(action);
+    });
+  });
+}
+
+// Show cancellation confirmation
+export function showCancellationConfirmation(action) {
+  const confirmationContainer = document.createElement('div');
+  confirmationContainer.className = 'cancellation-confirmation-container animate-fade-in';
+  confirmationContainer.id = 'cancellation-confirmation';
+
+  confirmationContainer.innerHTML = `
+    <div class="cancellation-confirmation-card">
+      <div class="confirmation-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+      </div>
+      <h3 class="confirmation-title">Подтверждение отмены</h3>
+      <p class="confirmation-text">Вы действительно хотите отменить бронирование?</p>
+      <div class="confirmation-actions">
+        <button class="confirmation-btn confirm" data-action="confirm">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Да, отменить
+        </button>
+        <button class="confirmation-btn cancel" data-action="cancel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Нет, оставить
+        </button>
+      </div>
+    </div>
+  `;
+
+  // Add to messages container
+  dom.messagesContainer.insertBefore(confirmationContainer, dom.typingIndicator);
+  dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+
+  // Add event listeners
+  const confirmBtn = confirmationContainer.querySelector('[data-action="confirm"]');
+  const cancelBtn = confirmationContainer.querySelector('[data-action="cancel"]');
+
+  confirmBtn.addEventListener('click', () => {
+    confirmationContainer.remove();
+    handleCancellationConfirmed(action);
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    confirmationContainer.remove();
+    addMessage('Бронирование сохранено. Чем ещё могу помочь?', 'ai');
+    addToConversationHistory('assistant', 'Бронирование сохранено. Чем ещё могу помочь?');
+    cancellationState.isActive = false;
+    cancellationState.action = null;
+  });
+}
+
+// Handle cancellation confirmed
+function handleCancellationConfirmed(action) {
+  // Cancel the booking
+  resetBookingState();
+  bookingState.hasActiveBooking = false;
+  saveBookingState();
+
+  if (action === 'cancel_and_rebook') {
+    // User wants to create a new booking
+    addMessage('Бронирование отменено. Давайте создадим новое! Расскажите о ваших пожеланиях: даты заезда и выезда, количество гостей, особые требования.', 'ai');
+    addToConversationHistory('assistant', 'Бронирование отменено. Давайте создадим новое! Расскажите о ваших пожеланиях: даты заезда и выезда, количество гостей, особые требования.');
+
+    // Reset step to initial
+    bookingState.step = 'initial';
+    saveBookingState();
+  } else {
+    // User just wants to cancel
+    addMessage('Бронирование отменено. Если передумаете или у вас будут вопросы, обращайтесь!', 'ai');
+    addToConversationHistory('assistant', 'Бронирование отменено. Если передумаете или у вас будут вопросы, обращайтесь!');
+  }
+
+  cancellationState.isActive = false;
+  cancellationState.action = null;
+}
+
+// Get cancellation state for external use
+export function getCancellationState() {
+  return cancellationState;
 }
 
 // ========================================
@@ -857,6 +1023,23 @@ export async function getAIResponse(userMessage) {
   // Add user message to conversation history
   addToConversationHistory('user', userMessage);
 
+  // Check if user wants to cancel/edit booking
+  if (bookingState.hasActiveBooking && detectCancellationIntent(userMessage)) {
+    hideTyping();
+    setButtonLoading(false);
+    isGenerating = false;
+
+    cancellationState.isActive = true;
+    addMessage('Понимаю, вы хотите внести изменения в бронирование. Давайте разберёмся.', 'ai');
+    addToConversationHistory('assistant', 'Понимаю, вы хотите внести изменения в бронирование. Давайте разберёмся.');
+
+    setTimeout(() => {
+      showCancellationOptions();
+    }, 500);
+
+    return;
+  }
+
   try {
     let response;
 
@@ -1083,6 +1266,12 @@ export function resetChat() {
   };
   hideSpecialBookingStatus();
   hideSpecialOfferCard();
+
+  // Reset cancellation state
+  cancellationState = {
+    isActive: false,
+    action: null
+  };
 
   // Clear room context container
   const container = document.getElementById('room-context-container');
@@ -1369,6 +1558,11 @@ function confirmSpecialOffer() {
       saveBookingState();
     }
   }
+
+  // Mark booking as active
+  bookingState.hasActiveBooking = true;
+  bookingState.step = 'completed';
+  saveBookingState();
 
   addMessage('Отлично! Ваше бронирование подтверждено. Наш менеджер свяжется с вами в ближайшее время для финального подтверждения деталей. Благодарим за выбор нашего отеля!', 'ai');
 
