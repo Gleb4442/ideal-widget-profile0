@@ -566,6 +566,11 @@ function handleCancellationConfirmed(action) {
     addToConversationHistory('assistant', 'Бронирование отменено. Если передумаете или у вас будут вопросы, обращайтесь!');
   }
 
+  // Show Telegram confirmation modal after cancellation
+  setTimeout(() => {
+    showTelegramBookingModal();
+  }, 800);
+
   cancellationState.isActive = false;
   cancellationState.action = null;
 }
@@ -1061,6 +1066,11 @@ function confirmBookingCancellation(bookingId, optionsContainer) {
     // Show success message
     addMessage(`✓ Бронирование для ${booking.guestName} успешно отменено.\n\nНомер: ${booking.roomName}\nДаты: ${bookings.formatBooking(booking).checkInFormatted} - ${bookings.formatBooking(booking).checkOutFormatted}\n\nЕсли нужна помощь с новым бронированием, обращайтесь!`, 'ai');
 
+    // Show Telegram confirmation modal
+    setTimeout(() => {
+      showTelegramBookingModal();
+    }, 800);
+
     // Reset cancellation state
     resetCancellationState();
 
@@ -1087,6 +1097,11 @@ function handleBookingEdit(bookingId, optionsContainer) {
 
     // Show message
     addMessage(`Бронирование для ${booking.guestName} отменено.\n\nТеперь расскажите о новых требованиях:\n• Желаемые даты заезда и выезда\n• Количество гостей\n• Тип номера\n• Особые пожелания`, 'ai');
+
+    // Show Telegram confirmation modal
+    setTimeout(() => {
+      showTelegramBookingModal();
+    }, 800);
 
     // Reset cancellation state
     resetCancellationState();
@@ -1399,70 +1414,6 @@ export function addMessage(text, sender) {
   dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
 }
 
-// Create a streaming message element (returns reference for updates)
-export function createStreamingMessage() {
-  const wrapper = document.createElement('div');
-  wrapper.className = 'message-wrapper ai animate-fade-in';
-
-  const messageElement = document.createElement('div');
-  messageElement.className = 'chat-message-ai text-base leading-relaxed';
-  messageElement.innerHTML = '';
-
-  const timeElement = document.createElement('span');
-  timeElement.className = 'message-time';
-  timeElement.innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-  wrapper.appendChild(messageElement);
-  wrapper.appendChild(timeElement);
-
-  dom.messagesContainer.insertBefore(wrapper, dom.typingIndicator);
-  dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
-
-  return {
-    wrapper,
-    messageElement,
-    update: (text) => {
-      messageElement.innerHTML = text.replace(/\n/g, '<br>');
-      // Auto-scroll to bottom if user is near bottom
-      const isNearBottom = dom.messagesContainer.scrollHeight - dom.messagesContainer.scrollTop - dom.messagesContainer.clientHeight < 100;
-      if (isNearBottom) {
-        dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
-      }
-    },
-    finalize: (text) => {
-      messageElement.innerHTML = text.replace(/\n/g, '<br>');
-      dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
-    }
-  };
-}
-
-// Show Telegram Confirmation Modal
-export function showTelegramConfirmation() {
-  if (dom.tgConfirmationModal) {
-    dom.tgConfirmationModal.classList.remove('hidden');
-  }
-}
-
-// Initialize Telegram Confirmation Listeners
-export function initTelegramConfirmationListeners() {
-  const confirmBtn = document.getElementById('confirm-tg-btn');
-  const cancelBtn = document.getElementById('cancel-tg-btn');
-
-  if (confirmBtn) {
-    confirmBtn.addEventListener('click', () => {
-      // Open Telegram (replace with actual bot link)
-      window.open('https://t.me/HotelBot?start=booking_confirmation', '_blank');
-      if (dom.tgConfirmationModal) dom.tgConfirmationModal.classList.add('hidden');
-    });
-  }
-
-  if (cancelBtn) {
-    cancelBtn.addEventListener('click', () => {
-      if (dom.tgConfirmationModal) dom.tgConfirmationModal.classList.add('hidden');
-    });
-  }
-}
-
 // Add Room Carousel to Chat
 export function addRoomCarousel() {
   const allRooms = rooms.getAllRooms();
@@ -1631,7 +1582,7 @@ export function setButtonLoading(isLoading) {
   }
 }
 
-// Get AI Response (main handler) - STREAMING VERSION
+// Get AI Response (main handler)
 export async function getAIResponse(userMessage) {
   const hotelName = document.getElementById('hotel-name-input')?.value || 'Hilton';
 
@@ -1663,11 +1614,9 @@ export async function getAIResponse(userMessage) {
     return;
   }
 
-  // Hide typing indicator and create streaming message
-  hideTyping();
-  const streamingMsg = createStreamingMessage();
-
   try {
+    let response;
+
     // Check if we should auto-activate Special Booking mode
     if (!specialBookingState.isActive && shouldActivateSpecialBooking(userMessage, bookingState.conversationHistory)) {
       // Extract requirements from message
@@ -1676,61 +1625,49 @@ export async function getAIResponse(userMessage) {
 
       activateSpecialBookingMode('auto');
 
-      // Process in special booking mode with STREAMING
+      // Process in special booking mode
       updateSpecialBookingStatus('analyzing');
-
-      await openai.getSpecialBookingAIResponseStreaming(
+      response = await openai.getSpecialBookingAIResponse(
         userMessage,
         specialBookingState.requirements,
         bookingState,
         bookingState.conversationHistory,
-        determineSpecialBookingStage(),
-        // onChunk callback
-        (delta, fullText) => {
-          streamingMsg.update(fullText);
-        },
-        // onComplete callback
-        (response) => {
-          streamingMsg.finalize(response.text);
-          setButtonLoading(false);
-          isGenerating = false;
-
-          // Update booking state with extracted data
-          if (response.extractedData) {
-            updateBookingStateWithExtracted(response.extractedData);
-          }
-
-          // Update requirements
-          const newRequirements = openai.extractRequirements(userMessage);
-          newRequirements.forEach(req => {
-            if (!specialBookingState.requirements.find(r => r.type === req.type)) {
-              specialBookingState.requirements.push(req);
-            }
-          });
-
-          addToConversationHistory('assistant', response.text);
-
-          // Check for offer data
-          if (response.hasOffer && response.offerData) {
-            showSpecialOfferCard(response.offerData);
-          } else {
-            // Update status based on progress
-            const newStage = determineSpecialBookingStage();
-            updateSpecialBookingStatus(newStage);
-          }
-        },
-        // onError callback
-        (error) => {
-          streamingMsg.finalize('Вибачте, сталася помилка. Спробуйте ще раз пізніше.');
-          setButtonLoading(false);
-          isGenerating = false;
-        }
+        determineSpecialBookingStage()
       );
+
+      hideTyping();
+      setButtonLoading(false);
+      isGenerating = false;
+
+      // Update booking state with extracted data
+      if (response.extractedData) {
+        updateBookingStateWithExtracted(response.extractedData);
+      }
+
+      // Update requirements
+      const newRequirements = openai.extractRequirements(userMessage);
+      newRequirements.forEach(req => {
+        if (!specialBookingState.requirements.find(r => r.type === req.type)) {
+          specialBookingState.requirements.push(req);
+        }
+      });
+
+      addMessage(response.text, 'ai');
+      addToConversationHistory('assistant', response.text);
+
+      // Check for offer data
+      if (response.hasOffer && response.offerData) {
+        showSpecialOfferCard(response.offerData);
+      } else {
+        // Update status based on progress
+        const newStage = determineSpecialBookingStage();
+        updateSpecialBookingStatus(newStage);
+      }
 
       return;
     }
 
-    // Handle Special Booking mode responses with STREAMING
+    // Handle Special Booking mode responses
     if (chatMode === 'special-booking' && specialBookingState.isActive) {
       // Update requirements from message
       const newRequirements = openai.extractRequirements(userMessage);
@@ -1744,45 +1681,34 @@ export async function getAIResponse(userMessage) {
       const stage = determineSpecialBookingStage();
       updateSpecialBookingStatus(stage === 'generating' ? 'generating' : 'analyzing');
 
-      await openai.getSpecialBookingAIResponseStreaming(
+      response = await openai.getSpecialBookingAIResponse(
         userMessage,
         specialBookingState.requirements,
         bookingState,
         bookingState.conversationHistory,
-        stage,
-        // onChunk callback
-        (delta, fullText) => {
-          streamingMsg.update(fullText);
-        },
-        // onComplete callback
-        (response) => {
-          streamingMsg.finalize(response.text);
-          setButtonLoading(false);
-          isGenerating = false;
-
-          // Update booking state with extracted data
-          if (response.extractedData) {
-            updateBookingStateWithExtracted(response.extractedData);
-          }
-
-          addToConversationHistory('assistant', response.text);
-
-          // Check for offer data
-          if (response.hasOffer && response.offerData) {
-            showSpecialOfferCard(response.offerData);
-          } else {
-            // Update status based on new progress
-            const newStage = determineSpecialBookingStage();
-            updateSpecialBookingStatus(newStage);
-          }
-        },
-        // onError callback
-        (error) => {
-          streamingMsg.finalize('Вибачте, сталася помилка. Спробуйте ще раз пізніше.');
-          setButtonLoading(false);
-          isGenerating = false;
-        }
+        stage
       );
+
+      hideTyping();
+      setButtonLoading(false);
+      isGenerating = false;
+
+      // Update booking state with extracted data
+      if (response.extractedData) {
+        updateBookingStateWithExtracted(response.extractedData);
+      }
+
+      addMessage(response.text, 'ai');
+      addToConversationHistory('assistant', response.text);
+
+      // Check for offer data
+      if (response.hasOffer && response.offerData) {
+        showSpecialOfferCard(response.offerData);
+      } else {
+        // Update status based on new progress
+        const newStage = determineSpecialBookingStage();
+        updateSpecialBookingStatus(newStage);
+      }
 
       return;
     }
@@ -1791,120 +1717,82 @@ export async function getAIResponse(userMessage) {
     if (chatMode === 'room-context' && selectedRoom && openai.isGeneralTopic(userMessage)) {
       // Auto-break room context for general topics
       clearRoomContext(true); // silent - don't add message
-      streamingMsg.update('Зрозуміло, повертаюсь до загальних питань.');
+      addMessage('Зрозуміло, повертаюсь до загальних питань.', 'ai');
       addToConversationHistory('assistant', 'Зрозуміло, повертаюсь до загальних питань.');
 
-      // Wait a moment before continuing
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      // Process as general response with STREAMING
-      await openai.getGeneralAIResponseStreaming(
+      // Process as general response
+      response = await openai.getGeneralAIResponse(
         userMessage,
         hotelName,
         bookingState,
-        bookingState.conversationHistory,
-        // onChunk callback
-        (delta, fullText) => {
-          streamingMsg.update(fullText);
-        },
-        // onComplete callback
-        (response) => {
-          streamingMsg.finalize(response.text);
-          setButtonLoading(false);
-          isGenerating = false;
-
-          // Update booking state with extracted data
-          if (response.extractedData) {
-            updateBookingStateWithExtracted(response.extractedData);
-          }
-
-          addToConversationHistory('assistant', response.text);
-
-          // Show rooms carousel if intent detected
-          if (response.showRoomsCarousel) {
-            setTimeout(() => addRoomCarousel(), 500);
-          }
-        },
-        // onError callback
-        (error) => {
-          streamingMsg.finalize('Вибачте, сталася помилка. Спробуйте ще раз пізніше.');
-          setButtonLoading(false);
-          isGenerating = false;
-        }
+        bookingState.conversationHistory
       );
+      hideTyping();
+      setButtonLoading(false);
+      isGenerating = false;
+
+      // Update booking state with extracted data
+      if (response.extractedData) {
+        updateBookingStateWithExtracted(response.extractedData);
+      }
+
+      addMessage(response.text, 'ai');
+      addToConversationHistory('assistant', response.text);
+
+      // Show rooms carousel if intent detected
+      if (response.showRoomsCarousel) {
+        setTimeout(() => addRoomCarousel(), 500);
+      }
     } else if (chatMode === 'room-context' && selectedRoom) {
-      // Room-specific response with STREAMING
-      await openai.getRoomAIResponseStreaming(
+      // Room-specific response
+      response = await openai.getRoomAIResponse(
         userMessage,
         selectedRoom,
         hotelName,
         bookingState,
-        bookingState.conversationHistory,
-        // onChunk callback
-        (delta, fullText) => {
-          streamingMsg.update(fullText);
-        },
-        // onComplete callback
-        (response) => {
-          streamingMsg.finalize(response.text);
-          setButtonLoading(false);
-          isGenerating = false;
-
-          // Update booking state with extracted data
-          if (response.extractedData) {
-            updateBookingStateWithExtracted(response.extractedData);
-          }
-
-          addToConversationHistory('assistant', response.text);
-        },
-        // onError callback
-        (error) => {
-          streamingMsg.finalize('Вибачте, сталася помилка. Спробуйте ще раз пізніше.');
-          setButtonLoading(false);
-          isGenerating = false;
-        }
+        bookingState.conversationHistory
       );
+      hideTyping();
+      setButtonLoading(false);
+      isGenerating = false;
+
+      // Update booking state with extracted data
+      if (response.extractedData) {
+        updateBookingStateWithExtracted(response.extractedData);
+      }
+
+      addMessage(response.text, 'ai');
+      addToConversationHistory('assistant', response.text);
     } else {
-      // General response with STREAMING
-      await openai.getGeneralAIResponseStreaming(
+      // General response
+      response = await openai.getGeneralAIResponse(
         userMessage,
         hotelName,
         bookingState,
-        bookingState.conversationHistory,
-        // onChunk callback
-        (delta, fullText) => {
-          streamingMsg.update(fullText);
-        },
-        // onComplete callback
-        (response) => {
-          streamingMsg.finalize(response.text);
-          setButtonLoading(false);
-          isGenerating = false;
-
-          // Update booking state with extracted data
-          if (response.extractedData) {
-            updateBookingStateWithExtracted(response.extractedData);
-          }
-
-          addToConversationHistory('assistant', response.text);
-
-          // Show rooms carousel if intent detected
-          if (response.showRoomsCarousel) {
-            setTimeout(() => addRoomCarousel(), 500);
-          }
-        },
-        // onError callback
-        (error) => {
-          streamingMsg.finalize('Вибачте, сталася помилка. Спробуйте ще раз пізніше.');
-          setButtonLoading(false);
-          isGenerating = false;
-        }
+        bookingState.conversationHistory
       );
+      hideTyping();
+      setButtonLoading(false);
+      isGenerating = false;
+
+      // Update booking state with extracted data
+      if (response.extractedData) {
+        updateBookingStateWithExtracted(response.extractedData);
+      }
+
+      addMessage(response.text, 'ai');
+      addToConversationHistory('assistant', response.text);
+
+      // Show rooms carousel if intent detected
+      if (response.showRoomsCarousel) {
+        setTimeout(() => addRoomCarousel(), 500);
+      }
     }
   } catch (error) {
-    streamingMsg.finalize('Вибачте, сталася помилка. Спробуйте ще раз.');
+    hideTyping();
     setButtonLoading(false);
     isGenerating = false;
+    addMessage('Вибачте, сталася помилка. Спробуйте ще раз.', 'ai');
   }
 }
 
@@ -2141,11 +2029,11 @@ export function initChatListeners() {
   // Special Booking listeners
   initSpecialBookingListeners();
 
-  // Telegram Confirmation listeners
-  initTelegramConfirmationListeners();
-
   // Welcome modal listeners
   initWelcomeListeners();
+
+  // Telegram booking modal listeners
+  initTelegramBookingModalListeners();
 }
 
 // Initialize Special Booking Event Listeners
@@ -2258,13 +2146,13 @@ function confirmSpecialOffer() {
 
   addMessage('Отлично! Ваше бронирование подтверждено. Наш менеджер свяжется с вами в ближайшее время для финального подтверждения деталей. Благодарим за выбор нашего отеля!', 'ai');
 
+  // Show Telegram confirmation modal
+  setTimeout(() => {
+    showTelegramBookingModal();
+  }, 800);
+
   // Deactivate special mode
   deactivateSpecialBookingMode(true);
-
-  // Show Telegram Confirmation
-  setTimeout(() => {
-    showTelegramConfirmation();
-  }, 1500);
 }
 
 // Edit special offer - return to chat for adjustments
@@ -2274,6 +2162,74 @@ function editSpecialOffer() {
 
   addMessage('Конечно! Что именно вы хотели бы изменить? Расскажите о ваших пожеланиях, и я подготовлю обновлённое предложение.', 'ai');
   addToConversationHistory('assistant', 'Конечно! Что именно вы хотели бы изменить? Расскажите о ваших пожеланиях, и я подготовлю обновлённое предложение.');
+}
+
+// ========================================
+// TELEGRAM BOOKING CONFIRMATION MODAL
+// ========================================
+
+// Show Telegram Booking Confirmation Modal
+export function showTelegramBookingModal() {
+  const modal = document.getElementById('telegram-booking-modal');
+  if (!modal) return;
+
+  // Show modal with animation
+  setTimeout(() => {
+    modal.classList.add('show');
+  }, 100);
+}
+
+// Hide Telegram Booking Confirmation Modal
+export function hideTelegramBookingModal() {
+  const modal = document.getElementById('telegram-booking-modal');
+  if (!modal) return;
+
+  modal.classList.remove('show');
+}
+
+// Initialize Telegram Booking Modal Listeners
+export function initTelegramBookingModalListeners() {
+  const modal = document.getElementById('telegram-booking-modal');
+  const closeBtn = document.getElementById('telegram-booking-close');
+  const confirmBtn = document.getElementById('telegram-booking-confirm');
+  const laterBtn = document.getElementById('telegram-booking-later');
+
+  if (!modal) return;
+
+  // Close button
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      hideTelegramBookingModal();
+    });
+  }
+
+  // Confirm button - redirect to Telegram
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', () => {
+      // Get Telegram username or bot link from settings (you can customize this)
+      const telegramLink = 'https://t.me/your_hotel_bot'; // Replace with actual bot link
+
+      // Open Telegram
+      window.open(telegramLink, '_blank');
+
+      // Close modal
+      hideTelegramBookingModal();
+    });
+  }
+
+  // Later button
+  if (laterBtn) {
+    laterBtn.addEventListener('click', () => {
+      hideTelegramBookingModal();
+    });
+  }
+
+  // Close on overlay click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      hideTelegramBookingModal();
+    }
+  });
 }
 
 // Export state getters/setters
