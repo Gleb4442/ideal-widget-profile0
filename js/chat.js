@@ -1399,6 +1399,33 @@ export function addMessage(text, sender) {
   dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
 }
 
+// Show Telegram Confirmation Modal
+export function showTelegramConfirmation() {
+  if (dom.tgConfirmationModal) {
+    dom.tgConfirmationModal.classList.remove('hidden');
+  }
+}
+
+// Initialize Telegram Confirmation Listeners
+export function initTelegramConfirmationListeners() {
+  const confirmBtn = document.getElementById('confirm-tg-btn');
+  const cancelBtn = document.getElementById('cancel-tg-btn');
+
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', () => {
+      // Open Telegram (replace with actual bot link)
+      window.open('https://t.me/HotelBot?start=booking_confirmation', '_blank');
+      if (dom.tgConfirmationModal) dom.tgConfirmationModal.classList.add('hidden');
+    });
+  }
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      if (dom.tgConfirmationModal) dom.tgConfirmationModal.classList.add('hidden');
+    });
+  }
+}
+
 // Add Room Carousel to Chat
 export function addRoomCarousel() {
   const allRooms = rooms.getAllRooms();
@@ -2014,6 +2041,9 @@ export function initChatListeners() {
   // Special Booking listeners
   initSpecialBookingListeners();
 
+  // Telegram Confirmation listeners
+  initTelegramConfirmationListeners();
+
   // Welcome modal listeners
   initWelcomeListeners();
 }
@@ -2130,6 +2160,11 @@ function confirmSpecialOffer() {
 
   // Deactivate special mode
   deactivateSpecialBookingMode(true);
+
+  // Show Telegram Confirmation
+  setTimeout(() => {
+    showTelegramConfirmation();
+  }, 1500);
 }
 
 // Edit special offer - return to chat for adjustments
