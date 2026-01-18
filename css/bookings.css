@@ -6,6 +6,25 @@
   border-top: 1px solid #e5e7eb;
 }
 
+/* Booking Search Form in Chat */
+.booking-search-form {
+  max-width: 500px;
+}
+
+.booking-search-form .search-input-container input:focus {
+  outline: none;
+  border-color: var(--accent-color, #2563eb) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.booking-search-form #booking-search-btn:hover {
+  transform: translateY(-50%) scale(1.02);
+}
+
+.booking-search-form #booking-search-btn:active {
+  transform: translateY(-50%) scale(0.98);
+}
+
 .bookings-section-header {
   display: flex;
   justify-content: space-between;

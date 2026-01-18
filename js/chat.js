@@ -61,7 +61,10 @@ let bookingState = {
 // Cancellation state
 let cancellationState = {
   isActive: false,
-  action: null // 'cancel_only' | 'cancel_and_rebook'
+  action: null, // 'cancel_only' | 'cancel_and_rebook'
+  stage: 'initial', // 'initial' | 'awaiting_search_params' | 'awaiting_confirmation'
+  searchAttempts: 0,
+  lastSearchType: null
 };
 
 // Load booking state from localStorage
@@ -599,7 +602,7 @@ function extractBookingSearchParams(message) {
     return result;
   }
 
-  // Check for phone number
+  // Check for phone number (must be 10+ digits)
   const phoneMatch = message.match(/(\+?\d{10,13})/);
   if (phoneMatch) {
     result.type = 'phone';
@@ -607,17 +610,19 @@ function extractBookingSearchParams(message) {
     return result;
   }
 
-  // Try to extract name after keywords
-  const namePatterns = [
-    /(?:для|на имя|на ім'я|for)\s+([А-ЯЁІЇҐа-яёіїґA-Z][А-ЯЁІЇҐа-яёіїґA-Za-z\s]+)/i,
-    /([А-ЯЁІЇҐа-яёіїґA-Z][А-ЯЁІЇҐа-яёіїґA-Za-z]+\s+[А-ЯЁІЇҐа-яёіїґA-Z][А-ЯЁІЇҐа-яёіїґA-Za-z]+(?:\s+[А-ЯЁІЇҐа-яёіїґA-Z][А-ЯЁІЇҐа-яёіїґA-Za-z]+)?)/
-  ];
+  // Try to extract name ONLY after specific keywords (more strict)
+  const namePatternWithKeyword = /(?:для|на имя|на ім'я|по имени|for|на прізвище)\s+([А-ЯЁІЇҐа-яёіїґA-Z][А-ЯЁІЇҐа-яёіїґA-Za-z]+(?:\s+[А-ЯЁІЇҐа-яёіїґA-Z][А-ЯЁІЇҐа-яёіїґA-Za-z]+){1,2})/i;
+  const nameMatch = message.match(namePatternWithKeyword);
+  if (nameMatch) {
+    const extractedName = nameMatch[1].trim();
+    // Filter out common action words
+    const actionWords = ['хочу', 'отменить', 'скасувати', 'змінити', 'изменить', 'бронирование', 'бронювання', 'резерв', 'cancel', 'change', 'booking'];
+    const nameParts = extractedName.toLowerCase().split(/\s+/);
+    const hasActionWords = nameParts.some(part => actionWords.includes(part));
 
-  for (const pattern of namePatterns) {
-    const match = message.match(pattern);
-    if (match) {
+    if (!hasActionWords && nameParts.length >= 2) {
       result.type = 'name';
-      result.value = match[1].trim();
+      result.value = extractedName;
       return result;
     }
   }
@@ -625,22 +630,150 @@ function extractBookingSearchParams(message) {
   return result;
 }
 
-// Handle booking cancellation by any parameter
-export function handleBookingCancellationByName(userMessage) {
-  // Extract search parameters from message
-  const searchParams = extractBookingSearchParams(userMessage);
+// Show search parameter request form
+function showBookingSearchForm() {
+  const container = document.createElement('div');
+  container.className = 'booking-search-form animate-fade-in';
+  container.id = 'booking-search-form';
+  container.style.cssText = 'margin: 16px 0;';
 
-  // If no parameters found, ask for them
-  if (!searchParams.type) {
-    addMessage(
-      'Пожалуйста, укажите один из параметров для поиска бронирования:\n\n' +
-      '• ФИО гостя: "Отменить бронирование для Іванов Петро Сергійович"\n' +
-      '• Email: "Отменить бронирование ivanov@example.com"\n' +
-      '• Телефон: "Отменить бронирование +380501234567"\n' +
-      '• ID бронирования: "Отменить бронирование BKG-ABC123"',
-      'ai'
-    );
+  container.innerHTML = `
+    <div class="ai-message" style="background: #f3f4f6; padding: 16px; border-radius: 12px;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <strong style="font-size: 15px;">Поиск бронирования</strong>
+      </div>
+
+      <p style="margin-bottom: 14px; font-size: 13px; color: #6b7280;">
+        Укажите один из параметров для поиска вашего бронирования:
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="search-input-container" style="position: relative;">
+          <input type="text" id="booking-search-input" placeholder="Введите ФИО, email, телефон или ID бронирования"
+            style="width: 100%; padding: 12px 44px 12px 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: all 0.2s;">
+          <button id="booking-search-btn" style="
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--accent-color, #2563eb);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+          ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            Знайти
+          </button>
+        </div>
+
+        <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">
+          <strong>Примеры:</strong><br>
+          • ФИО: Іванов Петро Сергійович<br>
+          • Email: ivanov@example.com<br>
+          • Телефон: +380501234567<br>
+          • ID: BKG-ABC123
+        </div>
+      </div>
+    </div>
+  `;
+
+  dom.messagesContainer.insertBefore(container, dom.typingIndicator);
+  dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+
+  // Focus input
+  const input = container.querySelector('#booking-search-input');
+  const searchBtn = container.querySelector('#booking-search-btn');
+
+  if (input) {
+    input.focus();
+
+    // Handle input styling
+    input.addEventListener('focus', () => {
+      input.style.borderColor = 'var(--accent-color, #2563eb)';
+    });
+    input.addEventListener('blur', () => {
+      input.style.borderColor = '#e5e7eb';
+    });
+
+    // Search on Enter
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        performBookingSearch(input.value.trim(), container);
+      }
+    });
+  }
+
+  // Search button handler
+  if (searchBtn) {
+    searchBtn.addEventListener('click', () => {
+      performBookingSearch(input.value.trim(), container);
+    });
+
+    searchBtn.addEventListener('mouseenter', () => {
+      searchBtn.style.opacity = '0.9';
+    });
+    searchBtn.addEventListener('mouseleave', () => {
+      searchBtn.style.opacity = '1';
+    });
+  }
+}
+
+// Perform booking search
+function performBookingSearch(searchValue, formContainer) {
+  if (!searchValue) {
+    addMessage('Пожалуйста, введите параметр для поиска.', 'ai');
     return;
+  }
+
+  // Extract search parameters
+  const searchParams = extractBookingSearchParams(searchValue);
+
+  // If no valid parameters found, try general search
+  if (!searchParams.type) {
+    // Try name search as fallback
+    const foundBookings = bookings.findBookingsByName(searchValue);
+
+    if (foundBookings.length === 0) {
+      addMessage(
+        `Бронирования по запросу "${searchValue}" не найдены.\n\n` +
+        'Проверьте правильность написания или попробуйте другой параметр поиска.',
+        'ai'
+      );
+      cancellationState.searchAttempts++;
+
+      if (cancellationState.searchAttempts >= 3) {
+        addMessage(
+          'Если у вас возникли сложности с поиском бронирования, обратитесь к администратору или укажите точные данные из письма-подтверждения.',
+          'ai'
+        );
+        resetCancellationState();
+      }
+      return;
+    }
+
+    searchParams.type = 'name';
+    searchParams.value = searchValue;
+  }
+
+  // Remove form
+  if (formContainer) {
+    formContainer.remove();
   }
 
   // Search for bookings
@@ -661,12 +794,12 @@ export function handleBookingCancellationByName(userMessage) {
 
     case 'phone':
       foundBookings = bookings.searchBookings({ phone: searchParams.value });
-      searchDescription = `телефону ${searchParams.value}`;
+      searchDescription = `телефон ${searchParams.value}`;
       break;
 
     case 'name':
       foundBookings = bookings.findBookingsByName(searchParams.value);
-      searchDescription = `ПІБ "${searchParams.value}"`;
+      searchDescription = `ФИО "${searchParams.value}"`;
       break;
   }
 
@@ -676,6 +809,20 @@ export function handleBookingCancellationByName(userMessage) {
       'Попробуйте указать другой параметр или проверьте правильность написания.',
       'ai'
     );
+
+    cancellationState.searchAttempts++;
+    cancellationState.lastSearchType = searchParams.type;
+
+    // Show form again for retry
+    if (cancellationState.searchAttempts < 3) {
+      setTimeout(() => showBookingSearchForm(), 500);
+    } else {
+      addMessage(
+        'Если у вас возникли сложности с поиском, обратитесь к администратору.',
+        'ai'
+      );
+      resetCancellationState();
+    }
     return;
   }
 
@@ -687,11 +834,44 @@ export function handleBookingCancellationByName(userMessage) {
       `Найдены бронирования по параметру ${searchDescription}, но все они уже отменены или завершены.`,
       'ai'
     );
+    resetCancellationState();
     return;
   }
 
   // Show found bookings with action buttons
   showBookingCancellationOptions(confirmedBookings, searchDescription);
+}
+
+// Handle booking cancellation by any parameter
+export function handleBookingCancellationByName(userMessage) {
+  // Activate cancellation state
+  cancellationState.isActive = true;
+  cancellationState.stage = 'awaiting_search_params';
+  cancellationState.searchAttempts = 0;
+
+  // Try to extract parameters from initial message
+  const searchParams = extractBookingSearchParams(userMessage);
+
+  if (searchParams.type) {
+    // If we found params in the initial message, search immediately
+    performBookingSearch(searchParams.value, null);
+  } else {
+    // Show interactive search form
+    addMessage(
+      'Давайте найдем ваше бронирование. Укажите любой известный вам параметр:',
+      'ai'
+    );
+    setTimeout(() => showBookingSearchForm(), 300);
+  }
+}
+
+// Reset cancellation state
+function resetCancellationState() {
+  cancellationState.isActive = false;
+  cancellationState.action = null;
+  cancellationState.stage = 'initial';
+  cancellationState.searchAttempts = 0;
+  cancellationState.lastSearchType = null;
 }
 
 // Show booking cancellation options
@@ -881,6 +1061,9 @@ function confirmBookingCancellation(bookingId, optionsContainer) {
     // Show success message
     addMessage(`✓ Бронирование для ${booking.guestName} успешно отменено.\n\nНомер: ${booking.roomName}\nДаты: ${bookings.formatBooking(booking).checkInFormatted} - ${bookings.formatBooking(booking).checkOutFormatted}\n\nЕсли нужна помощь с новым бронированием, обращайтесь!`, 'ai');
 
+    // Reset cancellation state
+    resetCancellationState();
+
     // Update admin panel if open
     if (typeof window.renderBookingsList === 'function') {
       window.renderBookingsList();
@@ -904,6 +1087,9 @@ function handleBookingEdit(bookingId, optionsContainer) {
 
     // Show message
     addMessage(`Бронирование для ${booking.guestName} отменено.\n\nТеперь расскажите о новых требованиях:\n• Желаемые даты заезда и выезда\n• Количество гостей\n• Тип номера\n• Особые пожелания`, 'ai');
+
+    // Reset cancellation state
+    resetCancellationState();
 
     // Reset booking state for new booking
     resetBookingState();
@@ -1390,38 +1576,26 @@ export async function getAIResponse(userMessage) {
 
   // Check if user wants to cancel/edit booking
   const hasCancellationIntent = detectCancellationIntent(userMessage);
-  console.log('Cancellation check:', {
-    hasActiveBooking: bookingState.hasActiveBooking,
-    hasCancellationIntent: hasCancellationIntent,
-    userMessage: userMessage,
-    totalBookings: bookings.getAllBookings().length
-  });
 
-  // NEW: Handle cancellation by guest name (search in database)
-  if (hasCancellationIntent) {
+  // Handle cancellation by searching in database
+  if (hasCancellationIntent && !cancellationState.isActive) {
     hideTyping();
     setButtonLoading(false);
     isGenerating = false;
 
-    // Try to handle cancellation using the new system (by guest name)
+    // Start cancellation process with interactive search
     handleBookingCancellationByName(userMessage);
     return;
   }
 
-  // OLD: Handle legacy single-booking cancellation (kept for compatibility)
-  if (bookingState.hasActiveBooking && hasCancellationIntent) {
+  // If already in cancellation process, let the search form handle it
+  if (cancellationState.isActive && cancellationState.stage === 'awaiting_search_params') {
     hideTyping();
     setButtonLoading(false);
     isGenerating = false;
 
-    cancellationState.isActive = true;
-    addMessage('Понимаю, вы хотите внести изменения в бронирование. Давайте разберёмся.', 'ai');
-    addToConversationHistory('assistant', 'Понимаю, вы хотите внести изменения в бронирование. Давайте разберёмся.');
-
-    setTimeout(() => {
-      showCancellationOptions();
-    }, 500);
-
+    // User might be providing search parameters in follow-up message
+    performBookingSearch(userMessage, document.getElementById('booking-search-form'));
     return;
   }
 
@@ -1655,7 +1829,10 @@ export function resetChat() {
   // Reset cancellation state
   cancellationState = {
     isActive: false,
-    action: null
+    action: null,
+    stage: 'initial',
+    searchAttempts: 0,
+    lastSearchType: null
   };
 
   // Clear room context container
