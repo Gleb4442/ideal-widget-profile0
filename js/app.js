@@ -10,6 +10,11 @@ import { initBanners } from './banners.js';
 import { initGallery } from './gallery.js';
 import * as bookings from './bookings.js';
 
+// Validate critical DOM elements
+if (!dom.widgetButton || !dom.chatWindow) {
+  console.error('CRITICAL ERROR: Widget elements not found in DOM');
+}
+
 // Initialize Application
 function init() {
   // Auto-load test bookings if database is empty
@@ -28,22 +33,34 @@ function init() {
   }
 
   // Initialize admin panel
-  initAdmin();
+  try {
+    initAdmin();
+  } catch (e) { console.error('Admin init failed:', e); }
 
   // Initialize language
-  initLanguage();
+  try {
+    initLanguage();
+  } catch (e) { console.error('Language init failed:', e); }
 
   // Initialize chat listeners
-  initChatListeners();
+  try {
+    initChatListeners();
+  } catch (e) { console.error('Chat listeners init failed:', e); }
 
   // Initialize banners
-  initBanners();
+  try {
+    initBanners();
+  } catch (e) { console.error('Banners init failed:', e); }
 
   // Initialize photo gallery
-  initGallery();
+  try {
+    initGallery();
+  } catch (e) { console.error('Gallery init failed:', e); }
 
   // Initialize send button state
-  updateSendButtonState();
+  try {
+    updateSendButtonState();
+  } catch (e) { console.error('Send button init failed:', e); }
 
   // Set default positioning
   dom.widgetButton.classList.add('widget-pos-right');
