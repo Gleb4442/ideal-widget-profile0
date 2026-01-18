@@ -361,7 +361,7 @@ export function isGeneralTopic(message) {
   return GENERAL_TOPIC_PATTERNS.some(pattern => pattern.test(message));
 }
 
-// Call OpenAI API
+// Call OpenAI API (non-streaming)
 async function callOpenAI(messages) {
   await configPromise;
 
@@ -403,6 +403,99 @@ async function callOpenAI(messages) {
   }
 }
 
+// Call OpenAI API with streaming
+async function callOpenAIStreaming(messages, onChunk, onComplete, onError) {
+  await configPromise;
+
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const useDirect = isLocal && OPENAI_API_KEY && OPENAI_API_KEY !== 'YOUR_OPENAI_API_KEY_HERE';
+
+  try {
+    const url = useDirect ? API_URL : PROXY_URL;
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+
+    if (useDirect) {
+      headers['Authorization'] = `Bearer ${OPENAI_API_KEY}`;
+    }
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({
+        model: MODEL,
+        messages: messages,
+        max_tokens: 500,
+        temperature: 0.7,
+        stream: true
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('API error:', error);
+      if (onError) onError(new Error(error.error?.message || 'API request failed'));
+      return;
+    }
+
+    // Read the stream
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let fullText = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        if (onComplete) onComplete(fullText);
+        break;
+      }
+
+      // Decode the chunk
+      buffer += decoder.decode(value, { stream: true });
+
+      // Process complete lines
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+
+        // Skip empty lines and comments
+        if (!trimmedLine || trimmedLine.startsWith(':')) continue;
+
+        // Parse SSE data
+        if (trimmedLine.startsWith('data: ')) {
+          const data = trimmedLine.slice(6);
+
+          // Check for stream end
+          if (data === '[DONE]') {
+            if (onComplete) onComplete(fullText);
+            return;
+          }
+
+          try {
+            const parsed = JSON.parse(data);
+            const delta = parsed.choices?.[0]?.delta?.content;
+
+            if (delta) {
+              fullText += delta;
+              if (onChunk) onChunk(delta, fullText);
+            }
+          } catch (e) {
+            console.warn('Failed to parse SSE data:', data);
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Streaming error:', error);
+    if (onError) onError(error);
+  }
+}
+
 // Get general AI response with booking funnel support
 export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bookingState = null, conversationHistory = []) {
   const systemPrompt = buildGeneralSystemPrompt(hotelName, bookingState);
@@ -441,6 +534,64 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
   }
 }
 
+// Get general AI response with STREAMING support
+export async function getGeneralAIResponseStreaming(userMessage, hotelName = 'Hilton', bookingState = null, conversationHistory = [], onChunk, onComplete, onError) {
+  const systemPrompt = buildGeneralSystemPrompt(hotelName, bookingState);
+
+  // Build messages with conversation history
+  const messages = [
+    { role: 'system', content: systemPrompt }
+  ];
+
+  // Add last 10 messages from history for context
+  const recentHistory = conversationHistory.slice(-10);
+  messages.push(...recentHistory);
+
+  // Add current user message
+  messages.push({ role: 'user', content: userMessage });
+
+  // Check for room intent
+  const showRooms = hasRoomIntent(userMessage);
+
+  // Extract booking data from user message
+  const extractedData = extractBookingData(userMessage);
+
+  try {
+    await callOpenAIStreaming(
+      messages,
+      (delta, fullText) => {
+        if (onChunk) onChunk(delta, fullText);
+      },
+      (fullText) => {
+        if (onComplete) {
+          onComplete({
+            text: fullText,
+            showRoomsCarousel: showRooms && getAllRooms().length > 0,
+            extractedData: extractedData
+          });
+        }
+      },
+      (error) => {
+        if (onError) {
+          onError({
+            text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
+            showRoomsCarousel: false,
+            error: true
+          });
+        }
+      }
+    );
+  } catch (error) {
+    if (onError) {
+      onError({
+        text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
+        showRoomsCarousel: false,
+        error: true
+      });
+    }
+  }
+}
+
 // Get room-specific AI response
 export async function getRoomAIResponse(userMessage, room, hotelName = 'Hilton', bookingState = null, conversationHistory = []) {
   const systemPrompt = buildRoomSystemPrompt(room, hotelName, bookingState);
@@ -472,6 +623,59 @@ export async function getRoomAIResponse(userMessage, room, hotelName = 'Hilton',
       text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
       error: true
     };
+  }
+}
+
+// Get room-specific AI response with STREAMING
+export async function getRoomAIResponseStreaming(userMessage, room, hotelName = 'Hilton', bookingState = null, conversationHistory = [], onChunk, onComplete, onError) {
+  const systemPrompt = buildRoomSystemPrompt(room, hotelName, bookingState);
+
+  // Build messages with conversation history
+  const messages = [
+    { role: 'system', content: systemPrompt }
+  ];
+
+  // Add last 10 messages from history for context
+  const recentHistory = conversationHistory.slice(-10);
+  messages.push(...recentHistory);
+
+  // Add current user message
+  messages.push({ role: 'user', content: userMessage });
+
+  // Extract booking data from user message
+  const extractedData = extractBookingData(userMessage);
+
+  try {
+    await callOpenAIStreaming(
+      messages,
+      (delta, fullText) => {
+        if (onChunk) onChunk(delta, fullText);
+      },
+      (fullText) => {
+        if (onComplete) {
+          onComplete({
+            text: fullText,
+            extractedData: extractedData,
+            error: false
+          });
+        }
+      },
+      (error) => {
+        if (onError) {
+          onError({
+            text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
+            error: true
+          });
+        }
+      }
+    );
+  } catch (error) {
+    if (onError) {
+      onError({
+        text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
+        error: true
+      });
+    }
   }
 }
 
@@ -843,6 +1047,64 @@ export async function getSpecialBookingAIResponse(userMessage, requirements = []
       text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
       error: true
     };
+  }
+}
+
+// Get Special Booking AI response with STREAMING
+export async function getSpecialBookingAIResponseStreaming(userMessage, requirements = [], bookingState = null, conversationHistory = [], stage = 'collecting', onChunk, onComplete, onError) {
+  const hotelName = document.getElementById('hotel-name-input')?.value || 'Hilton';
+  const systemPrompt = buildSpecialBookingPrompt(hotelName, requirements, bookingState, stage);
+
+  const messages = [
+    { role: 'system', content: systemPrompt }
+  ];
+
+  // Add conversation history
+  const recentHistory = conversationHistory.slice(-10);
+  messages.push(...recentHistory);
+
+  // Add current message
+  messages.push({ role: 'user', content: userMessage });
+
+  // Extract booking data
+  const extractedData = extractBookingData(userMessage);
+
+  try {
+    await callOpenAIStreaming(
+      messages,
+      (delta, fullText) => {
+        if (onChunk) onChunk(delta, fullText);
+      },
+      (fullText) => {
+        // Parse offer data if present
+        const offerData = parseOfferData(fullText);
+        const cleanText = fullText.replace(/\[OFFER_DATA\][\s\S]*?\[\/OFFER_DATA\]/g, '').trim();
+
+        if (onComplete) {
+          onComplete({
+            text: cleanText,
+            extractedData,
+            offerData,
+            hasOffer: !!offerData
+          });
+        }
+      },
+      (error) => {
+        if (onError) {
+          onError({
+            text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
+            error: true
+          });
+        }
+      }
+    );
+  } catch (error) {
+    if (onError) {
+      onError({
+        text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
+        error: true
+      });
+    }
   }
 }
 

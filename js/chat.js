@@ -1399,6 +1399,43 @@ export function addMessage(text, sender) {
   dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
 }
 
+// Create a streaming message element (returns reference for updates)
+export function createStreamingMessage() {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'message-wrapper ai animate-fade-in';
+
+  const messageElement = document.createElement('div');
+  messageElement.className = 'chat-message-ai text-base leading-relaxed';
+  messageElement.innerHTML = '';
+
+  const timeElement = document.createElement('span');
+  timeElement.className = 'message-time';
+  timeElement.innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  wrapper.appendChild(messageElement);
+  wrapper.appendChild(timeElement);
+
+  dom.messagesContainer.insertBefore(wrapper, dom.typingIndicator);
+  dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+
+  return {
+    wrapper,
+    messageElement,
+    update: (text) => {
+      messageElement.innerHTML = text.replace(/\n/g, '<br>');
+      // Auto-scroll to bottom if user is near bottom
+      const isNearBottom = dom.messagesContainer.scrollHeight - dom.messagesContainer.scrollTop - dom.messagesContainer.clientHeight < 100;
+      if (isNearBottom) {
+        dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+      }
+    },
+    finalize: (text) => {
+      messageElement.innerHTML = text.replace(/\n/g, '<br>');
+      dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+    }
+  };
+}
+
 // Show Telegram Confirmation Modal
 export function showTelegramConfirmation() {
   if (dom.tgConfirmationModal) {
@@ -1594,7 +1631,7 @@ export function setButtonLoading(isLoading) {
   }
 }
 
-// Get AI Response (main handler)
+// Get AI Response (main handler) - STREAMING VERSION
 export async function getAIResponse(userMessage) {
   const hotelName = document.getElementById('hotel-name-input')?.value || 'Hilton';
 
@@ -1626,9 +1663,11 @@ export async function getAIResponse(userMessage) {
     return;
   }
 
-  try {
-    let response;
+  // Hide typing indicator and create streaming message
+  hideTyping();
+  const streamingMsg = createStreamingMessage();
 
+  try {
     // Check if we should auto-activate Special Booking mode
     if (!specialBookingState.isActive && shouldActivateSpecialBooking(userMessage, bookingState.conversationHistory)) {
       // Extract requirements from message
@@ -1637,49 +1676,61 @@ export async function getAIResponse(userMessage) {
 
       activateSpecialBookingMode('auto');
 
-      // Process in special booking mode
+      // Process in special booking mode with STREAMING
       updateSpecialBookingStatus('analyzing');
-      response = await openai.getSpecialBookingAIResponse(
+
+      await openai.getSpecialBookingAIResponseStreaming(
         userMessage,
         specialBookingState.requirements,
         bookingState,
         bookingState.conversationHistory,
-        determineSpecialBookingStage()
-      );
+        determineSpecialBookingStage(),
+        // onChunk callback
+        (delta, fullText) => {
+          streamingMsg.update(fullText);
+        },
+        // onComplete callback
+        (response) => {
+          streamingMsg.finalize(response.text);
+          setButtonLoading(false);
+          isGenerating = false;
 
-      hideTyping();
-      setButtonLoading(false);
-      isGenerating = false;
+          // Update booking state with extracted data
+          if (response.extractedData) {
+            updateBookingStateWithExtracted(response.extractedData);
+          }
 
-      // Update booking state with extracted data
-      if (response.extractedData) {
-        updateBookingStateWithExtracted(response.extractedData);
-      }
+          // Update requirements
+          const newRequirements = openai.extractRequirements(userMessage);
+          newRequirements.forEach(req => {
+            if (!specialBookingState.requirements.find(r => r.type === req.type)) {
+              specialBookingState.requirements.push(req);
+            }
+          });
 
-      // Update requirements
-      const newRequirements = openai.extractRequirements(userMessage);
-      newRequirements.forEach(req => {
-        if (!specialBookingState.requirements.find(r => r.type === req.type)) {
-          specialBookingState.requirements.push(req);
+          addToConversationHistory('assistant', response.text);
+
+          // Check for offer data
+          if (response.hasOffer && response.offerData) {
+            showSpecialOfferCard(response.offerData);
+          } else {
+            // Update status based on progress
+            const newStage = determineSpecialBookingStage();
+            updateSpecialBookingStatus(newStage);
+          }
+        },
+        // onError callback
+        (error) => {
+          streamingMsg.finalize('Вибачте, сталася помилка. Спробуйте ще раз пізніше.');
+          setButtonLoading(false);
+          isGenerating = false;
         }
-      });
-
-      addMessage(response.text, 'ai');
-      addToConversationHistory('assistant', response.text);
-
-      // Check for offer data
-      if (response.hasOffer && response.offerData) {
-        showSpecialOfferCard(response.offerData);
-      } else {
-        // Update status based on progress
-        const newStage = determineSpecialBookingStage();
-        updateSpecialBookingStatus(newStage);
-      }
+      );
 
       return;
     }
 
-    // Handle Special Booking mode responses
+    // Handle Special Booking mode responses with STREAMING
     if (chatMode === 'special-booking' && specialBookingState.isActive) {
       // Update requirements from message
       const newRequirements = openai.extractRequirements(userMessage);
@@ -1693,34 +1744,45 @@ export async function getAIResponse(userMessage) {
       const stage = determineSpecialBookingStage();
       updateSpecialBookingStatus(stage === 'generating' ? 'generating' : 'analyzing');
 
-      response = await openai.getSpecialBookingAIResponse(
+      await openai.getSpecialBookingAIResponseStreaming(
         userMessage,
         specialBookingState.requirements,
         bookingState,
         bookingState.conversationHistory,
-        stage
+        stage,
+        // onChunk callback
+        (delta, fullText) => {
+          streamingMsg.update(fullText);
+        },
+        // onComplete callback
+        (response) => {
+          streamingMsg.finalize(response.text);
+          setButtonLoading(false);
+          isGenerating = false;
+
+          // Update booking state with extracted data
+          if (response.extractedData) {
+            updateBookingStateWithExtracted(response.extractedData);
+          }
+
+          addToConversationHistory('assistant', response.text);
+
+          // Check for offer data
+          if (response.hasOffer && response.offerData) {
+            showSpecialOfferCard(response.offerData);
+          } else {
+            // Update status based on new progress
+            const newStage = determineSpecialBookingStage();
+            updateSpecialBookingStatus(newStage);
+          }
+        },
+        // onError callback
+        (error) => {
+          streamingMsg.finalize('Вибачте, сталася помилка. Спробуйте ще раз пізніше.');
+          setButtonLoading(false);
+          isGenerating = false;
+        }
       );
-
-      hideTyping();
-      setButtonLoading(false);
-      isGenerating = false;
-
-      // Update booking state with extracted data
-      if (response.extractedData) {
-        updateBookingStateWithExtracted(response.extractedData);
-      }
-
-      addMessage(response.text, 'ai');
-      addToConversationHistory('assistant', response.text);
-
-      // Check for offer data
-      if (response.hasOffer && response.offerData) {
-        showSpecialOfferCard(response.offerData);
-      } else {
-        // Update status based on new progress
-        const newStage = determineSpecialBookingStage();
-        updateSpecialBookingStatus(newStage);
-      }
 
       return;
     }
@@ -1729,82 +1791,120 @@ export async function getAIResponse(userMessage) {
     if (chatMode === 'room-context' && selectedRoom && openai.isGeneralTopic(userMessage)) {
       // Auto-break room context for general topics
       clearRoomContext(true); // silent - don't add message
-      addMessage('Зрозуміло, повертаюсь до загальних питань.', 'ai');
+      streamingMsg.update('Зрозуміло, повертаюсь до загальних питань.');
       addToConversationHistory('assistant', 'Зрозуміло, повертаюсь до загальних питань.');
 
-      // Process as general response
-      response = await openai.getGeneralAIResponse(
+      // Wait a moment before continuing
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      // Process as general response with STREAMING
+      await openai.getGeneralAIResponseStreaming(
         userMessage,
         hotelName,
         bookingState,
-        bookingState.conversationHistory
+        bookingState.conversationHistory,
+        // onChunk callback
+        (delta, fullText) => {
+          streamingMsg.update(fullText);
+        },
+        // onComplete callback
+        (response) => {
+          streamingMsg.finalize(response.text);
+          setButtonLoading(false);
+          isGenerating = false;
+
+          // Update booking state with extracted data
+          if (response.extractedData) {
+            updateBookingStateWithExtracted(response.extractedData);
+          }
+
+          addToConversationHistory('assistant', response.text);
+
+          // Show rooms carousel if intent detected
+          if (response.showRoomsCarousel) {
+            setTimeout(() => addRoomCarousel(), 500);
+          }
+        },
+        // onError callback
+        (error) => {
+          streamingMsg.finalize('Вибачте, сталася помилка. Спробуйте ще раз пізніше.');
+          setButtonLoading(false);
+          isGenerating = false;
+        }
       );
-      hideTyping();
-      setButtonLoading(false);
-      isGenerating = false;
-
-      // Update booking state with extracted data
-      if (response.extractedData) {
-        updateBookingStateWithExtracted(response.extractedData);
-      }
-
-      addMessage(response.text, 'ai');
-      addToConversationHistory('assistant', response.text);
-
-      // Show rooms carousel if intent detected
-      if (response.showRoomsCarousel) {
-        setTimeout(() => addRoomCarousel(), 500);
-      }
     } else if (chatMode === 'room-context' && selectedRoom) {
-      // Room-specific response
-      response = await openai.getRoomAIResponse(
+      // Room-specific response with STREAMING
+      await openai.getRoomAIResponseStreaming(
         userMessage,
         selectedRoom,
         hotelName,
         bookingState,
-        bookingState.conversationHistory
+        bookingState.conversationHistory,
+        // onChunk callback
+        (delta, fullText) => {
+          streamingMsg.update(fullText);
+        },
+        // onComplete callback
+        (response) => {
+          streamingMsg.finalize(response.text);
+          setButtonLoading(false);
+          isGenerating = false;
+
+          // Update booking state with extracted data
+          if (response.extractedData) {
+            updateBookingStateWithExtracted(response.extractedData);
+          }
+
+          addToConversationHistory('assistant', response.text);
+        },
+        // onError callback
+        (error) => {
+          streamingMsg.finalize('Вибачте, сталася помилка. Спробуйте ще раз пізніше.');
+          setButtonLoading(false);
+          isGenerating = false;
+        }
       );
-      hideTyping();
-      setButtonLoading(false);
-      isGenerating = false;
-
-      // Update booking state with extracted data
-      if (response.extractedData) {
-        updateBookingStateWithExtracted(response.extractedData);
-      }
-
-      addMessage(response.text, 'ai');
-      addToConversationHistory('assistant', response.text);
     } else {
-      // General response
-      response = await openai.getGeneralAIResponse(
+      // General response with STREAMING
+      await openai.getGeneralAIResponseStreaming(
         userMessage,
         hotelName,
         bookingState,
-        bookingState.conversationHistory
+        bookingState.conversationHistory,
+        // onChunk callback
+        (delta, fullText) => {
+          streamingMsg.update(fullText);
+        },
+        // onComplete callback
+        (response) => {
+          streamingMsg.finalize(response.text);
+          setButtonLoading(false);
+          isGenerating = false;
+
+          // Update booking state with extracted data
+          if (response.extractedData) {
+            updateBookingStateWithExtracted(response.extractedData);
+          }
+
+          addToConversationHistory('assistant', response.text);
+
+          // Show rooms carousel if intent detected
+          if (response.showRoomsCarousel) {
+            setTimeout(() => addRoomCarousel(), 500);
+          }
+        },
+        // onError callback
+        (error) => {
+          streamingMsg.finalize('Вибачте, сталася помилка. Спробуйте ще раз пізніше.');
+          setButtonLoading(false);
+          isGenerating = false;
+        }
       );
-      hideTyping();
-      setButtonLoading(false);
-      isGenerating = false;
-
-      // Update booking state with extracted data
-      if (response.extractedData) {
-        updateBookingStateWithExtracted(response.extractedData);
-      }
-
-      addMessage(response.text, 'ai');
-      addToConversationHistory('assistant', response.text);
-
-      // Show rooms carousel if intent detected
-      if (response.showRoomsCarousel) {
-        setTimeout(() => addRoomCarousel(), 500);
-      }
     }
   } catch (error) {
-    hideTyping();
+    streamingMsg.finalize('Вибачте, сталася помилка. Спробуйте ще раз.');
     setButtonLoading(false);
     isGenerating = false;
-    addMessage('Вибачте, сталася помилка. Спробуйте ще раз.', 'ai');
   }
 }
 
