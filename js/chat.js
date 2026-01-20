@@ -1288,27 +1288,46 @@ export function toggleChat() {
   const isMobile = window.innerWidth < 768;
 
   if (isOpen) {
-    dom.chatWindow.classList.remove('open');
-    dom.widgetButton.style.display = 'flex';
     if (isMobile) {
+      dom.chatWindow.classList.remove('open');
+      dom.widgetButton.style.display = 'flex';
       dom.openAdminBtn.style.display = '';
       dom.adminPanel.classList.add('hidden-panel');
       dom.openAdminBtn.classList.remove('hidden-btn');
+      closeRoomDetailView();
+    } else {
+      // Desktop Closing Animation
+      dom.chatWindow.classList.add('closing');
+      dom.chatWindow.classList.remove('opening');
+
+      // Wait for animation to finish
+      setTimeout(() => {
+        dom.chatWindow.classList.remove('open', 'closing');
+        dom.widgetButton.style.display = 'flex';
+        closeRoomDetailView();
+      }, 350); // Matches CSS animation duration
     }
-    // Close room detail view if open
-    closeRoomDetailView();
   } else {
     // Load booking state when opening chat
     loadBookingState();
 
-    dom.chatWindow.classList.add('open');
     dom.widgetButton.style.display = 'none';
     if (dom.notificationBadge) dom.notificationBadge.style.display = 'none';
-    dom.messageInput.focus();
+
     if (isMobile) {
+      dom.chatWindow.classList.add('open');
       dom.adminPanel.classList.add('hidden-panel');
       dom.openAdminBtn.style.display = 'none';
+    } else {
+      // Desktop Opening Animation
+      dom.chatWindow.classList.add('open', 'opening');
+      // Remove opening class after animation to stop re-triggering if resized/etc
+      setTimeout(() => {
+        dom.chatWindow.classList.remove('opening');
+      }, 500);
     }
+
+    dom.messageInput.focus();
 
     // Check welcome state
     checkWelcomeState();
