@@ -1136,6 +1136,25 @@ export function getTranslation(key) {
 }
 
 // Switch language
+// Render Language Menu
+function renderLanguageMenu() {
+  const submenu = document.getElementById('language-submenu');
+  if (!submenu) return;
+
+  submenu.innerHTML = '';
+  languagesList.forEach(lang => {
+    const btn = document.createElement('button');
+    btn.className = 'language-option';
+    btn.dataset.lang = lang.code;
+    btn.innerHTML = `
+      <span class="lang-flag">${lang.flag}</span>
+      <span class="lang-name">${lang.name}</span>
+    `;
+    submenu.appendChild(btn);
+  });
+}
+
+// Switch Language
 export function switchLanguage(langCode) {
   if (!translations[langCode]) {
     console.warn(`Language ${langCode} not found, falling back to English`);
@@ -1283,6 +1302,7 @@ export function initLanguage() {
     dom.chatButtonText.textContent = dom.buttonTextSelect.value;
   }
   // Update language menu state
+  renderLanguageMenu();
   updateLanguageMenuState();
 }
 
@@ -2284,17 +2304,11 @@ export function initSpecialBookingListeners() {
   }
 
   // History modal listeners
-  const historyModal = document.getElementById('history-modal');
+  const historyView = document.getElementById('history-view');
   const historyCloseBtn = document.getElementById('history-close-btn');
-  if (historyModal && historyCloseBtn) {
+  if (historyView && historyCloseBtn) {
     historyCloseBtn.addEventListener('click', () => {
-      historyModal.classList.add('hidden');
-    });
-
-    historyModal.addEventListener('click', (e) => {
-      if (e.target === historyModal) {
-        historyModal.classList.add('hidden');
-      }
+      historyView.classList.add('hidden');
     });
   }
 
@@ -2351,15 +2365,24 @@ export function initSpecialBookingListeners() {
   }
 
   // Language options
-  document.querySelectorAll('.language-option').forEach(option => {
-    option.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const langCode = option.dataset.lang;
-      if (langCode) {
-        switchLanguage(langCode);
+  // Render language menu dynamically
+  // renderLanguageMenu(); // Moved to initLanguage
+
+  // Language options delegation
+  const languageSubmenu = document.getElementById('language-submenu');
+  if (languageSubmenu) {
+    languageSubmenu.addEventListener('click', (e) => {
+      const option = e.target.closest('.language-option');
+      if (option) {
+        e.stopPropagation();
+        const langCode = option.dataset.lang;
+        if (langCode) {
+          switchLanguage(langCode);
+          closeHeaderMenu(); // Close menu after selection
+        }
       }
     });
-  });
+  }
 
   // Initialize language state on load
   updateLanguageMenuState();
@@ -2555,11 +2578,11 @@ function archiveCurrentSession() {
   }
 }
 
-// Show History Modal
+// Show History Modal (now internal view)
 function showHistoryModal() {
-  const modal = document.getElementById('history-modal');
+  const view = document.getElementById('history-view');
   const list = document.getElementById('history-list');
-  if (!modal || !list) return;
+  if (!view || !list) return;
 
   // Load history
   const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
@@ -2594,7 +2617,7 @@ function showHistoryModal() {
     });
   }
 
-  modal.classList.remove('hidden');
+  view.classList.remove('hidden');
 }
 
 // Open History Detail View

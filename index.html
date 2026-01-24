@@ -208,7 +208,9 @@
         <span class="services-section-title">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            <path
+              d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+            </path>
           </svg>
           Додаткові послуги
         </span>
@@ -361,88 +363,7 @@
                   <polyline points="9 18 15 12 9 6"></polyline>
                 </svg>
               </button>
-              <div id="language-submenu" class="submenu-content hidden">
-                <button class="language-option" data-lang="en">
-                  <span class="lang-flag">🇬🇧</span>
-                  <span class="lang-name">English</span>
-                </button>
-                <button class="language-option" data-lang="zh">
-                  <span class="lang-flag">🇨🇳</span>
-                  <span class="lang-name">中文</span>
-                </button>
-                <button class="language-option" data-lang="hi">
-                  <span class="lang-flag">🇮🇳</span>
-                  <span class="lang-name">हिन्दी</span>
-                </button>
-                <button class="language-option" data-lang="es">
-                  <span class="lang-flag">🇪🇸</span>
-                  <span class="lang-name">Español</span>
-                </button>
-                <button class="language-option" data-lang="ar">
-                  <span class="lang-flag">🇸🇦</span>
-                  <span class="lang-name">العربية</span>
-                </button>
-                <button class="language-option" data-lang="fr">
-                  <span class="lang-flag">🇫🇷</span>
-                  <span class="lang-name">Français</span>
-                </button>
-                <button class="language-option" data-lang="bn">
-                  <span class="lang-flag">🇧🇩</span>
-                  <span class="lang-name">বাংলা</span>
-                </button>
-                <button class="language-option" data-lang="pt">
-                  <span class="lang-flag">🇵🇹</span>
-                  <span class="lang-name">Português</span>
-                </button>
-                <button class="language-option" data-lang="ru">
-                  <span class="lang-flag">🇷🇺</span>
-                  <span class="lang-name">Русский</span>
-                </button>
-                <button class="language-option" data-lang="id">
-                  <span class="lang-flag">🇮🇩</span>
-                  <span class="lang-name">Indonesia</span>
-                </button>
-                <button class="language-option" data-lang="uk">
-                  <span class="lang-flag">🇺🇦</span>
-                  <span class="lang-name">Українська</span>
-                </button>
-                <button class="language-option" data-lang="de">
-                  <span class="lang-flag">🇩🇪</span>
-                  <span class="lang-name">Deutsch</span>
-                </button>
-                <button class="language-option" data-lang="ja">
-                  <span class="lang-flag">🇯🇵</span>
-                  <span class="lang-name">日本語</span>
-                </button>
-                <button class="language-option" data-lang="ko">
-                  <span class="lang-flag">🇰🇷</span>
-                  <span class="lang-name">한국어</span>
-                </button>
-                <button class="language-option" data-lang="it">
-                  <span class="lang-flag">🇮🇹</span>
-                  <span class="lang-name">Italiano</span>
-                </button>
-                <button class="language-option" data-lang="tr">
-                  <span class="lang-flag">🇹🇷</span>
-                  <span class="lang-name">Türkçe</span>
-                </button>
-                <button class="language-option" data-lang="nl">
-                  <span class="lang-flag">🇳🇱</span>
-                  <span class="lang-name">Nederlands</span>
-                </button>
-                <button class="language-option" data-lang="pl">
-                  <span class="lang-flag">🇵🇱</span>
-                  <span class="lang-name">Polski</span>
-                </button>
-                <button class="language-option" data-lang="vi">
-                  <span class="lang-flag">🇻🇳</span>
-                  <span class="lang-name">Tiếng Việt</span>
-                </button>
-                <button class="language-option" data-lang="th">
-                  <span class="lang-flag">🇹🇭</span>
-                  <span class="lang-name">ไทย</span>
-                </button>
-              </div>
+              <div id="language-submenu" class="submenu-content hidden"></div>
             </div>
           </div>
         </div>
@@ -533,6 +454,7 @@
       </div>
     </div>
 
+
     <!-- Scroll to Bottom Button -->
     <button id="scroll-to-bottom-btn" aria-label="Прокрутити вниз" title="До нових повідомлень">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -540,6 +462,48 @@
         <polyline points="6 9 12 15 18 9"></polyline>
       </svg>
     </button>
+
+    <!-- History View (Internal) -->
+    <div id="history-view" class="hidden absolute inset-0 z-[60] bg-white flex flex-col animate-fade-in">
+      <div
+        class="history-header p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 flex-shrink-0">
+        <h3 class="font-bold text-lg text-gray-800">Історія діалогів</h3>
+        <button id="history-close-btn" class="p-2 rounded-full hover:bg-gray-200 transition text-gray-500">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div id="history-list" class="flex-1 overflow-y-auto p-4 flex flex-col gap-3 bg-white">
+        <!-- History items will be injected here -->
+        <div class="text-center text-gray-400 mt-10">
+          <p>Немає збережених діалогів</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Detail View (Internal Overlay) -->
+    <div id="history-detail-view" class="hidden absolute inset-0 z-[70] bg-white flex flex-col animate-slide-in-right">
+      <div class="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50 shadow-sm flex-shrink-0">
+        <div class="flex items-center gap-2">
+          <button id="history-detail-back" class="p-2 -ml-2 rounded-full hover:bg-gray-200 transition text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <div>
+            <h3 id="history-detail-date" class="font-bold text-gray-800 text-sm"></h3>
+            <p id="history-detail-time" class="text-xs text-gray-500"></p>
+          </div>
+        </div>
+      </div>
+      <div id="history-detail-messages" class="flex-1 p-4 overflow-y-auto flex flex-col bg-gray-50">
+        <!-- Messages will be injected here -->
+      </div>
+    </div>
 
     <!-- Reset Confirmation Modal -->
     <div id="reset-confirmation-modal"
@@ -1117,50 +1081,9 @@
     <div id="photo-gallery-dots" class="photo-gallery-dots"></div>
   </div>
 
-  <!-- History Modal -->
-  <div id="history-modal"
-    class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
-    <div
-      class="modal-content bg-white rounded-2xl p-0 w-full max-w-sm shadow-2xl transform scale-100 transition-all flex flex-col h-[70vh] animate-slide-up overflow-hidden">
-      <div class="history-header p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-        <h3 class="font-bold text-lg text-gray-800">Історія діалогів</h3>
-        <button id="history-close-btn" class="p-2 rounded-full hover:bg-gray-200 transition text-gray-500">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-      <div id="history-list" class="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
-        <!-- History items will be injected here -->
-        <div class="text-center text-gray-400 mt-10">
-          <p>Немає збережених діалогів</p>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- History Detail View (Overlay) -->
-  <div id="history-detail-view" class="hidden absolute inset-0 z-[60] bg-white flex flex-col">
-    <div class="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50 shadow-sm">
-      <div class="flex items-center gap-2">
-        <button id="history-detail-back" class="p-2 -ml-2 rounded-full hover:bg-gray-200 transition text-gray-600">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-        </button>
-        <div>
-          <h3 id="history-detail-date" class="font-bold text-gray-800 text-sm"></h3>
-          <p id="history-detail-time" class="text-xs text-gray-500"></p>
-        </div>
-      </div>
-    </div>
-    <div id="history-detail-messages" class="flex-1 p-4 overflow-y-auto flex flex-col bg-gray-50">
-      <!-- Messages will be injected here -->
-    </div>
-  </div>
+
+
 
   <!-- Application Scripts -->
   <script type="module" src="js/app.js"></script>
