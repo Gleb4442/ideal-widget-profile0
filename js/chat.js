@@ -12,6 +12,8 @@ import * as bookings from './bookings.js';
 
 // Language storage key
 const LANGUAGE_KEY = 'chat_language';
+// History storage key
+const HISTORY_KEY = 'chat_history_archive';
 
 // State
 let welcomed = false;
@@ -2017,6 +2019,7 @@ export function initChatListeners() {
   // Reset chat
   dom.resetChatBtn.addEventListener('click', () => dom.modals.reset.classList.remove('hidden'));
   document.getElementById('confirm-reset-btn').addEventListener('click', () => {
+    archiveCurrentSession();
     resetChat();
     dom.modals.reset.classList.add('hidden');
   });
@@ -2044,6 +2047,39 @@ export function initSpecialBookingListeners() {
     dom.headerMenuBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       toggleHeaderMenu();
+    });
+  }
+
+  // History menu button
+  const historyBtn = document.getElementById('history-menu-btn');
+  if (historyBtn) {
+    historyBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleHeaderMenu(); // Close menu
+      showHistoryModal();
+    });
+  }
+
+  // History modal listeners
+  const historyModal = document.getElementById('history-modal');
+  const historyCloseBtn = document.getElementById('history-close-btn');
+  if (historyModal && historyCloseBtn) {
+    historyCloseBtn.addEventListener('click', () => {
+      historyModal.classList.add('hidden');
+    });
+
+    historyModal.addEventListener('click', (e) => {
+      if (e.target === historyModal) {
+        historyModal.classList.add('hidden');
+      }
+    });
+  }
+
+  // History detail listeners
+  const historyDetailBack = document.getElementById('history-detail-back');
+  if (historyDetailBack) {
+    historyDetailBack.addEventListener('click', () => {
+      document.getElementById('history-detail-view').classList.add('hidden');
     });
   }
 
@@ -2249,3 +2285,132 @@ export function getSelectedRoom() {
 export function getChatMode() {
   return chatMode;
 }
+
+// ========================================
+// HISTORY ARCHIVE FUNCTIONS
+// ========================================
+
+// Archive current session
+function archiveCurrentSession() {
+  // Only archive if there are user messages
+  const userMessages = dom.messagesContainer.querySelectorAll('.message-wrapper.user');
+  if (userMessages.length === 0) return;
+
+  const timestamp = new Date().toISOString();
+  const summary = bookingState.collectedData.fullName || `Guest (${new Date(timestamp).toLocaleDateString()})`;
+
+  // Capture current messages HTML for display
+  const messagesHTML = dom.messagesContainer.innerHTML;
+
+  const sessionData = {
+    id: `session_${Date.now()}`,
+    timestamp: timestamp,
+    summary: summary,
+    messages: [
+      ...Array.from(dom.messagesContainer.children).map(el => {
+        // Very basic serialization for now - we'll re-render differently or use this
+        // Improved: Serialize structure
+        if (el.classList.contains('message-wrapper')) {
+          const isUser = el.classList.contains('user');
+          const text = el.querySelector('[class^="chat-message"]')?.innerHTML || '';
+          const time = el.querySelector('.message-time')?.innerText || '';
+          return { type: 'message', sender: isUser ? 'user' : 'ai', text, time };
+        }
+        return null;
+      }).filter(Boolean)
+    ]
+  };
+
+  try {
+    const existingArchive = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    existingArchive.unshift(sessionData); // Add to top
+    // Limit to 50 sessions
+    if (existingArchive.length > 50) existingArchive.pop();
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(existingArchive));
+  } catch (e) {
+    console.error('Error archiving session:', e);
+  }
+}
+
+// Show History Modal
+function showHistoryModal() {
+  const modal = document.getElementById('history-modal');
+  const list = document.getElementById('history-list');
+  if (!modal || !list) return;
+
+  // Load history
+  const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+
+  list.innerHTML = '';
+
+  if (history.length === 0) {
+    list.innerHTML = `
+        <div class="text-center text-gray-400 mt-10">
+          <p>Немає збережених діалогів</p>
+        </div>
+    `;
+  } else {
+    history.forEach(session => {
+      const date = new Date(session.timestamp);
+      const dateStr = date.toLocaleDateString();
+      const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      const item = document.createElement('div');
+      item.className = 'p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition cursor-pointer flex justify-between items-center border border-gray-100';
+      item.innerHTML = `
+            <div>
+                <div class="font-medium text-gray-800 text-sm">${session.summary}</div>
+                <div class="text-xs text-gray-500">${dateStr} • ${timeStr}</div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        `;
+      item.addEventListener('click', () => openHistoryDetail(session));
+      list.appendChild(item);
+    });
+  }
+
+  modal.classList.remove('hidden');
+}
+
+// Open History Detail View
+function openHistoryDetail(session) {
+  const detailView = document.getElementById('history-detail-view');
+  const container = document.getElementById('history-detail-messages');
+  const dateTitle = document.getElementById('history-detail-date');
+  const timeTitle = document.getElementById('history-detail-time');
+
+  if (!detailView || !container) return;
+
+  container.innerHTML = '';
+
+  // Set headers
+  if (dateTitle) dateTitle.textContent = session.summary;
+  if (timeTitle) timeTitle.textContent = new Date(session.timestamp).toLocaleString();
+
+  // Render messages
+  session.messages.forEach(msg => {
+    const wrapper = document.createElement('div');
+    wrapper.className = `message-wrapper ${msg.sender} animate-fade-in`;
+
+    const messageElement = document.createElement('div');
+    messageElement.className = `chat-message-${msg.sender} text-base leading-relaxed`;
+    messageElement.innerHTML = msg.text;
+
+    if (msg.sender === 'user') {
+      const timeElement = document.createElement('span');
+      timeElement.className = 'message-time';
+      timeElement.innerText = msg.time;
+      wrapper.appendChild(timeElement);
+      wrapper.appendChild(messageElement);
+    } else {
+      wrapper.appendChild(messageElement);
+    }
+
+    container.appendChild(wrapper);
+  });
+
+  detailView.classList.remove('hidden');
+}
+

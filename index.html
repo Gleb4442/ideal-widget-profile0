@@ -313,6 +313,14 @@
               </svg>
               <span data-i18n="specialBooking">Special Booking</span>
             </button>
+            <button id="history-menu-btn" class="dropdown-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 8v4l3 3"></path>
+                <circle cx="12" cy="12" r="10"></circle>
+              </svg>
+              <span>Previous Dialogs</span>
+            </button>
             <div class="dropdown-divider"></div>
             <div class="dropdown-submenu">
               <button id="language-menu-btn" class="dropdown-item has-submenu">
@@ -514,17 +522,7 @@
       class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
       <div
         class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-        <div class="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 6h18"></path>
-            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-          </svg>
-        </div>
         <h4 class="text-lg font-bold mb-2">Розпочати новий чат?</h4>
-        <p class="modal-text-secondary text-sm text-gray-500 mb-6">Поточну історію листування буде видалено
-          безповоротно.</p>
         <div class="flex flex-col gap-2">
           <button id="confirm-reset-btn"
             class="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2">
@@ -976,6 +974,51 @@
       </button>
     </div>
     <div id="photo-gallery-dots" class="photo-gallery-dots"></div>
+  </div>
+
+  <!-- History Modal -->
+  <div id="history-modal"
+    class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
+    <div
+      class="modal-content bg-white rounded-2xl p-0 w-full max-w-sm shadow-2xl transform scale-100 transition-all flex flex-col h-[70vh] animate-slide-up overflow-hidden">
+      <div class="history-header p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+        <h3 class="font-bold text-lg text-gray-800">Історія діалогів</h3>
+        <button id="history-close-btn" class="p-2 rounded-full hover:bg-gray-200 transition text-gray-500">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div id="history-list" class="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
+        <!-- History items will be injected here -->
+        <div class="text-center text-gray-400 mt-10">
+          <p>Немає збережених діалогів</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Detail View (Overlay) -->
+  <div id="history-detail-view" class="hidden absolute inset-0 z-[60] bg-white flex flex-col">
+    <div class="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50 shadow-sm">
+      <div class="flex items-center gap-2">
+        <button id="history-detail-back" class="p-2 -ml-2 rounded-full hover:bg-gray-200 transition text-gray-600">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <div>
+          <h3 id="history-detail-date" class="font-bold text-gray-800 text-sm"></h3>
+          <p id="history-detail-time" class="text-xs text-gray-500"></p>
+        </div>
+      </div>
+    </div>
+    <div id="history-detail-messages" class="flex-1 p-4 overflow-y-auto flex flex-col bg-gray-50">
+      <!-- Messages will be injected here -->
+    </div>
   </div>
 
   <!-- Application Scripts -->
