@@ -6,6 +6,7 @@
 import { translations, languagesList } from './config.js';
 import * as dom from './dom.js';
 import * as rooms from './rooms.js';
+import * as services from './services.js';
 import * as openai from './openai.js';
 import * as gallery from './gallery.js';
 import * as bookings from './bookings.js';
@@ -1510,6 +1511,218 @@ export function addRoomCarousel() {
   dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
 }
 
+// Add Services Carousel to Chat
+export function addServicesCarousel() {
+  const allServices = services.getAllServices();
+  if (allServices.length === 0) return;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'message-wrapper ai animate-fade-in';
+
+  const container = document.createElement('div');
+  container.className = 'services-carousel-container';
+
+  // Header with title
+  const header = document.createElement('div');
+  header.className = 'services-carousel-header';
+  header.innerHTML = `
+    <span class="services-carousel-title">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+      </svg>
+      Додаткові послуги
+    </span>
+  `;
+
+  const carouselWrapper = document.createElement('div');
+  carouselWrapper.className = 'services-carousel-wrapper';
+
+  const carousel = document.createElement('div');
+  carousel.className = 'services-carousel';
+
+  allServices.forEach(service => {
+    const card = document.createElement('div');
+    card.className = 'service-carousel-card';
+    card.dataset.serviceId = service.id;
+
+    const hasMainPhoto = !!service.mainPhoto;
+    const hasGallery = service.gallery && service.gallery.length > 0;
+    const allPhotos = [];
+    if (hasMainPhoto) allPhotos.push(service.mainPhoto);
+    if (hasGallery) allPhotos.push(...service.gallery);
+    const hasMultiplePhotos = allPhotos.length > 1;
+
+    // Build image track
+    let imageTrackHTML = '';
+    if (allPhotos.length > 0) {
+      imageTrackHTML = allPhotos.map((photo, idx) =>
+        `<img class="service-carousel-image" src="${photo}" alt="${service.name} ${idx + 1}" data-index="${idx}">`
+      ).join('');
+    } else {
+      imageTrackHTML = `
+        <div class="service-carousel-image" style="display:flex;align-items:center;justify-content:center;color:#9ca3af;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </div>
+      `;
+    }
+
+    // Build dots indicator
+    let dotsHTML = '';
+    if (hasMultiplePhotos) {
+      dotsHTML = `<div class="service-image-dots">` +
+        allPhotos.map((_, idx) => `<div class="service-image-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}"></div>`).join('') +
+        `</div>`;
+    }
+
+    // Build navigation arrows
+    let navHTML = '';
+    if (hasMultiplePhotos) {
+      navHTML = `
+        <button class="service-image-nav prev" disabled>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button class="service-image-nav next">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      `;
+    }
+
+    card.innerHTML = `
+      <div class="service-carousel-image-container">
+        <div class="service-carousel-images-track" data-current-index="0">
+          ${imageTrackHTML}
+        </div>
+        ${navHTML}
+        ${dotsHTML}
+        <div class="service-carousel-overlay">
+          <div class="service-carousel-actions">
+            ${service.addToBookingEnabled !== false ? `
+              <button class="service-carousel-action-btn primary" data-action="add" data-service-id="${service.id}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Додати
+              </button>
+            ` : ''}
+            ${service.askQuestionEnabled !== false ? `
+              <button class="service-carousel-action-btn secondary" data-action="ask" data-service-id="${service.id}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                Питання
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="service-carousel-info">
+        <div class="service-carousel-name">${service.name || 'Без назви'}</div>
+        ${service.description ? `<div class="service-carousel-description">${service.description}</div>` : ''}
+        <div class="service-carousel-price">${services.formatPrice(service.price, service.priceType)}</div>
+        <span class="service-carousel-category">${services.getCategoryName(service.category)}</span>
+      </div>
+    `;
+
+    // Handle image navigation
+    if (hasMultiplePhotos) {
+      const track = card.querySelector('.service-carousel-images-track');
+      const prevBtn = card.querySelector('.service-image-nav.prev');
+      const nextBtn = card.querySelector('.service-image-nav.next');
+      const dots = card.querySelectorAll('.service-image-dot');
+      const totalImages = allPhotos.length;
+
+      const updateNav = (currentIndex) => {
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex === totalImages - 1;
+        dots.forEach((dot, idx) => {
+          dot.classList.toggle('active', idx === currentIndex);
+        });
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+      };
+
+      prevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        let currentIndex = parseInt(track.dataset.currentIndex) || 0;
+        if (currentIndex > 0) {
+          currentIndex--;
+          track.dataset.currentIndex = currentIndex;
+          updateNav(currentIndex);
+        }
+      });
+
+      nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        let currentIndex = parseInt(track.dataset.currentIndex) || 0;
+        if (currentIndex < totalImages - 1) {
+          currentIndex++;
+          track.dataset.currentIndex = currentIndex;
+          updateNav(currentIndex);
+        }
+      });
+
+      // Click on dots
+      dots.forEach(dot => {
+        dot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const idx = parseInt(dot.dataset.index);
+          track.dataset.currentIndex = idx;
+          updateNav(idx);
+        });
+      });
+    }
+
+    // Handle action button clicks
+    card.querySelectorAll('.service-carousel-action-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const action = btn.dataset.action;
+        const serviceId = btn.dataset.serviceId;
+        const serviceData = services.getService(serviceId);
+
+        if (action === 'add') {
+          addMessage(`Хочу додати до бронювання: ${serviceData?.name}`, 'user');
+          addToConversationHistory('user', `Хочу додати до бронювання: ${serviceData?.name}`);
+          showTyping();
+          setTimeout(() => {
+            hideTyping();
+            addMessage(`Чудово! Послугу "${serviceData?.name}" додано до вашого бронювання. Є ще щось, що вас цікавить?`, 'ai');
+            addToConversationHistory('assistant', `Чудово! Послугу "${serviceData?.name}" додано до вашого бронювання. Є ще щось, що вас цікавить?`);
+          }, 800);
+        } else if (action === 'ask') {
+          addMessage(`Маю питання про послугу: ${serviceData?.name}`, 'user');
+          addToConversationHistory('user', `Маю питання про послугу: ${serviceData?.name}`);
+          showTyping();
+          setTimeout(() => {
+            hideTyping();
+            const description = serviceData?.description || 'Це одна з наших найпопулярніших послуг.';
+            addMessage(`${serviceData?.name}\n\n${description}\n\nЦіна: ${services.formatPrice(serviceData?.price, serviceData?.priceType)}\n\nЧим ще можу допомогти?`, 'ai');
+            addToConversationHistory('assistant', `${serviceData?.name}: ${description}`);
+          }, 800);
+        }
+      });
+    });
+
+    carousel.appendChild(card);
+  });
+
+  carouselWrapper.appendChild(carousel);
+  container.appendChild(header);
+  container.appendChild(carouselWrapper);
+  wrapper.appendChild(container);
+
+  dom.messagesContainer.insertBefore(wrapper, dom.typingIndicator);
+  dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+}
+
 // Add Room Context Badge
 export function addRoomContextBadge(room) {
   const container = document.getElementById('room-context-container');
@@ -1746,6 +1959,11 @@ export async function getAIResponse(userMessage) {
       if (response.showRoomsCarousel) {
         setTimeout(() => addRoomCarousel(), 500);
       }
+
+      // Show services carousel if intent detected
+      if (response.showServicesCarousel) {
+        setTimeout(() => addServicesCarousel(), response.showRoomsCarousel ? 800 : 500);
+      }
     } else if (chatMode === 'room-context' && selectedRoom) {
       // Room-specific response
       response = await openai.getRoomAIResponse(
@@ -1789,6 +2007,11 @@ export async function getAIResponse(userMessage) {
       // Show rooms carousel if intent detected
       if (response.showRoomsCarousel) {
         setTimeout(() => addRoomCarousel(), 500);
+      }
+
+      // Show services carousel if intent detected
+      if (response.showServicesCarousel) {
+        setTimeout(() => addServicesCarousel(), response.showRoomsCarousel ? 800 : 500);
       }
     }
   } catch (error) {

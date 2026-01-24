@@ -7,6 +7,7 @@ import { fontsList, iconsList } from './config.js';
 import * as dom from './dom.js';
 import * as rooms from './rooms.js';
 import * as bookings from './bookings.js';
+import * as services from './services.js';
 
 // Room editing state
 let currentEditRoomId = null;
@@ -14,6 +15,11 @@ let currentMainPhoto = '';
 let currentGallery = [];
 let currentBookedDates = [];
 let calendarCurrentMonth = new Date();
+
+// Service editing state
+let currentEditServiceId = null;
+let currentServiceMainPhoto = '';
+let currentServiceGallery = [];
 
 // Hotel info storage key
 const HOTEL_INFO_KEY = 'hotel_info';
@@ -912,6 +918,284 @@ export function initBookingsManagement() {
   window.renderBookingsList = renderBookingsList;
 }
 
+// ============================================
+// SERVICES MANAGEMENT FUNCTIONS
+// ============================================
+
+// Render Services Grid in Admin Panel
+export function renderServicesGrid() {
+  const grid = document.getElementById('services-admin-grid');
+  if (!grid) return;
+
+  const allServices = services.getAllServices();
+
+  grid.innerHTML = allServices.map(service => `
+    <div class="service-admin-card" data-service-id="${service.id}">
+      ${service.mainPhoto
+        ? `<img src="${service.mainPhoto}" alt="${service.name}">`
+        : `<div class="service-admin-placeholder"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div>`
+      }
+      <div class="service-admin-card-overlay">
+        <div class="service-admin-card-name">${service.name || 'Без назви'}</div>
+        <div class="service-admin-card-price">${services.formatPrice(service.price, service.priceType)}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Add click listeners
+  grid.querySelectorAll('.service-admin-card').forEach(card => {
+    card.addEventListener('click', () => {
+      openServiceModal(card.dataset.serviceId);
+    });
+  });
+}
+
+// Open Service Modal
+export function openServiceModal(serviceId = null) {
+  const modal = document.getElementById('service-modal-overlay');
+  const title = document.getElementById('service-modal-title');
+  const deleteBtn = document.getElementById('service-delete-btn');
+
+  currentEditServiceId = serviceId;
+  currentServiceMainPhoto = '';
+  currentServiceGallery = [];
+
+  if (serviceId) {
+    const service = services.getService(serviceId);
+    if (service) {
+      title.textContent = 'Редагувати послугу';
+      document.getElementById('service-name-input').value = service.name || '';
+      document.getElementById('service-description-input').value = service.description || '';
+      document.getElementById('service-price-input').value = service.price || '';
+      document.getElementById('service-price-type-input').value = service.priceType || 'fixed';
+      document.getElementById('service-category-input').value = service.category || 'general';
+      document.getElementById('service-ask-toggle').checked = service.askQuestionEnabled !== false;
+      document.getElementById('service-add-booking-toggle').checked = service.addToBookingEnabled !== false;
+      currentServiceMainPhoto = service.mainPhoto || '';
+      currentServiceGallery = service.gallery ? [...service.gallery] : [];
+      deleteBtn.style.display = 'flex';
+    }
+  } else {
+    title.textContent = 'Нова послуга';
+    document.getElementById('service-name-input').value = '';
+    document.getElementById('service-description-input').value = '';
+    document.getElementById('service-price-input').value = '';
+    document.getElementById('service-price-type-input').value = 'fixed';
+    document.getElementById('service-category-input').value = 'general';
+    document.getElementById('service-ask-toggle').checked = true;
+    document.getElementById('service-add-booking-toggle').checked = true;
+    deleteBtn.style.display = 'none';
+  }
+
+  updateServiceMainPhotoPreview();
+  updateServiceGalleryPreview();
+  modal.classList.add('active');
+}
+
+// Close Service Modal
+export function closeServiceModal() {
+  const modal = document.getElementById('service-modal-overlay');
+  modal.classList.remove('active');
+  currentEditServiceId = null;
+  currentServiceMainPhoto = '';
+  currentServiceGallery = [];
+}
+
+// Update Service Main Photo Preview
+function updateServiceMainPhotoPreview() {
+  const area = document.getElementById('service-main-photo-upload');
+  if (currentServiceMainPhoto) {
+    area.innerHTML = `<img src="${currentServiceMainPhoto}" alt="Main photo">`;
+    area.classList.add('has-photo');
+  } else {
+    area.innerHTML = `
+      <div class="photo-upload-placeholder">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+          <polyline points="21 15 16 10 5 21"></polyline>
+        </svg>
+        <span>Натисніть для завантаження</span>
+      </div>
+    `;
+    area.classList.remove('has-photo');
+  }
+}
+
+// Update Service Gallery Preview
+function updateServiceGalleryPreview() {
+  const grid = document.getElementById('service-gallery-upload-grid');
+
+  // Clear existing items
+  grid.innerHTML = '';
+
+  currentServiceGallery.forEach((photo, index) => {
+    const item = document.createElement('div');
+    item.className = 'service-gallery-photo-item';
+    item.innerHTML = `
+      <img src="${photo}" alt="Gallery photo ${index + 1}">
+      <button class="service-gallery-photo-remove" data-index="${index}">&times;</button>
+    `;
+    grid.appendChild(item);
+  });
+
+  // Re-add the add button
+  const newAddBtn = document.createElement('div');
+  newAddBtn.id = 'service-gallery-add-btn';
+  newAddBtn.className = 'service-gallery-add-btn';
+  newAddBtn.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+    <span>Додати</span>
+  `;
+  newAddBtn.addEventListener('click', () => {
+    document.getElementById('service-gallery-photo-input').click();
+  });
+  grid.appendChild(newAddBtn);
+
+  // Add remove listeners
+  grid.querySelectorAll('.service-gallery-photo-remove').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.dataset.index);
+      currentServiceGallery.splice(index, 1);
+      updateServiceGalleryPreview();
+    });
+  });
+}
+
+// Save Service
+function saveService() {
+  const name = document.getElementById('service-name-input').value.trim();
+  const description = document.getElementById('service-description-input').value.trim();
+  const price = parseInt(document.getElementById('service-price-input').value) || 0;
+  const priceType = document.getElementById('service-price-type-input').value;
+  const category = document.getElementById('service-category-input').value;
+  const askQuestionEnabled = document.getElementById('service-ask-toggle').checked;
+  const addToBookingEnabled = document.getElementById('service-add-booking-toggle').checked;
+
+  if (!name) {
+    alert('Введіть назву послуги');
+    return;
+  }
+
+  const serviceData = {
+    name,
+    description,
+    price,
+    priceType,
+    category,
+    mainPhoto: currentServiceMainPhoto,
+    gallery: currentServiceGallery,
+    askQuestionEnabled,
+    addToBookingEnabled
+  };
+
+  if (currentEditServiceId) {
+    services.updateService(currentEditServiceId, serviceData);
+  } else {
+    services.addService(serviceData);
+  }
+
+  closeServiceModal();
+  renderServicesGrid();
+}
+
+// Delete Service
+function deleteService() {
+  if (!currentEditServiceId) return;
+
+  if (confirm('Видалити цю послугу?')) {
+    services.deleteService(currentEditServiceId);
+    closeServiceModal();
+    renderServicesGrid();
+  }
+}
+
+// Initialize Service Management
+export function initServiceManagement() {
+  const addBtn = document.getElementById('add-service-btn');
+  const modalClose = document.getElementById('service-modal-close');
+  const cancelBtn = document.getElementById('service-cancel-btn');
+  const saveBtn = document.getElementById('service-save-btn');
+  const deleteBtn = document.getElementById('service-delete-btn');
+  const mainPhotoUpload = document.getElementById('service-main-photo-upload');
+  const mainPhotoInput = document.getElementById('service-main-photo-input');
+  const galleryAddBtn = document.getElementById('service-gallery-add-btn');
+  const galleryInput = document.getElementById('service-gallery-photo-input');
+
+  if (addBtn) {
+    addBtn.addEventListener('click', () => openServiceModal());
+  }
+
+  if (modalClose) {
+    modalClose.addEventListener('click', closeServiceModal);
+  }
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', closeServiceModal);
+  }
+
+  if (saveBtn) {
+    saveBtn.addEventListener('click', saveService);
+  }
+
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', deleteService);
+  }
+
+  // Main photo upload
+  if (mainPhotoUpload && mainPhotoInput) {
+    mainPhotoUpload.addEventListener('click', () => mainPhotoInput.click());
+
+    mainPhotoInput.addEventListener('change', async function() {
+      if (this.files && this.files[0]) {
+        try {
+          currentServiceMainPhoto = await services.compressImage(this.files[0]);
+          updateServiceMainPhotoPreview();
+        } catch (e) {
+          console.error('Error uploading service main photo:', e);
+        }
+      }
+    });
+  }
+
+  // Gallery photos upload
+  if (galleryAddBtn && galleryInput) {
+    galleryAddBtn.addEventListener('click', () => galleryInput.click());
+
+    galleryInput.addEventListener('change', async function() {
+      if (this.files && this.files.length > 0) {
+        for (const file of this.files) {
+          try {
+            const compressed = await services.compressImage(file);
+            currentServiceGallery.push(compressed);
+          } catch (e) {
+            console.error('Error uploading gallery photo:', e);
+          }
+        }
+        updateServiceGalleryPreview();
+        this.value = '';
+      }
+    });
+  }
+
+  // Click outside modal to close
+  const modalOverlay = document.getElementById('service-modal-overlay');
+  if (modalOverlay) {
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) {
+        closeServiceModal();
+      }
+    });
+  }
+
+  // Initial render
+  renderServicesGrid();
+}
+
 // Initialize All Admin Functions
 export function initAdmin() {
   initFontSelector();
@@ -924,5 +1208,6 @@ export function initAdmin() {
   initHotelInfo();
   initCalendarControls();
   initRoomManagement();
+  initServiceManagement();
   initBookingsManagement();
 }

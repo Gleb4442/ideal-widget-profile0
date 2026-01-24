@@ -4,6 +4,7 @@
  */
 
 import { getAllRooms, isRangeAvailable, getAvailableRoomsForRange } from './rooms.js';
+import { getAllServices, formatPrice as formatServicePrice, getCategoryName } from './services.js';
 import { languagesList } from './config.js';
 
 // Language code to full name mapping
@@ -100,6 +101,31 @@ const ROOM_INTENT_PATTERNS = [
   /list/i
 ];
 
+// Service intent keywords for detecting when user wants to see additional services
+const SERVICE_INTENT_PATTERNS = [
+  /послуг/i,
+  /услуг/i,
+  /service/i,
+  /спа|spa/i,
+  /масаж|массаж|massage/i,
+  /трансфер|transfer/i,
+  /екскурсі|экскурси|excursion|tour/i,
+  /ресторан|restaurant/i,
+  /сніданок|завтрак|breakfast/i,
+  /обід|обед|lunch/i,
+  /вечер|dinner/i,
+  /додатков|дополнительн|additional|extra/i,
+  /що ще|что еще|what else|що ви пропонуєте|что вы предлагаете/i,
+  /розваг|развлечен|entertainment/i,
+  /басейн|бассейн|pool/i,
+  /фітнес|фитнес|fitness|gym/i,
+  /для дітей|для детей|kids|children/i,
+  /прокат|rental/i,
+  /велосипед|bicycle|bike/i,
+  /йога|yoga/i,
+  /оздоровл|wellness/i
+];
+
 // Complex booking patterns - triggers Special Booking mode
 const COMPLEX_REQUEST_PATTERNS = [
   // Business trip / Командировка
@@ -181,6 +207,7 @@ function getCurrentBookingStep(collectedData) {
 // Build system prompt for general chat with booking funnel
 function buildGeneralSystemPrompt(hotelName = 'Hilton', bookingState = null) {
   const rooms = getAllRooms();
+  const services = getAllServices();
   const hotelInfo = getHotelInfo();
 
   const roomsList = rooms.length > 0
@@ -189,6 +216,10 @@ function buildGeneralSystemPrompt(hotelName = 'Hilton', bookingState = null) {
         return `- ${r.name}: ${r.area}м², $${r.pricePerNight}/ніч`;
       }).join('\n')
     : 'Номери ще не додані.';
+
+  const servicesList = services.length > 0
+    ? services.map(s => `- ${s.name} (${getCategoryName(s.category)}): ${formatServicePrice(s.price, s.priceType)} — ${s.description || 'без опису'}`).join('\n')
+    : 'Додаткові послуги ще не додані.';
 
   // Build booking state description with all fields
   let stateDescription = '';
@@ -252,6 +283,11 @@ ${hotelInfo || 'Информация не указана.'}
 ### ДОСТУПНЫЕ НОМЕРА
 ${roomsList}
 ${availabilityInfo}
+
+### ДОДАТКОВІ ПОСЛУГИ
+${servicesList}
+
+При запросе о дополнительных услугах — ОБЯЗАТЕЛЬНО предложи посмотреть каталог услуг. Скажи что сейчас покажешь доступные услуги.
 
 ### ПОЭТАПНЫЙ СБОР ДАННЫХ ДЛЯ БРОНИРОВАНИЯ
 ⚠️ КРИТИЧЕСКИ ВАЖНО: Запрашивай данные ПОЭТАПНО, по ОДНОМУ полю за раз!
@@ -364,6 +400,11 @@ ${hotelInfo || 'Информация не указана.'}
 // Check if message indicates room intent
 export function hasRoomIntent(message) {
   return ROOM_INTENT_PATTERNS.some(pattern => pattern.test(message));
+}
+
+// Check if message indicates service intent (additional services)
+export function hasServiceIntent(message) {
+  return SERVICE_INTENT_PATTERNS.some(pattern => pattern.test(message));
 }
 
 // Check if message is about a general topic (should break room context)
@@ -525,6 +566,9 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
   // Check for room intent
   const showRooms = hasRoomIntent(userMessage);
 
+  // Check for services intent
+  const showServices = hasServiceIntent(userMessage);
+
   // Extract booking data from user message
   const extractedData = extractBookingData(userMessage);
 
@@ -533,12 +577,14 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
     return {
       text: response,
       showRoomsCarousel: showRooms && getAllRooms().length > 0,
+      showServicesCarousel: showServices && getAllServices().length > 0,
       extractedData: extractedData
     };
   } catch (error) {
     return {
       text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
       showRoomsCarousel: false,
+      showServicesCarousel: false,
       error: true
     };
   }
@@ -563,6 +609,9 @@ export async function getGeneralAIResponseStreaming(userMessage, hotelName = 'Hi
   // Check for room intent
   const showRooms = hasRoomIntent(userMessage);
 
+  // Check for services intent
+  const showServices = hasServiceIntent(userMessage);
+
   // Extract booking data from user message
   const extractedData = extractBookingData(userMessage);
 
@@ -577,6 +626,7 @@ export async function getGeneralAIResponseStreaming(userMessage, hotelName = 'Hi
           onComplete({
             text: fullText,
             showRoomsCarousel: showRooms && getAllRooms().length > 0,
+            showServicesCarousel: showServices && getAllServices().length > 0,
             extractedData: extractedData
           });
         }
@@ -586,6 +636,7 @@ export async function getGeneralAIResponseStreaming(userMessage, hotelName = 'Hi
           onError({
             text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
             showRoomsCarousel: false,
+            showServicesCarousel: false,
             error: true
           });
         }
@@ -596,6 +647,7 @@ export async function getGeneralAIResponseStreaming(userMessage, hotelName = 'Hi
       onError({
         text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
         showRoomsCarousel: false,
+        showServicesCarousel: false,
         error: true
       });
     }
