@@ -18,7 +18,17 @@ const LANGUAGE_NAMES = {
   'pt': 'Portuguese',
   'ru': 'Russian',
   'id': 'Indonesian',
-  'ua': 'Ukrainian'
+  'uk': 'Ukrainian',
+  'de': 'German',
+  'ja': 'Japanese',
+  'ko': 'Korean',
+  'it': 'Italian',
+  'tr': 'Turkish',
+  'nl': 'Dutch',
+  'pl': 'Polish',
+  'vi': 'Vietnamese',
+  'th': 'Thai',
+  'ua': 'Ukrainian'  // Legacy support
 };
 
 // Get language name from code

@@ -156,6 +156,7 @@ function updateBookingStateWithExtracted(extractedData) {
   if (bookingState.step === 'completed' && previousStep !== 'completed') {
     bookingState.hasActiveBooking = true;
     console.log('✅ Booking completed! hasActiveBooking set to true');
+    showTelegramBookingModal();
   }
 
   if (updated) {
