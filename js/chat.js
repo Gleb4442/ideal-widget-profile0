@@ -1267,27 +1267,7 @@ function updateLanguageMenuState() {
   renderLanguageMenu();
 }
 
-// Close language submenu
-function closeLanguageSubmenu() {
-  if (dom.languageSubmenu) {
-    dom.languageSubmenu.classList.remove('show');
-  }
-  const submenuContainer = document.querySelector('.dropdown-submenu');
-  if (submenuContainer) {
-    submenuContainer.classList.remove('open');
-  }
-}
 
-// Toggle language submenu
-function toggleLanguageSubmenu() {
-  if (dom.languageSubmenu) {
-    dom.languageSubmenu.classList.toggle('show');
-  }
-  const submenuContainer = document.querySelector('.dropdown-submenu');
-  if (submenuContainer) {
-    submenuContainer.classList.toggle('open');
-  }
-}
 
 // Get conversation history for external use
 export function getConversationHistory() {
@@ -2253,40 +2233,68 @@ export function initRoomDetailListeners() {
 // Initialize Chat Event Listeners
 export function initChatListeners() {
   // Input listeners
-  dom.messageInput.addEventListener('input', () => {
-    autoResize();
-    updateSendButtonState();
-  });
+  if (dom.messageInput) {
+    dom.messageInput.addEventListener('input', () => {
+      autoResize();
+      updateSendButtonState();
+    });
+    dom.messageInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        handleSendMessage();
+      }
+    });
+  }
 
   // Chat toggle
-  dom.widgetButton.addEventListener('click', toggleChat);
-  dom.closeButton.addEventListener('click', toggleChat);
+  if (dom.widgetButton) {
+    dom.widgetButton.addEventListener('click', toggleChat);
+  } else {
+    console.error('Widget button not found');
+  }
+
+  if (dom.closeButton) {
+    dom.closeButton.addEventListener('click', toggleChat);
+  }
 
   // Send message
-  dom.sendButton.addEventListener('click', handleSendMessage);
-  dom.messageInput.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      handleSendMessage();
-    }
-  });
+  if (dom.sendButton) {
+    dom.sendButton.addEventListener('click', handleSendMessage);
+  }
 
   // Scroll button
-  dom.messagesContainer.addEventListener('scroll', checkScrollButtonVisibility);
-  dom.scrollToBottomBtn.addEventListener('click', () => {
-    dom.messagesContainer.scrollTo({ top: dom.messagesContainer.scrollHeight, behavior: 'smooth' });
-  });
+  if (dom.messagesContainer) {
+    dom.messagesContainer.addEventListener('scroll', checkScrollButtonVisibility);
+  }
+
+  if (dom.scrollToBottomBtn) {
+    dom.scrollToBottomBtn.addEventListener('click', () => {
+      if (dom.messagesContainer) {
+        dom.messagesContainer.scrollTo({ top: dom.messagesContainer.scrollHeight, behavior: 'smooth' });
+      }
+    });
+  }
 
   // Reset chat
-  dom.resetChatBtn.addEventListener('click', () => dom.modals.reset.classList.remove('hidden'));
-  document.getElementById('confirm-reset-btn').addEventListener('click', () => {
-    archiveCurrentSession();
-    resetChat();
-    dom.modals.reset.classList.add('hidden');
-  });
-  document.getElementById('cancel-reset-btn').addEventListener('click', () => {
-    dom.modals.reset.classList.add('hidden');
-  });
+  if (dom.resetChatBtn && dom.modals.reset) {
+    dom.resetChatBtn.addEventListener('click', () => dom.modals.reset.classList.remove('hidden'));
+  }
+  const confirmReset = document.getElementById('confirm-reset-btn');
+  const cancelReset = document.getElementById('cancel-reset-btn');
+
+  if (confirmReset) {
+    confirmReset.addEventListener('click', () => {
+      archiveCurrentSession();
+      resetChat();
+      if (dom.modals.reset) dom.modals.reset.classList.add('hidden');
+    });
+  }
+
+  if (cancelReset) {
+    cancelReset.addEventListener('click', () => {
+      if (dom.modals.reset) dom.modals.reset.classList.add('hidden');
+    });
+  }
 
   // Room detail listeners
   initRoomDetailListeners();
