@@ -135,10 +135,10 @@
   align-items: center;
   background: #f3f4f6;
   border-radius: 20px;
-  padding: 2px;
-  border: 1.5px solid transparent;
+  padding: 4px;
+  border: 2px solid transparent;
   transition: border-color 0.2s, background-color 0.2s;
-  gap: 2px;
+  gap: 4px;
 }
 
 .input-container-bg:focus-within {
