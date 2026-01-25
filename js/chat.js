@@ -1137,20 +1137,42 @@ export function getTranslation(key) {
 
 // Switch language
 // Render Language Menu
+// Render Language Menu (Sheet List)
 function renderLanguageMenu() {
-  const submenu = document.getElementById('language-submenu');
-  if (!submenu) return;
+  const list = document.getElementById('language-sheet-list');
+  const display = document.getElementById('current-lang-display');
 
-  submenu.innerHTML = '';
+  // Update current lang display on main menu
+  if (display) {
+    display.textContent = currentLang.toUpperCase();
+  }
+
+  if (!list) return;
+
+  list.innerHTML = '';
   languagesList.forEach(lang => {
     const btn = document.createElement('button');
-    btn.className = 'language-option';
+    btn.className = 'language-option w-full text-left p-4 hover:bg-gray-50 rounded-xl flex items-center justify-between transition-colors';
+
+    if (lang.code === currentLang) {
+      btn.classList.add('bg-blue-50', 'text-blue-600', 'font-medium', 'active');
+    } else {
+      btn.classList.add('text-gray-700');
+    }
+
     btn.dataset.lang = lang.code;
     btn.innerHTML = `
-      <span class="lang-flag">${lang.flag}</span>
-      <span class="lang-name">${lang.name}</span>
+      <div class="flex items-center gap-3">
+        <span class="text-xl">${lang.flag}</span>
+        <span class="text-base">${lang.name}</span>
+      </div>
+      ${lang.code === currentLang ? `
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      ` : ''}
     `;
-    submenu.appendChild(btn);
+    list.appendChild(btn);
   });
 }
 
@@ -1239,14 +1261,10 @@ function updateSpecialBookingStatusTexts() {
 }
 
 // Update language menu active state
+// Update language menu active state
 function updateLanguageMenuState() {
-  document.querySelectorAll('.language-option').forEach(option => {
-    if (option.dataset.lang === currentLang) {
-      option.classList.add('active');
-    } else {
-      option.classList.remove('active');
-    }
-  });
+  // Re-render the menu to update checkmarks and styles
+  renderLanguageMenu();
 }
 
 // Close language submenu
@@ -2321,11 +2339,15 @@ export function initSpecialBookingListeners() {
   }
 
   // Close menu when clicking outside
-  document.addEventListener('click', (e) => {
-    if (dom.headerMenuDropdown && !dom.headerMenuDropdown.contains(e.target) && !dom.headerMenuBtn?.contains(e.target)) {
-      closeHeaderMenu();
-    }
-  });
+  // Close menu when clicking outside (on backdrop)
+  const menuBottomSheet = document.getElementById('menu-bottom-sheet');
+  if (menuBottomSheet) {
+    menuBottomSheet.addEventListener('click', (e) => {
+      if (e.target === menuBottomSheet) {
+        closeHeaderMenu();
+      }
+    });
+  }
 
   // Special Booking button in menu
   if (dom.specialBookingBtn) {
@@ -2357,28 +2379,43 @@ export function initSpecialBookingListeners() {
   }
 
   // Language menu button
-  if (dom.languageMenuBtn) {
-    dom.languageMenuBtn.addEventListener('click', (e) => {
+  const languageMenuBtn = document.getElementById('language-menu-btn');
+  if (languageMenuBtn) {
+    languageMenuBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       toggleLanguageSubmenu();
     });
   }
 
-  // Language options
-  // Render language menu dynamically
-  // renderLanguageMenu(); // Moved to initLanguage
+  // Close menu sheet button
+  const menuSheetClose = document.getElementById('menu-sheet-close');
+  if (menuSheetClose) {
+    menuSheetClose.addEventListener('click', () => {
+      closeHeaderMenu();
+    });
+  }
+
+  // Close language sheet button
+  const langSheetClose = document.getElementById('language-sheet-close');
+  if (langSheetClose) {
+    langSheetClose.addEventListener('click', () => {
+      closeLanguageSubmenu();
+    });
+  }
 
   // Language options delegation
-  const languageSubmenu = document.getElementById('language-submenu');
-  if (languageSubmenu) {
-    languageSubmenu.addEventListener('click', (e) => {
+  // Note: languages are now rendered into language-sheet-list
+  const languageSheetList = document.getElementById('language-sheet-list');
+  if (languageSheetList) {
+    languageSheetList.addEventListener('click', (e) => {
       const option = e.target.closest('.language-option');
       if (option) {
         e.stopPropagation();
         const langCode = option.dataset.lang;
         if (langCode) {
           switchLanguage(langCode);
-          closeHeaderMenu(); // Close menu after selection
+          closeLanguageSubmenu();
+          closeHeaderMenu();
         }
       }
     });
@@ -2389,20 +2426,38 @@ export function initSpecialBookingListeners() {
   updateUITexts();
 }
 
-// Toggle header menu
+// Toggle header menu (Bottom Sheet)
 function toggleHeaderMenu() {
-  if (dom.headerMenuDropdown) {
-    dom.headerMenuDropdown.classList.toggle('show');
+  const menuSheet = document.getElementById('menu-bottom-sheet');
+  if (menuSheet) {
+    menuSheet.classList.toggle('hidden');
   }
 }
 
 // Close header menu
 function closeHeaderMenu() {
-  if (dom.headerMenuDropdown) {
-    dom.headerMenuDropdown.classList.remove('show');
+  const menuSheet = document.getElementById('menu-bottom-sheet');
+  if (menuSheet) {
+    menuSheet.classList.add('hidden');
   }
   // Also close language submenu
   closeLanguageSubmenu();
+}
+
+// Toggle language submenu (Sheet)
+function toggleLanguageSubmenu() {
+  const langSheet = document.getElementById('language-sheet-modal');
+  if (langSheet) {
+    langSheet.classList.toggle('hidden');
+  }
+}
+
+// Close language submenu
+function closeLanguageSubmenu() {
+  const langSheet = document.getElementById('language-sheet-modal');
+  if (langSheet) {
+    langSheet.classList.add('hidden');
+  }
 }
 
 // Confirm special offer

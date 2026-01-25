@@ -311,62 +311,15 @@
       </div>
       <div class="flex items-center gap-1 relative">
         <!-- Header Menu (Hamburger) -->
-        <div class="header-menu-container">
-          <button id="header-menu-btn"
-            class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white" title="Меню">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="3" y1="12" x2="21" y2="12"></line>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-          </button>
-          <div id="header-menu-dropdown" class="header-dropdown hidden">
-            <button id="reset-chat-btn" class="dropdown-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-                <path d="M3 3v5h5"></path>
-              </svg>
-              <span data-i18n="newChat">New Chat</span>
-            </button>
-            <button id="special-booking-btn" class="dropdown-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon
-                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-                </polygon>
-              </svg>
-              <span data-i18n="specialBooking">Special Booking</span>
-            </button>
-            <button id="history-menu-btn" class="dropdown-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 8v4l3 3"></path>
-                <circle cx="12" cy="12" r="10"></circle>
-              </svg>
-              <span>Previous Dialogs</span>
-            </button>
-            <div class="dropdown-divider"></div>
-            <div class="dropdown-submenu">
-              <button id="language-menu-btn" class="dropdown-item has-submenu">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="2" y1="12" x2="22" y2="12"></line>
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
-                  </path>
-                </svg>
-                <span data-i18n="language">Language</span>
-                <svg class="submenu-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-              </button>
-              <div id="language-submenu" class="submenu-content hidden"></div>
-            </div>
-          </div>
-        </div>
+        <button id="header-menu-btn"
+          class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white" title="Меню">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
         <button id="chat-close-button"
           class="text-white/80 hover:text-white hover:bg-white/10 rounded-full p-2 transition ml-1">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -792,6 +745,115 @@
               stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
+          </div>
+        </div>
+
+        <!-- Menu Bottom Sheet Modal -->
+        <div id="menu-bottom-sheet"
+          class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all">
+          <div
+            class="menu-sheet-content bg-white w-full rounded-t-2xl p-4 pb-8 shadow-2xl transform translate-y-full transition-transform duration-300 ease-out">
+            <div class="flex justify-center mb-4">
+              <div class="w-12 h-1.5 bg-gray-200 rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-2">
+              <button id="reset-chat-btn" class="menu-sheet-btn">
+                <div class="p-2 bg-blue-50 text-blue-600 rounded-full mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                  </svg>
+                </div>
+                <span class="flex-1 text-left font-medium text-gray-700" data-i18n="newChat">New Chat</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  class="text-gray-400" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+
+              <button id="special-booking-btn" class="menu-sheet-btn">
+                <div class="p-2 bg-purple-50 text-purple-600 rounded-full mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon
+                      points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                    </polygon>
+                  </svg>
+                </div>
+                <span class="flex-1 text-left font-medium text-gray-700" data-i18n="specialBooking">Special
+                  Booking</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  class="text-gray-400" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+
+              <button id="history-menu-btn" class="menu-sheet-btn">
+                <div class="p-2 bg-orange-50 text-orange-500 rounded-full mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 8v4l3 3"></path>
+                    <circle cx="12" cy="12" r="10"></circle>
+                  </svg>
+                </div>
+                <span class="flex-1 text-left font-medium text-gray-700">Previous Dialogs</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  class="text-gray-400" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+
+              <button id="language-menu-btn" class="menu-sheet-btn">
+                <div class="p-2 bg-green-50 text-green-600 rounded-full mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path
+                      d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                    </path>
+                  </svg>
+                </div>
+                <span class="flex-1 text-left font-medium text-gray-700" data-i18n="language">Language</span>
+                <span id="current-lang-display" class="text-sm text-gray-400 mr-2 uppercase">EN</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  class="text-gray-400" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </div>
+
+            <button id="menu-sheet-close"
+              class="mt-6 w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">
+              Закрыть
+            </button>
+          </div>
+
+          <!-- Language Submenu Modal (Nested) -->
+          <div id="language-sheet-modal"
+            class="hidden absolute inset-0 z-[60] flex items-end justify-center bg-black/40 backdrop-blur-sm"
+            style="background: transparent;">
+            <div class="bg-white w-full rounded-t-2xl p-4 pb-8 shadow-2xl animate-slide-up h-[50%] flex flex-col">
+              <div class="flex items-center justify-between mb-4 border-b pb-2">
+                <h3 class="font-bold text-lg">Выберите язык</h3>
+                <button id="language-sheet-close" class="p-2 bg-gray-100 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+              <div id="language-sheet-list" class="flex-1 overflow-y-auto space-y-2">
+                <!-- Languages injected here -->
+              </div>
+            </div>
           </div>
         </div>
 
