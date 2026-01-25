@@ -74,27 +74,52 @@
 .special-booking-icon-frame {
     position: relative;
     z-index: 1;
-}
-
-.special-booking-icon-frame::after {
-    content: '';
-    position: absolute;
-    inset: -3px;
+    background: white;
+    /* Ensure icon is on white */
+    padding: 10px;
+    /* Adjust padding for border space */
     border-radius: 50%;
-    border: 2px solid transparent;
-    border-top-color: #a855f7;
-    border-right-color: #a855f7;
-    filter: drop-shadow(0 0 2px #a855f7);
-    animation: neon-spin 1.5s linear infinite;
-    z-index: -1;
+    margin-right: 12px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-@keyframes neon-spin {
-    from {
-        transform: rotate(0deg);
+/* Gradient Border Setup */
+.special-booking-icon-frame::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    /* Border width */
+    border-radius: 50%;
+    padding: 2px;
+    /* Match inset/border width */
+    background: linear-gradient(45deg, #ff00cc, #3333ff, #00ccff, #ff00cc);
+    background-size: 300% 300%;
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    transition: all 0.3s ease;
+    filter: blur(0.5px);
+}
+
+/* Hover Animation */
+.menu-sheet-btn:hover .special-booking-icon-frame::before {
+    animation: gradient-spin 2s linear infinite;
+}
+
+@keyframes gradient-spin {
+    0% {
+        background-position: 0% 50%;
     }
 
-    to {
-        transform: rotate(360deg);
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
     }
 }

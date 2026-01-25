@@ -295,7 +295,9 @@
   <!-- CHAT WINDOW -->
   <div id="chat-window">
     <!-- Header -->
-    <header class="accent-bg text-white p-4 flex justify-between items-center shadow-md flex-shrink-0 z-20 relative">
+    <!-- Header -->
+    <header
+      class="accent-bg text-white p-4 flex justify-between items-center shadow-lg flex-shrink-0 z-20 relative mx-3 mt-3 rounded-2xl mb-2">
       <div class="flex items-center gap-3">
         <div class="relative">
           <div id="hotel-logo-container"
@@ -609,10 +611,11 @@
     </div>
 
     <!-- Footer -->
+    <!-- Footer -->
     <footer id="chat-footer"
-      class="border-t border-gray-100 bg-gray-50 flex-shrink-0 flex flex-col relative z-20 transition-all">
+      class="border-t-0 bg-transparent flex-shrink-0 flex flex-col relative z-20 transition-all mb-3 mx-3 gap-2">
       <!-- Telegram Banner -->
-      <a href="javascript:void(0)" id="telegram-banner" class="contact-banner">
+      <a href="javascript:void(0)" id="telegram-banner" class="contact-banner shadow-lg rounded-2xl bg-white mb-2 mx-0">
         <div class="banner-icon-wrapper flex items-center justify-center overflow-hidden">
           <svg class="main-icon w-full h-full scale-110" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240.1 240.1">
             <linearGradient id="Oval_1_" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581" x2="-838.041"
@@ -643,8 +646,8 @@
       </a>
 
       <!-- Input Area -->
-      <div id="input-area-wrapper" class="px-3 pb-0 pt-2">
-        <div class="input-container-bg">
+      <div id="input-area-wrapper" class="px-0 pb-0 pt-0">
+        <div class="input-container-bg shadow-lg bg-white">
           <textarea id="message-input" rows="1" placeholder="Введите сообщение..." autocomplete="off"></textarea>
           <button id="send-button" title="Надіслати">
             <svg id="btn-icon-send" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
@@ -658,7 +661,8 @@
       </div>
 
       <!-- Powered By -->
-      <div id="powered-by-container" class="text-center pb-2 pt-[5px]">
+      <div id="powered-by-container"
+        class="text-center pb-0 pt-0 bg-white/80 backdrop-blur-sm rounded-full self-center px-4 py-1 shadow-sm mt-1">
         <span class="text-sm text-gray-400 font-medium">powered by <a href="https://hotelmol.com" target="_blank"
             class="accent-text hover:underline cursor-pointer">hotelmol.com</a></span>
       </div>
@@ -742,11 +746,13 @@
           </button>
 
           <button id="special-booking-btn" class="menu-sheet-btn">
-            <div class="p-2 bg-purple-50 text-purple-600 rounded-full mr-3 special-booking-icon-frame">
+            <div class="p-2 rounded-full mr-3 special-booking-icon-frame">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <path d="m21 21-6-6m6 6v-4m0 4h-4" />
+                <circle cx="10" cy="10" r="7" />
+                <path d="m15 15 2.3 2.3" />
+                <path d="M15 8h2m-1-1v2" /> <!-- Mocking sparkles/stars -->
               </svg>
             </div>
             <span class="flex-1 text-left font-medium text-gray-700" data-i18n="specialBooking">Special
