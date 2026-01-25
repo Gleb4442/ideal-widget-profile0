@@ -2277,7 +2277,10 @@ export function initChatListeners() {
 
   // Reset chat
   if (dom.resetChatBtn && dom.modals.reset) {
-    dom.resetChatBtn.addEventListener('click', () => dom.modals.reset.classList.remove('hidden'));
+    dom.resetChatBtn.addEventListener('click', () => {
+      closeHeaderMenu();
+      dom.modals.reset.classList.remove('hidden');
+    });
   }
   const confirmReset = document.getElementById('confirm-reset-btn');
   const cancelReset = document.getElementById('cancel-reset-btn');
