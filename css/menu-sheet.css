@@ -69,3 +69,32 @@
     background: #eff6ff;
     border-radius: 12px;
 }
+
+/* Special Booking Icon Animation */
+.special-booking-icon-frame {
+    position: relative;
+    z-index: 1;
+}
+
+.special-booking-icon-frame::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: #a855f7;
+    border-right-color: #a855f7;
+    filter: drop-shadow(0 0 2px #a855f7);
+    animation: neon-spin 1.5s linear infinite;
+    z-index: -1;
+}
+
+@keyframes neon-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
