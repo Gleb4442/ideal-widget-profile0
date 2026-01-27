@@ -199,3 +199,7 @@
 .expand-arrow {
   display: none;
 }
+
+#telegram-banner.collapsed {
+  padding-right: 0;
+}
