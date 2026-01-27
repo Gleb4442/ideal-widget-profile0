@@ -106,6 +106,7 @@ export function addRoom(roomData) {
     leftCount: roomData.leftCount || 0,
     discount: roomData.discount || 0,
     originalPrice: roomData.originalPrice || 0,
+    reviews: roomData.reviews || [], // New reviews field
     createdAt: Date.now()
   };
 
@@ -139,6 +140,7 @@ export function updateRoom(id, roomData) {
     leftCount: roomData.leftCount ?? rooms[index].leftCount ?? 0,
     discount: roomData.discount ?? rooms[index].discount ?? 0,
     originalPrice: roomData.originalPrice ?? rooms[index].originalPrice ?? 0,
+    reviews: roomData.reviews ?? rooms[index].reviews ?? [], // Preserve or update reviews
     updatedAt: Date.now()
   };
 

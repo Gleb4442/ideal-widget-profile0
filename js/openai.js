@@ -212,9 +212,9 @@ function buildGeneralSystemPrompt(hotelName = 'Hilton', bookingState = null) {
 
   const roomsList = rooms.length > 0
     ? rooms.map(r => {
-        const bookedCount = (r.bookedDates || []).length;
-        return `- ${r.name}: ${r.area}м², $${r.pricePerNight}/ніч`;
-      }).join('\n')
+      const bookedCount = (r.bookedDates || []).length;
+      return `- ${r.name}: ${r.area}м², $${r.pricePerNight}/ніч`;
+    }).join('\n')
     : 'Номери ще не додані.';
 
   const servicesList = services.length > 0
@@ -413,7 +413,7 @@ export function isGeneralTopic(message) {
 }
 
 // Call OpenAI API (non-streaming)
-async function callOpenAI(messages) {
+async function callOpenAI(messages, model = MODEL) {
   await configPromise;
 
   const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -433,9 +433,9 @@ async function callOpenAI(messages) {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({
-        model: MODEL,
+        model: model,
         messages: messages,
-        max_tokens: 500,
+        max_tokens: 1000,
         temperature: 0.7
       })
     });
@@ -455,7 +455,7 @@ async function callOpenAI(messages) {
 }
 
 // Call OpenAI API with streaming
-async function callOpenAIStreaming(messages, onChunk, onComplete, onError) {
+async function callOpenAIStreaming(messages, onChunk, onComplete, onError, model = MODEL) {
   await configPromise;
 
   const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -475,9 +475,9 @@ async function callOpenAIStreaming(messages, onChunk, onComplete, onError) {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({
-        model: MODEL,
+        model: model,
         messages: messages,
-        max_tokens: 500,
+        max_tokens: 1000,
         temperature: 0.7,
         stream: true
       })
@@ -1082,8 +1082,8 @@ export async function getSpecialBookingAIResponse(userMessage, requirements = []
     { role: 'system', content: systemPrompt }
   ];
 
-  // Add conversation history
-  const recentHistory = conversationHistory.slice(-10);
+  // Add conversation history (Extended Memory for Special Mode)
+  const recentHistory = conversationHistory.slice(-50);
   messages.push(...recentHistory);
 
   // Add current message
@@ -1093,7 +1093,8 @@ export async function getSpecialBookingAIResponse(userMessage, requirements = []
   const extractedData = extractBookingData(userMessage);
 
   try {
-    const response = await callOpenAI(messages);
+    // Use GPT-4o for Special Booking
+    const response = await callOpenAI(messages, 'gpt-4o');
 
     // Parse offer data if present
     const offerData = parseOfferData(response);
@@ -1121,8 +1122,8 @@ export async function getSpecialBookingAIResponseStreaming(userMessage, requirem
     { role: 'system', content: systemPrompt }
   ];
 
-  // Add conversation history
-  const recentHistory = conversationHistory.slice(-10);
+  // Add conversation history (Extended Memory for Special Mode)
+  const recentHistory = conversationHistory.slice(-50);
   messages.push(...recentHistory);
 
   // Add current message
@@ -1132,6 +1133,7 @@ export async function getSpecialBookingAIResponseStreaming(userMessage, requirem
   const extractedData = extractBookingData(userMessage);
 
   try {
+    // Use GPT-4o for Special Booking
     await callOpenAIStreaming(
       messages,
       (delta, fullText) => {
@@ -1158,8 +1160,10 @@ export async function getSpecialBookingAIResponseStreaming(userMessage, requirem
             error: true
           });
         }
-      }
+      },
+      'gpt-4o'
     );
+
   } catch (error) {
     if (onError) {
       onError({

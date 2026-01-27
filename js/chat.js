@@ -1467,6 +1467,22 @@ export function addRoomCarousel() {
     const hasDiscount = room.discount > 0 && room.originalPrice > 0;
     const hasLeftCount = room.leftCount > 0;
 
+    // Reviews calculation
+    let ratingHTML = '';
+    const reviews = room.reviews || [];
+    if (reviews.length > 0) {
+      const avgRating = (reviews.reduce((sum, r) => sum + parseInt(r.rating), 0) / reviews.length).toFixed(1);
+      ratingHTML = `
+        <div class="room-carousel-rating">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span class="rating-value">${avgRating}</span>
+          <span class="rating-count">(${reviews.length})</span>
+        </div>
+      `;
+    }
+
     // Build image track (like services)
     let imageTrackHTML = '';
     if (allPhotos.length > 0) {
@@ -1567,6 +1583,8 @@ export function addRoomCarousel() {
       </div>
       <div class="room-carousel-info">
         <div class="room-carousel-name">${room.name || 'Без назви'}</div>
+        <div class="room-carousel-name">${room.name || 'Без назви'}</div>
+        ${ratingHTML}
         ${priceHTML}
         <div class="room-carousel-area">${rooms.formatArea(room.area)}</div>
       </div>
@@ -1736,6 +1754,22 @@ export function addServicesCarousel() {
     const hasDiscount = service.discount > 0 && service.originalPrice > 0;
     const hasLeftCount = service.leftCount > 0;
 
+    // Reviews calculation
+    let ratingHTML = '';
+    const reviews = service.reviews || [];
+    if (reviews.length > 0) {
+      const avgRating = (reviews.reduce((sum, r) => sum + parseInt(r.rating), 0) / reviews.length).toFixed(1);
+      ratingHTML = `
+        <div class="service-carousel-rating">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span class="rating-value">${avgRating}</span>
+          <span class="rating-count">(${reviews.length})</span>
+        </div>
+      `;
+    }
+
     // Marketing badges HTML
     let badgesHTML = '';
     if (badgeInfo) {
@@ -1793,6 +1827,7 @@ export function addServicesCarousel() {
       </div>
       <div class="service-carousel-info">
         <div class="service-carousel-name">${service.name || 'Без назви'}</div>
+        ${ratingHTML}
         ${service.description ? `<div class="service-carousel-description">${service.description}</div>` : ''}
         ${priceHTML}
         <span class="service-carousel-category">${services.getCategoryName(service.category)}</span>

@@ -14,12 +14,14 @@ let currentEditRoomId = null;
 let currentMainPhoto = '';
 let currentGallery = [];
 let currentBookedDates = [];
+let currentRoomReviews = []; // Reviews state
 let calendarCurrentMonth = new Date();
 
 // Service editing state
 let currentEditServiceId = null;
 let currentServiceMainPhoto = '';
 let currentServiceGallery = [];
+let currentServiceReviews = []; // Reviews state
 
 // Hotel info storage key
 const HOTEL_INFO_KEY = 'hotel_info';
@@ -138,10 +140,10 @@ export function initAdminPanelControls() {
     dom.hotelNameText.textContent = e.target.value || "Hilton";
   });
 
-  dom.logoUpload.addEventListener('change', function(e) {
+  dom.logoUpload.addEventListener('change', function (e) {
     if (this.files && this.files[0]) {
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         dom.hotelLogoContainer.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full" alt="Logo">`;
       };
       reader.readAsDataURL(this.files[0]);
@@ -169,12 +171,12 @@ export function initAdminPanelControls() {
     document.documentElement.style.setProperty('--accent-rgb', hexToRgb(color));
 
     const darkenColor = (hex, percent) => {
-      let num = parseInt(hex.replace("#",""), 16);
+      let num = parseInt(hex.replace("#", ""), 16);
       let amt = Math.round(2.55 * percent);
       let R = (num >> 16) - amt;
       let G = (num >> 8 & 0x00FF) - amt;
       let B = (num & 0x0000FF) - amt;
-      return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1);
+      return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
     };
     document.documentElement.style.setProperty('--accent-hover', darkenColor(color, 20));
   });
@@ -431,9 +433,9 @@ export function renderRoomsGrid() {
   grid.innerHTML = allRooms.map(room => `
     <div class="room-admin-card" data-room-id="${room.id}">
       ${room.mainPhoto
-        ? `<img src="${room.mainPhoto}" alt="${room.name}">`
-        : `<div class="room-admin-placeholder"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div>`
-      }
+      ? `<img src="${room.mainPhoto}" alt="${room.name}">`
+      : `<div class="room-admin-placeholder"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div>`
+    }
       <div class="room-admin-card-overlay">
         <div class="room-admin-card-name">${room.name || 'Без назви'}</div>
         <div class="room-admin-card-price">${rooms.formatPrice(room.pricePerNight)}</div>
@@ -458,7 +460,9 @@ export function openRoomModal(roomId = null) {
   currentEditRoomId = roomId;
   currentMainPhoto = '';
   currentGallery = [];
+  currentGallery = [];
   currentBookedDates = [];
+  currentRoomReviews = []; // Reset reviews
   calendarCurrentMonth = new Date(); // Reset to current month
 
   if (roomId) {
@@ -477,7 +481,10 @@ export function openRoomModal(roomId = null) {
       document.getElementById('room-original-price-input').value = room.originalPrice || 0;
       currentMainPhoto = room.mainPhoto || '';
       currentGallery = room.gallery ? [...room.gallery] : [];
+      currentMainPhoto = room.mainPhoto || '';
+      currentGallery = room.gallery ? [...room.gallery] : [];
       currentBookedDates = room.bookedDates ? [...room.bookedDates] : [];
+      currentRoomReviews = room.reviews ? [...room.reviews] : [];
       deleteBtn.style.display = 'flex';
     }
   } else {
@@ -497,6 +504,7 @@ export function openRoomModal(roomId = null) {
 
   updateMainPhotoPreview();
   updateGalleryPreview();
+  renderRoomReviewsList(); // Render reviews
   renderCalendar();
   modal.classList.add('active');
 }
@@ -602,7 +610,9 @@ function saveRoom() {
     mainPhoto: currentMainPhoto,
     gallery: currentGallery,
     askQuestionEnabled,
+    askQuestionEnabled,
     bookedDates: currentBookedDates,
+    reviews: currentRoomReviews,
     // Marketing fields
     badge,
     leftCount,
@@ -667,7 +677,7 @@ export function initRoomManagement() {
   if (mainPhotoUpload && mainPhotoInput) {
     mainPhotoUpload.addEventListener('click', () => mainPhotoInput.click());
 
-    mainPhotoInput.addEventListener('change', async function() {
+    mainPhotoInput.addEventListener('change', async function () {
       if (this.files && this.files[0]) {
         try {
           currentMainPhoto = await rooms.compressImage(this.files[0]);
@@ -683,7 +693,7 @@ export function initRoomManagement() {
   if (galleryAddBtn && galleryInput) {
     galleryAddBtn.addEventListener('click', () => galleryInput.click());
 
-    galleryInput.addEventListener('change', async function() {
+    galleryInput.addEventListener('change', async function () {
       if (this.files && this.files.length > 0) {
         for (const file of this.files) {
           try {
@@ -709,37 +719,98 @@ export function initRoomManagement() {
     });
   }
 
+  // Reviews management
+  const addReviewBtn = document.getElementById('room-add-review-btn');
+  if (addReviewBtn) {
+    addReviewBtn.addEventListener('click', () => {
+      const author = document.getElementById('room-review-author').value.trim();
+      const rating = parseInt(document.getElementById('room-review-rating').value);
+      const date = document.getElementById('room-review-date').value;
+      const text = document.getElementById('room-review-text').value.trim();
+
+      if (!author || !date || !text) {
+        alert('Будь ласка, заповніть всі поля відгуку');
+        return;
+      }
+
+      currentRoomReviews.push({ author, rating, date, text });
+      renderRoomReviewsList();
+
+      // Reset form
+      document.getElementById('room-review-author').value = '';
+      document.getElementById('room-review-rating').value = '5';
+      document.getElementById('room-review-date').value = '';
+      document.getElementById('room-review-text').value = '';
+    });
+  }
+
   // Initial render
   renderRoomsGrid();
 }
 
-// ============================================
-// BOOKINGS MANAGEMENT FUNCTIONS
-// ============================================
+// Render Room Reviews List
+function renderRoomReviewsList() {
+  const list = document.getElementById('room-reviews-list');
+  if (!list) return;
 
-let bookingsSearchTerm = '';
+  list.innerHTML = '';
 
-// Render bookings list
-export function renderBookingsList() {
-  const container = document.getElementById('bookings-list');
-  if (!container) return;
-
-  let allBookings = bookings.getAllBookings();
-
-  // Apply search filter
-  if (bookingsSearchTerm) {
-    allBookings = bookings.findBookingsByName(bookingsSearchTerm);
+  if (currentRoomReviews.length === 0) {
+    list.innerHTML = '<div class="text-sm text-gray-500 italic p-2 text-center">Немає відгуків</div>';
+    return;
   }
 
-  // Sort by check-in date (newest first)
-  allBookings.sort((a, b) => b.checkIn.localeCompare(a.checkIn));
+  currentRoomReviews.forEach((review, index) => {
+    const item = document.createElement('div');
+    item.className = 'review-item';
+    item.innerHTML = `
+      <div class="review-header">
+        <span class="review-author">${review.author}</span>
+        <span class="review-rating">${'★'.repeat(review.rating)}</span>
+      </div>
+      <div class="review-date">${review.date}</div>
+      <div class="review-text">${review.text}</div>
+      <button class="review-delete-btn" data-index="${index}">&times;</button>
+    `;
+    list.appendChild(item);
+  });
 
-  // Update stats
-  updateBookingsStats();
+  // Add delete listeners
+  list.querySelectorAll('.review-delete-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const index = parseInt(e.target.dataset.index);
+      currentRoomReviews.splice(index, 1);
+      renderRoomReviewsList();
+    });
+  });
 
-  // Render bookings
-  if (allBookings.length === 0) {
-    container.innerHTML = `
+  // ============================================
+  // BOOKINGS MANAGEMENT FUNCTIONS
+  // ============================================
+
+  let bookingsSearchTerm = '';
+
+  // Render bookings list
+  export function renderBookingsList() {
+    const container = document.getElementById('bookings-list');
+    if (!container) return;
+
+    let allBookings = bookings.getAllBookings();
+
+    // Apply search filter
+    if (bookingsSearchTerm) {
+      allBookings = bookings.findBookingsByName(bookingsSearchTerm);
+    }
+
+    // Sort by check-in date (newest first)
+    allBookings.sort((a, b) => b.checkIn.localeCompare(a.checkIn));
+
+    // Update stats
+    updateBookingsStats();
+
+    // Render bookings
+    if (allBookings.length === 0) {
+      container.innerHTML = `
       <div class="bookings-empty">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -751,12 +822,12 @@ export function renderBookingsList() {
         <div class="bookings-empty-text">${bookingsSearchTerm ? 'Нічого не знайдено за вашим запитом' : 'Натисніть "Тестові" для генерації демо-даних'}</div>
       </div>
     `;
-    return;
-  }
+      return;
+    }
 
-  container.innerHTML = allBookings.map(booking => {
-    const formatted = bookings.formatBooking(booking);
-    return `
+    container.innerHTML = allBookings.map(booking => {
+      const formatted = bookings.formatBooking(booking);
+      return `
       <div class="booking-card ${booking.status}" data-booking-id="${booking.id}">
         <div class="booking-card-header">
           <div>
@@ -828,128 +899,128 @@ export function renderBookingsList() {
         </div>
       </div>
     `;
-  }).join('');
-}
-
-// Update bookings statistics
-function updateBookingsStats() {
-  const stats = bookings.getBookingStats();
-
-  const totalEl = document.getElementById('stat-total');
-  const activeEl = document.getElementById('stat-active');
-  const cancelledEl = document.getElementById('stat-cancelled');
-
-  if (totalEl) totalEl.textContent = stats.total;
-  if (activeEl) activeEl.textContent = stats.active;
-  if (cancelledEl) cancelledEl.textContent = stats.cancelled;
-}
-
-// Cancel booking with confirmation
-window.cancelBookingConfirm = function(bookingId) {
-  const booking = bookings.getBookingById(bookingId);
-  if (!booking) return;
-
-  if (confirm(`Скасувати бронювання для ${booking.guestName}?`)) {
-    bookings.cancelBooking(bookingId);
-    renderBookingsList();
+    }).join('');
   }
-};
 
-// Delete booking permanently
-window.deleteBookingConfirm = function(bookingId) {
-  const booking = bookings.getBookingById(bookingId);
-  if (!booking) return;
+  // Update bookings statistics
+  function updateBookingsStats() {
+    const stats = bookings.getBookingStats();
 
-  if (confirm(`Видалити бронювання для ${booking.guestName} назавжди?\nЦю дію неможливо скасувати.`)) {
-    bookings.deleteBooking(bookingId);
-    renderBookingsList();
+    const totalEl = document.getElementById('stat-total');
+    const activeEl = document.getElementById('stat-active');
+    const cancelledEl = document.getElementById('stat-cancelled');
+
+    if (totalEl) totalEl.textContent = stats.total;
+    if (activeEl) activeEl.textContent = stats.active;
+    if (cancelledEl) cancelledEl.textContent = stats.cancelled;
   }
-};
 
-// Edit booking (cancel and recreate approach)
-window.editBooking = function(bookingId) {
-  const booking = bookings.getBookingById(bookingId);
-  if (!booking) return;
+  // Cancel booking with confirmation
+  window.cancelBookingConfirm = function (bookingId) {
+    const booking = bookings.getBookingById(bookingId);
+    if (!booking) return;
 
-  const message = `Редагування бронювання для ${booking.guestName}\n\n` +
-    `Поточні дані:\n` +
-    `• Заїзд: ${bookings.formatBooking(booking).checkInFormatted}\n` +
-    `• Виїзд: ${bookings.formatBooking(booking).checkOutFormatted}\n` +
-    `• Номер: ${booking.roomName}\n` +
-    `• Гостей: ${booking.guests}\n\n` +
-    `Для редагування бронювання:\n` +
-    `1. Поточне бронювання буде скасовано\n` +
-    `2. Гість зможе створити нове бронювання через чат\n\n` +
-    `Продовжити?`;
-
-  if (confirm(message)) {
-    // Cancel current booking
-    bookings.cancelBooking(bookingId);
-    renderBookingsList();
-
-    alert(`Бронювання скасовано.\n\nТепер гість ${booking.guestName} може створити нове бронювання через чат з оновленими даними.`);
-  }
-};
-
-// Generate test bookings
-function generateTestBookingsHandler() {
-  if (bookings.getAllBookings().length > 0) {
-    if (!confirm('Вже є бронювання в базі. Додати ще тестові дані?')) {
-      return;
+    if (confirm(`Скасувати бронювання для ${booking.guestName}?`)) {
+      bookings.cancelBooking(bookingId);
+      renderBookingsList();
     }
-  }
+  };
 
-  const generated = bookings.generateTestBookings();
-  renderBookingsList();
+  // Delete booking permanently
+  window.deleteBookingConfirm = function (bookingId) {
+    const booking = bookings.getBookingById(bookingId);
+    if (!booking) return;
 
-  // Show guest names for easy testing
-  const guestNames = generated
-    .filter(b => b.status === 'confirmed')
-    .slice(0, 5)
-    .map(b => b.guestName)
-    .join('\n• ');
+    if (confirm(`Видалити бронювання для ${booking.guestName} назавжди?\nЦю дію неможливо скасувати.`)) {
+      bookings.deleteBooking(bookingId);
+      renderBookingsList();
+    }
+  };
 
-  alert(`Згенеровано ${generated.length} тестових бронювань!\n\nПриклади гостей для тестування скасування:\n• ${guestNames}\n\nВи можете знайти бронювання через пошук за ПІБ.`);
-}
+  // Edit booking (cancel and recreate approach)
+  window.editBooking = function (bookingId) {
+    const booking = bookings.getBookingById(bookingId);
+    if (!booking) return;
 
-// Initialize bookings search
-function initBookingsSearch() {
-  const searchInput = document.getElementById('booking-search-input');
-  if (!searchInput) return;
+    const message = `Редагування бронювання для ${booking.guestName}\n\n` +
+      `Поточні дані:\n` +
+      `• Заїзд: ${bookings.formatBooking(booking).checkInFormatted}\n` +
+      `• Виїзд: ${bookings.formatBooking(booking).checkOutFormatted}\n` +
+      `• Номер: ${booking.roomName}\n` +
+      `• Гостей: ${booking.guests}\n\n` +
+      `Для редагування бронювання:\n` +
+      `1. Поточне бронювання буде скасовано\n` +
+      `2. Гість зможе створити нове бронювання через чат\n\n` +
+      `Продовжити?`;
 
-  searchInput.addEventListener('input', (e) => {
-    bookingsSearchTerm = e.target.value.trim();
+    if (confirm(message)) {
+      // Cancel current booking
+      bookings.cancelBooking(bookingId);
+      renderBookingsList();
+
+      alert(`Бронювання скасовано.\n\nТепер гість ${booking.guestName} може створити нове бронювання через чат з оновленими даними.`);
+    }
+  };
+
+  // Generate test bookings
+  function generateTestBookingsHandler() {
+    if (bookings.getAllBookings().length > 0) {
+      if (!confirm('Вже є бронювання в базі. Додати ще тестові дані?')) {
+        return;
+      }
+    }
+
+    const generated = bookings.generateTestBookings();
     renderBookingsList();
-  });
-}
 
-// Initialize bookings management
-export function initBookingsManagement() {
-  const generateBtn = document.getElementById('generate-test-bookings-btn');
+    // Show guest names for easy testing
+    const guestNames = generated
+      .filter(b => b.status === 'confirmed')
+      .slice(0, 5)
+      .map(b => b.guestName)
+      .join('\n• ');
 
-  if (generateBtn) {
-    generateBtn.addEventListener('click', generateTestBookingsHandler);
+    alert(`Згенеровано ${generated.length} тестових бронювань!\n\nПриклади гостей для тестування скасування:\n• ${guestNames}\n\nВи можете знайти бронювання через пошук за ПІБ.`);
   }
 
-  initBookingsSearch();
-  renderBookingsList();
+  // Initialize bookings search
+  function initBookingsSearch() {
+    const searchInput = document.getElementById('booking-search-input');
+    if (!searchInput) return;
 
-  // Make renderBookingsList available globally for chat integration
-  window.renderBookingsList = renderBookingsList;
-}
+    searchInput.addEventListener('input', (e) => {
+      bookingsSearchTerm = e.target.value.trim();
+      renderBookingsList();
+    });
+  }
 
-// ============================================
-// SERVICES MANAGEMENT FUNCTIONS
-// ============================================
+  // Initialize bookings management
+  export function initBookingsManagement() {
+    const generateBtn = document.getElementById('generate-test-bookings-btn');
 
-// Render Services Grid in Admin Panel
-export function renderServicesGrid() {
-  const grid = document.getElementById('services-admin-grid');
-  if (!grid) return;
+    if (generateBtn) {
+      generateBtn.addEventListener('click', generateTestBookingsHandler);
+    }
 
-  const allServices = services.getAllServices();
+    initBookingsSearch();
+    renderBookingsList();
 
-  grid.innerHTML = allServices.map(service => `
+    // Make renderBookingsList available globally for chat integration
+    window.renderBookingsList = renderBookingsList;
+  }
+
+  // ============================================
+  // SERVICES MANAGEMENT FUNCTIONS
+  // ============================================
+
+  // Render Services Grid in Admin Panel
+  export function renderServicesGrid() {
+    const grid = document.getElementById('services-admin-grid');
+    if (!grid) return;
+
+    const allServices = services.getAllServices();
+
+    grid.innerHTML = allServices.map(service => `
     <div class="service-admin-card" data-service-id="${service.id}">
       ${service.mainPhoto
         ? `<img src="${service.mainPhoto}" alt="${service.name}">`
@@ -962,83 +1033,87 @@ export function renderServicesGrid() {
     </div>
   `).join('');
 
-  // Add click listeners
-  grid.querySelectorAll('.service-admin-card').forEach(card => {
-    card.addEventListener('click', () => {
-      openServiceModal(card.dataset.serviceId);
+    // Add click listeners
+    grid.querySelectorAll('.service-admin-card').forEach(card => {
+      card.addEventListener('click', () => {
+        openServiceModal(card.dataset.serviceId);
+      });
     });
-  });
-}
-
-// Open Service Modal
-export function openServiceModal(serviceId = null) {
-  const modal = document.getElementById('service-modal-overlay');
-  const title = document.getElementById('service-modal-title');
-  const deleteBtn = document.getElementById('service-delete-btn');
-
-  currentEditServiceId = serviceId;
-  currentServiceMainPhoto = '';
-  currentServiceGallery = [];
-
-  if (serviceId) {
-    const service = services.getService(serviceId);
-    if (service) {
-      title.textContent = 'Редагувати послугу';
-      document.getElementById('service-name-input').value = service.name || '';
-      document.getElementById('service-description-input').value = service.description || '';
-      document.getElementById('service-price-input').value = service.price || '';
-      document.getElementById('service-price-type-input').value = service.priceType || 'fixed';
-      document.getElementById('service-category-input').value = service.category || 'general';
-      document.getElementById('service-ask-toggle').checked = service.askQuestionEnabled !== false;
-      document.getElementById('service-add-booking-toggle').checked = service.addToBookingEnabled !== false;
-      // Marketing fields
-      document.getElementById('service-badge-input').value = service.badge || '';
-      document.getElementById('service-left-count-input').value = service.leftCount || 0;
-      document.getElementById('service-discount-input').value = service.discount || 0;
-      document.getElementById('service-original-price-input').value = service.originalPrice || 0;
-      currentServiceMainPhoto = service.mainPhoto || '';
-      currentServiceGallery = service.gallery ? [...service.gallery] : [];
-      deleteBtn.style.display = 'flex';
-    }
-  } else {
-    title.textContent = 'Нова послуга';
-    document.getElementById('service-name-input').value = '';
-    document.getElementById('service-description-input').value = '';
-    document.getElementById('service-price-input').value = '';
-    document.getElementById('service-price-type-input').value = 'fixed';
-    document.getElementById('service-category-input').value = 'general';
-    document.getElementById('service-ask-toggle').checked = true;
-    document.getElementById('service-add-booking-toggle').checked = true;
-    // Marketing fields - reset
-    document.getElementById('service-badge-input').value = '';
-    document.getElementById('service-left-count-input').value = 0;
-    document.getElementById('service-discount-input').value = 0;
-    document.getElementById('service-original-price-input').value = 0;
-    deleteBtn.style.display = 'none';
   }
 
-  updateServiceMainPhotoPreview();
-  updateServiceGalleryPreview();
-  modal.classList.add('active');
-}
+  // Open Service Modal
+  export function openServiceModal(serviceId = null) {
+    const modal = document.getElementById('service-modal-overlay');
+    const title = document.getElementById('service-modal-title');
+    const deleteBtn = document.getElementById('service-delete-btn');
 
-// Close Service Modal
-export function closeServiceModal() {
-  const modal = document.getElementById('service-modal-overlay');
-  modal.classList.remove('active');
-  currentEditServiceId = null;
-  currentServiceMainPhoto = '';
-  currentServiceGallery = [];
-}
+    currentEditServiceId = serviceId;
+    currentServiceMainPhoto = '';
+    currentServiceGallery = [];
 
-// Update Service Main Photo Preview
-function updateServiceMainPhotoPreview() {
-  const area = document.getElementById('service-main-photo-upload');
-  if (currentServiceMainPhoto) {
-    area.innerHTML = `<img src="${currentServiceMainPhoto}" alt="Main photo">`;
-    area.classList.add('has-photo');
-  } else {
-    area.innerHTML = `
+    if (serviceId) {
+      const service = services.getService(serviceId);
+      if (service) {
+        title.textContent = 'Редагувати послугу';
+        document.getElementById('service-name-input').value = service.name || '';
+        document.getElementById('service-description-input').value = service.description || '';
+        document.getElementById('service-price-input').value = service.price || '';
+        document.getElementById('service-price-type-input').value = service.priceType || 'fixed';
+        document.getElementById('service-category-input').value = service.category || 'general';
+        document.getElementById('service-ask-toggle').checked = service.askQuestionEnabled !== false;
+        document.getElementById('service-add-booking-toggle').checked = service.addToBookingEnabled !== false;
+        // Marketing fields
+        document.getElementById('service-badge-input').value = service.badge || '';
+        document.getElementById('service-left-count-input').value = service.leftCount || 0;
+        document.getElementById('service-discount-input').value = service.discount || 0;
+        document.getElementById('service-original-price-input').value = service.originalPrice || 0;
+        currentServiceMainPhoto = service.mainPhoto || '';
+        currentServiceGallery = service.gallery ? [...service.gallery] : [];
+        currentServiceReviews = service.reviews ? [...service.reviews] : [];
+        deleteBtn.style.display = 'flex';
+      }
+    } else {
+      title.textContent = 'Нова послуга';
+      document.getElementById('service-name-input').value = '';
+      document.getElementById('service-description-input').value = '';
+      document.getElementById('service-price-input').value = '';
+      document.getElementById('service-price-type-input').value = 'fixed';
+      document.getElementById('service-category-input').value = 'general';
+      document.getElementById('service-ask-toggle').checked = true;
+      document.getElementById('service-add-booking-toggle').checked = true;
+      // Marketing fields - reset
+      document.getElementById('service-badge-input').value = '';
+      document.getElementById('service-left-count-input').value = 0;
+      document.getElementById('service-discount-input').value = 0;
+      document.getElementById('service-original-price-input').value = 0;
+      currentServiceReviews = [];
+      deleteBtn.style.display = 'none';
+    }
+
+    updateServiceMainPhotoPreview();
+    updateServiceGalleryPreview();
+    renderServiceReviewsList(); // Render reviews
+    modal.classList.add('active');
+  }
+
+  // Close Service Modal
+  export function closeServiceModal() {
+    const modal = document.getElementById('service-modal-overlay');
+    modal.classList.remove('active');
+    currentEditServiceId = null;
+    currentServiceMainPhoto = '';
+    currentServiceGallery = [];
+    currentServiceReviews = [];
+  }
+
+  // Update Service Main Photo Preview
+  function updateServiceMainPhotoPreview() {
+    const area = document.getElementById('service-main-photo-upload');
+    if (currentServiceMainPhoto) {
+      area.innerHTML = `<img src="${currentServiceMainPhoto}" alt="Main photo">`;
+      area.classList.add('has-photo');
+    } else {
+      area.innerHTML = `
       <div class="photo-upload-placeholder">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -1048,206 +1123,269 @@ function updateServiceMainPhotoPreview() {
         <span>Натисніть для завантаження</span>
       </div>
     `;
-    area.classList.remove('has-photo');
+      area.classList.remove('has-photo');
+    }
   }
-}
 
-// Update Service Gallery Preview
-function updateServiceGalleryPreview() {
-  const grid = document.getElementById('service-gallery-upload-grid');
+  // Update Service Gallery Preview
+  function updateServiceGalleryPreview() {
+    const grid = document.getElementById('service-gallery-upload-grid');
 
-  // Clear existing items
-  grid.innerHTML = '';
+    // Clear existing items
+    grid.innerHTML = '';
 
-  currentServiceGallery.forEach((photo, index) => {
-    const item = document.createElement('div');
-    item.className = 'service-gallery-photo-item';
-    item.innerHTML = `
+    currentServiceGallery.forEach((photo, index) => {
+      const item = document.createElement('div');
+      item.className = 'service-gallery-photo-item';
+      item.innerHTML = `
       <img src="${photo}" alt="Gallery photo ${index + 1}">
       <button class="service-gallery-photo-remove" data-index="${index}">&times;</button>
     `;
-    grid.appendChild(item);
-  });
+      grid.appendChild(item);
+    });
 
-  // Re-add the add button
-  const newAddBtn = document.createElement('div');
-  newAddBtn.id = 'service-gallery-add-btn';
-  newAddBtn.className = 'service-gallery-add-btn';
-  newAddBtn.innerHTML = `
+    // Re-add the add button
+    const newAddBtn = document.createElement('div');
+    newAddBtn.id = 'service-gallery-add-btn';
+    newAddBtn.className = 'service-gallery-add-btn';
+    newAddBtn.innerHTML = `
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <line x1="12" y1="5" x2="12" y2="19"></line>
       <line x1="5" y1="12" x2="19" y2="12"></line>
     </svg>
     <span>Додати</span>
   `;
-  newAddBtn.addEventListener('click', () => {
-    document.getElementById('service-gallery-photo-input').click();
-  });
-  grid.appendChild(newAddBtn);
-
-  // Add remove listeners
-  grid.querySelectorAll('.service-gallery-photo-remove').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const index = parseInt(btn.dataset.index);
-      currentServiceGallery.splice(index, 1);
-      updateServiceGalleryPreview();
+    newAddBtn.addEventListener('click', () => {
+      document.getElementById('service-gallery-photo-input').click();
     });
-  });
-}
+    grid.appendChild(newAddBtn);
 
-// Save Service
-function saveService() {
-  const name = document.getElementById('service-name-input').value.trim();
-  const description = document.getElementById('service-description-input').value.trim();
-  const price = parseInt(document.getElementById('service-price-input').value) || 0;
-  const priceType = document.getElementById('service-price-type-input').value;
-  const category = document.getElementById('service-category-input').value;
-  const askQuestionEnabled = document.getElementById('service-ask-toggle').checked;
-  const addToBookingEnabled = document.getElementById('service-add-booking-toggle').checked;
-  // Marketing fields
-  const badge = document.getElementById('service-badge-input').value;
-  const leftCount = parseInt(document.getElementById('service-left-count-input').value) || 0;
-  const discount = parseInt(document.getElementById('service-discount-input').value) || 0;
-  const originalPrice = parseInt(document.getElementById('service-original-price-input').value) || 0;
-
-  if (!name) {
-    alert('Введіть назву послуги');
-    return;
+    // Add remove listeners
+    grid.querySelectorAll('.service-gallery-photo-remove').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const index = parseInt(btn.dataset.index);
+        currentServiceGallery.splice(index, 1);
+        updateServiceGalleryPreview();
+      });
+    });
   }
 
-  const serviceData = {
-    name,
-    description,
-    price,
-    priceType,
-    category,
-    mainPhoto: currentServiceMainPhoto,
-    gallery: currentServiceGallery,
-    askQuestionEnabled,
-    addToBookingEnabled,
+  // Save Service
+  function saveService() {
+    const name = document.getElementById('service-name-input').value.trim();
+    const description = document.getElementById('service-description-input').value.trim();
+    const price = parseInt(document.getElementById('service-price-input').value) || 0;
+    const priceType = document.getElementById('service-price-type-input').value;
+    const category = document.getElementById('service-category-input').value;
+    const askQuestionEnabled = document.getElementById('service-ask-toggle').checked;
+    const addToBookingEnabled = document.getElementById('service-add-booking-toggle').checked;
     // Marketing fields
-    badge,
-    leftCount,
-    discount,
-    originalPrice
-  };
+    const badge = document.getElementById('service-badge-input').value;
+    const leftCount = parseInt(document.getElementById('service-left-count-input').value) || 0;
+    const discount = parseInt(document.getElementById('service-discount-input').value) || 0;
+    const originalPrice = parseInt(document.getElementById('service-original-price-input').value) || 0;
 
-  if (currentEditServiceId) {
-    services.updateService(currentEditServiceId, serviceData);
-  } else {
-    services.addService(serviceData);
-  }
+    if (!name) {
+      alert('Введіть назву послуги');
+      return;
+    }
 
-  closeServiceModal();
-  renderServicesGrid();
-}
+    const serviceData = {
+      name,
+      description,
+      price,
+      priceType,
+      category,
+      mainPhoto: currentServiceMainPhoto,
+      gallery: currentServiceGallery,
+      reviews: currentServiceReviews,
+      askQuestionEnabled,
+      addToBookingEnabled,
+      // Marketing fields
+      badge,
+      leftCount,
+      discount,
+      originalPrice
+    };
 
-// Delete Service
-function deleteService() {
-  if (!currentEditServiceId) return;
+    if (currentEditServiceId) {
+      services.updateService(currentEditServiceId, serviceData);
+    } else {
+      services.addService(serviceData);
+    }
 
-  if (confirm('Видалити цю послугу?')) {
-    services.deleteService(currentEditServiceId);
     closeServiceModal();
     renderServicesGrid();
   }
-}
 
-// Initialize Service Management
-export function initServiceManagement() {
-  const addBtn = document.getElementById('add-service-btn');
-  const modalClose = document.getElementById('service-modal-close');
-  const cancelBtn = document.getElementById('service-cancel-btn');
-  const saveBtn = document.getElementById('service-save-btn');
-  const deleteBtn = document.getElementById('service-delete-btn');
-  const mainPhotoUpload = document.getElementById('service-main-photo-upload');
-  const mainPhotoInput = document.getElementById('service-main-photo-input');
-  const galleryAddBtn = document.getElementById('service-gallery-add-btn');
-  const galleryInput = document.getElementById('service-gallery-photo-input');
+  // Delete Service
+  function deleteService() {
+    if (!currentEditServiceId) return;
 
-  if (addBtn) {
-    addBtn.addEventListener('click', () => openServiceModal());
+    if (confirm('Видалити цю послугу?')) {
+      services.deleteService(currentEditServiceId);
+      closeServiceModal();
+      renderServicesGrid();
+    }
   }
 
-  if (modalClose) {
-    modalClose.addEventListener('click', closeServiceModal);
-  }
+  // Initialize Service Management
+  export function initServiceManagement() {
+    const addBtn = document.getElementById('add-service-btn');
+    const modalClose = document.getElementById('service-modal-close');
+    const cancelBtn = document.getElementById('service-cancel-btn');
+    const saveBtn = document.getElementById('service-save-btn');
+    const deleteBtn = document.getElementById('service-delete-btn');
+    const mainPhotoUpload = document.getElementById('service-main-photo-upload');
+    const mainPhotoInput = document.getElementById('service-main-photo-input');
+    const galleryAddBtn = document.getElementById('service-gallery-add-btn');
+    const galleryInput = document.getElementById('service-gallery-photo-input');
 
-  if (cancelBtn) {
-    cancelBtn.addEventListener('click', closeServiceModal);
-  }
+    if (addBtn) {
+      addBtn.addEventListener('click', () => openServiceModal());
+    }
 
-  if (saveBtn) {
-    saveBtn.addEventListener('click', saveService);
-  }
+    if (modalClose) {
+      modalClose.addEventListener('click', closeServiceModal);
+    }
 
-  if (deleteBtn) {
-    deleteBtn.addEventListener('click', deleteService);
-  }
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', closeServiceModal);
+    }
 
-  // Main photo upload
-  if (mainPhotoUpload && mainPhotoInput) {
-    mainPhotoUpload.addEventListener('click', () => mainPhotoInput.click());
+    if (saveBtn) {
+      saveBtn.addEventListener('click', saveService);
+    }
 
-    mainPhotoInput.addEventListener('change', async function() {
-      if (this.files && this.files[0]) {
-        try {
-          currentServiceMainPhoto = await services.compressImage(this.files[0]);
-          updateServiceMainPhotoPreview();
-        } catch (e) {
-          console.error('Error uploading service main photo:', e);
-        }
-      }
-    });
-  }
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', deleteService);
+    }
 
-  // Gallery photos upload
-  if (galleryAddBtn && galleryInput) {
-    galleryAddBtn.addEventListener('click', () => galleryInput.click());
+    // Main photo upload
+    if (mainPhotoUpload && mainPhotoInput) {
+      mainPhotoUpload.addEventListener('click', () => mainPhotoInput.click());
 
-    galleryInput.addEventListener('change', async function() {
-      if (this.files && this.files.length > 0) {
-        for (const file of this.files) {
+      mainPhotoInput.addEventListener('change', async function () {
+        if (this.files && this.files[0]) {
           try {
-            const compressed = await services.compressImage(file);
-            currentServiceGallery.push(compressed);
+            currentServiceMainPhoto = await services.compressImage(this.files[0]);
+            updateServiceMainPhotoPreview();
           } catch (e) {
-            console.error('Error uploading gallery photo:', e);
+            console.error('Error uploading service main photo:', e);
           }
         }
-        updateServiceGalleryPreview();
-        this.value = '';
-      }
+      });
+    }
+
+    // Gallery photos upload
+    if (galleryAddBtn && galleryInput) {
+      galleryAddBtn.addEventListener('click', () => galleryInput.click());
+
+      galleryInput.addEventListener('change', async function () {
+        if (this.files && this.files.length > 0) {
+          for (const file of this.files) {
+            try {
+              const compressed = await services.compressImage(file);
+              currentServiceGallery.push(compressed);
+            } catch (e) {
+              console.error('Error uploading gallery photo:', e);
+            }
+          }
+          updateServiceGalleryPreview();
+          this.value = '';
+        }
+      });
+    }
+
+    // Click outside modal to close
+    const modalOverlay = document.getElementById('service-modal-overlay');
+    if (modalOverlay) {
+      modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+          closeServiceModal();
+        }
+      });
+    }
+
+    // Reviews management
+    const addReviewBtn = document.getElementById('service-add-review-btn');
+    if (addReviewBtn) {
+      addReviewBtn.addEventListener('click', () => {
+        const author = document.getElementById('service-review-author').value.trim();
+        const rating = parseInt(document.getElementById('service-review-rating').value);
+        const date = document.getElementById('service-review-date').value;
+        const text = document.getElementById('service-review-text').value.trim();
+
+        if (!author || !date || !text) {
+          alert('Будь ласка, заповніть всі поля відгуку');
+          return;
+        }
+
+        currentServiceReviews.push({ author, rating, date, text });
+        renderServiceReviewsList();
+
+        // Reset form
+        document.getElementById('service-review-author').value = '';
+        document.getElementById('service-review-rating').value = '5';
+        document.getElementById('service-review-date').value = '';
+        document.getElementById('service-review-text').value = '';
+      });
+    }
+
+    // Initial render
+    renderServicesGrid();
+  }
+
+  // Render Service Reviews List
+  function renderServiceReviewsList() {
+    const list = document.getElementById('service-reviews-list');
+    if (!list) return;
+
+    list.innerHTML = '';
+
+    if (currentServiceReviews.length === 0) {
+      list.innerHTML = '<div class="text-sm text-gray-500 italic p-2 text-center">Немає відгуків</div>';
+      return;
+    }
+
+    currentServiceReviews.forEach((review, index) => {
+      const item = document.createElement('div');
+      item.className = 'review-item';
+      item.innerHTML = `
+        <div class="review-header">
+          <span class="review-author">${review.author}</span>
+          <span class="review-rating">${'★'.repeat(review.rating)}</span>
+        </div>
+        <div class="review-date">${review.date}</div>
+        <div class="review-text">${review.text}</div>
+        <button class="review-delete-btn" data-index="${index}">&times;</button>
+      `;
+      list.appendChild(item);
+    });
+
+    // Add delete listeners
+    list.querySelectorAll('.review-delete-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const index = parseInt(e.target.dataset.index);
+        currentServiceReviews.splice(index, 1);
+        renderServiceReviewsList();
+      });
     });
   }
 
-  // Click outside modal to close
-  const modalOverlay = document.getElementById('service-modal-overlay');
-  if (modalOverlay) {
-    modalOverlay.addEventListener('click', (e) => {
-      if (e.target === modalOverlay) {
-        closeServiceModal();
-      }
-    });
+  // Initialize All Admin Functions
+  export function initAdmin() {
+    initFontSelector();
+    initIconSelector();
+    initShapeSelector();
+    initOffsetControls();
+    initAdminPanelControls();
+    initPositionSelector();
+    initFooterLayout();
+    initHotelInfo();
+    initCalendarControls();
+    initRoomManagement();
+    initServiceManagement();
+    initBookingsManagement();
   }
-
-  // Initial render
-  renderServicesGrid();
-}
-
-// Initialize All Admin Functions
-export function initAdmin() {
-  initFontSelector();
-  initIconSelector();
-  initShapeSelector();
-  initOffsetControls();
-  initAdminPanelControls();
-  initPositionSelector();
-  initFooterLayout();
-  initHotelInfo();
-  initCalendarControls();
-  initRoomManagement();
-  initServiceManagement();
-  initBookingsManagement();
-}

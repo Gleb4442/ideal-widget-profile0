@@ -965,8 +965,11 @@
 
         <!-- Marketing Section -->
         <div class="room-form-section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <polygon
+              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+            </polygon>
           </svg>
           Маркетинг
         </div>
@@ -996,6 +999,49 @@
           <div class="room-form-group">
             <label class="room-form-label">Стара ціна ($)</label>
             <input type="number" id="room-original-price-input" class="room-form-input" placeholder="0" min="0">
+          </div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="room-form-section-title">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path
+              d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+            </path>
+          </svg>
+          Відгуки
+        </div>
+
+        <div class="room-form-group">
+          <div id="room-reviews-list" class="reviews-list">
+            <!-- Reviews will be rendered here -->
+          </div>
+
+          <div class="add-review-form">
+            <div class="room-form-label">Додати відгук</div>
+            <div class="review-inputs-row">
+              <input type="text" id="room-review-author" class="room-form-input" placeholder="Ім'я гостя">
+              <select id="room-review-rating" class="room-form-select" style="width: 80px;">
+                <option value="5">5 ★</option>
+                <option value="4">4 ★</option>
+                <option value="3">3 ★</option>
+                <option value="2">2 ★</option>
+                <option value="1">1 ★</option>
+              </select>
+              <input type="date" id="room-review-date" class="room-form-input" style="width: 130px;">
+            </div>
+            <textarea id="room-review-text" class="room-form-textarea" placeholder="Текст відгуку..." rows="2"
+              style="margin-top: 8px;"></textarea>
+            <button type="button" id="room-add-review-btn" class="room-btn room-btn-secondary"
+              style="margin-top: 8px; width: 100%;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Додати відгук
+            </button>
           </div>
         </div>
 
@@ -1150,8 +1196,11 @@
 
         <!-- Marketing Section -->
         <div class="service-form-section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <polygon
+              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+            </polygon>
           </svg>
           Маркетинг
         </div>
@@ -1170,17 +1219,62 @@
 
         <div class="service-form-group">
           <label class="service-form-label">Залишилось місць (0 = не показувати)</label>
-          <input type="number" id="service-left-count-input" class="service-form-input" placeholder="0" min="0" max="99">
+          <input type="number" id="service-left-count-input" class="service-form-input" placeholder="0" min="0"
+            max="99">
         </div>
 
         <div class="service-form-row">
           <div class="service-form-group">
             <label class="service-form-label">Знижка (%)</label>
-            <input type="number" id="service-discount-input" class="service-form-input" placeholder="0" min="0" max="99">
+            <input type="number" id="service-discount-input" class="service-form-input" placeholder="0" min="0"
+              max="99">
           </div>
           <div class="service-form-group">
             <label class="service-form-label">Стара ціна ($)</label>
             <input type="number" id="service-original-price-input" class="service-form-input" placeholder="0" min="0">
+          </div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="service-form-section-title">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path
+              d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+            </path>
+          </svg>
+          Відгуки
+        </div>
+
+        <div class="service-form-group">
+          <div id="service-reviews-list" class="reviews-list">
+            <!-- Reviews will be rendered here -->
+          </div>
+
+          <div class="add-review-form">
+            <div class="service-form-label">Додати відгук</div>
+            <div class="review-inputs-row">
+              <input type="text" id="service-review-author" class="service-form-input" placeholder="Ім'я гостя">
+              <select id="service-review-rating" class="service-form-select" style="width: 80px;">
+                <option value="5">5 ★</option>
+                <option value="4">4 ★</option>
+                <option value="3">3 ★</option>
+                <option value="2">2 ★</option>
+                <option value="1">1 ★</option>
+              </select>
+              <input type="date" id="service-review-date" class="service-form-input" style="width: 130px;">
+            </div>
+            <textarea id="service-review-text" class="service-form-textarea" placeholder="Текст відгуку..." rows="2"
+              style="margin-top: 8px;"></textarea>
+            <button type="button" id="service-add-review-btn" class="service-btn service-btn-secondary"
+              style="margin-top: 8px; width: 100%;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Додати відгук
+            </button>
           </div>
         </div>
       </div>

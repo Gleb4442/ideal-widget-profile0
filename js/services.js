@@ -106,6 +106,7 @@ export function addService(serviceData) {
     leftCount: serviceData.leftCount || 0,
     discount: serviceData.discount || 0,
     originalPrice: serviceData.originalPrice || 0,
+    reviews: serviceData.reviews || [], // New reviews field
     createdAt: Date.now()
   };
 
@@ -140,6 +141,7 @@ export function updateService(id, serviceData) {
     leftCount: serviceData.leftCount ?? services[index].leftCount ?? 0,
     discount: serviceData.discount ?? services[index].discount ?? 0,
     originalPrice: serviceData.originalPrice ?? services[index].originalPrice ?? 0,
+    reviews: serviceData.reviews ?? services[index].reviews ?? [], // Preserve or update reviews
     updatedAt: Date.now()
   };
 
