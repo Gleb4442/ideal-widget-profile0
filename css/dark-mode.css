@@ -72,3 +72,17 @@
 #chat-window.dark-mode .modal-btn-cancel:hover {
   background-color: #6b7280;
 }
+
+/* Powered by badge - lighter gray in dark mode */
+#chat-window.dark-mode #powered-by-container {
+  background: rgba(55, 65, 81, 0.8);
+}
+
+#chat-window.dark-mode #powered-by-container span {
+  color: #9ca3af;
+}
+
+#chat-window.dark-mode #powered-by-container a {
+  color: var(--accent-color);
+  opacity: 0.9;
+}

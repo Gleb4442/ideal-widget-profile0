@@ -417,3 +417,57 @@ input[type=range]::-webkit-slider-runnable-track {
   font-size: 24px;
   opacity: 0.5;
 }
+
+/* ============================
+   GUIDE ITEMS ADMIN
+   ============================ */
+
+.guide-items-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.guide-admin-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.guide-admin-item input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 13px;
+  background: white;
+}
+
+.guide-admin-item input:focus {
+  outline: none;
+  border-color: var(--accent-color, #2563eb);
+}
+
+.guide-item-delete {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fee2e2;
+  color: #dc2626;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.15s;
+}
+
+.guide-item-delete:hover {
+  background: #fecaca;
+}

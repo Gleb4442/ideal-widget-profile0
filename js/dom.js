@@ -105,6 +105,13 @@ export const operatorNameInput = document.getElementById('operator-name-input');
 export const operatorPhotoInput = document.getElementById('operator-photo-input');
 export const operatorPhotoPreview = document.getElementById('operator-photo-preview');
 
+// Guide Elements
+export const guideBadgeBtn = document.getElementById('guide-badge-btn');
+export const guideBottomSheet = document.getElementById('guide-bottom-sheet');
+export const guideSheetClose = document.getElementById('guide-sheet-close');
+export const guideTelegramBtn = document.getElementById('guide-telegram-btn');
+export const guideItemsList = document.getElementById('guide-items-list');
+
 // Mutable reference for typing indicator (needs re-assignment after reset)
 export let typingIndicator = document.getElementById('typing-indicator');
 

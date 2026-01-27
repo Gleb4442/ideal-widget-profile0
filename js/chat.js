@@ -103,6 +103,29 @@ export function hideHeaderStatus() {
   if (pill) pill.classList.add('hidden');
 }
 
+// Update operator status bar
+function updateOperatorStatusBar(text, showSpinner = true) {
+  const bar = document.getElementById('operator-status-bar');
+  const spinner = bar?.querySelector('.operator-status-spinner');
+  const statusText = bar?.querySelector('.operator-status-text');
+
+  if (!bar) return;
+
+  if (text) {
+    if (statusText) statusText.textContent = text;
+    if (spinner) spinner.style.display = showSpinner ? 'block' : 'none';
+    bar.classList.remove('hidden');
+  } else {
+    bar.classList.add('hidden');
+  }
+}
+
+// Hide operator status bar
+function hideOperatorStatusBar() {
+  const bar = document.getElementById('operator-status-bar');
+  if (bar) bar.classList.add('hidden');
+}
+
 // Start operator simulation
 export function startOperatorSimulation() {
   // Clear any existing timeouts
@@ -116,18 +139,18 @@ export function startOperatorSimulation() {
   }
 
   // Stage 1: Searching for specialist (0-4 sec)
-  updateHeaderStatus('Ищем специалиста...', true);
+  updateOperatorStatusBar('Ищем специалиста...', true);
 
   // Stage 2: Connecting operator (4-7 sec)
   const t1 = setTimeout(() => {
-    updateHeaderStatus('Подключаем оператора...', true);
+    updateOperatorStatusBar('Подключаем оператора...', true);
   }, 4000);
   operatorMode.timeouts.push(t1);
 
   // Stage 3: Operator connected (10 sec)
   const t2 = setTimeout(() => {
     const name = operatorMode.name || 'Денис';
-    updateHeaderStatus(`Оператор ${name} присоединился`, false);
+    updateOperatorStatusBar(`Оператор ${name} присоединился`, false);
     operatorMode.connected = true;
 
     // Change logo to operator photo
@@ -137,7 +160,7 @@ export function startOperatorSimulation() {
 
     // Hide status after 3 seconds
     const t3 = setTimeout(() => {
-      hideHeaderStatus();
+      hideOperatorStatusBar();
     }, 3000);
     operatorMode.timeouts.push(t3);
   }, 10000);
@@ -151,7 +174,7 @@ export function stopOperatorSimulation() {
   operatorMode.timeouts = [];
 
   operatorMode.connected = false;
-  hideHeaderStatus();
+  hideOperatorStatusBar();
 
   // Restore original logo
   const logoContainer = document.getElementById('hotel-logo-container');
@@ -2597,6 +2620,9 @@ export function initChatListeners() {
 
   // Telegram booking modal listeners
   initTelegramBookingModalListeners();
+
+  // Guide sheet listeners
+  initGuideSheetListeners();
 }
 
 // Initialize Special Booking Event Listeners
@@ -3011,5 +3037,144 @@ function openHistoryDetail(session) {
   });
 
   detailView.classList.remove('hidden');
+}
+
+// ========================================
+// GUIDE SHEET FUNCTIONS
+// ========================================
+
+// Guide items storage key
+const GUIDE_ITEMS_KEY = 'guide_items';
+
+// Default guide items
+const DEFAULT_GUIDE_ITEMS = [
+  { id: '1', icon: 'user', text: 'Рекомендации нашего шефа' },
+  { id: '2', icon: 'spa', text: 'Wellness эксклюзивы' }
+];
+
+// Load guide items from storage
+export function loadGuideItems() {
+  try {
+    const saved = localStorage.getItem(GUIDE_ITEMS_KEY);
+    return saved ? JSON.parse(saved) : DEFAULT_GUIDE_ITEMS;
+  } catch (e) {
+    return DEFAULT_GUIDE_ITEMS;
+  }
+}
+
+// Save guide items to storage
+export function saveGuideItems(items) {
+  try {
+    localStorage.setItem(GUIDE_ITEMS_KEY, JSON.stringify(items));
+    return true;
+  } catch (e) {
+    console.error('Error saving guide items:', e);
+    return false;
+  }
+}
+
+// Get icon SVG for guide item
+function getGuideItemIcon(iconType) {
+  const icons = {
+    user: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+      <circle cx="12" cy="7" r="4"></circle>
+    </svg>`,
+    chef: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6z"></path>
+      <line x1="6" y1="17" x2="18" y2="17"></line>
+    </svg>`,
+    spa: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+    </svg>`,
+    star: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+    </svg>`
+  };
+  return icons[iconType] || icons.star;
+}
+
+// Render guide items in the sheet
+function renderGuideItems() {
+  const container = dom.guideItemsList;
+  if (!container) return;
+
+  const items = loadGuideItems();
+
+  container.innerHTML = items.map(item => `
+    <div class="guide-item" data-id="${item.id}">
+      <div class="guide-item-icon">
+        ${getGuideItemIcon(item.icon)}
+      </div>
+      <span class="guide-item-text">${item.text}</span>
+      <svg class="guide-item-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </div>
+  `).join('');
+}
+
+// Show guide sheet
+function showGuideSheet() {
+  const sheet = dom.guideBottomSheet;
+  if (!sheet) return;
+
+  renderGuideItems();
+  sheet.classList.remove('hidden');
+
+  // Animate in
+  setTimeout(() => {
+    const content = sheet.querySelector('.guide-sheet-content');
+    if (content) content.style.transform = 'translateY(0)';
+  }, 10);
+}
+
+// Hide guide sheet
+function hideGuideSheet() {
+  const sheet = dom.guideBottomSheet;
+  if (!sheet) return;
+
+  const content = sheet.querySelector('.guide-sheet-content');
+  if (content) content.style.transform = 'translateY(100%)';
+
+  setTimeout(() => {
+    sheet.classList.add('hidden');
+  }, 300);
+}
+
+// Initialize Guide Sheet Listeners
+function initGuideSheetListeners() {
+  // Badge click - open sheet
+  if (dom.guideBadgeBtn) {
+    dom.guideBadgeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showGuideSheet();
+    });
+  }
+
+  // Close button
+  if (dom.guideSheetClose) {
+    dom.guideSheetClose.addEventListener('click', () => {
+      hideGuideSheet();
+    });
+  }
+
+  // Telegram button
+  if (dom.guideTelegramBtn) {
+    dom.guideTelegramBtn.addEventListener('click', () => {
+      const telegramLink = 'https://t.me/your_hotel_bot';
+      window.open(telegramLink, '_blank');
+      hideGuideSheet();
+    });
+  }
+
+  // Close on backdrop click
+  if (dom.guideBottomSheet) {
+    dom.guideBottomSheet.addEventListener('click', (e) => {
+      if (e.target === dom.guideBottomSheet) {
+        hideGuideSheet();
+      }
+    });
+  }
 }
 

@@ -50,6 +50,25 @@
 }
 
 /* Language Sheet */
+#language-sheet-modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+#language-sheet-modal:not(.hidden) {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+}
+
+#language-sheet-modal > div {
+    max-width: 420px;
+    margin: 0 auto;
+    max-height: 70%;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
 #language-sheet-list .language-option {
     width: 100%;
     display: flex;
@@ -122,4 +141,101 @@
     100% {
         background-position: 0% 50%;
     }
+}
+
+/* ============================
+   GUIDE BOTTOM SHEET
+   ============================ */
+
+#guide-bottom-sheet.hidden {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+#guide-bottom-sheet:not(.hidden) {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+}
+
+#guide-bottom-sheet:not(.hidden) .guide-sheet-content {
+    transform: translateY(0);
+}
+
+.guide-sheet-content {
+    max-width: 420px;
+    margin: 0 auto;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.guide-telegram-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(180deg, #2AABEE 0%, #229ED9 100%);
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.guide-telegram-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(42, 171, 238, 0.4);
+}
+
+.guide-telegram-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.guide-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.guide-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #f9fafb;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.guide-item:hover {
+    background: #f3f4f6;
+}
+
+.guide-item-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--accent-color, #2563eb);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.guide-item-text {
+    flex: 1;
+    font-weight: 500;
+    color: #374151;
+    font-size: 14px;
+}
+
+.guide-item-arrow {
+    color: #9ca3af;
 }

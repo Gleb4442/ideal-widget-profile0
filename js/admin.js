@@ -1423,6 +1423,104 @@ function initOperatorMode() {
   }
 }
 
+// ========================================
+// GUEST GUIDE MANAGEMENT
+// ========================================
+
+const GUIDE_ITEMS_KEY = 'guide_items';
+
+const DEFAULT_GUIDE_ITEMS = [
+  { id: '1', icon: 'chef', text: 'Рекомендации нашего шефа' },
+  { id: '2', icon: 'spa', text: 'Wellness эксклюзивы' }
+];
+
+function loadGuideItems() {
+  try {
+    const saved = localStorage.getItem(GUIDE_ITEMS_KEY);
+    return saved ? JSON.parse(saved) : DEFAULT_GUIDE_ITEMS;
+  } catch (e) {
+    return DEFAULT_GUIDE_ITEMS;
+  }
+}
+
+function saveGuideItems(items) {
+  try {
+    localStorage.setItem(GUIDE_ITEMS_KEY, JSON.stringify(items));
+  } catch (e) {
+    console.error('Error saving guide items:', e);
+  }
+}
+
+function renderGuideAdminItems() {
+  const container = document.getElementById('guide-items-admin');
+  if (!container) return;
+
+  const items = loadGuideItems();
+
+  container.innerHTML = items.map((item, index) => `
+    <div class="guide-admin-item" data-id="${item.id}">
+      <input type="text" value="${item.text}" class="guide-item-input" data-index="${index}">
+      <button class="guide-item-delete" data-index="${index}">&times;</button>
+    </div>
+  `).join('');
+
+  // Add event listeners for editing
+  container.querySelectorAll('.guide-item-input').forEach(input => {
+    input.addEventListener('change', (e) => {
+      const index = parseInt(e.target.dataset.index);
+      const items = loadGuideItems();
+      if (items[index]) {
+        items[index].text = e.target.value;
+        saveGuideItems(items);
+      }
+    });
+  });
+
+  // Add event listeners for deletion
+  container.querySelectorAll('.guide-item-delete').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const index = parseInt(e.target.dataset.index);
+      const items = loadGuideItems();
+      items.splice(index, 1);
+      saveGuideItems(items);
+      renderGuideAdminItems();
+    });
+  });
+}
+
+function addGuideItem() {
+  const items = loadGuideItems();
+  const newItem = {
+    id: Date.now().toString(),
+    icon: 'star',
+    text: 'Новий елемент'
+  };
+  items.push(newItem);
+  saveGuideItems(items);
+  renderGuideAdminItems();
+}
+
+function initGuideManagement() {
+  // Toggle visibility
+  const toggle = document.getElementById('guide-toggle');
+  const badge = document.getElementById('guide-badge-btn');
+
+  if (toggle && badge) {
+    toggle.addEventListener('change', (e) => {
+      badge.style.display = e.target.checked ? 'flex' : 'none';
+    });
+  }
+
+  // Add item button
+  const addBtn = document.getElementById('add-guide-item-btn');
+  if (addBtn) {
+    addBtn.addEventListener('click', addGuideItem);
+  }
+
+  // Render initial items
+  renderGuideAdminItems();
+}
+
 // Initialize All Admin Functions
 export function initAdmin() {
   initFontSelector();
@@ -1438,4 +1536,5 @@ export function initAdmin() {
   initServiceManagement();
   initBookingsManagement();
   initOperatorMode();
+  initGuideManagement();
 }
