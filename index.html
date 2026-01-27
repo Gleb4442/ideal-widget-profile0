@@ -296,26 +296,29 @@
   <div id="chat-window">
     <!-- Header -->
     <!-- Header -->
-    <header
-      class="accent-bg text-white p-4 flex justify-between items-center shadow-lg flex-shrink-0 z-20 relative mx-3 mt-3 rounded-2xl mb-2">
-      <div class="flex items-center gap-3">
+    <!-- Header Wrapper -->
+    <div class="flex justify-between items-center z-20 relative mx-3 mt-3 mb-2 px-1">
+      <!-- Block 1: Identity (Logo + Name) -->
+      <div class="accent-bg text-white p-2 pr-5 flex items-center gap-3 shadow-lg rounded-full">
         <div class="relative">
           <div id="hotel-logo-container"
-            class="w-12 h-12 rounded-full bg-white accent-text flex items-center justify-center shadow-sm overflow-hidden">
-            <span class="text-2xl font-bold accent-text">H</span>
+            class="w-10 h-10 rounded-full bg-white accent-text flex items-center justify-center shadow-sm overflow-hidden">
+            <span class="text-xl font-bold accent-text">H</span>
           </div>
-          <div class="absolute bottom-0 right-0 w-[14px] h-[14px] bg-green-400 border-2 accent-border rounded-full"
+          <div class="absolute bottom-0 right-0 w-[12px] h-[12px] bg-green-400 border-2 accent-border rounded-full"
             title="Онлайн"></div>
         </div>
         <div>
-          <h3 id="hotel-name-text" class="text-lg font-bold leading-tight tracking-wide">Hilton</h3>
+          <h3 id="hotel-name-text" class="text-base font-bold leading-tight tracking-wide">Hilton</h3>
         </div>
       </div>
-      <div class="flex items-center gap-1 relative">
+
+      <!-- Block 2: Controls (Menu + Close) -->
+      <div class="accent-bg text-white p-2 flex items-center gap-1 shadow-lg rounded-full">
         <!-- Header Menu (Hamburger) -->
         <button id="header-menu-btn"
           class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white" title="Меню">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -324,13 +327,13 @@
         </button>
         <button id="chat-close-button"
           class="text-white/80 hover:text-white hover:bg-white/10 rounded-full p-2 transition ml-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </button>
       </div>
-    </header>
+    </div>
 
     <!-- Room Context Container (Fixed) -->
     <div id="room-context-container" class="hidden"></div>
