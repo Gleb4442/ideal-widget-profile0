@@ -8,6 +8,7 @@ import * as dom from './dom.js';
 import * as rooms from './rooms.js';
 import * as bookings from './bookings.js';
 import * as services from './services.js';
+import { startOperatorSimulation, stopOperatorSimulation, setOperatorSettings } from './chat.js';
 
 // Room editing state
 let currentEditRoomId = null;
@@ -1375,6 +1376,53 @@ function renderServiceReviewsList() {
   });
 }
 
+// Initialize Operator Mode
+function initOperatorMode() {
+  const toggle = document.getElementById('operator-mode-toggle');
+  const settings = document.getElementById('operator-settings');
+  const nameInput = document.getElementById('operator-name-input');
+  const photoInput = document.getElementById('operator-photo-input');
+  const photoPreview = document.getElementById('operator-photo-preview');
+
+  if (toggle && settings) {
+    toggle.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        settings.classList.remove('hidden');
+        // Get current settings before starting
+        const name = nameInput?.value || 'Денис';
+        const photo = photoPreview?.querySelector('img')?.src || null;
+        setOperatorSettings(name, photo);
+        startOperatorSimulation();
+      } else {
+        settings.classList.add('hidden');
+        stopOperatorSimulation();
+      }
+    });
+  }
+
+  // Operator name input
+  if (nameInput) {
+    nameInput.addEventListener('input', (e) => {
+      setOperatorSettings(e.target.value, null);
+    });
+  }
+
+  // Operator photo upload
+  if (photoInput && photoPreview) {
+    photoInput.addEventListener('change', async function () {
+      if (this.files && this.files[0]) {
+        try {
+          const compressed = await rooms.compressImage(this.files[0]);
+          photoPreview.innerHTML = `<img src="${compressed}" class="w-full h-full object-cover rounded-full" alt="Operator">`;
+          setOperatorSettings(null, compressed);
+        } catch (e) {
+          console.error('Error uploading operator photo:', e);
+        }
+      }
+    });
+  }
+}
+
 // Initialize All Admin Functions
 export function initAdmin() {
   initFontSelector();
@@ -1389,4 +1437,5 @@ export function initAdmin() {
   initRoomManagement();
   initServiceManagement();
   initBookingsManagement();
+  initOperatorMode();
 }

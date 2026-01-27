@@ -284,3 +284,161 @@
     transform: translateX(0);
   }
 }
+
+/* ===== Floating Header with Gradient Blur ===== */
+.chat-header-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  pointer-events: none;
+}
+
+.chat-header-wrapper > * {
+  pointer-events: auto;
+}
+
+/* Gradient blur effect for header */
+.chat-header-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: linear-gradient(to bottom,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 255, 255, 0.9) 30%,
+    rgba(255, 255, 255, 0.6) 60%,
+    rgba(255, 255, 255, 0) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  mask-image: linear-gradient(to bottom, black 0%, black 40%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 40%, transparent 100%);
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 24px 24px 0 0;
+}
+
+/* Header Status Pill (Special Booking / Operator Mode) */
+.header-status-pill {
+  background: var(--accent-color, #2563eb);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: fadeInScale 0.3s ease;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-status-pill.hidden {
+  display: none;
+}
+
+.header-status-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: headerSpin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+.header-status-spinner.hidden {
+  display: none;
+}
+
+.header-status-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@keyframes headerSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ===== Floating Footer with Gradient Blur ===== */
+#chat-footer {
+  position: absolute !important;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  pointer-events: none;
+  background: transparent !important;
+  border: none !important;
+}
+
+#chat-footer > * {
+  pointer-events: auto;
+}
+
+/* Gradient blur effect for footer */
+#chat-footer::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 140px;
+  background: linear-gradient(to top,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 255, 255, 0.9) 40%,
+    rgba(255, 255, 255, 0.6) 70%,
+    rgba(255, 255, 255, 0) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  mask-image: linear-gradient(to top, black 0%, black 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, black 0%, black 50%, transparent 100%);
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 0 0 24px 24px;
+}
+
+/* Messages container padding for floating header/footer */
+#chat-messages {
+  padding-top: 75px !important;
+  padding-bottom: 130px !important;
+}
+
+/* Dark mode support for floating elements */
+.dark-mode .chat-header-wrapper::before {
+  background: linear-gradient(to bottom,
+    rgba(31, 41, 55, 0.98) 0%,
+    rgba(31, 41, 55, 0.9) 30%,
+    rgba(31, 41, 55, 0.6) 60%,
+    rgba(31, 41, 55, 0) 100%);
+}
+
+.dark-mode #chat-footer::before {
+  background: linear-gradient(to top,
+    rgba(31, 41, 55, 0.98) 0%,
+    rgba(31, 41, 55, 0.9) 40%,
+    rgba(31, 41, 55, 0.6) 70%,
+    rgba(31, 41, 55, 0) 100%);
+}

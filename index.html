@@ -177,6 +177,39 @@
       </div>
     </div>
 
+    <hr class="border-gray-200 my-4">
+
+    <!-- Operator Mode Section -->
+    <div class="admin-control">
+      <span class="admin-label">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline mr-1">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        Режим оператора
+      </span>
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-gray-600">Імітація оператора</span>
+        <label class="switch"><input type="checkbox" id="operator-mode-toggle"><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <div id="operator-settings" class="operator-settings hidden">
+      <div class="admin-control">
+        <span class="admin-label text-xs">Ім'я оператора</span>
+        <input type="text" id="operator-name-input" class="admin-input" placeholder="Ім'я оператора" value="Денис">
+      </div>
+      <div class="admin-control">
+        <span class="admin-label text-xs">Фото оператора</span>
+        <label class="file-upload-btn">
+          Обрати фото
+          <input type="file" id="operator-photo-input" accept="image/*" style="display: none;">
+        </label>
+        <div id="operator-photo-preview" class="operator-photo-preview mt-2"></div>
+      </div>
+    </div>
+
     <!-- Rooms Section -->
     <div class="rooms-section">
       <div class="rooms-section-header">
@@ -294,10 +327,8 @@
 
   <!-- CHAT WINDOW -->
   <div id="chat-window">
-    <!-- Header -->
-    <!-- Header -->
-    <!-- Header Wrapper -->
-    <div class="flex justify-between items-center z-20 relative mx-3 mt-3 mb-2 px-1">
+    <!-- Floating Header Wrapper with Gradient Blur -->
+    <div class="chat-header-wrapper">
       <!-- Block 1: Identity (Logo + Name) -->
       <div class="accent-bg text-white p-2 pr-5 flex items-center gap-3 shadow-lg rounded-full">
         <div class="relative">
@@ -305,12 +336,18 @@
             class="w-10 h-10 rounded-full bg-white accent-text flex items-center justify-center shadow-sm overflow-hidden">
             <span class="text-xl font-bold accent-text">H</span>
           </div>
-          <div class="absolute bottom-0 right-0 w-[12px] h-[12px] bg-green-400 border-2 accent-border rounded-full"
+          <div id="online-indicator" class="absolute bottom-0 right-0 w-[12px] h-[12px] bg-green-400 border-2 accent-border rounded-full"
             title="Онлайн"></div>
         </div>
         <div>
           <h3 id="hotel-name-text" class="text-base font-bold leading-tight tracking-wide">Hilton</h3>
         </div>
+      </div>
+
+      <!-- Status Pill (Special Booking / Operator Mode) -->
+      <div id="header-status-pill" class="header-status-pill hidden">
+        <div class="header-status-spinner"></div>
+        <span class="header-status-text">Загрузка...</span>
       </div>
 
       <!-- Block 2: Controls (Menu + Close) -->

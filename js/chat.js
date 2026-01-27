@@ -70,6 +70,102 @@ let cancellationState = {
   lastSearchType: null
 };
 
+// Operator Mode State
+let operatorMode = {
+  enabled: false,
+  name: 'Денис',
+  photo: null,
+  connected: false,
+  originalLogo: null,
+  timeouts: []
+};
+
+// Update header status pill
+export function updateHeaderStatus(text, showSpinner = true) {
+  const pill = document.getElementById('header-status-pill');
+  const spinner = pill?.querySelector('.header-status-spinner');
+  const statusText = pill?.querySelector('.header-status-text');
+
+  if (!pill) return;
+
+  if (text) {
+    if (statusText) statusText.textContent = text;
+    if (spinner) spinner.style.display = showSpinner ? 'block' : 'none';
+    pill.classList.remove('hidden');
+  } else {
+    pill.classList.add('hidden');
+  }
+}
+
+// Hide header status pill
+export function hideHeaderStatus() {
+  const pill = document.getElementById('header-status-pill');
+  if (pill) pill.classList.add('hidden');
+}
+
+// Start operator simulation
+export function startOperatorSimulation() {
+  // Clear any existing timeouts
+  operatorMode.timeouts.forEach(t => clearTimeout(t));
+  operatorMode.timeouts = [];
+
+  // Save original logo
+  const logoContainer = document.getElementById('hotel-logo-container');
+  if (logoContainer && !operatorMode.originalLogo) {
+    operatorMode.originalLogo = logoContainer.innerHTML;
+  }
+
+  // Stage 1: Searching for specialist (0-4 sec)
+  updateHeaderStatus('Ищем специалиста...', true);
+
+  // Stage 2: Connecting operator (4-7 sec)
+  const t1 = setTimeout(() => {
+    updateHeaderStatus('Подключаем оператора...', true);
+  }, 4000);
+  operatorMode.timeouts.push(t1);
+
+  // Stage 3: Operator connected (10 sec)
+  const t2 = setTimeout(() => {
+    const name = operatorMode.name || 'Денис';
+    updateHeaderStatus(`Оператор ${name} присоединился`, false);
+    operatorMode.connected = true;
+
+    // Change logo to operator photo
+    if (operatorMode.photo && logoContainer) {
+      logoContainer.innerHTML = `<img src="${operatorMode.photo}" class="w-full h-full object-cover rounded-full" alt="Operator">`;
+    }
+
+    // Hide status after 3 seconds
+    const t3 = setTimeout(() => {
+      hideHeaderStatus();
+    }, 3000);
+    operatorMode.timeouts.push(t3);
+  }, 10000);
+  operatorMode.timeouts.push(t2);
+}
+
+// Stop operator simulation
+export function stopOperatorSimulation() {
+  // Clear all timeouts
+  operatorMode.timeouts.forEach(t => clearTimeout(t));
+  operatorMode.timeouts = [];
+
+  operatorMode.connected = false;
+  hideHeaderStatus();
+
+  // Restore original logo
+  const logoContainer = document.getElementById('hotel-logo-container');
+  if (logoContainer && operatorMode.originalLogo) {
+    logoContainer.innerHTML = operatorMode.originalLogo;
+  }
+}
+
+// Set operator mode settings
+export function setOperatorSettings(name, photo) {
+  if (name) operatorMode.name = name;
+  if (photo) operatorMode.photo = photo;
+}
+
 // Load booking state from localStorage
 function loadBookingState() {
   try {
@@ -283,6 +379,9 @@ export function showSpecialBookingStatus(stage) {
   }
 
   statusContainer.classList.remove('hidden');
+
+  // Also update header status pill
+  updateHeaderStatus(statusTexts[stage] || statusTexts['collecting'], true);
 }
 
 // Update Special Booking status
@@ -296,6 +395,10 @@ export function hideSpecialBookingStatus() {
   const statusContainer = dom.specialBookingStatus;
   if (statusContainer) {
     statusContainer.classList.add('hidden');
+  }
+  // Also hide header status pill (if not in operator mode)
+  if (!operatorMode.connected) {
+    hideHeaderStatus();
   }
 }
 

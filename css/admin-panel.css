@@ -381,3 +381,39 @@ input[type=range]::-webkit-slider-runnable-track {
   padding: 12px;
   border-radius: 8px;
 }
+
+/* Operator Mode Settings */
+.operator-settings {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.operator-settings.hidden {
+  display: none;
+}
+
+.operator-photo-preview {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.operator-photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.operator-photo-preview:empty::before {
+  content: '👤';
+  font-size: 24px;
+  opacity: 0.5;
+}

@@ -343,7 +343,7 @@
 
 /* ===== Service Card in Chat ===== */
 .service-carousel-card {
-  flex: 0 0 260px;
+  flex: 0 0 300px;
   scroll-snap-align: start;
   background: white;
   border-radius: 12px;
@@ -363,7 +363,7 @@
 .service-carousel-image-container {
   position: relative;
   width: 100%;
-  height: 160px;
+  height: 230px;
   overflow: hidden;
 }
 
@@ -375,7 +375,7 @@
 
 .service-carousel-image {
   width: 100%;
-  height: 160px;
+  height: 230px;
   object-fit: cover;
   background: #f3f4f6;
   flex-shrink: 0;
@@ -650,12 +650,12 @@
   }
 
   .service-carousel-card {
-    flex: 0 0 220px;
+    flex: 0 0 260px;
   }
 
   .service-carousel-image-container,
   .service-carousel-image {
-    height: 130px;
+    height: 190px;
   }
 
   /* Always show nav on touch devices */

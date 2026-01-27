@@ -92,6 +92,19 @@ export const languageMenuBtn = document.getElementById('language-menu-btn');
 export const languageSubmenu = document.getElementById('language-submenu');
 export const languageOptions = document.querySelectorAll('.language-option');
 
+// Header Status Pill (Special Booking / Operator Mode)
+export const headerStatusPill = document.getElementById('header-status-pill');
+export const headerStatusSpinner = document.querySelector('.header-status-spinner');
+export const headerStatusText = document.querySelector('.header-status-text');
+export const onlineIndicator = document.getElementById('online-indicator');
+
+// Operator Mode Elements (Admin)
+export const operatorModeToggle = document.getElementById('operator-mode-toggle');
+export const operatorSettings = document.getElementById('operator-settings');
+export const operatorNameInput = document.getElementById('operator-name-input');
+export const operatorPhotoInput = document.getElementById('operator-photo-input');
+export const operatorPhotoPreview = document.getElementById('operator-photo-preview');
+
 // Mutable reference for typing indicator (needs re-assignment after reset)
 export let typingIndicator = document.getElementById('typing-indicator');
 
