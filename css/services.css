@@ -466,6 +466,8 @@
   flex-direction: column;
   justify-content: flex-end;
   min-height: 80px;
+  z-index: 5;
+  pointer-events: none;
 }
 
 .service-carousel-card:hover .service-carousel-overlay {
@@ -475,6 +477,7 @@
 .service-carousel-actions {
   display: flex;
   gap: 6px;
+  pointer-events: auto;
 }
 
 .service-carousel-action-btn {
@@ -729,4 +732,59 @@
 .service-gallery-add-btn:hover {
   border-color: var(--accent-color, #2563eb);
   color: var(--accent-color, #2563eb);
+}
+
+/* ===== Marketing Section Title ===== */
+.service-form-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.service-form-section-title svg {
+  color: #f59e0b;
+}
+
+/* Service Form Row */
+.service-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ===== Price with Discount ===== */
+.service-carousel-price-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.service-carousel-original-price {
+  font-size: 12px;
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
+.service-carousel-price-wrapper .service-carousel-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.service-carousel-discount {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  background: #dcfce7;
+  color: #16a34a;
 }

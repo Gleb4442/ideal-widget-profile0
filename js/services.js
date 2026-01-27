@@ -101,6 +101,11 @@ export function addService(serviceData) {
     category: serviceData.category || 'general',
     askQuestionEnabled: serviceData.askQuestionEnabled !== false,
     addToBookingEnabled: serviceData.addToBookingEnabled !== false,
+    // Marketing fields
+    badge: serviceData.badge || '',
+    leftCount: serviceData.leftCount || 0,
+    discount: serviceData.discount || 0,
+    originalPrice: serviceData.originalPrice || 0,
     createdAt: Date.now()
   };
 
@@ -130,6 +135,11 @@ export function updateService(id, serviceData) {
     category: serviceData.category ?? services[index].category,
     askQuestionEnabled: serviceData.askQuestionEnabled ?? services[index].askQuestionEnabled,
     addToBookingEnabled: serviceData.addToBookingEnabled ?? services[index].addToBookingEnabled,
+    // Marketing fields
+    badge: serviceData.badge ?? services[index].badge ?? '',
+    leftCount: serviceData.leftCount ?? services[index].leftCount ?? 0,
+    discount: serviceData.discount ?? services[index].discount ?? 0,
+    originalPrice: serviceData.originalPrice ?? services[index].originalPrice ?? 0,
     updatedAt: Date.now()
   };
 
@@ -197,4 +207,18 @@ export const SERVICE_CATEGORIES = [
 export function getCategoryName(categoryId) {
   const category = SERVICE_CATEGORIES.find(c => c.id === categoryId);
   return category ? category.name : 'Другое';
+}
+
+// Badge types and labels
+export const BADGE_TYPES = {
+  popular: { label: 'Most Popular', class: 'badge-popular' },
+  new: { label: 'New', class: 'badge-new' },
+  limited: { label: 'Limited', class: 'badge-limited' },
+  recommended: { label: 'Recommended', class: 'badge-recommended' },
+  bestseller: { label: 'Bestseller', class: 'badge-bestseller' }
+};
+
+// Get badge info
+export function getBadgeInfo(badgeType) {
+  return BADGE_TYPES[badgeType] || null;
 }

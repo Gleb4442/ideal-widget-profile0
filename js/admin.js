@@ -470,6 +470,11 @@ export function openRoomModal(roomId = null) {
       document.getElementById('room-area-input').value = room.area || '';
       document.getElementById('room-price-input').value = room.pricePerNight || '';
       document.getElementById('room-ask-toggle').checked = room.askQuestionEnabled !== false;
+      // Marketing fields
+      document.getElementById('room-badge-input').value = room.badge || '';
+      document.getElementById('room-left-count-input').value = room.leftCount || 0;
+      document.getElementById('room-discount-input').value = room.discount || 0;
+      document.getElementById('room-original-price-input').value = room.originalPrice || 0;
       currentMainPhoto = room.mainPhoto || '';
       currentGallery = room.gallery ? [...room.gallery] : [];
       currentBookedDates = room.bookedDates ? [...room.bookedDates] : [];
@@ -482,6 +487,11 @@ export function openRoomModal(roomId = null) {
     document.getElementById('room-area-input').value = '';
     document.getElementById('room-price-input').value = '';
     document.getElementById('room-ask-toggle').checked = true;
+    // Marketing fields - reset
+    document.getElementById('room-badge-input').value = '';
+    document.getElementById('room-left-count-input').value = 0;
+    document.getElementById('room-discount-input').value = 0;
+    document.getElementById('room-original-price-input').value = 0;
     deleteBtn.style.display = 'none';
   }
 
@@ -573,6 +583,11 @@ function saveRoom() {
   const area = parseInt(document.getElementById('room-area-input').value) || 0;
   const pricePerNight = parseInt(document.getElementById('room-price-input').value) || 0;
   const askQuestionEnabled = document.getElementById('room-ask-toggle').checked;
+  // Marketing fields
+  const badge = document.getElementById('room-badge-input').value;
+  const leftCount = parseInt(document.getElementById('room-left-count-input').value) || 0;
+  const discount = parseInt(document.getElementById('room-discount-input').value) || 0;
+  const originalPrice = parseInt(document.getElementById('room-original-price-input').value) || 0;
 
   if (!name) {
     alert('Введіть назву номера');
@@ -587,7 +602,12 @@ function saveRoom() {
     mainPhoto: currentMainPhoto,
     gallery: currentGallery,
     askQuestionEnabled,
-    bookedDates: currentBookedDates
+    bookedDates: currentBookedDates,
+    // Marketing fields
+    badge,
+    leftCount,
+    discount,
+    originalPrice
   };
 
   if (currentEditRoomId) {
@@ -971,6 +991,11 @@ export function openServiceModal(serviceId = null) {
       document.getElementById('service-category-input').value = service.category || 'general';
       document.getElementById('service-ask-toggle').checked = service.askQuestionEnabled !== false;
       document.getElementById('service-add-booking-toggle').checked = service.addToBookingEnabled !== false;
+      // Marketing fields
+      document.getElementById('service-badge-input').value = service.badge || '';
+      document.getElementById('service-left-count-input').value = service.leftCount || 0;
+      document.getElementById('service-discount-input').value = service.discount || 0;
+      document.getElementById('service-original-price-input').value = service.originalPrice || 0;
       currentServiceMainPhoto = service.mainPhoto || '';
       currentServiceGallery = service.gallery ? [...service.gallery] : [];
       deleteBtn.style.display = 'flex';
@@ -984,6 +1009,11 @@ export function openServiceModal(serviceId = null) {
     document.getElementById('service-category-input').value = 'general';
     document.getElementById('service-ask-toggle').checked = true;
     document.getElementById('service-add-booking-toggle').checked = true;
+    // Marketing fields - reset
+    document.getElementById('service-badge-input').value = '';
+    document.getElementById('service-left-count-input').value = 0;
+    document.getElementById('service-discount-input').value = 0;
+    document.getElementById('service-original-price-input').value = 0;
     deleteBtn.style.display = 'none';
   }
 
@@ -1075,6 +1105,11 @@ function saveService() {
   const category = document.getElementById('service-category-input').value;
   const askQuestionEnabled = document.getElementById('service-ask-toggle').checked;
   const addToBookingEnabled = document.getElementById('service-add-booking-toggle').checked;
+  // Marketing fields
+  const badge = document.getElementById('service-badge-input').value;
+  const leftCount = parseInt(document.getElementById('service-left-count-input').value) || 0;
+  const discount = parseInt(document.getElementById('service-discount-input').value) || 0;
+  const originalPrice = parseInt(document.getElementById('service-original-price-input').value) || 0;
 
   if (!name) {
     alert('Введіть назву послуги');
@@ -1090,7 +1125,12 @@ function saveService() {
     mainPhoto: currentServiceMainPhoto,
     gallery: currentServiceGallery,
     askQuestionEnabled,
-    addToBookingEnabled
+    addToBookingEnabled,
+    // Marketing fields
+    badge,
+    leftCount,
+    discount,
+    originalPrice
   };
 
   if (currentEditServiceId) {

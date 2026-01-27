@@ -963,6 +963,42 @@
           </label>
         </div>
 
+        <!-- Marketing Section -->
+        <div class="room-form-section-title">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          Маркетинг
+        </div>
+
+        <div class="room-form-group">
+          <label class="room-form-label">Бейдж</label>
+          <select id="room-badge-input" class="room-form-select">
+            <option value="">Без бейджа</option>
+            <option value="popular">Most Popular</option>
+            <option value="new">New</option>
+            <option value="limited">Limited</option>
+            <option value="recommended">Recommended</option>
+            <option value="bestseller">Bestseller</option>
+          </select>
+        </div>
+
+        <div class="room-form-group">
+          <label class="room-form-label">Залишилось номерів (0 = не показувати)</label>
+          <input type="number" id="room-left-count-input" class="room-form-input" placeholder="0" min="0" max="99">
+        </div>
+
+        <div class="room-form-row">
+          <div class="room-form-group">
+            <label class="room-form-label">Знижка (%)</label>
+            <input type="number" id="room-discount-input" class="room-form-input" placeholder="0" min="0" max="99">
+          </div>
+          <div class="room-form-group">
+            <label class="room-form-label">Стара ціна ($)</label>
+            <input type="number" id="room-original-price-input" class="room-form-input" placeholder="0" min="0">
+          </div>
+        </div>
+
         <!-- Calendar Section -->
         <div class="room-form-group">
           <label class="room-form-label">Календарь доступности</label>
@@ -1110,6 +1146,42 @@
             <input type="checkbox" id="service-add-booking-toggle" checked>
             <span class="slider"></span>
           </label>
+        </div>
+
+        <!-- Marketing Section -->
+        <div class="service-form-section-title">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          Маркетинг
+        </div>
+
+        <div class="service-form-group">
+          <label class="service-form-label">Бейдж</label>
+          <select id="service-badge-input" class="service-form-select">
+            <option value="">Без бейджа</option>
+            <option value="popular">Most Popular</option>
+            <option value="new">New</option>
+            <option value="limited">Limited</option>
+            <option value="recommended">Recommended</option>
+            <option value="bestseller">Bestseller</option>
+          </select>
+        </div>
+
+        <div class="service-form-group">
+          <label class="service-form-label">Залишилось місць (0 = не показувати)</label>
+          <input type="number" id="service-left-count-input" class="service-form-input" placeholder="0" min="0" max="99">
+        </div>
+
+        <div class="service-form-row">
+          <div class="service-form-group">
+            <label class="service-form-label">Знижка (%)</label>
+            <input type="number" id="service-discount-input" class="service-form-input" placeholder="0" min="0" max="99">
+          </div>
+          <div class="service-form-group">
+            <label class="service-form-label">Стара ціна ($)</label>
+            <input type="number" id="service-original-price-input" class="service-form-input" placeholder="0" min="0">
+          </div>
         </div>
       </div>
       <div class="service-modal-footer">

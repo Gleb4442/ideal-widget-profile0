@@ -101,6 +101,11 @@ export function addRoom(roomData) {
     mainPhoto: roomData.mainPhoto || '',
     gallery: roomData.gallery || [],
     askQuestionEnabled: roomData.askQuestionEnabled !== false,
+    // Marketing fields
+    badge: roomData.badge || '',
+    leftCount: roomData.leftCount || 0,
+    discount: roomData.discount || 0,
+    originalPrice: roomData.originalPrice || 0,
     createdAt: Date.now()
   };
 
@@ -129,6 +134,11 @@ export function updateRoom(id, roomData) {
     gallery: roomData.gallery ?? rooms[index].gallery,
     askQuestionEnabled: roomData.askQuestionEnabled ?? rooms[index].askQuestionEnabled,
     bookedDates: roomData.bookedDates ?? rooms[index].bookedDates ?? [],
+    // Marketing fields
+    badge: roomData.badge ?? rooms[index].badge ?? '',
+    leftCount: roomData.leftCount ?? rooms[index].leftCount ?? 0,
+    discount: roomData.discount ?? rooms[index].discount ?? 0,
+    originalPrice: roomData.originalPrice ?? rooms[index].originalPrice ?? 0,
     updatedAt: Date.now()
   };
 
@@ -171,6 +181,20 @@ export function formatPrice(price) {
 // Format area for display
 export function formatArea(area) {
   return `${area} м²`;
+}
+
+// Badge types and labels
+export const BADGE_TYPES = {
+  popular: { label: 'Most Popular', class: 'badge-popular' },
+  new: { label: 'New', class: 'badge-new' },
+  limited: { label: 'Limited', class: 'badge-limited' },
+  recommended: { label: 'Recommended', class: 'badge-recommended' },
+  bestseller: { label: 'Bestseller', class: 'badge-bestseller' }
+};
+
+// Get badge info
+export function getBadgeInfo(badgeType) {
+  return BADGE_TYPES[badgeType] || null;
 }
 
 // ============================================

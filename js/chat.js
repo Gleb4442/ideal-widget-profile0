@@ -1455,39 +1455,111 @@ export function addRoomCarousel() {
     card.className = 'room-carousel-card';
     card.dataset.roomId = room.id;
 
-    const hasPhoto = !!room.mainPhoto;
+    const hasMainPhoto = !!room.mainPhoto;
     const hasGallery = room.gallery && room.gallery.length > 0;
+    const allPhotos = [];
+    if (hasMainPhoto) allPhotos.push(room.mainPhoto);
+    if (hasGallery) allPhotos.push(...room.gallery);
+    const hasMultiplePhotos = allPhotos.length > 1;
+
+    // Marketing elements
+    const badgeInfo = room.badge ? rooms.getBadgeInfo(room.badge) : null;
+    const hasDiscount = room.discount > 0 && room.originalPrice > 0;
+    const hasLeftCount = room.leftCount > 0;
+
+    // Build image track (like services)
+    let imageTrackHTML = '';
+    if (allPhotos.length > 0) {
+      imageTrackHTML = allPhotos.map((photo, idx) =>
+        `<img class="room-carousel-image" src="${photo}" alt="${room.name} ${idx + 1}" data-index="${idx}">`
+      ).join('');
+    } else {
+      imageTrackHTML = `
+        <div class="room-carousel-image room-carousel-placeholder" style="display:flex;align-items:center;justify-content:center;color:#9ca3af;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+        </div>
+      `;
+    }
+
+    // Build dots indicator
+    let dotsHTML = '';
+    if (hasMultiplePhotos) {
+      dotsHTML = `<div class="room-image-dots">` +
+        allPhotos.map((_, idx) => `<div class="room-image-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}"></div>`).join('') +
+        `</div>`;
+    }
+
+    // Build navigation arrows
+    let navHTML = '';
+    if (hasMultiplePhotos) {
+      navHTML = `
+        <button class="room-image-nav prev" disabled>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button class="room-image-nav next">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      `;
+    }
+
+    // Marketing badges HTML
+    let badgesHTML = '';
+    if (badgeInfo) {
+      badgesHTML += `<div class="carousel-badge ${badgeInfo.class}">${badgeInfo.label}</div>`;
+    }
+    if (hasLeftCount) {
+      badgesHTML += `<div class="carousel-left-count">Залишилось: ${room.leftCount}</div>`;
+    }
+
+    // Price HTML with discount
+    let priceHTML = '';
+    if (hasDiscount) {
+      priceHTML = `
+        <div class="room-carousel-price-wrapper">
+          <span class="room-carousel-original-price">${rooms.formatPrice(room.originalPrice)}</span>
+          <span class="room-carousel-price">${rooms.formatPrice(room.pricePerNight)}</span>
+          <span class="room-carousel-discount">-${room.discount}%</span>
+        </div>
+      `;
+    } else {
+      priceHTML = `<div class="room-carousel-price">${rooms.formatPrice(room.pricePerNight)}</div>`;
+    }
 
     card.innerHTML = `
       <div class="room-carousel-image-container">
-        ${hasPhoto
-        ? `<img class="room-carousel-image" src="${room.mainPhoto}" alt="${room.name}">`
-        : `<div class="room-carousel-image" style="display:flex;align-items:center;justify-content:center;color:#9ca3af;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                <polyline points="21 15 16 10 5 21"></polyline>
-              </svg>
-            </div>`
-      }
+        ${badgesHTML ? `<div class="carousel-badges">${badgesHTML}</div>` : ''}
+        <div class="room-carousel-images-track" data-current-index="0">
+          ${imageTrackHTML}
+        </div>
+        ${navHTML}
+        ${dotsHTML}
         <div class="room-carousel-overlay">
           <div class="room-carousel-actions">
+            <button class="room-carousel-action-btn primary" data-action="book" data-room-id="${room.id}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              Забронювати
+            </button>
             ${room.askQuestionEnabled !== false ? `
-              <button class="room-carousel-action-btn primary" data-action="ask" data-room-id="${room.id}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              <button class="room-carousel-action-btn secondary" data-action="ask" data-room-id="${room.id}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
                 </svg>
                 Питання
-              </button>
-            ` : ''}
-            ${hasPhoto || hasGallery ? `
-              <button class="room-carousel-action-btn secondary" data-action="photos" data-room-id="${room.id}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                  <polyline points="21 15 16 10 5 21"></polyline>
-                </svg>
-                Фото
               </button>
             ` : ''}
           </div>
@@ -1495,10 +1567,58 @@ export function addRoomCarousel() {
       </div>
       <div class="room-carousel-info">
         <div class="room-carousel-name">${room.name || 'Без назви'}</div>
-        <div class="room-carousel-price">${rooms.formatPrice(room.pricePerNight)}</div>
+        ${priceHTML}
         <div class="room-carousel-area">${rooms.formatArea(room.area)}</div>
       </div>
     `;
+
+    // Handle image navigation (like services)
+    if (hasMultiplePhotos) {
+      const track = card.querySelector('.room-carousel-images-track');
+      const prevBtn = card.querySelector('.room-image-nav.prev');
+      const nextBtn = card.querySelector('.room-image-nav.next');
+      const dots = card.querySelectorAll('.room-image-dot');
+      const totalImages = allPhotos.length;
+
+      const updateNav = (currentIndex) => {
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex === totalImages - 1;
+        dots.forEach((dot, idx) => {
+          dot.classList.toggle('active', idx === currentIndex);
+        });
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+      };
+
+      prevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        let currentIndex = parseInt(track.dataset.currentIndex) || 0;
+        if (currentIndex > 0) {
+          currentIndex--;
+          track.dataset.currentIndex = currentIndex;
+          updateNav(currentIndex);
+        }
+      });
+
+      nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        let currentIndex = parseInt(track.dataset.currentIndex) || 0;
+        if (currentIndex < totalImages - 1) {
+          currentIndex++;
+          track.dataset.currentIndex = currentIndex;
+          updateNav(currentIndex);
+        }
+      });
+
+      // Click on dots
+      dots.forEach(dot => {
+        dot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const idx = parseInt(dot.dataset.index);
+          track.dataset.currentIndex = idx;
+          updateNav(idx);
+        });
+      });
+    }
 
     // Handle action button clicks
     card.querySelectorAll('.room-carousel-action-btn').forEach(btn => {
@@ -1506,10 +1626,10 @@ export function addRoomCarousel() {
         e.stopPropagation();
         const action = btn.dataset.action;
         const roomId = btn.dataset.roomId;
-        if (action === 'ask') {
+        if (action === 'book') {
+          openRoomDetailView(roomId);
+        } else if (action === 'ask') {
           enterRoomContext(roomId);
-        } else if (action === 'photos') {
-          viewRoomPhotos(roomId);
         }
       });
     });
@@ -1611,8 +1731,37 @@ export function addServicesCarousel() {
       `;
     }
 
+    // Marketing elements
+    const badgeInfo = service.badge ? services.getBadgeInfo(service.badge) : null;
+    const hasDiscount = service.discount > 0 && service.originalPrice > 0;
+    const hasLeftCount = service.leftCount > 0;
+
+    // Marketing badges HTML
+    let badgesHTML = '';
+    if (badgeInfo) {
+      badgesHTML += `<div class="carousel-badge ${badgeInfo.class}">${badgeInfo.label}</div>`;
+    }
+    if (hasLeftCount) {
+      badgesHTML += `<div class="carousel-left-count">Залишилось: ${service.leftCount}</div>`;
+    }
+
+    // Price HTML with discount
+    let priceHTML = '';
+    if (hasDiscount) {
+      priceHTML = `
+        <div class="service-carousel-price-wrapper">
+          <span class="service-carousel-original-price">${services.formatPrice(service.originalPrice, service.priceType)}</span>
+          <span class="service-carousel-price">${services.formatPrice(service.price, service.priceType)}</span>
+          <span class="service-carousel-discount">-${service.discount}%</span>
+        </div>
+      `;
+    } else {
+      priceHTML = `<div class="service-carousel-price">${services.formatPrice(service.price, service.priceType)}</div>`;
+    }
+
     card.innerHTML = `
       <div class="service-carousel-image-container">
+        ${badgesHTML ? `<div class="carousel-badges">${badgesHTML}</div>` : ''}
         <div class="service-carousel-images-track" data-current-index="0">
           ${imageTrackHTML}
         </div>
@@ -1645,7 +1794,7 @@ export function addServicesCarousel() {
       <div class="service-carousel-info">
         <div class="service-carousel-name">${service.name || 'Без назви'}</div>
         ${service.description ? `<div class="service-carousel-description">${service.description}</div>` : ''}
-        <div class="service-carousel-price">${services.formatPrice(service.price, service.priceType)}</div>
+        ${priceHTML}
         <span class="service-carousel-category">${services.getCategoryName(service.category)}</span>
       </div>
     `;
