@@ -21,7 +21,7 @@ export function updateContactStack() {
       item.el.classList.add('show-banner');
       item.el.style.marginBottom = `${currentBottom}px`;
       const isCollapsed = item.el.classList.contains('collapsed');
-      const spacing = isCollapsed ? 45 : 75;
+      const spacing = isCollapsed ? 37 : 75;
       currentBottom += spacing;
     } else {
       item.el.classList.remove('show-banner');
@@ -41,7 +41,7 @@ export function setupBannerInteractions(bannerId, modalId, externalLink) {
   const confirmBtn = modal.querySelector('button:first-child');
   const cancelBtn = modal.querySelector('.modal-btn-cancel');
 
-  banner.addEventListener('click', function(e) {
+  banner.addEventListener('click', function (e) {
     if (e.target.closest('.close-banner-btn')) return;
     if (this.classList.contains('collapsed')) {
       e.preventDefault();

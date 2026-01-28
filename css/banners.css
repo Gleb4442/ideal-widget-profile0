@@ -160,7 +160,7 @@
   transform: scale(1.1);
 }
 
-/* Collapsed State (Circular Icon) - Adjusted to 44px */
+/* Collapsed State (Circular Icon) - Enlarged for better visibility */
 .contact-banner.collapsed {
   width: 44px;
   height: 44px;
@@ -195,7 +195,7 @@
   height: 100%;
   margin-left: 0;
   padding: 6px;
-  /* Adjusted padding to fit 32px icon in 44px container */
+  /* Removing margin to center icon perfectly */
 }
 
 .contact-banner.collapsed .banner-icon-wrapper svg {
