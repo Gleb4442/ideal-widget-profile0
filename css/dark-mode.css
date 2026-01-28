@@ -73,9 +73,11 @@
   background-color: #6b7280;
 }
 
-/* Powered by badge - lighter gray in dark mode */
+/* Powered by badge - independent block in dark mode */
 #chat-window.dark-mode #powered-by-container {
-  background: rgba(55, 65, 81, 0.8);
+  background: rgba(55, 65, 81, 0.85) !important;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 #chat-window.dark-mode #powered-by-container span {
@@ -85,4 +87,167 @@
 #chat-window.dark-mode #powered-by-container a {
   color: var(--accent-color);
   opacity: 0.9;
+}
+
+/* ===== Typing Indicator Dark Mode ===== */
+#chat-window.dark-mode .typing-indicator-bubble span {
+  background-color: #6b7280;
+}
+
+/* ===== Section Titles Dark Mode ===== */
+#chat-window.dark-mode .services-section-title,
+#chat-window.dark-mode .rooms-section-title,
+#chat-window.dark-mode .bookings-section-title,
+#chat-window.dark-mode .services-carousel-title {
+  color: #e5e7eb;
+}
+
+/* ===== Sections Borders Dark Mode ===== */
+#chat-window.dark-mode .services-section,
+#chat-window.dark-mode .rooms-section,
+#chat-window.dark-mode .bookings-section {
+  border-top-color: #374151;
+}
+
+/* ===== Bookings Dark Mode ===== */
+#chat-window.dark-mode .bookings-stats {
+  background: #374151;
+}
+
+#chat-window.dark-mode .stat-label {
+  color: #9ca3af;
+}
+
+#chat-window.dark-mode .stat-value {
+  color: #f3f4f6;
+}
+
+#chat-window.dark-mode .booking-card {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+#chat-window.dark-mode .booking-card:hover {
+  border-color: var(--accent-color, #3b82f6);
+}
+
+#chat-window.dark-mode .booking-guest-name {
+  color: #f3f4f6;
+}
+
+#chat-window.dark-mode .booking-info-value {
+  color: #e5e7eb;
+}
+
+#chat-window.dark-mode .booking-info-label {
+  color: #9ca3af;
+}
+
+#chat-window.dark-mode .booking-room {
+  background: #374151;
+  color: #d1d5db;
+}
+
+#chat-window.dark-mode .booking-actions {
+  border-top-color: #374151;
+}
+
+/* ===== Rooms Cards Dark Mode ===== */
+#chat-window.dark-mode .room-card {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+#chat-window.dark-mode .room-card:hover {
+  border-color: var(--accent-color, #3b82f6);
+}
+
+#chat-window.dark-mode .room-name {
+  color: #f3f4f6;
+}
+
+#chat-window.dark-mode .room-description {
+  color: #9ca3af;
+}
+
+#chat-window.dark-mode .room-price {
+  color: #e5e7eb;
+}
+
+/* ===== Services Cards Dark Mode ===== */
+#chat-window.dark-mode .service-card {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+#chat-window.dark-mode .service-card:hover {
+  border-color: var(--accent-color, #3b82f6);
+}
+
+#chat-window.dark-mode .service-name {
+  color: #f3f4f6;
+}
+
+#chat-window.dark-mode .service-description {
+  color: #9ca3af;
+}
+
+#chat-window.dark-mode .service-price {
+  color: #e5e7eb;
+}
+
+/* ===== Special Booking Status Dark Mode ===== */
+#chat-window.dark-mode .special-booking-status {
+  background: linear-gradient(135deg, #1e3a5f 0%, #1e3a8a 40%, #1e40af 100%);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+#chat-window.dark-mode .special-booking-status .status-text {
+  color: #bfdbfe;
+}
+
+#chat-window.dark-mode .special-booking-status .mini-loader {
+  border-color: rgba(59, 130, 246, 0.3);
+  border-top-color: #60a5fa;
+}
+
+#chat-window.dark-mode .special-booking-status .cancel-special-btn {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+}
+
+/* ===== Operator Status Bar Dark Mode ===== */
+#chat-window.dark-mode .operator-status-bar {
+  background: linear-gradient(135deg, #2e1065 0%, #4c1d95 50%, #5b21b6 100%);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+#chat-window.dark-mode .operator-status-bar .operator-status-text {
+  color: #ddd6fe;
+}
+
+#chat-window.dark-mode .operator-status-bar .operator-icon {
+  background: linear-gradient(145deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);
+}
+
+#chat-window.dark-mode .operator-status-bar .operator-status-spinner {
+  border-color: rgba(139, 92, 246, 0.3);
+  border-top-color: #a78bfa;
+}
+
+/* ===== Menu Sheet Dark Mode ===== */
+#chat-window.dark-mode .menu-sheet {
+  background: #1f2937;
+}
+
+#chat-window.dark-mode .menu-sheet-btn {
+  color: #e5e7eb;
+}
+
+#chat-window.dark-mode .menu-sheet-btn:hover {
+  background: #374151;
+}
+
+#chat-window.dark-mode .menu-divider {
+  background: #374151;
 }

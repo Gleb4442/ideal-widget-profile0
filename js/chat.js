@@ -210,6 +210,15 @@ export function showNewMessagesMarker() {
   const existingMarker = document.getElementById('new-messages-marker');
   if (existingMarker) return;
 
+  // Не показываем маркер если textarea многострочный
+  const textarea = document.getElementById('message-input');
+  if (textarea) {
+    const minHeight = parseInt(getComputedStyle(textarea).minHeight) || 31;
+    if (textarea.scrollHeight > minHeight + 5) {
+      return;
+    }
+  }
+
   const marker = document.createElement('div');
   marker.id = 'new-messages-marker';
   marker.className = 'new-messages-marker animate-fade-in';
@@ -582,9 +591,7 @@ export function showSpecialBookingStatus(stage) {
   }
 
   statusContainer.classList.remove('hidden');
-
-  // Also update header status pill
-  updateHeaderStatus(statusTexts[stage] || statusTexts['collecting'], true);
+  // Анимация только в special-booking-status, не дублируем в header
 }
 
 // Update Special Booking status
@@ -3067,6 +3074,11 @@ export function initChatListeners() {
     dom.messageInput.addEventListener('input', () => {
       autoResize();
       updateSendButtonState();
+      // Скрывать маркер при многострочном вводе
+      const minHeight = parseInt(getComputedStyle(dom.messageInput).minHeight) || 31;
+      if (dom.messageInput.scrollHeight > minHeight + 5) {
+        hideNewMessagesMarker();
+      }
     });
     dom.messageInput.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' && !event.shiftKey) {

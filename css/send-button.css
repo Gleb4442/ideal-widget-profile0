@@ -14,11 +14,13 @@
   align-items: center;
   justify-content: center;
   margin-right: 0;
+  margin-bottom: 2px;  /* Выравнивание по нижней линии textarea */
   border-radius: 50%;
   overflow: hidden;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
   flex-shrink: 0;
+  align-self: flex-end;  /* Всегда внизу контейнера */
 }
 
 /* Active state */

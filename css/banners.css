@@ -173,7 +173,7 @@
 }
 
 .contact-banner.collapsed:hover {
-  transform: scale(1.08);
+  transform: scale(1.05);
   box-shadow: 0 8px 24px rgba(42, 171, 238, 0.5);
 }
 

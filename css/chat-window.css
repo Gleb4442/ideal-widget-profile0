@@ -132,7 +132,7 @@
 /* ===== Input Field Styles ===== */
 .input-container-bg {
   display: flex;
-  align-items: center;
+  align-items: flex-end;  /* Кнопка всегда внизу */
   background: #f3f4f6;
   border-radius: 20px;
   padding: 4px;
@@ -467,39 +467,59 @@
   pointer-events: none;
   background: transparent !important;
   border: none !important;
+  padding-bottom: 12px !important;
 }
 
 #chat-footer>* {
   pointer-events: auto;
 }
 
-/* Gradient blur effect for footer */
+/* Gradient blur effect for footer - full coverage to edges */
 #chat-footer::before {
   content: '';
   position: absolute;
   bottom: 0;
-  left: 0;
-  right: 0;
-  height: 160px;
+  left: -12px;
+  right: -12px;
+  height: 200px;
   background: linear-gradient(to top,
       rgba(255, 255, 255, 1) 0%,
-      rgba(255, 255, 255, 0.98) 25%,
-      rgba(255, 255, 255, 0.9) 50%,
-      rgba(255, 255, 255, 0.6) 75%,
+      rgba(255, 255, 255, 1) 30%,
+      rgba(255, 255, 255, 0.98) 50%,
+      rgba(255, 255, 255, 0.9) 70%,
+      rgba(255, 255, 255, 0.5) 85%,
       rgba(255, 255, 255, 0) 100%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  mask-image: linear-gradient(to top, black 0%, black 60%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to top, black 0%, black 60%, transparent 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  mask-image: linear-gradient(to top, black 0%, black 65%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, black 0%, black 65%, transparent 100%);
   z-index: -1;
   pointer-events: none;
   border-radius: 0 0 24px 24px;
 }
 
+/* Input area wrapper styling */
+#input-area-wrapper {
+  position: relative;
+  z-index: 2;
+}
+
+/* Powered by as independent block */
+#powered-by-container {
+  position: relative;
+  z-index: 2;
+  margin-top: 8px !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
 /* Messages container padding for floating header/footer */
 #chat-messages {
   padding-top: 90px !important;
-  padding-bottom: 130px !important;
+  padding-bottom: 140px !important;
 }
 
 /* Dark mode support for floating elements */
@@ -514,10 +534,16 @@
 .dark-mode #chat-footer::before {
   background: linear-gradient(to top,
       rgba(31, 41, 55, 1) 0%,
-      rgba(31, 41, 55, 0.98) 25%,
-      rgba(31, 41, 55, 0.9) 50%,
-      rgba(31, 41, 55, 0.6) 75%,
+      rgba(31, 41, 55, 1) 30%,
+      rgba(31, 41, 55, 0.98) 50%,
+      rgba(31, 41, 55, 0.9) 70%,
+      rgba(31, 41, 55, 0.5) 85%,
       rgba(31, 41, 55, 0) 100%);
+}
+
+.dark-mode #powered-by-container {
+  background: rgba(31, 41, 55, 0.85) !important;
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* ============================
@@ -583,5 +609,70 @@
   }
   50% {
     transform: translateY(3px);
+  }
+}
+
+/* ===== Mobile Header Overflow Fix ===== */
+@media (max-width: 360px) {
+  .header-status-pill {
+    max-width: 120px;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .header-status-spinner {
+    width: 12px;
+    height: 12px;
+  }
+
+  .chat-header-unified {
+    gap: 2px;
+    padding: 0 2px;
+  }
+
+  .header-identity {
+    padding: 6px 8px 6px 6px;
+    gap: 8px;
+  }
+
+  .header-guide-btn {
+    padding: 0 12px;
+    font-size: 12px;
+    min-height: 38px;
+  }
+
+  .header-controls {
+    padding: 6px 8px 6px 4px;
+    gap: 2px;
+  }
+
+  .header-divider {
+    margin: 0 2px;
+  }
+}
+
+@media (max-width: 320px) {
+  .header-status-pill {
+    max-width: 100px;
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  .header-guide-btn span {
+    display: none;
+  }
+
+  .header-guide-btn {
+    padding: 0 10px;
+    min-width: 38px;
+  }
+
+  .header-identity #hotel-logo-container {
+    width: 32px;
+    height: 32px;
+  }
+
+  .header-identity h3 {
+    font-size: 14px;
   }
 }
