@@ -476,17 +476,17 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 160px;
+  height: 200px;
   background: linear-gradient(to top,
       rgba(255, 255, 255, 0.8) 0%,
-      rgba(255, 255, 255, 0.7) 25%,
-      rgba(255, 255, 255, 0.5) 50%,
-      rgba(255, 255, 255, 0.2) 75%,
+      rgba(255, 255, 255, 0.7) 30%,
+      rgba(255, 255, 255, 0.5) 60%,
+      rgba(255, 255, 255, 0.2) 80%,
       rgba(255, 255, 255, 0) 100%);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  mask-image: linear-gradient(to top, black 0%, black 60%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to top, black 0%, black 60%, transparent 100%);
+  mask-image: linear-gradient(to top, black 0%, black 80%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, black 0%, black 80%, transparent 100%);
   z-index: -1;
   pointer-events: none;
   border-radius: 0 0 24px 24px;
@@ -510,9 +510,9 @@
 .dark-mode #chat-footer::before {
   background: linear-gradient(to top,
       rgba(31, 41, 55, 0.8) 0%,
-      rgba(31, 41, 55, 0.7) 25%,
-      rgba(31, 41, 55, 0.5) 50%,
-      rgba(31, 41, 55, 0.2) 75%,
+      rgba(31, 41, 55, 0.7) 30%,
+      rgba(31, 41, 55, 0.5) 60%,
+      rgba(31, 41, 55, 0.2) 80%,
       rgba(31, 41, 55, 0) 100%);
 }
 
