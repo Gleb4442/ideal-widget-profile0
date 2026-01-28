@@ -365,54 +365,63 @@
   <div id="chat-window">
     <!-- Floating Header Wrapper with Gradient Blur -->
     <div class="chat-header-wrapper">
-      <!-- Block 1: Identity (Logo + Name) -->
-      <div class="accent-bg text-white p-2 pr-5 flex items-center gap-3 shadow-lg rounded-full">
-        <div class="relative">
-          <div id="hotel-logo-container"
-            class="w-10 h-10 rounded-full bg-white accent-text flex items-center justify-center shadow-sm overflow-hidden">
-            <span class="text-xl font-bold accent-text">H</span>
+      <!-- Unified Header Bar -->
+      <div class="chat-header-unified accent-bg text-white shadow-lg rounded-full">
+        <!-- Block 1: Identity (Logo + Name) -->
+        <div class="header-identity p-2 pr-4 flex items-center gap-3">
+          <div class="relative">
+            <div id="hotel-logo-container"
+              class="w-10 h-10 rounded-full bg-white accent-text flex items-center justify-center shadow-sm overflow-hidden">
+              <span class="text-xl font-bold accent-text">H</span>
+            </div>
+            <div id="online-indicator" class="absolute bottom-0 right-0 w-[12px] h-[12px] bg-green-400 border-2 accent-border rounded-full"
+              title="Онлайн"></div>
           </div>
-          <div id="online-indicator" class="absolute bottom-0 right-0 w-[12px] h-[12px] bg-green-400 border-2 accent-border rounded-full"
-            title="Онлайн"></div>
+          <div>
+            <h3 id="hotel-name-text" class="text-base font-bold leading-tight tracking-wide">Hilton</h3>
+          </div>
         </div>
-        <div>
-          <h3 id="hotel-name-text" class="text-base font-bold leading-tight tracking-wide">Hilton</h3>
+
+        <!-- Divider -->
+        <div class="header-divider"></div>
+
+        <!-- Guide Badge (integrated) -->
+        <button id="guide-badge-btn" class="header-guide-btn" title="Guest Guide">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="1">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke-linejoin="round"/>
+          </svg>
+          <span>Guide</span>
+        </button>
+
+        <!-- Status Pill (Special Booking / Operator Mode) -->
+        <div id="header-status-pill" class="header-status-pill hidden">
+          <div class="header-status-spinner"></div>
+          <span class="header-status-text">Загрузка...</span>
         </div>
-      </div>
 
-      <!-- Guide Badge -->
-      <button id="guide-badge-btn" class="guide-badge" title="Guest Guide">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="1">
-          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke-linejoin="round"/>
-        </svg>
-        <span>Guide</span>
-      </button>
+        <!-- Divider -->
+        <div class="header-divider"></div>
 
-      <!-- Status Pill (Special Booking / Operator Mode) -->
-      <div id="header-status-pill" class="header-status-pill hidden">
-        <div class="header-status-spinner"></div>
-        <span class="header-status-text">Загрузка...</span>
-      </div>
-
-      <!-- Block 2: Controls (Menu + Close) -->
-      <div class="accent-bg text-white p-2 flex items-center gap-1 shadow-lg rounded-full">
-        <!-- Header Menu (Hamburger) -->
-        <button id="header-menu-btn"
-          class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white" title="Меню">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-        </button>
-        <button id="chat-close-button"
-          class="text-white/80 hover:text-white hover:bg-white/10 rounded-full p-2 transition ml-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </button>
+        <!-- Block 2: Controls (Menu + Close) -->
+        <div class="header-controls p-2 flex items-center gap-1">
+          <!-- Header Menu (Hamburger) -->
+          <button id="header-menu-btn"
+            class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white" title="Меню">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <button id="chat-close-button"
+            class="text-white/80 hover:text-white hover:bg-white/10 rounded-full p-2 transition ml-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -1404,6 +1413,38 @@
         </button>
         <button id="service-cancel-btn" class="service-btn service-btn-secondary">Скасувати</button>
         <button id="service-save-btn" class="service-btn service-btn-primary">Зберегти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Item Preview Modal (for Room/Service cards in admin) -->
+  <div id="item-preview-overlay" class="item-preview-overlay">
+    <div class="item-preview-modal">
+      <button class="item-preview-close">&times;</button>
+      <div class="item-preview-image">
+        <img id="preview-image" src="" alt="">
+        <div class="item-preview-no-image">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+          <span>Немає фото</span>
+        </div>
+      </div>
+      <div class="item-preview-content">
+        <h3 id="preview-title"></h3>
+        <div id="preview-price" class="item-preview-price"></div>
+        <div class="item-preview-description-wrapper">
+          <p id="preview-description" class="item-preview-description"></p>
+        </div>
+        <button id="preview-edit-btn" class="item-preview-edit-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          Редагувати
+        </button>
       </div>
     </div>
   </div>

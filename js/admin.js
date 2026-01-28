@@ -447,7 +447,7 @@ export function renderRoomsGrid() {
   // Add click listeners
   grid.querySelectorAll('.room-admin-card').forEach(card => {
     card.addEventListener('click', () => {
-      openRoomModal(card.dataset.roomId);
+      openItemPreview('room', card.dataset.roomId);
     });
   });
 }
@@ -1038,7 +1038,7 @@ export function renderServicesGrid() {
   // Add click listeners
   grid.querySelectorAll('.service-admin-card').forEach(card => {
     card.addEventListener('click', () => {
-      openServiceModal(card.dataset.serviceId);
+      openItemPreview('service', card.dataset.serviceId);
     });
   });
 }
@@ -1521,6 +1521,101 @@ function initGuideManagement() {
   renderGuideAdminItems();
 }
 
+// ===== ITEM PREVIEW MODAL =====
+
+// Open Item Preview Modal (for room/service cards)
+function openItemPreview(type, id) {
+  const overlay = document.getElementById('item-preview-overlay');
+  const imageEl = document.getElementById('preview-image');
+  const titleEl = document.getElementById('preview-title');
+  const priceEl = document.getElementById('preview-price');
+  const descEl = document.getElementById('preview-description');
+  const editBtn = document.getElementById('preview-edit-btn');
+  const noImageEl = overlay?.querySelector('.item-preview-no-image');
+
+  if (!overlay) return;
+
+  let item, priceText;
+
+  if (type === 'room') {
+    item = rooms.getRoom(id);
+    if (!item) return;
+    priceText = rooms.formatPrice(item.pricePerNight);
+  } else {
+    item = services.getService(id);
+    if (!item) return;
+    priceText = services.formatPrice(item.price, item.priceType);
+  }
+
+  // Set image
+  if (item.mainPhoto) {
+    imageEl.src = item.mainPhoto;
+    imageEl.style.display = 'block';
+    if (noImageEl) noImageEl.style.display = 'none';
+  } else {
+    imageEl.src = '';
+    imageEl.style.display = 'none';
+    if (noImageEl) noImageEl.style.display = 'flex';
+  }
+
+  // Set content
+  titleEl.textContent = item.name || 'Без назви';
+  priceEl.textContent = priceText;
+  descEl.textContent = item.description || '';
+
+  // Store type and id for edit button
+  editBtn.dataset.type = type;
+  editBtn.dataset.id = id;
+
+  overlay.classList.add('active');
+}
+
+// Close Item Preview Modal
+function closeItemPreview() {
+  const overlay = document.getElementById('item-preview-overlay');
+  if (overlay) {
+    overlay.classList.remove('active');
+  }
+}
+
+// Initialize Item Preview Modal
+function initItemPreview() {
+  const overlay = document.getElementById('item-preview-overlay');
+  const closeBtn = overlay?.querySelector('.item-preview-close');
+  const editBtn = document.getElementById('preview-edit-btn');
+
+  // Close on overlay click
+  overlay?.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      closeItemPreview();
+    }
+  });
+
+  // Close on close button click
+  closeBtn?.addEventListener('click', closeItemPreview);
+
+  // Edit button click
+  editBtn?.addEventListener('click', () => {
+    const type = editBtn.dataset.type;
+    const id = editBtn.dataset.id;
+
+    closeItemPreview();
+
+    if (type === 'room') {
+      openRoomModal(id);
+    } else if (type === 'service') {
+      openServiceModal(id);
+    }
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay?.classList.contains('active')) {
+      closeItemPreview();
+    }
+  });
+}
+
 // Initialize All Admin Functions
 export function initAdmin() {
   initFontSelector();
@@ -1537,4 +1632,5 @@ export function initAdmin() {
   initBookingsManagement();
   initOperatorMode();
   initGuideManagement();
+  initItemPreview();
 }

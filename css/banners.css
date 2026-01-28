@@ -160,20 +160,21 @@
   transform: scale(1.1);
 }
 
-/* Collapsed State (Circular Icon) */
+/* Collapsed State (Circular Icon) - Enlarged for better visibility */
 .contact-banner.collapsed {
-  width: 40px;
-  /* Match close to send button size (32px + padding -> ~40px visual weight) */
-  height: 40px;
+  width: 52px;
+  height: 52px;
   padding: 0;
   left: auto;
-  /* Release left anchor */
   right: 0;
-  /* Align center-to-center with send button (20px from edge) */
-  /* Stay on the right side mostly */
-  /* Remove text overflow issues */
   justify-content: center;
   border-radius: 50%;
+  box-shadow: 0 6px 20px rgba(42, 171, 238, 0.4);
+}
+
+.contact-banner.collapsed:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 24px rgba(42, 171, 238, 0.5);
 }
 
 .contact-banner.collapsed .banner-content {
@@ -198,8 +199,8 @@
 }
 
 .contact-banner.collapsed .banner-icon-wrapper svg {
-  width: 20px;
-  height: 20px;
+  width: 32px;
+  height: 32px;
 }
 
 .expand-arrow {

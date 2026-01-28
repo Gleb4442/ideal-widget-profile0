@@ -294,7 +294,7 @@
   z-index: 20;
   padding: 12px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: flex-start;
   gap: 8px;
   pointer-events: none;
@@ -302,6 +302,73 @@
 
 .chat-header-wrapper > * {
   pointer-events: auto;
+}
+
+/* ===== Unified Header Bar ===== */
+.chat-header-unified {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0;
+  border-radius: 9999px;
+}
+
+.header-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.header-divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.25);
+  flex-shrink: 0;
+}
+
+.header-guide-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  height: 100%;
+  min-height: 44px;
+  background: transparent;
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.header-guide-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.header-guide-btn svg {
+  fill: white;
+  stroke: white;
+  width: 16px;
+  height: 16px;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* Status pill inside unified header */
+.chat-header-unified .header-status-pill {
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  margin: 0 4px;
+  box-shadow: none;
 }
 
 /* Gradient blur effect for header */
@@ -447,33 +514,7 @@
 }
 
 /* ============================
-   GUIDE BADGE
+   GUIDE BADGE (Legacy - now integrated into unified header)
    ============================ */
 
-.guide-badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  background: var(--accent-color, #2563eb);
-  color: white;
-  border-radius: 9999px;
-  font-size: 14px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
-}
-
-.guide-badge:hover {
-  transform: scale(1.02);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-}
-
-.guide-badge svg {
-  fill: white;
-  stroke: white;
-  width: 16px;
-  height: 16px;
-}
+/* Styles moved to .header-guide-btn in unified header section */
