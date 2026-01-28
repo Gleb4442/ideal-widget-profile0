@@ -80,6 +80,186 @@ let operatorMode = {
   timeouts: []
 };
 
+// ===== NOTIFICATION SYSTEM =====
+const NOTIFICATION_SETTINGS_KEY = 'chat_notification_settings';
+
+// Notification state
+let notificationState = {
+  unreadCount: 0,
+  soundEnabled: true,
+  isTabVisible: true,
+  isWidgetOpen: false
+};
+
+// Short beep sound as base64 (generated programmatically)
+const NOTIFICATION_SOUND_BASE64 = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1gZGtyd3V0d3R0dnd3d3Z1c3BtaWViXVpYV1hZW11fYWNlZ2lrbG1tbm5tbGtqaGZjYV5bWFVSUE5NTE1OT1FSVFZYWlxeYGJkZWdoaWpqa2tqamlnZWNhXltYVVJPTEpIR0ZGRkdISUpMTlBSVFZYWVtcXV5fYGBhYWFgX15dW1lXVVJQTUtJR0VDQUA/Pj4+P0BCREdJTE5RU1VXWVpbXF1dXl5eXV1cW1lXVVNQTktIRkRBPzw6ODc2NjY3ODo8P0JFSEtOUVNVV1laW1xcXFxcW1pZV1VTUE1KRkNAPTo3NTIwLy4uLi8wMjU4O0BESExQU1ZYWltcXFxcW1pZV1VRUE1JRkI+Ojc0MC4rKSgnJygpKy4xNTo+Q0hMUFRXWltcXV1cW1pYVlNQTEhEQDw4NC8rKCUjISAgISIkJyovNDpAR0xSVllcXl9fXl1bWFVRTUlEPzo1MC0pJSIgHh0cHB0eICMnLDI5P0dOVVteYWNjY2FfXFhTTklDPTcxKyYiHx0bGRkZGhsdICQpLzY9RU5WWF1hZGVlY2BeWlVPS0Q9Ni8pIx8cGRcWFRUWFxkbHiImLDM7RE5WWF1iZWdnZmRhXFdRSkM8NC0mIR0aGBYVFBQUFRcZHCAkKjE4QEpTW2BiZmlqamdjXldQSUA4MCkjHhsYFhQTEhISExUXGh0iJyw0PEZQWWBkaWxub21pZF5XTkU8MysjHhoXFRMSEREREhQWGRwgJSsyOkRNV19lamtvcnJwbGVdVEpBOC8oIh4aFxUSERAPEBAREhUYHCAkKjE5Q0xWX2VrbnJzdnVybl9oXFJHPTQsJR8bFxQREA8ODg8QEhQXGyAmLTU+R1FaZGlwdHd5enl2c2xlW1BFOzIqIx0ZFhQREA4ODQ0OEBIUGBsgJi03QUpVXmhudnp9f4CBgIB9eXRqX1VLPzUtJh8aFhMQDg0MDAwODxMXGx8mLTVARE9YYWpxd3yAgYKCgYB9eXZwaGBWTEM6MikhHBgVEQ4NCwsMDQ8RFRkaHyUqLjY8Q0pRWF5iZ21wcnNzcnFua2ZgWlVQSUI6NC0oIh0aFhQRDw0MCwsNDg8RFhkdIS0xOz1ESFFYX2RnaWlqaWhoZmRgXFdTTkhCPTcxLCckIB0ZFhMRDw4NDAwNDxESFRkdIC0zPD9ERktRVVheYGFhYWBfXVtZVlNPTEhEPzs1MCwpJCAeGxgWExIQDg0MDQ4QExQYHCEqNDg/P0RHTEtOUFFSUlJRUU9NTElGQ0A8OTYyLCooIx4cGhcVExIQDw0NDQ4PERQWGRweIyowNzg8PERERU1PUFBQTk5MS0lGQ0A9Ojc0MC0pJiMfHBoYFhQTEhEQEBARERMVFxobHiElKi8zNjk8PkFDRUdISEdGRUNBPz06NzQxLiomIh8cGhcWFBMSEREQEBESExQWGBocHyIlKSwtMDI0NTY3ODk5OTg3NjQyMC4rKCYjIB4cGhgWFBMSEREREREREhMUFRcZGhwfISMlJyorLC0uLi4uLS0sKyooJyUjIR8eHBoZFxYVFBMSEhISEhITFBUWGBkaHB0fISIjJCUmJiYmJiUlJCMiIR8eHRsaGRgXFhUUFBMTExMTFBQVFhcYGRobHB0eHyAgISEhISEgIB8fHh0cGxoZGBcWFhUVFRQUFBQVFRYWFxgZGhobHB0dHh4eHx8fHx8eHh0dHBsaGRkYFxcWFhYVFRUVFhYWFxcYGRkKGhscHBwdHR0dHR0dHBwcGxsaGhkZGBgXFxcWFhYWFhYWFxcXGBgZGRoKGxsbGxwcHBwcHBwbGxsaGhoZGRkYGBgXFxcXFxcXFxcXFxgYGBkZGRoaGhsbGxsbGxsaGhoaGRkZGRkYGBgYGBcXFxcXFxcYGBgYGRkZGRoaGhoaGhoaGhoZGRkZGRkZGBgYGBgYGBgXFxcYGBgYGBkZGRkZGRkaGhoaGhoZGRkZGRkZGRkYGBgYGBgYGBgYGBgYGBkZGRkZGRkZGRoaGhoaGhkZGRkZGRkZGRkYGBgYGBgYGBgYGBgYGRkZGRkZGRkZGRkZGRoaGhkZGRkZGRkZGRkZGBgYGBgYGBgYGBgZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGBgYGBgYGBgZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZ';
+
+let notificationAudio = null;
+
+// Initialize notification sound
+function initNotificationSound() {
+  try {
+    notificationAudio = new Audio(NOTIFICATION_SOUND_BASE64);
+    notificationAudio.volume = 0.5;
+  } catch (e) {
+    console.log('Could not initialize notification sound:', e);
+  }
+}
+
+// Load notification settings from localStorage
+function loadNotificationSettings() {
+  try {
+    const saved = localStorage.getItem(NOTIFICATION_SETTINGS_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      notificationState.soundEnabled = parsed.soundEnabled ?? true;
+    }
+  } catch (e) {
+    console.error('Error loading notification settings:', e);
+  }
+}
+
+// Save notification settings to localStorage
+function saveNotificationSettings() {
+  try {
+    localStorage.setItem(NOTIFICATION_SETTINGS_KEY, JSON.stringify({
+      soundEnabled: notificationState.soundEnabled
+    }));
+  } catch (e) {
+    console.error('Error saving notification settings:', e);
+  }
+}
+
+// Play notification sound
+function playNotificationSound() {
+  if (!notificationState.soundEnabled || !notificationAudio) return;
+
+  try {
+    notificationAudio.currentTime = 0;
+    notificationAudio.play().catch(e => {
+      // Sound playback may be blocked by browser autoplay policy
+      console.log('Sound playback blocked:', e);
+    });
+  } catch (e) {
+    console.log('Error playing sound:', e);
+  }
+}
+
+// Update notification badge with count
+export function updateNotificationBadge(count) {
+  if (!dom.notificationBadge) return;
+
+  notificationState.unreadCount = count;
+
+  if (count > 0) {
+    dom.notificationBadge.textContent = count > 99 ? '99+' : count;
+    dom.notificationBadge.style.display = 'flex';
+    dom.notificationBadge.classList.add('has-notifications');
+  } else {
+    dom.notificationBadge.style.display = 'none';
+    dom.notificationBadge.classList.remove('has-notifications');
+  }
+}
+
+// Increment unread count
+export function incrementUnreadCount() {
+  notificationState.unreadCount++;
+  updateNotificationBadge(notificationState.unreadCount);
+}
+
+// Reset unread count
+export function resetUnreadCount() {
+  notificationState.unreadCount = 0;
+  updateNotificationBadge(0);
+}
+
+// Toggle notification sound on/off
+export function toggleNotificationSound() {
+  notificationState.soundEnabled = !notificationState.soundEnabled;
+  saveNotificationSettings();
+  updateSoundToggleUI(notificationState.soundEnabled);
+  return notificationState.soundEnabled;
+}
+
+// Update sound toggle button UI
+function updateSoundToggleUI(isEnabled) {
+  const soundIconOn = document.getElementById('sound-icon-on');
+  const soundIconOff = document.getElementById('sound-icon-off');
+  const soundStatusText = document.getElementById('sound-status-text');
+
+  if (soundIconOn) soundIconOn.classList.toggle('hidden', !isEnabled);
+  if (soundIconOff) soundIconOff.classList.toggle('hidden', isEnabled);
+  if (soundStatusText) soundStatusText.textContent = isEnabled ? 'Вкл' : 'Выкл';
+}
+
+// Initialize visibility tracking for tab focus
+function initVisibilityTracking() {
+  document.addEventListener('visibilitychange', () => {
+    notificationState.isTabVisible = !document.hidden;
+
+    // If tab becomes visible and widget is open - reset unread count
+    if (notificationState.isTabVisible && notificationState.isWidgetOpen) {
+      resetUnreadCount();
+      hideNewMessagesMarker();
+    }
+  });
+}
+
+// Show "New messages" marker in chat
+export function showNewMessagesMarker() {
+  const existingMarker = document.getElementById('new-messages-marker');
+  if (existingMarker) return;
+
+  const marker = document.createElement('div');
+  marker.id = 'new-messages-marker';
+  marker.className = 'new-messages-marker animate-fade-in';
+  marker.innerHTML = `
+    <div class="marker-content">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+      <span>Нові повідомлення</span>
+    </div>
+  `;
+
+  marker.addEventListener('click', () => {
+    dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+    hideNewMessagesMarker();
+  });
+
+  dom.messagesContainer.appendChild(marker);
+}
+
+// Hide "New messages" marker
+export function hideNewMessagesMarker() {
+  const marker = document.getElementById('new-messages-marker');
+  if (marker) marker.remove();
+}
+
+// Handle new message notification (called from addMessage)
+function handleNewMessageNotification(sender) {
+  if (sender !== 'ai') return;
+
+  const isWidgetOpen = dom.chatWindow?.classList.contains('open');
+  const isTabVisible = !document.hidden;
+
+  notificationState.isWidgetOpen = isWidgetOpen;
+
+  // If widget is closed OR tab is not visible
+  if (!isWidgetOpen || !isTabVisible) {
+    // Increment unread count
+    incrementUnreadCount();
+
+    // Play sound
+    playNotificationSound();
+
+    // Show marker if widget is open but tab is not visible
+    if (isWidgetOpen && !isTabVisible) {
+      showNewMessagesMarker();
+    }
+  }
+}
+
 // Update header status pill
 export function updateHeaderStatus(text, showSpinner = true) {
   const pill = document.getElementById('header-status-pill');
@@ -562,6 +742,46 @@ function detectCancellationIntent(message) {
   return cancellationKeywords.some(keyword => lowerMessage.includes(keyword));
 }
 
+// Detect booking modification intent with type (cancel vs edit)
+function detectBookingModificationIntent(message) {
+  const lowerMessage = message.toLowerCase();
+
+  // Edit keywords (more specific)
+  const editKeywords = [
+    // Русский
+    'изменить дат', 'поменять дат', 'перенести бронь', 'перенести дат',
+    'изменить бронирование', 'изменить детали', 'изменить броню', 'поменять бронирование',
+    'сменить номер', 'другой номер', 'хочу другие даты',
+    // English
+    'change date', 'modify date', 'reschedule', 'move booking',
+    'change room', 'different room', 'edit booking', 'modify booking',
+    // Украинский
+    'змінити дат', 'перенести дат', 'змінити бронювання', 'інший номер'
+  ];
+
+  // Cancel keywords
+  const cancelKeywords = [
+    // Русский
+    'отменить бронирование', 'отменить броню', 'отмени бронирование',
+    'отмена бронирования', 'хочу отменить', 'нужно отменить',
+    // English
+    'cancel booking', 'cancel reservation', 'want to cancel', 'need to cancel',
+    // Украинский
+    'скасувати бронювання', 'відмінити бронювання', 'хочу скасувати'
+  ];
+
+  const isEdit = editKeywords.some(kw => lowerMessage.includes(kw));
+  const isCancel = cancelKeywords.some(kw => lowerMessage.includes(kw));
+
+  if (isEdit) {
+    return { hasIntent: true, type: 'edit' };
+  } else if (isCancel) {
+    return { hasIntent: true, type: 'cancel' };
+  }
+
+  return { hasIntent: false, type: null };
+}
+
 // Show cancellation options
 export function showCancellationOptions() {
   const optionsContainer = document.createElement('div');
@@ -708,6 +928,222 @@ function handleCancellationConfirmed(action) {
 // Get cancellation state for external use
 export function getCancellationState() {
   return cancellationState;
+}
+
+// ========================================
+// BOOKING EDIT FUNCTIONS
+// ========================================
+
+// Store current booking being edited
+let editingBooking = null;
+
+// Show edit booking options
+export function showEditBookingOptions(booking) {
+  editingBooking = booking;
+
+  const container = document.createElement('div');
+  container.className = 'edit-booking-options animate-fade-in';
+  container.id = 'edit-booking-options';
+
+  container.innerHTML = `
+    <div class="edit-booking-card" style="background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+        <div style="width: 40px; height: 40px; background: #eff6ff; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+        </div>
+        <h4 style="font-weight: 600; font-size: 16px; color: #111827; margin: 0;">Редагування бронювання</h4>
+      </div>
+
+      <div style="background: #f9fafb; border-radius: 10px; padding: 14px; margin-bottom: 16px;">
+        <p style="font-size: 13px; color: #6b7280; margin: 0; line-height: 1.5;">
+          <strong style="color: #374151;">Гість:</strong> ${booking.guestName}<br>
+          <strong style="color: #374151;">Номер:</strong> ${booking.roomName || '—'}<br>
+          <strong style="color: #374151;">Дати:</strong> ${booking.checkIn} — ${booking.checkOut}
+        </p>
+      </div>
+
+      <p style="font-size: 14px; color: #6b7280; margin-bottom: 14px;">Що ви хочете змінити?</p>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="edit-option-btn" data-action="change-dates" style="
+          display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px;
+          background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px;
+          font-size: 14px; font-weight: 500; color: #374151; cursor: pointer; transition: all 0.2s; text-align: left;
+        ">
+          <span style="font-size: 18px;">📅</span>
+          <span>Змінити дати</span>
+        </button>
+
+        <button class="edit-option-btn" data-action="change-room" style="
+          display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px;
+          background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px;
+          font-size: 14px; font-weight: 500; color: #374151; cursor: pointer; transition: all 0.2s; text-align: left;
+        ">
+          <span style="font-size: 18px;">🏨</span>
+          <span>Змінити номер</span>
+        </button>
+
+        <button class="edit-option-btn" data-action="change-guests" style="
+          display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px;
+          background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px;
+          font-size: 14px; font-weight: 500; color: #374151; cursor: pointer; transition: all 0.2s; text-align: left;
+        ">
+          <span style="font-size: 18px;">👥</span>
+          <span>Змінити кількість гостей</span>
+        </button>
+
+        <button class="edit-option-btn cancel-edit" data-action="cancel-edit" style="
+          display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px 16px;
+          background: transparent; border: 1px solid #e5e7eb; border-radius: 10px;
+          font-size: 13px; font-weight: 500; color: #9ca3af; cursor: pointer; transition: all 0.2s; margin-top: 4px;
+        ">
+          Скасувати
+        </button>
+      </div>
+    </div>
+  `;
+
+  dom.messagesContainer.insertBefore(container, dom.typingIndicator);
+  dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+
+  // Add hover effects
+  container.querySelectorAll('.edit-option-btn').forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      if (!btn.classList.contains('cancel-edit')) {
+        btn.style.borderColor = 'var(--accent-color, #2563eb)';
+        btn.style.background = '#eff6ff';
+      }
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.borderColor = '#e5e7eb';
+      btn.style.background = btn.classList.contains('cancel-edit') ? 'transparent' : '#f9fafb';
+    });
+  });
+
+  // Event listeners
+  container.querySelector('[data-action="change-dates"]').addEventListener('click', () => {
+    container.remove();
+    showDateChangeWarning(booking);
+  });
+
+  container.querySelector('[data-action="change-room"]').addEventListener('click', () => {
+    container.remove();
+    addMessage('Розкажіть, який номер вас цікавить, або оберіть із доступних:', 'ai');
+    setTimeout(() => addRoomCarousel(), 300);
+  });
+
+  container.querySelector('[data-action="change-guests"]').addEventListener('click', () => {
+    container.remove();
+    addMessage('Вкажіть нову кількість гостей для вашого бронювання:', 'ai');
+  });
+
+  container.querySelector('[data-action="cancel-edit"]').addEventListener('click', () => {
+    container.remove();
+    editingBooking = null;
+    addMessage('Добре, бронювання залишається без змін. Чим ще можу допомогти?', 'ai');
+  });
+}
+
+// Show warning when changing dates
+function showDateChangeWarning(booking) {
+  const container = document.createElement('div');
+  container.className = 'date-change-warning animate-fade-in';
+  container.id = 'date-change-warning';
+
+  container.innerHTML = `
+    <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 16px; padding: 20px;">
+      <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px;">
+        <div style="width: 36px; height: 36px; background: #fef3c7; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" stroke-width="0">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13" stroke="white" stroke-width="2"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17" stroke="white" stroke-width="2"></line>
+          </svg>
+        </div>
+        <div>
+          <strong style="color: #92400e; font-size: 15px; display: block; margin-bottom: 4px;">Увага</strong>
+          <p style="font-size: 14px; color: #78350f; margin: 0; line-height: 1.5;">
+            Зміна дат вимагає скасування поточного бронювання та створення нового.
+          </p>
+        </div>
+      </div>
+
+      <p style="font-size: 14px; color: #78350f; margin-bottom: 16px; line-height: 1.5;">
+        Хочете зберегти дані гостя (ПІБ, email, телефон) для нового бронювання?
+      </p>
+
+      <div style="display: flex; gap: 10px;">
+        <button id="keep-data-btn" style="
+          flex: 1; padding: 12px 16px; background: var(--accent-color, #2563eb); color: white;
+          border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;
+          transition: all 0.2s;
+        ">
+          Так, зберегти
+        </button>
+        <button id="new-data-btn" style="
+          flex: 1; padding: 12px 16px; background: white; color: #374151;
+          border: 1px solid #e5e7eb; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer;
+          transition: all 0.2s;
+        ">
+          Ні, ввести заново
+        </button>
+      </div>
+    </div>
+  `;
+
+  dom.messagesContainer.insertBefore(container, dom.typingIndicator);
+  dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+
+  // Event listeners
+  document.getElementById('keep-data-btn').addEventListener('click', () => {
+    // Save guest data
+    bookingState.collectedData.fullName = booking.guestName;
+    bookingState.collectedData.phone = booking.phone;
+    bookingState.collectedData.email = booking.email;
+    bookingState.collectedData.guests = booking.guests;
+    saveBookingState();
+
+    // Cancel old booking
+    bookings.cancelBooking(booking.id);
+
+    container.remove();
+    editingBooking = null;
+
+    addMessage(
+      `Дані збережено! Старе бронювання скасовано.\n\n` +
+      `<strong>Збережені дані:</strong>\n` +
+      `• ПІБ: ${booking.guestName}\n` +
+      `• Email: ${booking.email || '—'}\n` +
+      `• Телефон: ${booking.phone || '—'}\n\n` +
+      `Тепер вкажіть нові дати заїзду та виїзду:`,
+      'ai'
+    );
+
+    // Reset booking step to collect dates
+    bookingState.step = 'collecting_dates';
+    saveBookingState();
+  });
+
+  document.getElementById('new-data-btn').addEventListener('click', () => {
+    // Cancel old booking
+    bookings.cancelBooking(booking.id);
+
+    // Reset all collected data
+    resetBookingState();
+    saveBookingState();
+
+    container.remove();
+    editingBooking = null;
+
+    addMessage(
+      'Старе бронювання скасовано. Давайте створимо нове!\n\n' +
+      'Будь ласка, вкажіть ваші дані: ПІБ, email, телефон, дати заїзду та виїзду.',
+      'ai'
+    );
+  });
 }
 
 // ========================================
@@ -1211,44 +1647,19 @@ function confirmBookingCancellation(bookingId, optionsContainer) {
   }
 }
 
-// Handle booking edit (cancel and create new)
+// Handle booking edit (show edit options)
 function handleBookingEdit(bookingId, optionsContainer) {
   const booking = bookings.getBookingById(bookingId);
   if (!booking) return;
 
-  const formatted = bookings.formatBooking(booking);
+  // Remove options container
+  optionsContainer.remove();
 
-  if (confirm(`Редактирование бронирования для ${booking.guestName}\n\nТекущие данные:\n• Номер: ${booking.roomName}\n• Заїзд: ${formatted.checkInFormatted}\n• Виїзд: ${formatted.checkOutFormatted}\n• Гостей: ${booking.guests}\n\nДля редактирования:\n1. Текущее бронирование будет отменено\n2. Вы сможете создать новое с другими параметрами\n\nПродолжить?`)) {
-    // Cancel current booking
-    bookings.cancelBooking(bookingId);
+  // Reset cancellation state
+  resetCancellationState();
 
-    // Remove options container
-    optionsContainer.remove();
-
-    // Show message
-    addMessage(`Бронирование для ${booking.guestName} отменено.\n\nТеперь расскажите о новых требованиях:\n• Желаемые даты заезда и выезда\n• Количество гостей\n• Тип номера\n• Особые пожелания`, 'ai');
-
-    // Show Telegram confirmation modal
-    setTimeout(() => {
-      showTelegramBookingModal();
-    }, 800);
-
-    // Reset cancellation state
-    resetCancellationState();
-
-    // Reset booking state for new booking
-    resetBookingState();
-    bookingState.collectedData.fullName = booking.guestName;
-    bookingState.collectedData.phone = booking.phone;
-    bookingState.collectedData.email = booking.email;
-    bookingState.step = 'collecting_dates';
-    saveBookingState();
-
-    // Update admin panel if open
-    if (typeof window.renderBookingsList === 'function') {
-      window.renderBookingsList();
-    }
-  }
+  // Show edit booking options (with beautiful UI)
+  showEditBookingOptions(booking);
 }
 
 // ========================================
@@ -1436,6 +1847,8 @@ export function toggleChat() {
   const isMobile = window.innerWidth < 768;
 
   if (isOpen) {
+    // Closing widget
+    notificationState.isWidgetOpen = false;
     dom.chatWindow.classList.remove('open');
     dom.widgetButton.style.display = 'flex';
     if (isMobile) {
@@ -1446,12 +1859,18 @@ export function toggleChat() {
     // Close room detail view if open
     closeRoomDetailView();
   } else {
+    // Opening widget
+    notificationState.isWidgetOpen = true;
+
+    // Reset unread notifications
+    resetUnreadCount();
+    hideNewMessagesMarker();
+
     // Load booking state when opening chat
     loadBookingState();
 
     dom.chatWindow.classList.add('open');
     dom.widgetButton.style.display = 'none';
-    if (dom.notificationBadge) dom.notificationBadge.style.display = 'none';
     dom.messageInput.focus();
     if (isMobile) {
       dom.adminPanel.classList.add('hidden-panel');
@@ -1560,6 +1979,9 @@ export function addMessage(text, sender) {
 
   dom.messagesContainer.insertBefore(wrapper, dom.typingIndicator);
   dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+
+  // Handle notification for new AI messages
+  handleNewMessageNotification(sender);
 }
 
 // Add Room Carousel to Chat
@@ -1791,6 +2213,86 @@ export function addRoomCarousel() {
 
   dom.messagesContainer.insertBefore(wrapper, dom.typingIndicator);
   dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+}
+
+// ===== ROOMS VIA AGENT =====
+
+// State for room selection mode
+let roomSelectionMode = false;
+
+// Show all rooms via agent (from menu)
+export function showRoomsViaAgent() {
+  const allRooms = rooms.getAllRooms();
+
+  if (allRooms.length === 0) {
+    addMessage('На жаль, наразі немає доступних номерів.', 'ai');
+    return;
+  }
+
+  // Build rooms text description
+  let roomsText = '🏨 <strong>Наші номери:</strong>\n\n';
+
+  allRooms.forEach((room, index) => {
+    roomsText += `<strong>${index + 1}. ${room.name}</strong>\n`;
+    roomsText += `   📐 ${room.area || '—'} м² | 💵 $${room.pricePerNight}/ніч\n`;
+    if (room.description) {
+      const shortDesc = room.description.length > 80
+        ? room.description.slice(0, 80) + '...'
+        : room.description;
+      roomsText += `   ${shortDesc}\n`;
+    }
+    roomsText += '\n';
+  });
+
+  roomsText += '---\nЯкий тип номера вас цікавить? Розкажіть про ваші побажання — кількість гостей, вид з вікна, поверх чи інші особливі вимоги.';
+
+  addMessage(roomsText, 'ai');
+  addToConversationHistory('assistant', roomsText);
+
+  // Show room carousel
+  setTimeout(() => {
+    addRoomCarousel();
+  }, 300);
+
+  // Set room selection mode
+  roomSelectionMode = true;
+}
+
+// Offer additional services after room selection
+export function offerServicesAfterRoomSelection(selectedRoomName) {
+  const allServices = services.getAllServices();
+
+  if (allServices.length === 0) return;
+
+  roomSelectionMode = false;
+
+  addMessage(`Чудово! Ви обрали "${selectedRoomName}". Можу запропонувати додаткові послуги для вашого комфорту:`, 'ai');
+
+  // Show services carousel after a short delay
+  setTimeout(() => {
+    addServicesCarousel();
+  }, 500);
+}
+
+// Check if room was selected in message (for room selection mode)
+export function checkRoomSelectionInMessage(message) {
+  if (!roomSelectionMode) return false;
+
+  const allRooms = rooms.getAllRooms();
+  const lowerMessage = message.toLowerCase();
+
+  // Check if any room name is mentioned
+  const selectedRoom = allRooms.find(room =>
+    room.name && lowerMessage.includes(room.name.toLowerCase())
+  );
+
+  if (selectedRoom) {
+    setRoomContext(selectedRoom);
+    offerServicesAfterRoomSelection(selectedRoom.name);
+    return true;
+  }
+
+  return false;
 }
 
 // Add Services Carousel to Chat
@@ -2133,16 +2635,28 @@ export async function getAIResponse(userMessage) {
   // Add user message to conversation history
   addToConversationHistory('user', userMessage);
 
-  // Check if user wants to cancel/edit booking
+  // Check if user is in room selection mode (from menu)
+  if (checkRoomSelectionInMessage(userMessage)) {
+    hideTyping();
+    setButtonLoading(false);
+    isGenerating = false;
+    return;
+  }
+
+  // Check if user wants to cancel/edit booking (with type detection)
+  const modificationIntent = detectBookingModificationIntent(userMessage);
   const hasCancellationIntent = detectCancellationIntent(userMessage);
 
-  // Handle cancellation by searching in database
-  if (hasCancellationIntent && !cancellationState.isActive) {
+  // Handle booking modification (cancel or edit) by searching in database
+  if ((modificationIntent.hasIntent || hasCancellationIntent) && !cancellationState.isActive) {
     hideTyping();
     setButtonLoading(false);
     isGenerating = false;
 
-    // Start cancellation process with interactive search
+    // Store the modification type for later use
+    cancellationState.modificationType = modificationIntent.type || 'cancel';
+
+    // Start cancellation/edit process with interactive search
     handleBookingCancellationByName(userMessage);
     return;
   }
@@ -2542,6 +3056,12 @@ export function initRoomDetailListeners() {
 
 // Initialize Chat Event Listeners
 export function initChatListeners() {
+  // Initialize notification system
+  initNotificationSound();
+  loadNotificationSettings();
+  initVisibilityTracking();
+  updateSoundToggleUI(notificationState.soundEnabled);
+
   // Input listeners
   if (dom.messageInput) {
     dom.messageInput.addEventListener('input', () => {
@@ -2699,6 +3219,23 @@ export function initSpecialBookingListeners() {
   if (dom.offerEditBtn) {
     dom.offerEditBtn.addEventListener('click', () => {
       editSpecialOffer();
+    });
+  }
+
+  // Sound toggle button in menu
+  const soundToggleBtn = document.getElementById('sound-toggle-btn');
+  if (soundToggleBtn) {
+    soundToggleBtn.addEventListener('click', () => {
+      toggleNotificationSound();
+    });
+  }
+
+  // Rooms menu button
+  const roomsMenuBtn = document.getElementById('rooms-menu-btn');
+  if (roomsMenuBtn) {
+    roomsMenuBtn.addEventListener('click', () => {
+      closeHeaderMenu();
+      showRoomsViaAgent();
     });
   }
 

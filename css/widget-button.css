@@ -98,17 +98,33 @@
   position: absolute;
   top: -5px;
   right: -5px;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
-  width: 20px;
+  min-width: 20px;
   height: 20px;
+  padding: 0 5px;
   background-color: #ef4444;
   color: white;
   font-size: 11px;
   font-weight: bold;
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  animation: badge-pop 2s infinite ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   z-index: 10;
+}
+
+#chat-notification-badge.has-notifications {
+  display: flex;
+  animation: badge-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
+  }
 }

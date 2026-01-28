@@ -368,7 +368,7 @@
       <!-- Unified Header Bar -->
       <div class="chat-header-unified accent-bg text-white shadow-lg rounded-full">
         <!-- Block 1: Identity (Logo + Name) -->
-        <div class="header-identity p-2 pr-4 flex items-center gap-3">
+        <div class="header-identity flex items-center gap-3">
           <div class="relative">
             <div id="hotel-logo-container"
               class="w-10 h-10 rounded-full bg-white accent-text flex items-center justify-center shadow-sm overflow-hidden">
@@ -403,7 +403,7 @@
         <div class="header-divider"></div>
 
         <!-- Block 2: Controls (Menu + Close) -->
-        <div class="header-controls p-2 flex items-center gap-1">
+        <div class="header-controls flex items-center gap-1">
           <!-- Header Menu (Hamburger) -->
           <button id="header-menu-btn"
             class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white" title="Меню">
@@ -848,6 +848,23 @@
             </svg>
           </button>
 
+          <!-- Rooms Button -->
+          <button id="rooms-menu-btn" class="menu-sheet-btn">
+            <div class="p-2 bg-purple-50 text-purple-600 rounded-full mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            </div>
+            <span class="flex-1 text-left font-medium text-gray-700">Номери</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              class="text-gray-400" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+
           <button id="special-booking-btn" class="menu-sheet-btn">
             <div class="p-2 rounded-full mr-3 special-booking-icon-frame">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -884,6 +901,26 @@
               stroke-linejoin="round">
               <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
+          </button>
+
+          <!-- Sound Toggle Button -->
+          <button id="sound-toggle-btn" class="menu-sheet-btn">
+            <div class="p-2 bg-indigo-50 text-indigo-600 rounded-full mr-3">
+              <svg id="sound-icon-on" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+              <svg id="sound-icon-off" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <line x1="23" y1="9" x2="17" y2="15"></line>
+                <line x1="17" y1="9" x2="23" y2="15"></line>
+              </svg>
+            </div>
+            <span class="flex-1 text-left font-medium text-gray-700">Звук сповіщень</span>
+            <span id="sound-status-text" class="text-sm text-gray-400 mr-2">Вкл</span>
           </button>
 
           <button id="language-menu-btn" class="menu-sheet-btn">

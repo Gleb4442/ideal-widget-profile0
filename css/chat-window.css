@@ -308,8 +308,8 @@
 .chat-header-unified {
   display: flex;
   align-items: center;
-  gap: 0;
-  padding: 0;
+  gap: 4px;
+  padding: 0 4px;
   border-radius: 9999px;
 }
 
@@ -317,6 +317,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 8px 16px 8px 12px;
   flex-shrink: 0;
 }
 
@@ -325,15 +326,17 @@
   height: 28px;
   background: rgba(255, 255, 255, 0.25);
   flex-shrink: 0;
+  margin: 0 4px;
 }
 
 .header-guide-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 16px;
+  padding: 0 20px;
   height: 100%;
   min-height: 44px;
+  margin: 0 4px;
   background: transparent;
   color: white;
   border: none;
@@ -359,6 +362,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  padding: 8px 12px 8px 8px;
   flex-shrink: 0;
 }
 
@@ -476,17 +480,17 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 200px;
+  height: 160px;
   background: linear-gradient(to top,
-      rgba(255, 255, 255, 0.8) 0%,
-      rgba(255, 255, 255, 0.7) 30%,
-      rgba(255, 255, 255, 0.5) 60%,
-      rgba(255, 255, 255, 0.2) 80%,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0.98) 25%,
+      rgba(255, 255, 255, 0.9) 50%,
+      rgba(255, 255, 255, 0.6) 75%,
       rgba(255, 255, 255, 0) 100%);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  mask-image: linear-gradient(to top, black 0%, black 80%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to top, black 0%, black 80%, transparent 100%);
+  mask-image: linear-gradient(to top, black 0%, black 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, black 0%, black 60%, transparent 100%);
   z-index: -1;
   pointer-events: none;
   border-radius: 0 0 24px 24px;
@@ -509,10 +513,10 @@
 
 .dark-mode #chat-footer::before {
   background: linear-gradient(to top,
-      rgba(31, 41, 55, 0.8) 0%,
-      rgba(31, 41, 55, 0.7) 30%,
-      rgba(31, 41, 55, 0.5) 60%,
-      rgba(31, 41, 55, 0.2) 80%,
+      rgba(31, 41, 55, 1) 0%,
+      rgba(31, 41, 55, 0.98) 25%,
+      rgba(31, 41, 55, 0.9) 50%,
+      rgba(31, 41, 55, 0.6) 75%,
       rgba(31, 41, 55, 0) 100%);
 }
 
@@ -521,3 +525,63 @@
    ============================ */
 
 /* Styles moved to .header-guide-btn in unified header section */
+
+/* ============================
+   NEW MESSAGES MARKER
+   ============================ */
+
+.new-messages-marker {
+  position: sticky;
+  bottom: 140px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  margin: 16px auto;
+  width: fit-content;
+  pointer-events: auto;
+}
+
+.new-messages-marker .marker-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--accent-color, #2563eb);
+  color: white;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: marker-bounce-in 0.3s ease;
+  transition: all 0.2s ease;
+}
+
+.new-messages-marker .marker-content:hover {
+  background: var(--accent-hover, #1d4ed8);
+  transform: scale(1.02);
+}
+
+.new-messages-marker .marker-content svg {
+  animation: marker-arrow-bounce 1s ease-in-out infinite;
+}
+
+@keyframes marker-bounce-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes marker-arrow-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
