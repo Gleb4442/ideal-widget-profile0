@@ -211,6 +211,16 @@ export function getCategoryName(categoryId) {
   return category ? category.name : 'Другое';
 }
 
+// Get full category info
+export function getCategoryInfo(categoryId) {
+  return SERVICE_CATEGORIES.find(c => c.id === categoryId) || { id: 'general', name: 'Другое', icon: 'general' };
+}
+
+// Format service price with priceType
+export function formatServicePrice(service) {
+  return formatPrice(service.price, service.priceType);
+}
+
 // Badge types and labels
 export const BADGE_TYPES = {
   popular: { label: 'Most Popular', class: 'badge-popular' },

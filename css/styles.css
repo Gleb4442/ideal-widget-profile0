@@ -17,6 +17,7 @@
 @import 'send-button.css';
 @import 'rooms.css';
 @import 'services.css';
+@import 'room-service.css';
 @import 'special-booking.css';
 @import 'bookings.css';
 @import 'telegram-confirmation.css';

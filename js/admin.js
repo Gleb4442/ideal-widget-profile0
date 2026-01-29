@@ -8,7 +8,7 @@ import * as dom from './dom.js';
 import * as rooms from './rooms.js';
 import * as bookings from './bookings.js';
 import * as services from './services.js';
-import { startOperatorSimulation, stopOperatorSimulation, setOperatorSettings } from './chat.js';
+import { startOperatorSimulation, stopOperatorSimulation, setOperatorSettings, updateScrollButtonPosition } from './chat.js';
 
 // Room editing state
 let currentEditRoomId = null;
@@ -216,13 +216,28 @@ export function initFooterLayout() {
     if (!dom.brandingToggle) return;
     const isBrandingVisible = dom.brandingToggle.checked;
     dom.poweredByContainer.style.display = isBrandingVisible ? 'block' : 'none';
+
+    // Update footer class for blur adjustment
     if (isBrandingVisible) {
       dom.inputAreaWrapper.classList.remove('pb-2');
       dom.inputAreaWrapper.classList.add('pb-0');
+      dom.chatFooter?.classList.remove('no-branding');
+      // Update messages container bottom padding
+      if (dom.messagesContainer) {
+        dom.messagesContainer.style.paddingBottom = '140px';
+      }
     } else {
       dom.inputAreaWrapper.classList.remove('pb-0');
       dom.inputAreaWrapper.classList.add('pb-2');
+      dom.chatFooter?.classList.add('no-branding');
+      // Update messages container bottom padding (reduced when no branding)
+      if (dom.messagesContainer) {
+        dom.messagesContainer.style.paddingBottom = '110px';
+      }
     }
+
+    // Trigger scroll button position update
+    updateScrollButtonPosition();
   };
 
   if (dom.brandingToggle) {

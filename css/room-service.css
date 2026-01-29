@@ -1,0 +1,491 @@
+/*
+ * Room Service Form Styles
+ * Hotel Chat Widget
+ */
+
+/* Room Service Container */
+.room-service-container {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 8px 0;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  max-width: 340px;
+}
+
+.room-service-header {
+  background: linear-gradient(135deg, var(--accent-color, #2563eb) 0%, var(--accent-hover, #1d4ed8) 100%);
+  color: white;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.room-service-header svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.room-service-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.room-service-body {
+  padding: 14px;
+}
+
+/* Room Number Input */
+.room-number-input-group {
+  margin-bottom: 14px;
+}
+
+.room-number-input-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.room-number-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 15px;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 2px;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.room-number-input:focus {
+  outline: none;
+  border-color: var(--accent-color, #2563eb);
+}
+
+/* Category Buttons Grid */
+.service-category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.service-category-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+  background: #f9fafb;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.service-category-btn:hover {
+  background: #f3f4f6;
+  border-color: rgba(var(--accent-rgb, 37, 99, 235), 0.3);
+}
+
+.service-category-btn.active {
+  background: rgba(var(--accent-rgb, 37, 99, 235), 0.1);
+  border-color: var(--accent-color, #2563eb);
+}
+
+.service-category-btn svg {
+  width: 24px;
+  height: 24px;
+  color: var(--accent-color, #2563eb);
+  margin-bottom: 6px;
+}
+
+.service-category-btn span {
+  font-size: 11px;
+  font-weight: 500;
+  color: #374151;
+  text-align: center;
+}
+
+/* Menu Section */
+.rs-menu-section {
+  margin-top: 12px;
+}
+
+.rs-menu-category {
+  margin-bottom: 12px;
+}
+
+.rs-menu-category-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.rs-menu-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rs-menu-item-card {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: #f9fafb;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.rs-menu-item-card:hover {
+  background: #f3f4f6;
+}
+
+.rs-menu-item-card.selected {
+  background: rgba(var(--accent-rgb, 37, 99, 235), 0.1);
+  border-color: var(--accent-color, #2563eb);
+}
+
+.rs-menu-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rs-menu-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 2px;
+}
+
+.rs-menu-item-description {
+  font-size: 11px;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rs-menu-item-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-color, #2563eb);
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+.rs-menu-item-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #d1d5db;
+  border-radius: 6px;
+  margin-left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.rs-menu-item-card.selected .rs-menu-item-checkbox {
+  background: var(--accent-color, #2563eb);
+  border-color: var(--accent-color, #2563eb);
+  color: white;
+}
+
+/* Service Options (Cleaning, Towels, Minibar) */
+.rs-service-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.rs-service-option-btn {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: #f9fafb;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.rs-service-option-btn:hover {
+  background: #f3f4f6;
+}
+
+.rs-service-option-btn.selected {
+  background: rgba(var(--accent-rgb, 37, 99, 235), 0.1);
+  border-color: var(--accent-color, #2563eb);
+}
+
+.rs-service-option-icon {
+  width: 36px;
+  height: 36px;
+  background: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  color: var(--accent-color, #2563eb);
+  flex-shrink: 0;
+}
+
+.rs-service-option-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rs-service-option-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.rs-service-option-desc {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* Order Summary */
+.rs-order-summary {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.rs-order-summary-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.rs-order-items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rs-order-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.rs-order-item-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 8px;
+}
+
+.rs-order-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #e5e7eb;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+/* Special Instructions */
+.rs-special-instructions {
+  margin-top: 12px;
+}
+
+.rs-special-instructions textarea {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 13px;
+  resize: none;
+  min-height: 50px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.rs-special-instructions textarea:focus {
+  outline: none;
+  border-color: var(--accent-color, #2563eb);
+}
+
+.rs-special-instructions textarea::placeholder {
+  color: #9ca3af;
+}
+
+/* Submit Button */
+.rs-submit-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent-color, #2563eb);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+
+.rs-submit-btn:hover:not(:disabled) {
+  background: var(--accent-hover, #1d4ed8);
+}
+
+.rs-submit-btn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+/* Scrollable content area */
+.rs-content-scroll {
+  max-height: 280px;
+  overflow-y: auto;
+  margin: 0 -14px;
+  padding: 0 14px;
+}
+
+/* Dark mode support */
+.dark-mode .room-service-container {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+.dark-mode .room-number-input-group label {
+  color: #d1d5db;
+}
+
+.dark-mode .room-number-input {
+  background: #1f2937;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.dark-mode .room-number-input:focus {
+  border-color: var(--accent-color, #3b82f6);
+}
+
+.dark-mode .service-category-btn {
+  background: #4b5563;
+}
+
+.dark-mode .service-category-btn:hover {
+  background: #6b7280;
+}
+
+.dark-mode .service-category-btn.active {
+  background: rgba(var(--accent-rgb, 59, 130, 246), 0.2);
+}
+
+.dark-mode .service-category-btn span {
+  color: #e5e7eb;
+}
+
+.dark-mode .rs-menu-category-title {
+  color: #9ca3af;
+  border-bottom-color: #4b5563;
+}
+
+.dark-mode .rs-menu-item-card {
+  background: #4b5563;
+}
+
+.dark-mode .rs-menu-item-card:hover {
+  background: #6b7280;
+}
+
+.dark-mode .rs-menu-item-card.selected {
+  background: rgba(var(--accent-rgb, 59, 130, 246), 0.2);
+}
+
+.dark-mode .rs-menu-item-name {
+  color: #f3f4f6;
+}
+
+.dark-mode .rs-menu-item-description {
+  color: #9ca3af;
+}
+
+.dark-mode .rs-service-option-btn {
+  background: #4b5563;
+}
+
+.dark-mode .rs-service-option-btn:hover {
+  background: #6b7280;
+}
+
+.dark-mode .rs-service-option-btn.selected {
+  background: rgba(var(--accent-rgb, 59, 130, 246), 0.2);
+}
+
+.dark-mode .rs-service-option-icon {
+  background: #374151;
+}
+
+.dark-mode .rs-service-option-name {
+  color: #f3f4f6;
+}
+
+.dark-mode .rs-service-option-desc {
+  color: #9ca3af;
+}
+
+.dark-mode .rs-order-summary {
+  border-top-color: #4b5563;
+}
+
+.dark-mode .rs-order-summary-title {
+  color: #d1d5db;
+}
+
+.dark-mode .rs-order-item {
+  color: #d1d5db;
+}
+
+.dark-mode .rs-order-total {
+  border-top-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.dark-mode .rs-special-instructions textarea {
+  background: #1f2937;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.dark-mode .rs-special-instructions textarea:focus {
+  border-color: var(--accent-color, #3b82f6);
+}
+
+.dark-mode .rs-special-instructions textarea::placeholder {
+  color: #6b7280;
+}

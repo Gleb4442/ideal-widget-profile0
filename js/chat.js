@@ -10,6 +10,7 @@ import * as services from './services.js';
 import * as openai from './openai.js';
 import * as gallery from './gallery.js';
 import * as bookings from './bookings.js';
+import * as roomService from './roomService.js';
 
 // Language storage key
 const LANGUAGE_KEY = 'chat_language';
@@ -1822,6 +1823,16 @@ export function getConversationHistory() {
 export function autoResize() {
   dom.messageInput.style.height = 'auto';
   dom.messageInput.style.height = Math.min(dom.messageInput.scrollHeight, 120) + 'px';
+  // Update scroll button position when textarea resizes
+  updateScrollButtonPosition();
+}
+
+// Update scroll button position based on footer height
+export function updateScrollButtonPosition() {
+  const footerHeight = dom.chatFooter?.offsetHeight || 100;
+  const baseOffset = 16;
+  const bottomPosition = footerHeight + baseOffset;
+  document.documentElement.style.setProperty('--scroll-btn-bottom', `${bottomPosition}px`);
 }
 
 // Update Send Button State
@@ -2548,6 +2559,16 @@ export function addServicesCarousel() {
       });
     });
 
+    // Handle card click to open detail view (click on info section)
+    const infoSection = card.querySelector('.service-carousel-info');
+    if (infoSection) {
+      infoSection.style.cursor = 'pointer';
+      infoSection.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openServiceDetailView(service.id);
+      });
+    }
+
     carousel.appendChild(card);
   });
 
@@ -2558,6 +2579,332 @@ export function addServicesCarousel() {
 
   dom.messagesContainer.insertBefore(wrapper, dom.typingIndicator);
   dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+}
+
+// Show Room Service Form
+export function showRoomServiceForm(category = 'food') {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'message-wrapper ai animate-fade-in';
+
+  const container = document.createElement('div');
+  container.className = 'room-service-container';
+  container.innerHTML = generateRoomServiceFormHTML(category);
+
+  wrapper.appendChild(container);
+  dom.messagesContainer.insertBefore(wrapper, dom.typingIndicator);
+  dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+
+  // Initialize form listeners
+  initRoomServiceFormListeners(container, category);
+}
+
+// Generate Room Service Form HTML
+function generateRoomServiceFormHTML(category) {
+  const categories = roomService.SERVICE_CATEGORIES;
+
+  return `
+    <div class="room-service-header">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+        <line x1="6" y1="1" x2="6" y2="4"/>
+        <line x1="10" y1="1" x2="10" y2="4"/>
+        <line x1="14" y1="1" x2="14" y2="4"/>
+      </svg>
+      <h3>Room Service</h3>
+    </div>
+
+    <div class="room-service-body">
+      <div class="room-number-input-group">
+        <label>Номер кімнати</label>
+        <input type="text" class="room-number-input" placeholder="напр. 305" maxlength="5" id="rs-room-number">
+      </div>
+
+      <div class="service-category-grid" id="rs-categories">
+        ${Object.values(categories).map(cat => `
+          <button class="service-category-btn ${cat.id === category ? 'active' : ''}" data-category="${cat.id}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              ${roomService.getCategoryIcon(cat.id)}
+            </svg>
+            <span>${cat.nameUa}</span>
+          </button>
+        `).join('')}
+      </div>
+
+      <div class="rs-content-scroll" id="rs-content">
+        ${generateCategoryContent(category)}
+      </div>
+
+      <div class="rs-order-summary" id="rs-order-summary" style="display: none;">
+        <div class="rs-order-summary-title">Ваше замовлення</div>
+        <div class="rs-order-items" id="rs-order-items"></div>
+        <div class="rs-order-total">
+          <span>Всього</span>
+          <span id="rs-order-total">$0</span>
+        </div>
+      </div>
+
+      <div class="rs-special-instructions">
+        <textarea placeholder="Особливі побажання (алергії, дієта...)" id="rs-instructions"></textarea>
+      </div>
+
+      <button class="rs-submit-btn" id="rs-submit" disabled>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        Замовити
+      </button>
+    </div>
+  `;
+}
+
+// Generate content based on category
+function generateCategoryContent(category) {
+  if (category === 'food') {
+    return generateFoodMenuContent();
+  } else if (category === 'cleaning') {
+    return generateOptionsContent(roomService.CLEANING_OPTIONS, 'cleaning');
+  } else if (category === 'towels') {
+    return generateOptionsContent(roomService.TOWEL_OPTIONS, 'towels');
+  } else if (category === 'minibar') {
+    return generateOptionsContent(roomService.MINIBAR_OPTIONS, 'minibar');
+  }
+  return '';
+}
+
+// Generate Food Menu HTML
+function generateFoodMenuContent() {
+  const menu = roomService.RESTAURANT_MENU;
+  let html = '<div class="rs-menu-section">';
+
+  for (const [sectionKey, section] of Object.entries(menu)) {
+    html += `
+      <div class="rs-menu-category">
+        <div class="rs-menu-category-title">${section.name}</div>
+        <div class="rs-menu-items-list">
+          ${section.items.map(item => `
+            <div class="rs-menu-item-card" data-item-id="${item.id}" data-item-name="${item.name}" data-price="${item.price}">
+              <div class="rs-menu-item-info">
+                <div class="rs-menu-item-name">${item.name}</div>
+                <div class="rs-menu-item-description">${item.description}</div>
+              </div>
+              <div class="rs-menu-item-price">$${item.price}</div>
+              <div class="rs-menu-item-checkbox">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  html += '</div>';
+  return html;
+}
+
+// Generate Options Content (for cleaning, towels, minibar)
+function generateOptionsContent(options, type) {
+  return `
+    <div class="rs-service-options">
+      ${options.map(opt => `
+        <div class="rs-service-option-btn" data-option-id="${opt.id}" data-option-name="${opt.name}" data-type="${type}">
+          <div class="rs-service-option-icon">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <div class="rs-service-option-info">
+            <div class="rs-service-option-name">${opt.name}</div>
+            <div class="rs-service-option-desc">${opt.description}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// Initialize Room Service Form Event Listeners
+function initRoomServiceFormListeners(container, initialCategory) {
+  let selectedItems = [];
+  let currentCategory = initialCategory;
+
+  // Room number input
+  const roomInput = container.querySelector('#rs-room-number');
+
+  // Category buttons
+  container.querySelectorAll('.service-category-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      container.querySelectorAll('.service-category-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCategory = btn.dataset.category;
+
+      // Clear selection when switching categories
+      selectedItems = [];
+      updateOrderSummary();
+
+      // Update content
+      const contentArea = container.querySelector('#rs-content');
+      if (contentArea) {
+        contentArea.innerHTML = generateCategoryContent(currentCategory);
+        initContentListeners();
+      }
+
+      validateForm();
+    });
+  });
+
+  // Initialize content listeners
+  function initContentListeners() {
+    // Food menu items
+    container.querySelectorAll('.rs-menu-item-card').forEach(card => {
+      card.addEventListener('click', () => {
+        card.classList.toggle('selected');
+        const itemId = card.dataset.itemId;
+        const itemName = card.dataset.itemName;
+        const price = parseFloat(card.dataset.price);
+
+        if (card.classList.contains('selected')) {
+          selectedItems.push({ id: itemId, name: itemName, price });
+        } else {
+          selectedItems = selectedItems.filter(i => i.id !== itemId);
+        }
+
+        updateOrderSummary();
+        validateForm();
+      });
+    });
+
+    // Service options (cleaning, towels, minibar)
+    container.querySelectorAll('.rs-service-option-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // For cleaning and minibar - single select; for towels - multi select
+        const type = btn.dataset.type;
+        if (type === 'towels') {
+          btn.classList.toggle('selected');
+        } else {
+          container.querySelectorAll('.rs-service-option-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+        }
+
+        // Update selected items
+        if (type === 'towels') {
+          const optionId = btn.dataset.optionId;
+          const optionName = btn.dataset.optionName;
+          if (btn.classList.contains('selected')) {
+            if (!selectedItems.find(i => i.id === optionId)) {
+              selectedItems.push({ id: optionId, name: optionName, price: 0 });
+            }
+          } else {
+            selectedItems = selectedItems.filter(i => i.id !== optionId);
+          }
+        } else {
+          selectedItems = [{
+            id: btn.dataset.optionId,
+            name: btn.dataset.optionName,
+            price: 0
+          }];
+        }
+
+        updateOrderSummary();
+        validateForm();
+      });
+    });
+  }
+
+  initContentListeners();
+
+  // Update order summary
+  function updateOrderSummary() {
+    const summaryEl = container.querySelector('#rs-order-summary');
+    const itemsEl = container.querySelector('#rs-order-items');
+    const totalEl = container.querySelector('#rs-order-total');
+
+    if (selectedItems.length === 0) {
+      if (summaryEl) summaryEl.style.display = 'none';
+      return;
+    }
+
+    if (summaryEl) summaryEl.style.display = 'block';
+
+    if (itemsEl) {
+      itemsEl.innerHTML = selectedItems.map(item => `
+        <div class="rs-order-item">
+          <span class="rs-order-item-name">${item.name}</span>
+          ${item.price > 0 ? `<span>$${item.price}</span>` : ''}
+        </div>
+      `).join('');
+    }
+
+    const total = selectedItems.reduce((sum, item) => sum + (item.price || 0), 0);
+    if (totalEl) {
+      totalEl.textContent = total > 0 ? `$${total}` : 'Безкоштовно';
+    }
+  }
+
+  // Validate form
+  function validateForm() {
+    const roomNumber = roomInput?.value?.trim() || '';
+    const hasItems = selectedItems.length > 0;
+    const submitBtn = container.querySelector('#rs-submit');
+
+    if (submitBtn) {
+      submitBtn.disabled = !roomNumber || !hasItems;
+    }
+  }
+
+  // Room number input validation
+  if (roomInput) {
+    roomInput.addEventListener('input', validateForm);
+  }
+
+  // Submit order
+  const submitBtn = container.querySelector('#rs-submit');
+  if (submitBtn) {
+    submitBtn.addEventListener('click', () => {
+      const roomNumber = roomInput?.value?.trim() || '';
+      const instructions = container.querySelector('#rs-instructions')?.value?.trim() || '';
+
+      if (!roomNumber || selectedItems.length === 0) return;
+
+      // Create and submit order
+      roomService.createOrder(roomNumber, currentCategory);
+      selectedItems.forEach(item => roomService.addItemToOrder(item));
+      roomService.setSpecialInstructions(instructions);
+
+      const order = roomService.submitOrder();
+      const total = selectedItems.reduce((sum, item) => sum + (item.price || 0), 0);
+
+      // Remove form
+      const wrapper = container.closest('.message-wrapper');
+      if (wrapper) wrapper.remove();
+
+      // Show confirmation message
+      let confirmationText = `Ваше замовлення прийнято!\n\n`;
+      confirmationText += `Номер замовлення: ${order.id}\n`;
+      confirmationText += `Кімната: ${roomNumber}\n`;
+      confirmationText += `Замовлення: ${selectedItems.map(i => i.name).join(', ')}\n`;
+      if (total > 0) {
+        confirmationText += `Сума: $${total}\n`;
+      }
+      confirmationText += `\nОрієнтовний час виконання: `;
+
+      if (currentCategory === 'food') {
+        confirmationText += '30-45 хвилин';
+      } else if (currentCategory === 'cleaning') {
+        confirmationText += '15-20 хвилин';
+      } else if (currentCategory === 'towels') {
+        confirmationText += '10-15 хвилин';
+      } else {
+        confirmationText += '20-30 хвилин';
+      }
+
+      addMessage(confirmationText, 'ai');
+      addToConversationHistory('assistant', confirmationText);
+    });
+  }
 }
 
 // Add Room Context Badge
@@ -2647,6 +2994,16 @@ export async function getAIResponse(userMessage) {
     hideTyping();
     setButtonLoading(false);
     isGenerating = false;
+    return;
+  }
+
+  // Check for room service intent
+  const rsIntent = roomService.detectRoomServiceIntent(userMessage);
+  if (rsIntent.hasIntent) {
+    hideTyping();
+    setButtonLoading(false);
+    isGenerating = false;
+    showRoomServiceForm(rsIntent.category);
     return;
   }
 
@@ -2968,6 +3325,7 @@ export function openRoomDetailView(roomId) {
   const detailName = document.getElementById('room-detail-name');
   const detailArea = document.getElementById('room-detail-area');
   const detailPrice = document.getElementById('room-detail-price-value');
+  const detailDescription = document.getElementById('room-detail-description');
   const askBtn = document.getElementById('room-ask-question-btn');
 
   if (detailImage) {
@@ -2978,6 +3336,14 @@ export function openRoomDetailView(roomId) {
   if (detailName) detailName.textContent = room.name || '';
   if (detailArea) detailArea.querySelector('span').textContent = rooms.formatArea(room.area);
   if (detailPrice) detailPrice.textContent = rooms.formatPrice(room.pricePerNight);
+
+  // Show room description
+  if (detailDescription) {
+    detailDescription.textContent = room.description || '';
+  }
+
+  // Render reviews
+  renderRoomDetailReviews(room.reviews || []);
 
   // Show/hide ask question button
   if (askBtn) {
@@ -2993,12 +3359,130 @@ export function openRoomDetailView(roomId) {
   }
 }
 
+// Render reviews in room detail view
+function renderRoomDetailReviews(reviews) {
+  const reviewsList = document.getElementById('room-reviews-list');
+  const reviewsSection = document.getElementById('room-detail-reviews');
+  if (!reviewsList) return;
+
+  // Hide section if no reviews
+  if (!reviews || reviews.length === 0) {
+    if (reviewsSection) reviewsSection.style.display = 'none';
+    return;
+  }
+
+  if (reviewsSection) reviewsSection.style.display = 'block';
+
+  reviewsList.innerHTML = reviews.map(review => `
+    <div class="review-card">
+      <div class="review-card-header">
+        <span class="review-author">${escapeHtml(review.author || 'Guest')}</span>
+        <span class="review-rating">${'★'.repeat(review.rating || 0)}${'☆'.repeat(5 - (review.rating || 0))}</span>
+      </div>
+      <div class="review-date">${review.date || ''}</div>
+      <div class="review-text">${escapeHtml(review.text || '')}</div>
+    </div>
+  `).join('');
+}
+
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
 // Close Room Detail View
 export function closeRoomDetailView() {
   const detailView = document.getElementById('room-detail-view');
   if (detailView) {
     detailView.classList.remove('active');
     delete detailView.dataset.roomId;
+  }
+}
+
+// Open Service Detail View
+export function openServiceDetailView(serviceId) {
+  const service = services.getService(serviceId);
+  if (!service) return;
+
+  const detailView = document.getElementById('service-detail-view');
+  const detailImage = document.getElementById('service-detail-image');
+  const detailName = document.getElementById('service-detail-name');
+  const detailCategory = document.getElementById('service-detail-category');
+  const detailPrice = document.getElementById('service-detail-price-value');
+  const detailDescription = document.getElementById('service-detail-description');
+  const askBtn = document.getElementById('service-ask-question-btn');
+
+  if (detailImage) {
+    detailImage.src = service.mainPhoto || '';
+    detailImage.style.display = service.mainPhoto ? 'block' : 'none';
+  }
+
+  if (detailName) detailName.textContent = service.name || '';
+
+  if (detailCategory) {
+    const categoryInfo = services.getCategoryInfo(service.category);
+    detailCategory.textContent = categoryInfo?.name || service.category || '';
+  }
+
+  if (detailPrice) detailPrice.textContent = services.formatServicePrice(service);
+
+  // Show service description
+  if (detailDescription) {
+    detailDescription.textContent = service.description || '';
+  }
+
+  // Render reviews
+  renderServiceDetailReviews(service.reviews || []);
+
+  // Show/hide ask question button
+  if (askBtn) {
+    askBtn.style.display = service.askQuestionEnabled ? 'flex' : 'none';
+  }
+
+  // Store service reference
+  detailView.dataset.serviceId = serviceId;
+
+  // Show detail view
+  if (detailView) {
+    detailView.classList.add('active');
+  }
+}
+
+// Render reviews in service detail view
+function renderServiceDetailReviews(reviews) {
+  const reviewsList = document.getElementById('service-reviews-list');
+  const reviewsSection = document.getElementById('service-detail-reviews');
+  if (!reviewsList) return;
+
+  // Hide section if no reviews
+  if (!reviews || reviews.length === 0) {
+    if (reviewsSection) reviewsSection.style.display = 'none';
+    return;
+  }
+
+  if (reviewsSection) reviewsSection.style.display = 'block';
+
+  reviewsList.innerHTML = reviews.map(review => `
+    <div class="review-card">
+      <div class="review-card-header">
+        <span class="review-author">${escapeHtml(review.author || 'Guest')}</span>
+        <span class="review-rating">${'★'.repeat(review.rating || 0)}${'☆'.repeat(5 - (review.rating || 0))}</span>
+      </div>
+      <div class="review-date">${review.date || ''}</div>
+      <div class="review-text">${escapeHtml(review.text || '')}</div>
+    </div>
+  `).join('');
+}
+
+// Close Service Detail View
+export function closeServiceDetailView() {
+  const detailView = document.getElementById('service-detail-view');
+  if (detailView) {
+    detailView.classList.remove('active');
+    delete detailView.dataset.serviceId;
   }
 }
 
@@ -3056,6 +3540,32 @@ export function initRoomDetailListeners() {
       const roomId = detailView?.dataset.roomId;
       if (roomId) {
         viewRoomPhotos(roomId);
+      }
+    });
+  }
+}
+
+// Initialize Service Detail Listeners
+export function initServiceDetailListeners() {
+  const backBtn = document.getElementById('service-detail-back');
+  const askBtn = document.getElementById('service-ask-question-btn');
+  const detailView = document.getElementById('service-detail-view');
+
+  if (backBtn) {
+    backBtn.addEventListener('click', closeServiceDetailView);
+  }
+
+  if (askBtn) {
+    askBtn.addEventListener('click', () => {
+      const serviceId = detailView?.dataset.serviceId;
+      if (serviceId) {
+        const service = services.getService(serviceId);
+        if (service) {
+          closeServiceDetailView();
+          addMessage(`Хочу дізнатися більше про послугу "${service.name}"`, 'user');
+          // Trigger AI response about the service
+          getAIResponse(`Хочу дізнатися більше про послугу "${service.name}"`);
+        }
       }
     });
   }
@@ -3143,6 +3653,9 @@ export function initChatListeners() {
 
   // Room detail listeners
   initRoomDetailListeners();
+
+  // Service detail listeners
+  initServiceDetailListeners();
 
   // Special Booking listeners
   initSpecialBookingListeners();
