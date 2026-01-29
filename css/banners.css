@@ -51,6 +51,9 @@
   /* Adjustment for close button spacing */
   max-width: 100%;
   box-sizing: border-box;
+  left: 4px;
+  right: 4px;
+  width: auto;
 }
 
 /* Base Styles Update */
@@ -162,7 +165,7 @@
   height: 44px;
   padding: 0;
   left: auto;
-  right: 6px;
+  right: 12px;
   justify-content: center;
   border-radius: 50%;
   box-shadow: 0 6px 20px rgba(42, 171, 238, 0.4);
