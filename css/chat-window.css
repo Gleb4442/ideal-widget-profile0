@@ -137,11 +137,10 @@
   /* Кнопка всегда внизу */
   background: #f3f4f6;
   border-radius: 24px;
-  padding: 6px;
+  padding: 4px;
   border: 2px solid transparent;
   transition: border-color 0.2s, background-color 0.2s;
   gap: 4px;
-  margin-top: 3px;
 }
 
 .input-container-bg:focus-within {
@@ -319,8 +318,8 @@
 .header-identity {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
+  gap: 12px;
+  padding: 8px 16px 8px 12px;
   flex-shrink: 0;
 }
 
@@ -473,7 +472,7 @@
   pointer-events: none;
   background: transparent !important;
   border: none !important;
-  padding-bottom: 8px !important;
+  padding-bottom: 4px !important;
 }
 
 #chat-footer>* {
@@ -523,7 +522,7 @@
 #powered-by-container {
   position: relative;
   z-index: 2;
-  margin-top: 4px !important;
+  margin-top: 1px !important;
   background: rgba(255, 255, 255, 0.85) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
