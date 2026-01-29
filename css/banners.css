@@ -49,6 +49,8 @@
   /* Fully rounded pill shape */
   padding-right: 8px;
   /* Adjustment for close button spacing */
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Base Styles Update */
@@ -160,7 +162,7 @@
   height: 44px;
   padding: 0;
   left: auto;
-  right: 0;
+  right: 6px;
   justify-content: center;
   border-radius: 50%;
   box-shadow: 0 6px 20px rgba(42, 171, 238, 0.4);

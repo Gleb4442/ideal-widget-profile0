@@ -133,7 +133,8 @@
 /* ===== Input Field Styles ===== */
 .input-container-bg {
   display: flex;
-  align-items: flex-end;  /* Кнопка всегда внизу */
+  align-items: flex-end;
+  /* Кнопка всегда внизу */
   background: #f3f4f6;
   border-radius: 20px;
   padding: 4px;
@@ -334,9 +335,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 20px;
-  height: 100%;
-  min-height: 44px;
+  padding: 0 16px;
+  height: 40px;
+  /* Distinct button height */
   margin: 0 4px;
   background: transparent;
   color: white;
@@ -344,12 +345,15 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
+  border-radius: 12px;
+  /* Smooth corners */
 }
 
 .header-guide-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
 }
 
 .header-guide-btn svg {
@@ -608,6 +612,7 @@
     opacity: 0;
     transform: translateX(-50%) translateY(10px);
   }
+
   100% {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
@@ -615,9 +620,12 @@
 }
 
 @keyframes marker-arrow-bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(3px);
   }
