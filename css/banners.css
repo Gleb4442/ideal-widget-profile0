@@ -6,16 +6,16 @@
 .contact-banner {
   position: absolute;
   bottom: 100%;
-  left: 12px;
-  right: 12px;
+  left: 0;
+  right: 0;
   margin-bottom: 40px;
   transform: translateY(10px);
   overflow: hidden;
   white-space: nowrap;
-  height: 64px;
+  height: 52px;
   z-index: 50;
   cursor: pointer;
-  border-radius: 24px;
+  border-radius: 26px;
   justify-content: space-between;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
@@ -26,6 +26,7 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+  box-sizing: border-box;
 }
 
 .contact-banner.show-banner {
@@ -55,34 +56,27 @@
   position: absolute;
   bottom: 100%;
   left: 0;
-  /* Align with input container edges */
   right: 0;
-  /* Align with input container edges */
   margin-bottom: 40px;
   transform: translateY(10px);
   overflow: hidden;
   white-space: nowrap;
   height: 52px;
-  /* reduced from 56px per user request "miniature" */
   z-index: 50;
   cursor: pointer;
   border-radius: 26px;
-  /* Half of height */
   justify-content: space-between;
   box-shadow: 0 8px 24px rgba(42, 171, 238, 0.25);
-  /* Colored shadow */
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  /* Bouncy transition */
   display: flex;
   align-items: center;
   padding: 0 4px;
-  /* Inner padding */
   text-decoration: none;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  width: 100%;
-  /* Ensure full width initially */
+  width: auto;
+  box-sizing: border-box;
 }
 
 .contact-banner.show-banner {
@@ -170,10 +164,11 @@
   justify-content: center;
   border-radius: 50%;
   box-shadow: 0 6px 20px rgba(42, 171, 238, 0.4);
+  transform: translateY(-8px);
 }
 
 .contact-banner.collapsed:hover {
-  transform: scale(1.05);
+  transform: translateY(-8px) scale(1.1);
   box-shadow: 0 8px 24px rgba(42, 171, 238, 0.5);
 }
 
