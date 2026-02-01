@@ -161,6 +161,28 @@
       </div>
     </div>
 
+    <!-- Price Popup Section -->
+    <div class="admin-control">
+      <span class="admin-label">Всплывающее окно с ценами</span>
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-sm text-gray-600">Показывать при закрытом виджете</span>
+        <label class="switch"><input type="checkbox" id="price-popup-toggle"><span class="slider"></span></label>
+      </div>
+      <div id="price-popup-settings" class="hidden">
+        <div class="mb-3">
+          <label class="text-xs text-gray-600 block mb-1">Цена на Booking.com (€)</label>
+          <input type="number" id="booking-price-input" value="150" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+        </div>
+        <div class="mb-3">
+          <label class="text-xs text-gray-600 block mb-1">Цена на сайте (€)</label>
+          <input type="number" id="site-price-input" value="105" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+        </div>
+        <div class="text-xs text-gray-500 italic">
+          Экономия: <span id="savings-preview">€45</span>
+        </div>
+      </div>
+    </div>
+
     <div class="admin-control">
       <span class="admin-label">Анимация кнопки</span>
       <div class="flex items-center justify-between">
@@ -360,6 +382,49 @@
     <span class="chat-button-text">Чат с отелем</span>
     <span id="chat-notification-badge">1</span>
   </button>
+
+  <!-- PRICE COMPARISON POPUP -->
+  <div id="price-popup" class="price-popup">
+    <button class="price-popup-close" id="price-popup-close">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <div class="price-popup-header">
+      <div class="price-popup-title">Экономьте до 30% на прямом бронировании!</div>
+      <div class="price-popup-subtitle">Сравните цены:</div>
+    </div>
+
+    <div class="price-comparison">
+      <div class="price-card">
+        <div class="price-label">Booking.com</div>
+        <div class="price-value" id="popup-booking-price">€150</div>
+        <div class="price-currency">за ночь</div>
+      </div>
+
+      <div class="price-card highlight">
+        <div class="price-label">На сайте</div>
+        <div class="price-value" id="popup-site-price">€105</div>
+        <div class="price-currency">за ночь</div>
+        <div class="price-badge">Лучшая цена</div>
+      </div>
+    </div>
+
+    <div class="savings-badge">
+      <span class="savings-text">Вы экономите</span>
+      <span class="savings-amount" id="popup-savings">€45</span>
+    </div>
+
+    <button class="price-popup-cta" id="price-popup-cta">
+      <span>Забронировать по лучшей цене</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </button>
+  </div>
 
   <!-- CHAT WINDOW -->
   <div id="chat-window">

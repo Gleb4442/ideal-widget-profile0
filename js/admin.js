@@ -1631,6 +1631,172 @@ function initItemPreview() {
   });
 }
 
+// ========================================
+// PRICE POPUP MANAGEMENT
+// ========================================
+
+const PRICE_POPUP_SETTINGS_KEY = 'price_popup_settings';
+
+function loadPricePopupSettings() {
+  try {
+    const saved = localStorage.getItem(PRICE_POPUP_SETTINGS_KEY);
+    return saved ? JSON.parse(saved) : {
+      enabled: false,
+      bookingPrice: 150,
+      sitePrice: 105
+    };
+  } catch (e) {
+    return { enabled: false, bookingPrice: 150, sitePrice: 105 };
+  }
+}
+
+function savePricePopupSettings(settings) {
+  try {
+    localStorage.setItem(PRICE_POPUP_SETTINGS_KEY, JSON.stringify(settings));
+  } catch (e) {
+    console.error('Error saving price popup settings:', e);
+  }
+}
+
+function updatePricePopupDisplay(settings) {
+  const popup = document.getElementById('price-popup');
+  const bookingPriceEl = document.getElementById('popup-booking-price');
+  const sitePriceEl = document.getElementById('popup-site-price');
+  const savingsEl = document.getElementById('popup-savings');
+
+  if (!popup || !bookingPriceEl || !sitePriceEl || !savingsEl) return;
+
+  const savings = settings.bookingPrice - settings.sitePrice;
+
+  bookingPriceEl.textContent = `€${settings.bookingPrice}`;
+  sitePriceEl.textContent = `€${settings.sitePrice}`;
+  savingsEl.textContent = `€${savings}`;
+}
+
+function updatePricePopupVisibility() {
+  const settings = loadPricePopupSettings();
+  const popup = document.getElementById('price-popup');
+  const chatWindow = document.getElementById('chat-window');
+
+  if (!popup || !chatWindow) return;
+
+  const isWidgetClosed = !chatWindow.classList.contains('open');
+
+  if (settings.enabled && isWidgetClosed) {
+    setTimeout(() => {
+      popup.classList.add('show');
+    }, 1000); // Show after 1 second delay
+  } else {
+    popup.classList.remove('show');
+  }
+}
+
+function initPricePopup() {
+  const toggle = document.getElementById('price-popup-toggle');
+  const settingsDiv = document.getElementById('price-popup-settings');
+  const bookingInput = document.getElementById('booking-price-input');
+  const siteInput = document.getElementById('site-price-input');
+  const savingsPreview = document.getElementById('savings-preview');
+  const popup = document.getElementById('price-popup');
+  const closeBtn = document.getElementById('price-popup-close');
+  const ctaBtn = document.getElementById('price-popup-cta');
+  const widgetButton = document.getElementById('chat-widget-button');
+
+  // Load saved settings
+  const settings = loadPricePopupSettings();
+
+  if (toggle) {
+    toggle.checked = settings.enabled;
+
+    if (settings.enabled && settingsDiv) {
+      settingsDiv.classList.remove('hidden');
+    }
+
+    toggle.addEventListener('change', (e) => {
+      const newSettings = loadPricePopupSettings();
+      newSettings.enabled = e.target.checked;
+      savePricePopupSettings(newSettings);
+
+      if (settingsDiv) {
+        if (e.target.checked) {
+          settingsDiv.classList.remove('hidden');
+        } else {
+          settingsDiv.classList.add('hidden');
+        }
+      }
+
+      updatePricePopupVisibility();
+    });
+  }
+
+  // Price inputs
+  if (bookingInput) {
+    bookingInput.value = settings.bookingPrice;
+
+    bookingInput.addEventListener('input', (e) => {
+      const newSettings = loadPricePopupSettings();
+      newSettings.bookingPrice = parseInt(e.target.value) || 0;
+      savePricePopupSettings(newSettings);
+      updatePricePopupDisplay(newSettings);
+
+      if (savingsPreview) {
+        const savings = newSettings.bookingPrice - newSettings.sitePrice;
+        savingsPreview.textContent = `€${savings}`;
+      }
+    });
+  }
+
+  if (siteInput) {
+    siteInput.value = settings.sitePrice;
+
+    siteInput.addEventListener('input', (e) => {
+      const newSettings = loadPricePopupSettings();
+      newSettings.sitePrice = parseInt(e.target.value) || 0;
+      savePricePopupSettings(newSettings);
+      updatePricePopupDisplay(newSettings);
+
+      if (savingsPreview) {
+        const savings = newSettings.bookingPrice - newSettings.sitePrice;
+        savingsPreview.textContent = `€${savings}`;
+      }
+    });
+  }
+
+  // Close button
+  if (closeBtn && popup) {
+    closeBtn.addEventListener('click', () => {
+      popup.classList.remove('show');
+    });
+  }
+
+  // CTA button - opens widget
+  if (ctaBtn && widgetButton && popup) {
+    ctaBtn.addEventListener('click', () => {
+      popup.classList.remove('show');
+      widgetButton.click();
+    });
+  }
+
+  // Initial display update
+  updatePricePopupDisplay(settings);
+
+  // Show popup if widget is closed and popup is enabled
+  updatePricePopupVisibility();
+
+  // Listen for widget open/close events
+  const chatWindow = document.getElementById('chat-window');
+  if (chatWindow) {
+    const observer = new MutationObserver(() => {
+      updatePricePopupVisibility();
+    });
+
+    observer.observe(chatWindow, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+  }
+}
+
 // Initialize All Admin Functions
 export function initAdmin() {
   initFontSelector();
@@ -1648,4 +1814,5 @@ export function initAdmin() {
   initOperatorMode();
   initGuideManagement();
   initItemPreview();
+  initPricePopup();
 }

@@ -60,8 +60,8 @@
 .contact-banner {
   position: absolute;
   bottom: 100%;
-  left: 3px;
-  right: 3px;
+  left: 0;
+  right: 0;
   margin-bottom: 40px;
   transform: translateY(10px);
   overflow: hidden;
@@ -80,7 +80,7 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  width: auto;
+  width: 100%;
   box-sizing: border-box;
 }
 
@@ -165,7 +165,7 @@
   height: 44px;
   padding: 0;
   left: auto;
-  right: 11px;
+  right: 4px;
   justify-content: center;
   border-radius: 50%;
   box-shadow: 0 6px 20px rgba(42, 171, 238, 0.4);
