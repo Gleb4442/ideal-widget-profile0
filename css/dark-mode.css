@@ -251,3 +251,93 @@
 #chat-window.dark-mode .menu-divider {
   background: #374151;
 }
+
+/* ===== Welcome Modal Dark Mode ===== */
+#chat-window.dark-mode .welcome-modal {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+#chat-window.dark-mode .welcome-content {
+  background: #1f2937;
+  border: 1px solid #374151;
+}
+
+#chat-window.dark-mode .welcome-logo {
+  background: #374151;
+}
+
+#chat-window.dark-mode .welcome-title {
+  color: #f3f4f6;
+}
+
+#chat-window.dark-mode .welcome-text {
+  color: #9ca3af;
+}
+
+#chat-window.dark-mode .welcome-text-small {
+  color: #6b7280;
+}
+
+#chat-window.dark-mode .legal-link {
+  color: var(--accent-color);
+}
+
+/* ===== Telegram Confirmation Modal Dark Mode ===== */
+#chat-window.dark-mode .telegram-confirmation-overlay {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+#chat-window.dark-mode .telegram-confirmation-modal {
+  background: #1f2937;
+  border: 1px solid #374151;
+}
+
+#chat-window.dark-mode .telegram-modal-close {
+  background: #374151;
+  color: #9ca3af;
+}
+
+#chat-window.dark-mode .telegram-modal-close:hover {
+  background: #4b5563;
+  color: #e5e7eb;
+}
+
+#chat-window.dark-mode .telegram-modal-title {
+  color: #f3f4f6;
+}
+
+#chat-window.dark-mode .telegram-modal-subtitle {
+  color: #9ca3af;
+}
+
+#chat-window.dark-mode .telegram-later-button {
+  color: #9ca3af;
+}
+
+#chat-window.dark-mode .telegram-later-button:hover {
+  background: #374151;
+  color: #e5e7eb;
+}
+
+/* ===== Legal Modal Dark Mode ===== */
+#chat-window.dark-mode .legal-modal {
+  background: #1f2937;
+}
+
+#chat-window.dark-mode .legal-header {
+  background: #1f2937;
+  border-bottom-color: #374151;
+}
+
+#chat-window.dark-mode .legal-title {
+  color: #f3f4f6;
+}
+
+#chat-window.dark-mode .legal-back-btn {
+  color: #9ca3af;
+}
+
+#chat-window.dark-mode .legal-back-btn:hover {
+  background: #374151;
+  color: #e5e7eb;
+}

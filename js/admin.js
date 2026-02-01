@@ -189,10 +189,13 @@ export function initAdminPanelControls() {
 
   // Theme Toggle
   dom.themeToggle.addEventListener('change', (e) => {
+    const pricePopup = document.getElementById('price-popup');
     if (e.target.checked) {
       dom.chatWindow.classList.add('dark-mode');
+      if (pricePopup) pricePopup.classList.add('dark-mode');
     } else {
       dom.chatWindow.classList.remove('dark-mode');
+      if (pricePopup) pricePopup.classList.remove('dark-mode');
     }
   });
 }

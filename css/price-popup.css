@@ -240,3 +240,42 @@
 .price-popup.show {
   animation: pulse 3s ease-in-out infinite;
 }
+
+/* Dark Mode Support */
+.dark-mode .price-popup {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .price-popup-close {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .price-popup-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .price-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .price-card.highlight {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .savings-badge {
+  background: rgba(255, 215, 0, 0.15);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+}
+
+.dark-mode .price-popup-cta {
+  background: rgba(255, 255, 255, 0.9);
+  color: #1f2937;
+}
+
+.dark-mode .price-popup-cta:hover {
+  background: white;
+}
