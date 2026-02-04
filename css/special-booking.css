@@ -75,17 +75,21 @@
   align-items: center;
   justify-content: space-between;
   padding: 8px 16px;
-  margin: 90px auto 0;
-  width: fit-content;
+  position: absolute;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
   max-width: 90%;
-  background: linear-gradient(135deg, rgba(239, 246, 255, 0.8) 0%, rgba(219, 234, 254, 0.6) 100%);
+  white-space: nowrap;
+  background: linear-gradient(135deg, rgba(243, 244, 246, 0.9) 0%, rgba(229, 231, 235, 0.8) 100%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 9999px;
-  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
   animation: specialSlideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  z-index: 30;
   overflow: hidden;
 }
 
@@ -99,9 +103,9 @@
   width: 100%;
   background: linear-gradient(90deg,
       transparent 0%,
-      #3b82f6 20%,
-      #60a5fa 50%,
-      #3b82f6 80%,
+      #9ca3af 20%,
+      #d1d5db 50%,
+      #9ca3af 80%,
       transparent 100%);
   background-size: 200% 100%;
   animation: specialProgressWave 2s ease-in-out infinite;
@@ -145,8 +149,8 @@
 .mini-loader {
   width: 22px;
   height: 22px;
-  border: 2.5px solid rgba(59, 130, 246, 0.2);
-  border-top-color: #3b82f6;
+  border: 2.5px solid rgba(156, 163, 175, 0.2);
+  border-top-color: #6b7280;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   flex-shrink: 0;
@@ -161,7 +165,7 @@
   left: -4px;
   right: -4px;
   bottom: -4px;
-  border: 1px solid rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(156, 163, 175, 0.1);
   border-radius: 50%;
   animation: spinReverse 1.5s linear infinite;
 }
@@ -181,7 +185,7 @@
 .status-text {
   font-size: 14px;
   font-weight: 600;
-  color: #1e40af;
+  color: #374151;
   animation: statusTextFade 2.5s ease-in-out infinite;
   flex: 1;
   min-width: 0;
@@ -206,9 +210,9 @@
   justify-content: center;
   padding: 8px 16px;
   border: none;
-  background: rgba(59, 130, 246, 0.12);
+  background: rgba(107, 114, 128, 0.1);
   border-radius: 10px;
-  color: #1d4ed8;
+  color: #4b5563;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 12px;
@@ -218,8 +222,8 @@
 }
 
 .cancel-special-btn:hover {
-  background: rgba(59, 130, 246, 0.2);
-  color: #1e40af;
+  background: rgba(107, 114, 128, 0.15);
+  color: #374151;
   transform: scale(1.02);
 }
 
@@ -236,17 +240,21 @@
   align-items: center;
   justify-content: space-between;
   padding: 8px 16px;
-  margin: 90px auto 0;
-  width: fit-content;
+  position: absolute;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
   max-width: 90%;
-  background: linear-gradient(135deg, rgba(245, 243, 255, 0.8) 0%, rgba(224, 215, 254, 0.6) 100%);
+  white-space: nowrap;
+  background: linear-gradient(135deg, rgba(249, 250, 251, 0.9) 0%, rgba(243, 244, 246, 0.8) 100%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 9999px;
-  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
   animation: operatorSlideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  z-index: 30;
   overflow: hidden;
 }
 
@@ -258,7 +266,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #8b5cf6, #a78bfa, #c4b5fd, #a78bfa, #8b5cf6);
+  background: linear-gradient(90deg, #6b7280, #9ca3af, #d1d5db, #9ca3af, #6b7280);
   background-size: 200% 100%;
   animation: operatorGradientShift 3s ease-in-out infinite;
 }
@@ -302,14 +310,14 @@
 .operator-icon {
   width: 36px;
   height: 36px;
-  background: linear-gradient(145deg, #a78bfa 0%, #8b5cf6 50%, #7c3aed 100%);
+  background: linear-gradient(145deg, #6b7280 0%, #4b5563 50%, #374151 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow:
-    0 4px 12px rgba(139, 92, 246, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   flex-shrink: 0;
   animation: operatorPulse 2s ease-in-out infinite;
 }
@@ -320,23 +328,23 @@
   100% {
     transform: scale(1);
     box-shadow:
-      0 4px 12px rgba(139, 92, 246, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      0 4px 12px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
   50% {
     transform: scale(1.05);
     box-shadow:
-      0 6px 20px rgba(139, 92, 246, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      0 6px 20px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 }
 
 .operator-status-spinner {
   width: 22px;
   height: 22px;
-  border: 2.5px solid rgba(139, 92, 246, 0.2);
-  border-top-color: #8b5cf6;
+  border: 2.5px solid rgba(107, 114, 128, 0.2);
+  border-top-color: #6b7280;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   flex-shrink: 0;
@@ -345,7 +353,7 @@
 .operator-status-text {
   font-size: 14px;
   font-weight: 600;
-  color: #5b21b6;
+  color: #374151;
   animation: operatorTextPulse 2.5s ease-in-out infinite;
   white-space: nowrap;
   overflow: hidden;

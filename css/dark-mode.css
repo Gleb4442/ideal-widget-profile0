@@ -198,41 +198,43 @@
 
 /* ===== Special Booking Status Dark Mode ===== */
 #chat-window.dark-mode .special-booking-status {
-  background: linear-gradient(135deg, #1e3a5f 0%, #1e3a8a 40%, #1e40af 100%);
-  border-color: rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, rgba(55, 65, 81, 0.95) 0%, rgba(31, 41, 55, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 #chat-window.dark-mode .special-booking-status .status-text {
-  color: #bfdbfe;
+  color: #d1d5db;
 }
 
 #chat-window.dark-mode .special-booking-status .mini-loader {
-  border-color: rgba(59, 130, 246, 0.3);
-  border-top-color: #60a5fa;
+  border-color: rgba(156, 163, 175, 0.2);
+  border-top-color: #9ca3af;
 }
 
 #chat-window.dark-mode .special-booking-status .cancel-special-btn {
-  background: rgba(59, 130, 246, 0.2);
-  color: #93c5fd;
+  background: rgba(156, 163, 175, 0.15);
+  color: #e5e7eb;
 }
 
 /* ===== Operator Status Bar Dark Mode ===== */
 #chat-window.dark-mode .operator-status-bar {
-  background: linear-gradient(135deg, #2e1065 0%, #4c1d95 50%, #5b21b6 100%);
-  border-color: rgba(139, 92, 246, 0.3);
+  background: linear-gradient(135deg, rgba(31, 41, 55, 0.95) 0%, rgba(17, 24, 39, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 #chat-window.dark-mode .operator-status-bar .operator-status-text {
-  color: #ddd6fe;
+  color: #e5e7eb;
 }
 
 #chat-window.dark-mode .operator-status-bar .operator-icon {
-  background: linear-gradient(145deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);
+  background: linear-gradient(145deg, #4b5563 0%, #374151 50%, #1f2937 100%);
 }
 
 #chat-window.dark-mode .operator-status-bar .operator-status-spinner {
-  border-color: rgba(139, 92, 246, 0.3);
-  border-top-color: #a78bfa;
+  border-color: rgba(156, 163, 175, 0.2);
+  border-top-color: #9ca3af;
 }
 
 /* ===== Menu Sheet Dark Mode ===== */
@@ -254,16 +256,24 @@
 
 /* ===== Welcome Modal Dark Mode ===== */
 #chat-window.dark-mode .welcome-modal {
-  background: rgba(0, 0, 0, 0.6);
+  background: #1f2937;
 }
 
-#chat-window.dark-mode .welcome-content {
+#chat-window.dark-mode .welcome-header {
   background: #1f2937;
-  border: 1px solid #374151;
+  border-bottom-color: #374151;
+}
+
+#chat-window.dark-mode .welcome-header-title {
+  color: #f3f4f6;
 }
 
 #chat-window.dark-mode .welcome-logo {
   background: #374151;
+}
+
+#chat-window.dark-mode .welcome-logo-text {
+  color: var(--accent-color);
 }
 
 #chat-window.dark-mode .welcome-title {
@@ -280,6 +290,19 @@
 
 #chat-window.dark-mode .legal-link {
   color: var(--accent-color);
+}
+
+#chat-window.dark-mode .welcome-email-link {
+  color: #9ca3af;
+}
+
+#chat-window.dark-mode .welcome-start-btn {
+  background: var(--accent-color);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+}
+
+#chat-window.dark-mode .welcome-start-btn:hover {
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
 }
 
 /* ===== Telegram Confirmation Modal Dark Mode ===== */

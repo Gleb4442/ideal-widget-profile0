@@ -190,12 +190,15 @@ export function initAdminPanelControls() {
   // Theme Toggle
   dom.themeToggle.addEventListener('change', (e) => {
     const pricePopup = document.getElementById('price-popup');
+    const cancellationBanner = document.getElementById('cancellation-banner');
     if (e.target.checked) {
       dom.chatWindow.classList.add('dark-mode');
       if (pricePopup) pricePopup.classList.add('dark-mode');
+      if (cancellationBanner) cancellationBanner.classList.add('dark-mode');
     } else {
       dom.chatWindow.classList.remove('dark-mode');
       if (pricePopup) pricePopup.classList.remove('dark-mode');
+      if (cancellationBanner) cancellationBanner.classList.remove('dark-mode');
     }
   });
 }
@@ -1665,15 +1668,11 @@ function updatePricePopupDisplay(settings) {
   const popup = document.getElementById('price-popup');
   const bookingPriceEl = document.getElementById('popup-booking-price');
   const sitePriceEl = document.getElementById('popup-site-price');
-  const savingsEl = document.getElementById('popup-savings');
 
-  if (!popup || !bookingPriceEl || !sitePriceEl || !savingsEl) return;
-
-  const savings = settings.bookingPrice - settings.sitePrice;
+  if (!popup || !bookingPriceEl || !sitePriceEl) return;
 
   bookingPriceEl.textContent = `€${settings.bookingPrice}`;
   sitePriceEl.textContent = `€${settings.sitePrice}`;
-  savingsEl.textContent = `€${savings}`;
 }
 
 function updatePricePopupVisibility() {
@@ -1687,10 +1686,15 @@ function updatePricePopupVisibility() {
 
   if (settings.enabled && isWidgetClosed) {
     setTimeout(() => {
-      popup.classList.add('show');
+      // Re-check conditions after timeout
+      if (!chatWindow.classList.contains('open')) {
+        popup.classList.add('show');
+        updateBannersCloseButton();
+      }
     }, 1000); // Show after 1 second delay
   } else {
     popup.classList.remove('show');
+    updateBannersCloseButton();
   }
 }
 
@@ -1702,7 +1706,6 @@ function initPricePopup() {
   const savingsPreview = document.getElementById('savings-preview');
   const popup = document.getElementById('price-popup');
   const closeBtn = document.getElementById('price-popup-close');
-  const ctaBtn = document.getElementById('price-popup-cta');
   const widgetButton = document.getElementById('chat-widget-button');
 
   // Load saved settings
@@ -1772,14 +1775,6 @@ function initPricePopup() {
     });
   }
 
-  // CTA button - opens widget
-  if (ctaBtn && widgetButton && popup) {
-    ctaBtn.addEventListener('click', () => {
-      popup.classList.remove('show');
-      widgetButton.click();
-    });
-  }
-
   // Initial display update
   updatePricePopupDisplay(settings);
 
@@ -1796,6 +1791,332 @@ function initPricePopup() {
     observer.observe(chatWindow, {
       attributes: true,
       attributeFilter: ['class']
+    });
+  }
+}
+
+// ========================================
+// CANCELLATION BANNER MANAGEMENT
+// ========================================
+
+const CANCELLATION_BANNER_KEY = 'cancellation_banner_settings';
+
+function loadCancellationSettings() {
+  try {
+    const saved = localStorage.getItem(CANCELLATION_BANNER_KEY);
+    return saved ? JSON.parse(saved) : { enabled: false };
+  } catch (e) {
+    return { enabled: false };
+  }
+}
+
+function saveCancellationSettings(settings) {
+  try {
+    localStorage.setItem(CANCELLATION_BANNER_KEY, JSON.stringify(settings));
+  } catch (e) {
+    console.error('Error saving cancellation banner settings:', e);
+  }
+}
+
+function updateCancellationVisibility() {
+  const settings = loadCancellationSettings();
+  const banner = document.getElementById('cancellation-banner');
+  const chatWindow = document.getElementById('chat-window');
+
+  if (!banner || !chatWindow) return;
+
+  const isWidgetClosed = !chatWindow.classList.contains('open');
+
+  if (settings.enabled && isWidgetClosed) {
+    setTimeout(() => {
+      // Re-check conditions after timeout
+      if (!chatWindow.classList.contains('open')) {
+        banner.classList.add('show');
+        updateBannersCloseButton();
+      }
+    }, 1000); // Show after 1s delay
+  } else {
+    banner.classList.remove('show');
+    updateBannersCloseButton();
+  }
+}
+
+function initCancellationBanner() {
+  const toggle = document.getElementById('cancellation-banner-toggle');
+  const banner = document.getElementById('cancellation-banner');
+
+  // Load saved settings
+  const settings = loadCancellationSettings();
+
+  if (toggle) {
+    toggle.checked = settings.enabled;
+
+    // Initial theme sync
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle && themeToggle.checked && banner) {
+      banner.classList.add('dark-mode');
+    }
+
+    toggle.addEventListener('change', (e) => {
+      const newSettings = { enabled: e.target.checked };
+      saveCancellationSettings(newSettings);
+      updateCancellationVisibility();
+    });
+  }
+
+  // Initial visibility update
+  updateCancellationVisibility();
+
+  // Listen for widget open/close events
+  const chatWindow = document.getElementById('chat-window');
+  if (chatWindow) {
+    const observer = new MutationObserver(() => {
+      updateCancellationVisibility();
+    });
+
+    observer.observe(chatWindow, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+  }
+}
+
+// ========================================
+// RESTAURANT MENU MANAGEMENT
+// ========================================
+
+const MENU_SETTINGS_KEY = 'menu_settings';
+
+function loadMenuSettings() {
+  try {
+    const saved = localStorage.getItem(MENU_SETTINGS_KEY);
+    return saved ? JSON.parse(saved) : {
+      enabled: false,
+      type: 'link', // 'link' or 'pdf'
+      link: '',
+      pdfData: null,
+      pdfFilename: ''
+    };
+  } catch (e) {
+    return {
+      enabled: false,
+      type: 'link',
+      link: '',
+      pdfData: null,
+      pdfFilename: ''
+    };
+  }
+}
+
+function saveMenuSettings(settings) {
+  try {
+    localStorage.setItem(MENU_SETTINGS_KEY, JSON.stringify(settings));
+    return true;
+  } catch (e) {
+    console.error('Error saving menu settings:', e);
+    return false;
+  }
+}
+
+function initMenuManagement() {
+  const menuToggle = document.getElementById('menu-toggle');
+  const menuSettings = document.getElementById('menu-admin-settings');
+  const menuTypeLinkRadio = document.getElementById('menu-type-link');
+  const menuTypePdfRadio = document.getElementById('menu-type-pdf');
+  const menuLinkContainer = document.getElementById('menu-link-input-container');
+  const menuPdfContainer = document.getElementById('menu-pdf-input-container');
+  const menuLinkInput = document.getElementById('menu-link-input');
+  const menuPdfInput = document.getElementById('menu-pdf-input');
+  const menuPdfUploadBtn = document.getElementById('menu-pdf-upload-btn');
+  const menuPdfClearBtn = document.getElementById('menu-pdf-clear-btn');
+  const menuPdfFilename = document.getElementById('menu-pdf-filename');
+  const menuSaveBtn = document.getElementById('menu-save-btn');
+
+  // Load saved settings
+  const settings = loadMenuSettings();
+
+  if (menuToggle) {
+    menuToggle.checked = settings.enabled;
+
+    if (settings.enabled && menuSettings) {
+      menuSettings.classList.remove('hidden');
+    }
+
+    menuToggle.addEventListener('change', (e) => {
+      if (menuSettings) {
+        if (e.target.checked) {
+          menuSettings.classList.remove('hidden');
+        } else {
+          menuSettings.classList.add('hidden');
+        }
+      }
+    });
+  }
+
+  // Set initial menu type
+  if (settings.type === 'pdf') {
+    if (menuTypePdfRadio) menuTypePdfRadio.checked = true;
+    if (menuLinkContainer) menuLinkContainer.classList.add('hidden');
+    if (menuPdfContainer) menuPdfContainer.classList.remove('hidden');
+  }
+
+  // Load saved link
+  if (menuLinkInput && settings.link) {
+    menuLinkInput.value = settings.link;
+  }
+
+  // Show PDF filename if exists
+  if (menuPdfFilename && settings.pdfFilename) {
+    menuPdfFilename.textContent = `Файл: ${settings.pdfFilename}`;
+    if (menuPdfClearBtn) menuPdfClearBtn.classList.remove('hidden');
+  }
+
+  // Menu type radio change
+  if (menuTypeLinkRadio && menuTypePdfRadio) {
+    menuTypeLinkRadio.addEventListener('change', () => {
+      if (menuLinkContainer) menuLinkContainer.classList.remove('hidden');
+      if (menuPdfContainer) menuPdfContainer.classList.add('hidden');
+    });
+
+    menuTypePdfRadio.addEventListener('change', () => {
+      if (menuLinkContainer) menuLinkContainer.classList.add('hidden');
+      if (menuPdfContainer) menuPdfContainer.classList.remove('hidden');
+    });
+  }
+
+  // PDF upload button
+  if (menuPdfUploadBtn && menuPdfInput) {
+    menuPdfUploadBtn.addEventListener('click', () => {
+      menuPdfInput.click();
+    });
+
+    menuPdfInput.addEventListener('change', async function () {
+      if (this.files && this.files[0]) {
+        const file = this.files[0];
+        if (file.type !== 'application/pdf') {
+          alert('Будь ласка, виберіть PDF файл');
+          return;
+        }
+
+        // Read file as base64
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const pdfData = e.target.result;
+
+          // Save to temp variable (will be saved when user clicks Save button)
+          window.tempMenuPdfData = pdfData;
+          window.tempMenuPdfFilename = file.name;
+
+          if (menuPdfFilename) {
+            menuPdfFilename.textContent = `Файл: ${file.name}`;
+          }
+          if (menuPdfClearBtn) {
+            menuPdfClearBtn.classList.remove('hidden');
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  // PDF clear button
+  if (menuPdfClearBtn) {
+    menuPdfClearBtn.addEventListener('click', () => {
+      window.tempMenuPdfData = null;
+      window.tempMenuPdfFilename = '';
+      if (menuPdfInput) menuPdfInput.value = '';
+      if (menuPdfFilename) menuPdfFilename.textContent = '';
+      menuPdfClearBtn.classList.add('hidden');
+    });
+  }
+
+  // Save button
+  if (menuSaveBtn) {
+    menuSaveBtn.addEventListener('click', () => {
+      const isEnabled = menuToggle ? menuToggle.checked : false;
+      const menuType = menuTypePdfRadio && menuTypePdfRadio.checked ? 'pdf' : 'link';
+
+      let newSettings = {
+        enabled: isEnabled,
+        type: menuType,
+        link: '',
+        pdfData: null,
+        pdfFilename: ''
+      };
+
+      if (menuType === 'link') {
+        const link = menuLinkInput ? menuLinkInput.value.trim() : '';
+        if (isEnabled && !link) {
+          alert('Будь ласка, введіть посилання на меню');
+          return;
+        }
+        newSettings.link = link;
+      } else if (menuType === 'pdf') {
+        const pdfData = window.tempMenuPdfData || settings.pdfData;
+        const pdfFilename = window.tempMenuPdfFilename || settings.pdfFilename;
+
+        if (isEnabled && !pdfData) {
+          alert('Будь ласка, завантажте PDF файл');
+          return;
+        }
+
+        newSettings.pdfData = pdfData;
+        newSettings.pdfFilename = pdfFilename;
+      }
+
+      if (saveMenuSettings(newSettings)) {
+        alert('Меню збережено успішно!');
+      } else {
+        alert('Помилка при збереженні меню');
+      }
+    });
+  }
+}
+
+// Export for use in other modules
+export function getMenuSettings() {
+  return loadMenuSettings();
+}
+
+// ========================================
+// UNIFIED BANNERS CLOSE BUTTON
+// ========================================
+
+function updateBannersCloseButton() {
+  const closeBtn = document.getElementById('banners-close-btn');
+  const pricePopup = document.getElementById('price-popup');
+  const cancellationBanner = document.getElementById('cancellation-banner');
+
+  if (!closeBtn) return;
+
+  const isPriceShown = pricePopup && pricePopup.classList.contains('show');
+  const isCancellationShown = cancellationBanner && cancellationBanner.classList.contains('show');
+
+  if (isPriceShown || isCancellationShown) {
+    setTimeout(() => {
+      closeBtn.classList.add('show');
+    }, 300); // Show close button after banners appear
+  } else {
+    closeBtn.classList.remove('show');
+  }
+}
+
+function hideAllBanners() {
+  const pricePopup = document.getElementById('price-popup');
+  const cancellationBanner = document.getElementById('cancellation-banner');
+  const closeBtn = document.getElementById('banners-close-btn');
+
+  if (pricePopup) pricePopup.classList.remove('show');
+  if (cancellationBanner) cancellationBanner.classList.remove('show');
+  if (closeBtn) closeBtn.classList.remove('show');
+}
+
+function initBannersCloseButton() {
+  const closeBtn = document.getElementById('banners-close-btn');
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      hideAllBanners();
     });
   }
 }
@@ -1818,4 +2139,7 @@ export function initAdmin() {
   initGuideManagement();
   initItemPreview();
   initPricePopup();
+  initCancellationBanner();
+  initBannersCloseButton();
+  initMenuManagement();
 }

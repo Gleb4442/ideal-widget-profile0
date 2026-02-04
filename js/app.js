@@ -8,6 +8,7 @@ import { initAdmin } from './admin.js';
 import { initLanguage, initChatListeners, updateSendButtonState } from './chat.js';
 import { initBanners } from './banners.js';
 import { initGallery } from './gallery.js';
+import { initMenuModal } from './menu.js';
 import * as bookings from './bookings.js';
 
 // Validate critical DOM elements
@@ -56,6 +57,11 @@ function init() {
   try {
     initGallery();
   } catch (e) { console.error('Gallery init failed:', e); }
+
+  // Initialize menu modal
+  try {
+    initMenuModal();
+  } catch (e) { console.error('Menu modal init failed:', e); }
 
   // Initialize send button state
   try {

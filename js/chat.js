@@ -11,6 +11,7 @@ import * as openai from './openai.js';
 import * as gallery from './gallery.js';
 import * as bookings from './bookings.js';
 import * as roomService from './roomService.js';
+import { openMenuModal, isMenuAvailable } from './menu.js';
 
 // Language storage key
 const LANGUAGE_KEY = 'chat_language';
@@ -3170,6 +3171,11 @@ export async function getAIResponse(userMessage) {
       if (response.showServicesCarousel) {
         setTimeout(() => addServicesCarousel(), response.showRoomsCarousel ? 800 : 500);
       }
+
+      // Show menu modal if intent detected and menu is available
+      if (response.showMenu && isMenuAvailable()) {
+        setTimeout(() => openMenuModal(), response.showRoomsCarousel || response.showServicesCarousel ? 1000 : 500);
+      }
     } else if (chatMode === 'room-context' && selectedRoom) {
       // Room-specific response
       response = await openai.getRoomAIResponse(
@@ -3218,6 +3224,11 @@ export async function getAIResponse(userMessage) {
       // Show services carousel if intent detected
       if (response.showServicesCarousel) {
         setTimeout(() => addServicesCarousel(), response.showRoomsCarousel ? 800 : 500);
+      }
+
+      // Show menu modal if intent detected and menu is available
+      if (response.showMenu && isMenuAvailable()) {
+        setTimeout(() => openMenuModal(), response.showRoomsCarousel || response.showServicesCarousel ? 1000 : 500);
       }
     }
   } catch (error) {
@@ -3898,9 +3909,7 @@ export function showTelegramBookingModal() {
   if (!modal) return;
 
   // Show modal with animation
-  setTimeout(() => {
-    modal.classList.add('show');
-  }, 100);
+  modal.classList.remove('hidden');
 }
 
 // Hide Telegram Booking Confirmation Modal
@@ -3908,7 +3917,7 @@ export function hideTelegramBookingModal() {
   const modal = document.getElementById('telegram-booking-modal');
   if (!modal) return;
 
-  modal.classList.remove('show');
+  modal.classList.add('hidden');
 }
 
 // Initialize Telegram Booking Modal Listeners

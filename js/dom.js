@@ -50,10 +50,12 @@ export const widgetIconContainer = document.getElementById('widget-icon-containe
 
 // Toggles
 export const tgToggle = document.getElementById('tg-toggle');
+export const cancellationBannerToggle = document.getElementById('cancellation-banner-toggle');
 
 // Banners
 export const banners = {
-  telegram: document.getElementById('telegram-banner')
+  telegram: document.getElementById('telegram-banner'),
+  cancellation: document.getElementById('cancellation-banner')
 };
 
 // Modals

@@ -126,6 +126,26 @@ const SERVICE_INTENT_PATTERNS = [
   /оздоровл|wellness/i
 ];
 
+// Menu intent keywords for detecting when user wants to see restaurant menu
+const MENU_INTENT_PATTERNS = [
+  /меню/i,
+  /menu/i,
+  /їжа|еда|food/i,
+  /страв|блюд|dish/i,
+  /їсти|есть|кушать|eat/i,
+  /поїсти|поесть/i,
+  /ресторан|restaurant/i,
+  /кухн|cuisine/i,
+  /сніданок|завтрак|breakfast/i,
+  /обід|обед|lunch/i,
+  /вечер|dinner/i,
+  /що можна з'їсти|что можно поесть|what.*eat/i,
+  /які страви|какие блюда|what.*dish/i,
+  /їжа.*ресторан|еда.*ресторан|restaurant.*food/i,
+  /показ.*меню|покаж.*меню|show.*menu/i,
+  /подив.*меню|посмотр.*меню|see.*menu|view.*menu/i
+];
+
 // Complex booking patterns - triggers Special Booking mode
 const COMPLEX_REQUEST_PATTERNS = [
   // Business trip / Командировка
@@ -289,6 +309,9 @@ ${servicesList}
 
 При запросе о дополнительных услугах — ОБЯЗАТЕЛЬНО предложи посмотреть каталог услуг. Скажи что сейчас покажешь доступные услуги.
 
+### МЕНЮ РЕСТОРАНУ
+Когда гость интересуется едой, меню, блюдами или рестораном — ОБЯЗАТЕЛЬНО предложи посмотреть меню ресторана. Скажи что сейчас покажешь меню с подробной информацией о блюдах.
+
 ### ПОЭТАПНЫЙ СБОР ДАННЫХ ДЛЯ БРОНИРОВАНИЯ
 ⚠️ КРИТИЧЕСКИ ВАЖНО: Запрашивай данные ПОЭТАПНО, по ОДНОМУ полю за раз!
 НЕ запрашивай несколько полей одновременно.
@@ -405,6 +428,11 @@ export function hasRoomIntent(message) {
 // Check if message indicates service intent (additional services)
 export function hasServiceIntent(message) {
   return SERVICE_INTENT_PATTERNS.some(pattern => pattern.test(message));
+}
+
+// Check if message indicates menu intent (restaurant menu)
+export function hasMenuIntent(message) {
+  return MENU_INTENT_PATTERNS.some(pattern => pattern.test(message));
 }
 
 // Check if message is about a general topic (should break room context)
@@ -569,6 +597,9 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
   // Check for services intent
   const showServices = hasServiceIntent(userMessage);
 
+  // Check for menu intent
+  const showMenu = hasMenuIntent(userMessage);
+
   // Extract booking data from user message
   const extractedData = extractBookingData(userMessage);
 
@@ -578,6 +609,7 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
       text: response,
       showRoomsCarousel: showRooms && getAllRooms().length > 0,
       showServicesCarousel: showServices && getAllServices().length > 0,
+      showMenu: showMenu,
       extractedData: extractedData
     };
   } catch (error) {
@@ -585,6 +617,7 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
       text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
       showRoomsCarousel: false,
       showServicesCarousel: false,
+      showMenu: false,
       error: true
     };
   }
@@ -612,6 +645,9 @@ export async function getGeneralAIResponseStreaming(userMessage, hotelName = 'Hi
   // Check for services intent
   const showServices = hasServiceIntent(userMessage);
 
+  // Check for menu intent
+  const showMenu = hasMenuIntent(userMessage);
+
   // Extract booking data from user message
   const extractedData = extractBookingData(userMessage);
 
@@ -627,7 +663,9 @@ export async function getGeneralAIResponseStreaming(userMessage, hotelName = 'Hi
             text: fullText,
             showRoomsCarousel: showRooms && getAllRooms().length > 0,
             showServicesCarousel: showServices && getAllServices().length > 0,
-            extractedData: extractedData
+            showMenu: showMenu,
+            extractedData: extractedData,
+            error: false
           });
         }
       },
@@ -637,6 +675,7 @@ export async function getGeneralAIResponseStreaming(userMessage, hotelName = 'Hi
             text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
             showRoomsCarousel: false,
             showServicesCarousel: false,
+            showMenu: false,
             error: true
           });
         }
