@@ -6,7 +6,7 @@
 /* Popup Container */
 .price-popup {
   position: fixed;
-  bottom: 90px;
+  bottom: 110px;
   right: 20px;
   width: 280px;
   background: rgba(255, 255, 255, 0.95);
@@ -28,7 +28,7 @@
 
 /* Stacking logic: move up if cancellation banner is shown */
 .cancellation-banner.show~.price-popup {
-  bottom: 160px;
+  bottom: 180px;
 }
 
 .price-popup.show {

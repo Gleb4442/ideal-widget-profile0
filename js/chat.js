@@ -1953,6 +1953,20 @@ export function initWelcomeListeners() {
       }
     });
   }
+
+  // Handle policy links in consent banner
+  if (dom.policyLinks) {
+    dom.policyLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const url = link.dataset.url;
+        if (dom.legalIframe && dom.legalModal) {
+          dom.legalIframe.src = url;
+          dom.legalModal.classList.remove('hidden');
+        }
+      });
+    });
+  }
 }
 
 // Show Typing Indicator
@@ -3248,6 +3262,12 @@ export function handleSendMessage() {
 
   isGenerating = true;
   addMessage(text, 'user');
+
+  // Hide policy consent banner after first message
+  if (dom.policyConsentBanner && !dom.policyConsentBanner.classList.contains('hidden')) {
+    dom.policyConsentBanner.classList.add('hidden');
+  }
+
   dom.messageInput.value = '';
   dom.messageInput.style.height = 'auto';
   updateSendButtonState();

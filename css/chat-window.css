@@ -452,7 +452,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 12px;
+  padding: 12px;
   flex-shrink: 0;
 }
 
@@ -605,7 +605,7 @@
   pointer-events: none;
   background: transparent !important;
   border: none !important;
-  padding-bottom: 4px !important;
+  padding-bottom: 14px !important;
 }
 
 #chat-footer>* {
@@ -692,6 +692,52 @@
 .dark-mode #powered-by-container {
   background: transparent !important;
   border: none;
+}
+
+/* ===== Policy Consent Banner ===== */
+.policy-consent-banner {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #6b7280;
+  text-align: center;
+  opacity: 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.policy-consent-banner.hidden {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+.policy-consent-text {
+  display: inline;
+}
+
+.policy-link {
+  color: var(--accent-color, #2563eb);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.policy-link:hover {
+  text-decoration: underline;
+}
+
+/* Dark mode */
+.dark-mode .policy-consent-banner {
+  background: #374151;
+  color: #9ca3af;
+}
+
+.dark-mode .policy-link {
+  color: var(--accent-color);
 }
 
 /* ============================

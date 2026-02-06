@@ -71,6 +71,8 @@ export const legalModal = document.getElementById('legal-modal');
 export const legalBackBtn = document.getElementById('legal-back-btn');
 export const legalIframe = document.getElementById('legal-iframe');
 export const legalLinks = document.querySelectorAll('.legal-link');
+export const policyConsentBanner = document.getElementById('policy-consent-banner');
+export const policyLinks = document.querySelectorAll('.policy-link');
 
 // Special Booking Elements
 export const headerMenuBtn = document.getElementById('header-menu-btn');

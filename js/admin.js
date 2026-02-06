@@ -1786,6 +1786,7 @@ function initPricePopup() {
   if (chatWindow) {
     const observer = new MutationObserver(() => {
       updatePricePopupVisibility();
+      updateBannersCloseButton();
     });
 
     observer.observe(chatWindow, {
@@ -1872,6 +1873,7 @@ function initCancellationBanner() {
   if (chatWindow) {
     const observer = new MutationObserver(() => {
       updateCancellationVisibility();
+      updateBannersCloseButton();
     });
 
     observer.observe(chatWindow, {
@@ -2109,17 +2111,20 @@ export function getMenuSettings() {
 // UNIFIED BANNERS CLOSE BUTTON
 // ========================================
 
-function updateBannersCloseButton() {
+export function updateBannersCloseButton() {
   const closeBtn = document.getElementById('banners-close-btn');
   const pricePopup = document.getElementById('price-popup');
   const cancellationBanner = document.getElementById('cancellation-banner');
+  const chatWindow = document.getElementById('chat-window');
 
   if (!closeBtn) return;
 
   const isPriceShown = pricePopup && pricePopup.classList.contains('show');
   const isCancellationShown = cancellationBanner && cancellationBanner.classList.contains('show');
+  const isChatOpen = chatWindow && chatWindow.classList.contains('open');
 
-  if (isPriceShown || isCancellationShown) {
+  // Show close button only if at least one banner is visible AND chat is closed
+  if ((isPriceShown || isCancellationShown) && !isChatOpen) {
     setTimeout(() => {
       closeBtn.classList.add('show');
     }, 300); // Show close button after banners appear
