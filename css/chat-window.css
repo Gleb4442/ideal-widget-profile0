@@ -665,7 +665,7 @@
 
 /* Messages container padding for floating header/footer */
 #chat-messages {
-  padding-top: 65px !important;
+  padding-top: 82px !important;
   padding-bottom: 140px !important;
   overflow-x: hidden;
 }
