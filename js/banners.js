@@ -1,85 +1,120 @@
 /*
- * Banner Logic
+ * Telegram Banner Logic
  * Hilton Chat Widget
  */
 
-import * as dom from './dom.js';
 import { checkScrollButtonVisibility } from './chat.js';
 
-// Update Contact Stack
-export function updateContactStack() {
-  const isChecked = (el) => el && el.checked;
-  const stackOrder = [
-    { el: dom.banners.telegram, enabled: isChecked(dom.tgToggle) }
-  ];
+// Telegram Banner Management
+let telegramLink = 'https://t.me/your_bot_or_channel'; // Replace with actual Telegram link
 
-  let currentBottom = 12;
+// Initialize Telegram Banner
+export function initTelegramBanner() {
+  const banner = document.getElementById('telegram-banner');
+  const collapsed = document.getElementById('telegram-collapsed');
+  const closeBtn = document.getElementById('telegram-close-btn');
+  const modal = document.getElementById('telegram-confirmation-modal');
+  const proceedBtn = document.getElementById('telegram-proceed-btn');
+  const cancelBtn = document.getElementById('telegram-cancel-btn');
 
-  stackOrder.forEach(item => {
-    if (!item.el) return;
-    if (item.enabled) {
-      item.el.classList.add('show-banner');
-      item.el.style.marginBottom = `${currentBottom}px`;
-      const isCollapsed = item.el.classList.contains('collapsed');
-      const spacing = isCollapsed ? 37 : 75;
-      currentBottom += spacing;
-    } else {
-      item.el.classList.remove('show-banner');
-    }
-  });
+  if (!banner || !collapsed || !closeBtn || !modal || !proceedBtn || !cancelBtn) {
+    console.warn('Telegram banner elements not found');
+    return;
+  }
 
-  checkScrollButtonVisibility();
-}
-
-// Setup Banner Interactions
-export function setupBannerInteractions(bannerId, modalId, externalLink) {
-  const banner = document.getElementById(bannerId);
-  const modal = document.getElementById(modalId);
-  if (!banner || !modal) return;
-
-  const closeBtn = banner.querySelector('.close-banner-btn');
-  const confirmBtn = modal.querySelector('button:first-child');
-  const cancelBtn = modal.querySelector('.modal-btn-cancel');
-
-  banner.addEventListener('click', function (e) {
-    if (e.target.closest('.close-banner-btn')) return;
-    if (this.classList.contains('collapsed')) {
-      e.preventDefault();
-      modal.classList.remove('hidden');
-    } else {
-      if (externalLink) {
-        window.open(externalLink, '_blank');
-      } else {
-        modal.classList.remove('hidden');
-      }
-    }
-  });
-
+  // Close button - collapse banner
   closeBtn.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
-    banner.classList.add('collapsed');
-    updateContactStack();
-    checkScrollButtonVisibility();
+    collapseBanner();
   });
 
-  confirmBtn.addEventListener('click', () => {
-    if (externalLink) window.open(externalLink, '_blank');
-    modal.classList.add('hidden');
+  // Collapsed button - show modal
+  collapsed.addEventListener('click', (e) => {
+    e.preventDefault();
+    showModal();
   });
 
+  // Proceed button - open Telegram
+  proceedBtn.addEventListener('click', () => {
+    window.open(telegramLink, '_blank');
+    hideModal();
+  });
+
+  // Cancel button - close modal
   cancelBtn.addEventListener('click', () => {
-    modal.classList.add('hidden');
+    hideModal();
   });
+
+  // Close modal on overlay click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      hideModal();
+    }
+  });
+
+  // Show banner initially with animation
+  setTimeout(() => {
+    if (banner) {
+      banner.classList.add('expanded');
+    }
+  }, 500);
 }
 
-// Initialize Banners
-export function initBanners() {
-  setupBannerInteractions('telegram-banner', 'tg-confirmation-modal', 'https://t.me/hilton');
+function collapseBanner() {
+  const banner = document.getElementById('telegram-banner');
+  const collapsed = document.getElementById('telegram-collapsed');
 
-  if (dom.tgToggle) {
-    dom.tgToggle.addEventListener('change', updateContactStack);
+  if (!banner || !collapsed) return;
+
+  // Add collapsing animation
+  banner.classList.add('collapsing');
+
+  // After animation, hide banner and show collapsed button
+  setTimeout(() => {
+    banner.style.display = 'none';
+    collapsed.style.display = 'block';
+    setTimeout(() => {
+      collapsed.classList.add('show');
+      checkScrollButtonVisibility();
+    }, 50);
+  }, 300);
+}
+
+function showModal() {
+  const modal = document.getElementById('telegram-confirmation-modal');
+  if (!modal) return;
+
+  modal.style.display = 'flex';
+  // Trigger animation
+  setTimeout(() => {
+    modal.style.opacity = '1';
+  }, 10);
+}
+
+function hideModal() {
+  const modal = document.getElementById('telegram-confirmation-modal');
+  if (!modal) return;
+
+  modal.style.opacity = '0';
+  setTimeout(() => {
+    modal.style.display = 'none';
+  }, 200);
+}
+
+// Set Telegram link (can be called from config or admin panel)
+export function setTelegramLink(link) {
+  if (link) {
+    telegramLink = link;
   }
+}
 
-  updateContactStack();
+// Get current Telegram link
+export function getTelegramLink() {
+  return telegramLink;
+}
+
+// Initialize all banners
+export function initBanners() {
+  initTelegramBanner();
 }

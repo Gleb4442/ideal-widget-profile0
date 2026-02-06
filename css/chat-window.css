@@ -655,18 +655,18 @@
 #powered-by-container {
   position: relative;
   z-index: 2;
-  margin-top: -2px !important;
-  background: rgba(255, 255, 255, 0.85) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-top: 4px !important;
+  background: transparent !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  box-shadow: none;
 }
 
 /* Messages container padding for floating header/footer */
 #chat-messages {
   padding-top: 82px !important;
-  padding-bottom: 140px !important;
+  padding-bottom: 180px !important;
   overflow-x: hidden;
 }
 
@@ -690,8 +690,8 @@
 }
 
 .dark-mode #powered-by-container {
-  background: rgba(31, 41, 55, 0.85) !important;
-  border-color: rgba(255, 255, 255, 0.1);
+  background: transparent !important;
+  border: none;
 }
 
 /* ============================

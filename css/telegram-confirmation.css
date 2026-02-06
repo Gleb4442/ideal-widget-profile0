@@ -1,287 +1,184 @@
 /*
- * Telegram Confirmation Modal - Fullscreen Style
- * Appears after booking completion/cancellation/modification
+ * Telegram Confirmation Modal
+ * Shows when user clicks collapsed telegram button
  */
 
-/* Modal Container - Fullscreen */
-.telegram-confirmation-modal {
-  position: absolute;
+/* Modal Overlay */
+.telegram-confirmation-overlay {
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: white;
-  z-index: 100;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  animation: fadeIn 0.2s ease forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal Content */
+.telegram-confirmation-modal {
+  background: white;
+  border-radius: 20px;
+  padding: 32px 24px;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  animation: slideInRight 0.3s ease-out;
-}
-
-.telegram-confirmation-modal.hidden {
-  display: none;
-}
-
-/* Header */
-.telegram-header {
-  height: 60px;
-  display: flex;
   align-items: center;
-  padding: 0 16px;
-  border-bottom: 1px solid #e5e7eb;
-  background-color: white;
-  flex-shrink: 0;
-}
-
-.telegram-back-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  border: none;
-  color: #4b5563;
-  font-weight: 500;
-  font-size: 15px;
-  cursor: pointer;
-  padding: 8px;
-  margin-left: -8px;
-  border-radius: 8px;
-  transition: background-color 0.2s;
-}
-
-.telegram-back-btn:hover {
-  background-color: #f3f4f6;
-  color: #111827;
-}
-
-.telegram-header-title {
-  flex: 1;
   text-align: center;
-  font-weight: 600;
-  font-size: 16px;
-  color: #111827;
-  margin-right: 32px;
+  animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Content Area */
-.telegram-content {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-
-.telegram-inner {
-  max-width: 400px;
-  width: 100%;
-  text-align: center;
-}
-
-/* Telegram Logo Container */
-.telegram-logo-container {
-  width: 100px;
-  height: 100px;
-  margin: 0 auto 32px;
-  position: relative;
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.telegram-logo-container svg {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 4px 12px rgba(42, 171, 238, 0.3));
-}
-
-/* Success Icon */
-.telegram-success-icon {
-  position: absolute;
-  bottom: -4px;
-  right: -4px;
-  width: 36px;
-  height: 36px;
-  background: #10b981;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 4px solid white;
-  animation: successPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
-}
-
-@keyframes successPop {
-  0% {
-    transform: scale(0);
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
     opacity: 0;
   }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
+  to {
     transform: scale(1);
     opacity: 1;
   }
 }
 
-.telegram-success-icon svg {
-  width: 20px;
-  height: 20px;
-  color: white;
+/* Telegram Icon in Modal */
+.telegram-modal-icon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 24px;
+  animation: float 3s ease-in-out infinite;
 }
 
-/* Modal Content */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.telegram-modal-icon svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 12px rgba(42, 171, 238, 0.3));
+}
+
+/* Modal Title */
 .telegram-modal-title {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 700;
   color: #111827;
-  margin-bottom: 12px;
+  margin-bottom: 24px;
   line-height: 1.3;
 }
 
-.telegram-modal-subtitle {
-  font-size: 16px;
-  color: #6b7280;
-  margin-bottom: 32px;
-  line-height: 1.5;
+/* Modal Buttons */
+.telegram-modal-buttons {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-/* Telegram Button */
-.telegram-confirm-button {
+.telegram-proceed-button {
   width: 100%;
-  padding: 16px 24px;
+  padding: 14px 24px;
   background: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%);
   color: white;
   border: none;
-  border-radius: 14px;
-  font-size: 17px;
+  border-radius: 12px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
   transition: all 0.2s;
-  box-shadow: 0 4px 14px rgba(42, 171, 238, 0.4);
+  box-shadow: 0 4px 12px rgba(42, 171, 238, 0.3);
 }
 
-.telegram-confirm-button:hover {
+.telegram-proceed-button:hover {
   background: linear-gradient(135deg, #229ED9 0%, #1e88bd 100%);
-  box-shadow: 0 6px 20px rgba(42, 171, 238, 0.5);
+  box-shadow: 0 6px 16px rgba(42, 171, 238, 0.4);
   transform: translateY(-2px);
 }
 
-.telegram-confirm-button:active {
+.telegram-proceed-button:active {
   transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(42, 171, 238, 0.4);
 }
 
-.telegram-button-icon {
-  width: 24px;
-  height: 24px;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
-}
-
-/* Later Button */
-.telegram-later-button {
+.telegram-cancel-button {
   width: 100%;
   padding: 14px 24px;
-  background: transparent;
+  background: #f3f4f6;
   color: #6b7280;
   border: none;
   border-radius: 12px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  margin-top: 12px;
   transition: all 0.2s;
 }
 
-.telegram-later-button:hover {
-  background: #f3f4f6;
+.telegram-cancel-button:hover {
+  background: #e5e7eb;
   color: #374151;
 }
 
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+.telegram-cancel-button:active {
+  transform: scale(0.98);
 }
 
 /* Dark Mode Support */
 .dark-mode .telegram-confirmation-modal {
   background: #1f2937;
-}
-
-.dark-mode .telegram-header {
-  background: #1f2937;
-  border-bottom-color: #374151;
-}
-
-.dark-mode .telegram-back-btn {
-  color: #9ca3af;
-}
-
-.dark-mode .telegram-back-btn:hover {
-  background: #374151;
-  color: #e5e7eb;
-}
-
-.dark-mode .telegram-header-title {
-  color: #f3f4f6;
+  border: 1px solid #374151;
 }
 
 .dark-mode .telegram-modal-title {
   color: #f3f4f6;
 }
 
-.dark-mode .telegram-modal-subtitle {
-  color: #9ca3af;
-}
-
-.dark-mode .telegram-later-button {
-  color: #9ca3af;
-}
-
-.dark-mode .telegram-later-button:hover {
+.dark-mode .telegram-cancel-button {
   background: #374151;
+  color: #9ca3af;
+}
+
+.dark-mode .telegram-cancel-button:hover {
+  background: #4b5563;
   color: #e5e7eb;
 }
 
 /* Mobile Adjustments */
 @media (max-width: 480px) {
-  .telegram-inner {
-    padding: 0 8px;
+  .telegram-confirmation-modal {
+    padding: 28px 20px;
   }
 
-  .telegram-logo-container {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 24px;
+  .telegram-modal-icon {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 20px;
   }
 
   .telegram-modal-title {
-    font-size: 22px;
+    font-size: 20px;
+    margin-bottom: 20px;
   }
 
-  .telegram-modal-subtitle {
+  .telegram-proceed-button,
+  .telegram-cancel-button {
+    padding: 12px 20px;
     font-size: 15px;
-    margin-bottom: 24px;
-  }
-
-  .telegram-confirm-button {
-    padding: 14px 20px;
-    font-size: 16px;
   }
 }

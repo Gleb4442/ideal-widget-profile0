@@ -1910,10 +1910,28 @@ function loadMenuSettings() {
 
 function saveMenuSettings(settings) {
   try {
-    localStorage.setItem(MENU_SETTINGS_KEY, JSON.stringify(settings));
+    const settingsStr = JSON.stringify(settings);
+    const sizeInBytes = new Blob([settingsStr]).size;
+    const sizeInMB = (sizeInBytes / (1024 * 1024)).toFixed(2);
+
+    console.log(`Trying to save menu settings (${sizeInMB} MB)`);
+
+    // Check if size is too large (warn if > 4MB)
+    if (sizeInBytes > 4 * 1024 * 1024) {
+      alert(`Розмір меню занадто великий (${sizeInMB} MB). Рекомендується використовувати посилання або менший PDF файл (< 4 MB).`);
+      return false;
+    }
+
+    localStorage.setItem(MENU_SETTINGS_KEY, settingsStr);
     return true;
   } catch (e) {
     console.error('Error saving menu settings:', e);
+
+    if (e.name === 'QuotaExceededError') {
+      alert('Помилка: Недостатньо місця для збереження меню. Спробуйте використати менший PDF файл або посилання на меню.');
+    } else {
+      alert('Помилка при збереженні меню: ' + e.message);
+    }
     return false;
   }
 }
@@ -1998,6 +2016,14 @@ function initMenuManagement() {
           return;
         }
 
+        // Check file size (warn if > 3MB, as base64 increases size by ~33%)
+        const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+        if (file.size > 3 * 1024 * 1024) {
+          alert(`PDF файл занадто великий (${sizeInMB} MB). Рекомендується використовувати файл менше 3 MB або посилання на меню.`);
+          this.value = '';
+          return;
+        }
+
         // Read file as base64
         const reader = new FileReader();
         reader.onload = function (e) {
@@ -2008,7 +2034,7 @@ function initMenuManagement() {
           window.tempMenuPdfFilename = file.name;
 
           if (menuPdfFilename) {
-            menuPdfFilename.textContent = `Файл: ${file.name}`;
+            menuPdfFilename.textContent = `Файл: ${file.name} (${sizeInMB} MB)`;
           }
           if (menuPdfClearBtn) {
             menuPdfClearBtn.classList.remove('hidden');
@@ -2066,8 +2092,9 @@ function initMenuManagement() {
 
       if (saveMenuSettings(newSettings)) {
         alert('Меню збережено успішно!');
-      } else {
-        alert('Помилка при збереженні меню');
+        // Clear temp variables after successful save
+        window.tempMenuPdfData = null;
+        window.tempMenuPdfFilename = '';
       }
     });
   }
