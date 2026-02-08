@@ -9,6 +9,7 @@ import { initLanguage, initChatListeners, updateSendButtonState } from './chat.j
 import { initBanners } from './banners.js';
 import { initGallery } from './gallery.js';
 import { initMenuModal } from './menu.js';
+import { initLoginModal } from './login.js';
 import * as bookings from './bookings.js';
 
 // Validate critical DOM elements
@@ -62,6 +63,11 @@ function init() {
   try {
     initMenuModal();
   } catch (e) { console.error('Menu modal init failed:', e); }
+
+  // Initialize login modal
+  try {
+    initLoginModal();
+  } catch (e) { console.error('Login modal init failed:', e); }
 
   // Initialize send button state
   try {

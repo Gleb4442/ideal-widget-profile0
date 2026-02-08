@@ -809,6 +809,44 @@
       </div>
     </div>
 
+    <!-- Login Modal -->
+    <div id="login-modal"
+      class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
+      <div
+        class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
+        <h4 class="text-lg font-bold mb-4">Вход в аккаунт</h4>
+        <input type="tel" id="phone-input" placeholder="+380 XX XXX XX XX"
+          class="w-full px-4 py-3 border border-gray-300 rounded-xl text-center text-base mb-6 focus:outline-none focus:border-blue-500 transition-colors">
+        <div class="flex flex-col gap-2">
+          <button id="confirm-login-btn"
+            class="w-full py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors shadow-sm">
+            <span>Продолжить</span>
+          </button>
+          <button id="cancel-login-btn"
+            class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Отменить</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Success Modal -->
+    <div id="login-success-modal"
+      class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
+      <div
+        class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
+        <div class="mx-auto w-16 h-16 flex items-center justify-center mb-4 bg-green-100 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <h4 id="success-message-title" class="text-lg font-bold mb-2">Вы успешно вошли в свой аккаунт</h4>
+        <p class="modal-text-secondary text-sm text-gray-500 mb-6">Теперь вы можете продолжить использование чата</p>
+        <button id="close-success-btn"
+          class="w-full py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors shadow-sm">
+          <span>Отлично</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Special Offer Card -->
     <div id="special-offer-card" class="special-offer-card hidden">
       <div class="offer-header">
@@ -914,7 +952,7 @@
 
     <!-- Footer with full blur coverage -->
     <footer id="chat-footer"
-      class="border-t-0 bg-transparent flex-shrink-0 flex flex-col relative z-20 transition-all px-3 pb-2 gap-3">
+      class="border-t-0 bg-transparent flex-shrink-0 flex flex-col relative z-20 transition-all px-3 pb-2 gap-1">
       <!-- Policy Consent Banner -->
       <div id="policy-consent-banner" class="policy-consent-banner">
         <div class="policy-consent-text">
