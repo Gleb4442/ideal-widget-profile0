@@ -529,16 +529,14 @@
           </div>
         </div>
 
-        <!-- Divider -->
-        <div class="header-divider"></div>
-
-        <!-- Guide Badge (integrated) -->
-        <button id="guide-badge-btn" class="header-guide-btn" title="Guest Guide">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="1">
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
-              stroke-linejoin="round" />
+        <!-- Log In Button (integrated) -->
+        <button id="guide-badge-btn" class="header-guide-btn" title="Log In">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
           </svg>
-          <span>Guide</span>
+          <span>Log In</span>
         </button>
 
         <!-- Status Pill (Special Booking / Operator Mode) -->
@@ -546,9 +544,6 @@
           <div class="header-status-spinner"></div>
           <span class="header-status-text">Загрузка...</span>
         </div>
-
-        <!-- Divider -->
-        <div class="header-divider"></div>
 
         <!-- Block 2: Controls (Menu + Close) -->
         <div class="header-controls flex items-center gap-1">
@@ -920,6 +915,16 @@
     <!-- Footer with full blur coverage -->
     <footer id="chat-footer"
       class="border-t-0 bg-transparent flex-shrink-0 flex flex-col relative z-20 transition-all px-3 pb-2 gap-3">
+      <!-- Policy Consent Banner -->
+      <div id="policy-consent-banner" class="policy-consent-banner">
+        <div class="policy-consent-text">
+          Начиная чат вы соглашаетесь с
+          <a href="#" class="policy-link" data-url="https://roomie.user-agreement.hotelmol.com/">Условиями использования</a>
+          и
+          <a href="#" class="policy-link" data-url="https://roomie.privacy-policy.hotelmol.com/">Политикой конфиденциальности</a>
+        </div>
+      </div>
+
       <!-- Telegram Banner (Expanded) -->
       <div id="telegram-banner" class="telegram-banner expanded">
         <div class="telegram-banner-content">
@@ -963,16 +968,6 @@
         </svg>
       </button>
 
-      <!-- Policy Consent Banner -->
-      <div id="policy-consent-banner" class="policy-consent-banner">
-        <div class="policy-consent-text">
-          Нажимая чат вы соглашаетесь с
-          <a href="#" class="policy-link" data-url="https://roomie.user-agreement.hotelmol.com/">Условия использования</a>
-          и
-          <a href="#" class="policy-link" data-url="https://roomie.privacy-policy.hotelmol.com/">Политика конфиденциальности</a>
-        </div>
-      </div>
-
       <!-- Input Area -->
       <div id="input-area-wrapper" class="px-0 pb-0 pt-0">
         <div class="input-container-bg shadow-lg bg-white">
@@ -995,38 +990,6 @@
       </div>
     </footer>
 
-    <!-- Welcome Modal -->
-    <div id="welcome-modal" class="welcome-modal hidden">
-      <div class="welcome-header">
-        <span class="welcome-header-title">Добро пожаловать</span>
-      </div>
-      <div class="welcome-content">
-        <div class="welcome-inner">
-          <div class="welcome-logo">
-            <span class="welcome-logo-text">H</span>
-          </div>
-          <h2 class="welcome-title">Привет! Я Roomie,<br>твой ИИ-консьерж в Hilton</h2>
-
-          <div class="welcome-body">
-            <p class="welcome-text">
-              Нажимая кнопку «Начать», вы принимаете наши <a href="#" class="legal-link"
-                data-url="https://roomie.user-agreement.hotelmol.com/">Условия использования</a> и <a href="#"
-                class="legal-link"
-                data-url="https://roomie.privacy-policy.hotelmol.com/">Политику конфиденциальности</a>,
-              а также соглашаетесь получать от нас полезную информацию о своем проживании и спецпредложениях отеля.
-            </p>
-            <p class="welcome-text-small">
-              Ты можешь в любой момент удалить все свои данные, просто написав на почту <a
-                href="mailto:legal@hotelmol.com" class="welcome-email-link">legal@hotelmol.com</a>
-            </p>
-          </div>
-
-          <button id="welcome-start-btn" class="welcome-start-btn">
-            Начать работу
-          </button>
-        </div>
-      </div>
-    </div>
 
     <!-- Legal Modal (Iframe) -->
     <div id="legal-modal" class="legal-modal hidden">
