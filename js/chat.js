@@ -4236,7 +4236,7 @@ function hideGuideSheet() {
 // Initialize Guide Sheet Listeners
 function initGuideSheetListeners() {
   // Badge click - open sheet
-  if (dom.guideBadgeBtn) {
+  if (dom.guideBadgeBtn && dom.guideBadgeBtn.dataset.role === 'guide') {
     dom.guideBadgeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       showGuideSheet();
@@ -4268,4 +4268,3 @@ function initGuideSheetListeners() {
     });
   }
 }
-

@@ -14,6 +14,7 @@
     rel="stylesheet">
 
   <!-- Widget Styles -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/cancellation-banner.css">
   <link rel="stylesheet" href="css/banners.css">
@@ -332,17 +333,20 @@
           <label class="text-xs text-gray-600 block mb-1">Завантажити PDF</label>
           <div class="flex gap-2">
             <input type="file" id="menu-pdf-input" accept=".pdf" class="hidden">
-            <button id="menu-pdf-upload-btn" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">
+            <button id="menu-pdf-upload-btn"
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">
               Вибрати файл
             </button>
-            <button id="menu-pdf-clear-btn" class="px-3 py-2 border border-red-300 text-red-600 rounded-lg text-sm hover:bg-red-50 transition hidden">
+            <button id="menu-pdf-clear-btn"
+              class="px-3 py-2 border border-red-300 text-red-600 rounded-lg text-sm hover:bg-red-50 transition hidden">
               Очистити
             </button>
           </div>
           <div id="menu-pdf-filename" class="text-xs text-gray-500 mt-1"></div>
         </div>
 
-        <button id="menu-save-btn" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
+        <button id="menu-save-btn"
+          class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
           Зберегти меню
         </button>
       </div>
@@ -500,8 +504,8 @@
 
   <!-- UNIFIED CLOSE BUTTON FOR BANNERS -->
   <button id="banners-close-btn" class="banners-close-btn">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <line x1="18" y1="6" x2="6" y2="18"></line>
       <line x1="6" y1="6" x2="18" y2="18"></line>
     </svg>
@@ -530,11 +534,12 @@
         </div>
 
         <!-- Log In Button (integrated) -->
-        <button id="guide-badge-btn" class="header-guide-btn" title="Log In">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-            <polyline points="10 17 15 12 10 7"/>
-            <line x1="15" y1="12" x2="3" y2="12"/>
+        <button id="guide-badge-btn" class="header-guide-btn" title="Log In" data-role="login">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+            <polyline points="10 17 15 12 10 7" />
+            <line x1="15" y1="12" x2="3" y2="12" />
           </svg>
           <span>Log In</span>
         </button>
@@ -834,7 +839,8 @@
       <div
         class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
         <div class="mx-auto w-16 h-16 flex items-center justify-center mb-4 bg-green-100 rounded-full">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-600" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
         </div>
@@ -957,9 +963,11 @@
       <div id="policy-consent-banner" class="policy-consent-banner">
         <div class="policy-consent-text">
           Начиная чат вы соглашаетесь с
-          <a href="#" class="policy-link" data-url="https://roomie.user-agreement.hotelmol.com/">Условиями использования</a>
+          <a href="#" class="policy-link" data-url="https://roomie.user-agreement.hotelmol.com/">Условиями
+            использования</a>
           и
-          <a href="#" class="policy-link" data-url="https://roomie.privacy-policy.hotelmol.com/">Политикой конфиденциальности</a>
+          <a href="#" class="policy-link" data-url="https://roomie.privacy-policy.hotelmol.com/">Политикой
+            конфиденциальности</a>
         </div>
       </div>
 
@@ -968,12 +976,13 @@
         <div class="telegram-banner-content">
           <div class="telegram-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240.1 240.1">
-              <linearGradient id="telegram_gradient" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581" x2="-838.041"
-                y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
+              <linearGradient id="telegram_gradient" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581"
+                x2="-838.041" y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
                 <stop offset="0" style="stop-color:#2AABEE" />
                 <stop offset="1" style="stop-color:#229ED9" />
               </linearGradient>
-              <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#telegram_gradient)" cx="120.1" cy="120.1" r="120.1" />
+              <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#telegram_gradient)" cx="120.1" cy="120.1"
+                r="120.1" />
               <path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF"
                 d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z" />
             </svg>
@@ -995,12 +1004,13 @@
       <!-- Telegram Collapsed Button -->
       <button id="telegram-collapsed" class="telegram-collapsed" style="display: none;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240.1 240.1">
-          <linearGradient id="telegram_gradient_collapsed" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581" x2="-838.041"
-            y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
+          <linearGradient id="telegram_gradient_collapsed" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581"
+            x2="-838.041" y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
             <stop offset="0" style="stop-color:#2AABEE" />
             <stop offset="1" style="stop-color:#229ED9" />
           </linearGradient>
-          <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#telegram_gradient_collapsed)" cx="120.1" cy="120.1" r="120.1" />
+          <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#telegram_gradient_collapsed)" cx="120.1" cy="120.1"
+            r="120.1" />
           <path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF"
             d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z" />
         </svg>
@@ -1070,12 +1080,13 @@
       <div class="telegram-confirmation-modal">
         <div class="telegram-modal-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240.1 240.1">
-            <linearGradient id="telegram_gradient_modal" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581" x2="-838.041"
-              y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
+            <linearGradient id="telegram_gradient_modal" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581"
+              x2="-838.041" y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
               <stop offset="0" style="stop-color:#2AABEE" />
               <stop offset="1" style="stop-color:#229ED9" />
             </linearGradient>
-            <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#telegram_gradient_modal)" cx="120.1" cy="120.1" r="120.1" />
+            <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#telegram_gradient_modal)" cx="120.1" cy="120.1"
+              r="120.1" />
             <path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF"
               d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z" />
           </svg>
@@ -1305,7 +1316,8 @@
           <p class="telegram-modal-subtitle">Перейдите в Telegram чтобы получить подтверждение о вашем бронировании</p>
 
           <button class="telegram-confirm-button" id="telegram-booking-confirm">
-            <svg class="telegram-button-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <svg class="telegram-button-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+              fill="currentColor">
               <path
                 d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.2-.04-.28-.02-.12.02-1.98 1.26-5.59 3.7-.53.37-.1.02-1.44.38-.67.19-1.19.3-1.14.65.03.19.21.38 1.48.68 1.05.27 2.44.58 3.18.68.64.08 1.35-.06 1.74-.2 1.16-.38 3.31-1.32 3.36-1.34.03-.02.1-.03.17-.03.13 0 .23.08.23.19z" />
             </svg>
