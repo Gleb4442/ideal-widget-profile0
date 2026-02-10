@@ -22,13 +22,18 @@ export function initLoginModal() {
   }
 
   // Open login modal
-  loginBtn.addEventListener('click', () => {
+  loginBtn.addEventListener('click', (e) => {
+    // Prevent any other click handlers on this button (e.g. Guest Guide)
+    if (e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
     loginModal.classList.remove('hidden');
     if (smsCodeInput) {
       smsCodeInput.value = '';
       smsCodeInput.focus();
     }
-  });
+  }, { capture: true });
 
   // Cancel login
   cancelLoginBtn.addEventListener('click', () => {
