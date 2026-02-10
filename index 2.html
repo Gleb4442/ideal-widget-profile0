@@ -226,17 +226,17 @@
 
         /* Telegram Баннер */
         #telegram-banner {
-            position: absolute; bottom: 100%; left: 12px; right: 12px; margin-bottom: 30px;
+            position: absolute; left: 0; right: 0; bottom: calc(100% + 10px);
             transform: translateY(0); overflow: hidden; white-space: nowrap; height: 64px; z-index: 50;
         }
         #telegram-banner.collapsed {
-            width: 40px; height: 40px; padding: 0; left: auto; right: 12px; border-radius: 50%;
-            justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(36, 161, 222, 0.4);
-            transform: translateY(10px) scale(0.95);
+            width: 24px; height: 24px; padding: 0; left: auto; right: 12px; border-radius: 0;
+            justify-content: center; cursor: pointer; box-shadow: none; background: transparent; gap: 0;
+            transform: none; bottom: calc(100% + 6px); color: #24A1DE;
         }
         #telegram-banner.collapsed .tg-content, #telegram-banner.collapsed #close-tg-banner { opacity: 0; pointer-events: none; position: absolute; }
-        #telegram-banner.collapsed .tg-icon-wrapper { margin: 0; background-color: transparent; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-        #telegram-banner.collapsed .tg-icon-wrapper svg { width: 20px; height: 20px; }
+        #telegram-banner.collapsed .tg-icon-wrapper { margin: 0; background-color: transparent; width: 24px; height: 24px; border-radius: 0; display: flex; align-items: center; justify-content: center; }
+        #telegram-banner.collapsed .tg-icon-wrapper svg { width: 24px; height: 24px; }
 
         /* * СТИЛИ ДЛЯ АДМИН ПАНЕЛИ */
         #admin-panel {
@@ -413,21 +413,22 @@
         <footer class="border-t border-gray-100 bg-gray-50 flex-shrink-0 flex flex-col relative z-20">
             
             <!-- БАННЕР TELEGRAM -->
-            <a href="https://t.me/hilton" target="_blank" id="telegram-banner" class="bg-[#24A1DE] text-white rounded-2xl p-3 shadow-lg flex items-center gap-3 hover:opacity-95 no-underline">
-                <div class="tg-icon-wrapper w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-2.05-1.23-2.21-1.41-.37-.39.52-1.23.91-1.6 1.22-1.18 2.43-2.17 2.43-2.17s.2-.18-.05.08c-.24.26-3.45 2.36-3.7 2.53-.34.23-.97.28-1.38.16l-1.97-.6c-.48-.15-.7-.32-.67-.67.02-.4.53-.8 2.08-1.42 6.08-2.27 7.55-2.87 8.2-2.87.67 0 .62 1.3.75 1.9z"/></svg>
-                </div>
-                <div class="tg-content flex flex-col pr-6">
-                    <span class="text-sm font-bold leading-tight">Перейти в Telegram</span>
-                    <span class="text-xs opacity-90 text-blue-50">Быстрее и удобнее</span>
-                </div>
-                <button id="close-tg-banner" class="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-white/60 hover:text-white rounded-full bg-black/10 hover:bg-black/20 transition-all z-10">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-            </a>
-
             <!-- Основная строка ввода -->
-            <div class="px-3 pb-1 pt-2">
+            <div class="px-3 pb-1 pt-2 relative">
+                <!-- БАННЕР TELEGRAM -->
+                <a href="https://t.me/hilton" target="_blank" id="telegram-banner" class="bg-[#24A1DE] text-white rounded-2xl p-3 shadow-lg flex items-center gap-3 hover:opacity-95 no-underline">
+                    <div class="tg-icon-wrapper w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-2.05-1.23-2.21-1.41-.37-.39.52-1.23.91-1.6 1.22-1.18 2.43-2.17 2.43-2.17s.2-.18-.05.08c-.24.26-3.45 2.36-3.7 2.53-.34.23-.97.28-1.38.16l-1.97-.6c-.48-.15-.7-.32-.67-.67.02-.4.53-.8 2.08-1.42 6.08-2.27 7.55-2.87 8.2-2.87.67 0 .62 1.3.75 1.9z"/></svg>
+                    </div>
+                    <div class="tg-content flex flex-col pr-6">
+                        <span class="text-sm font-bold leading-tight">Перейти в Telegram</span>
+                        <span class="text-xs opacity-90 text-blue-50">Быстрее и удобнее</span>
+                    </div>
+                    <button id="close-tg-banner" class="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-white/60 hover:text-white rounded-full bg-black/10 hover:bg-black/20 transition-all z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </a>
+
                 <div class="input-wrapper-bg flex items-center gap-2 bg-white border border-gray-200 rounded-3xl pl-3 pr-1 py-1 focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500 transition-shadow transition-colors">
                     <input type="text" id="message-input" placeholder="Напишите сообщение..." class="flex-1 bg-transparent border-none focus:ring-0 p-1 text-sm max-h-20 overflow-y-auto resize-none outline-none text-gray-700 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed" autocomplete="off">
                     <button id="send-button" class="w-10 h-10 rounded-full accent-bg text-white flex items-center justify-center accent-bg-hover transition transform hover:scale-105 flex-shrink-0 mb-0.5 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed">
