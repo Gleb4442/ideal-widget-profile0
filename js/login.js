@@ -10,7 +10,7 @@ export function initLoginModal() {
   const loginBtn = document.getElementById('guide-badge-btn');
   const loginModal = document.getElementById('login-modal');
   const successModal = document.getElementById('login-success-modal');
-  const phoneInput = document.getElementById('phone-input');
+  const smsCodeInput = document.getElementById('sms-code-input');
   const confirmLoginBtn = document.getElementById('confirm-login-btn');
   const cancelLoginBtn = document.getElementById('cancel-login-btn');
   const closeSuccessBtn = document.getElementById('close-success-btn');
@@ -24,8 +24,10 @@ export function initLoginModal() {
   // Open login modal
   loginBtn.addEventListener('click', () => {
     loginModal.classList.remove('hidden');
-    phoneInput.value = '';
-    phoneInput.focus();
+    if (smsCodeInput) {
+      smsCodeInput.value = '';
+      smsCodeInput.focus();
+    }
   });
 
   // Cancel login
@@ -42,12 +44,17 @@ export function initLoginModal() {
 
   // Confirm login/registration
   confirmLoginBtn.addEventListener('click', () => {
-    const phoneValue = phoneInput.value.trim();
+    const codeValue = smsCodeInput ? smsCodeInput.value.trim() : '';
+    const isValidCode = /^\d{4,6}$/.test(codeValue);
 
-    if (!phoneValue) {
-      phoneInput.style.borderColor = '#ef4444';
+    if (!codeValue || !isValidCode) {
+      if (smsCodeInput) {
+        smsCodeInput.style.borderColor = '#ef4444';
+      }
       setTimeout(() => {
-        phoneInput.style.borderColor = '';
+        if (smsCodeInput) {
+          smsCodeInput.style.borderColor = '';
+        }
       }, 1500);
       return;
     }
@@ -57,9 +64,9 @@ export function initLoginModal() {
 
     // Alternate between login and registration messages
     if (isLogin) {
-      successMessageTitle.textContent = 'Вы успешно вошли в свой аккаунт';
+      successMessageTitle.textContent = 'Код подтвержден. Вы вошли в аккаунт';
     } else {
-      successMessageTitle.textContent = 'Вы успешно создали профиль';
+      successMessageTitle.textContent = 'Код подтвержден. Профиль создан';
     }
 
     // Toggle state for next time
@@ -70,11 +77,13 @@ export function initLoginModal() {
   });
 
   // Handle Enter key in phone input
-  phoneInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      confirmLoginBtn.click();
-    }
-  });
+  if (smsCodeInput) {
+    smsCodeInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        confirmLoginBtn.click();
+      }
+    });
+  }
 
   // Close success modal
   closeSuccessBtn.addEventListener('click', () => {
