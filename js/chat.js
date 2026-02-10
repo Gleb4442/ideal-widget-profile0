@@ -43,6 +43,34 @@ const SPECIAL_BOOKING_STATUSES = {
   'generating': 'Формируем персональное предложение…'
 };
 
+// Escalation detection patterns
+const ESCALATION_REQUEST_DIRECT_PATTERNS = [
+  /жив(ой|ого)\s+человек/i,
+  /жив(ого)?\s+оператор/i,
+  /live\s*agent/i,
+  /human\s*agent/i,
+  /real\s*person/i
+];
+
+const ESCALATION_REQUEST_VERB_PATTERN = /соедин|переключ|позов|свяж|приглас|вызов|перевед|хочу\s+поговорить|хочу\s+связаться|можно\s+поговорить|можна\s+поговорити|speak|talk|transfer|connect/i;
+const ESCALATION_REQUEST_TARGET_PATTERN = /оператор|менеджер|сотрудник|консультант|администратор|поддержк|support|agent|human|representative|manager/i;
+
+const ESCALATION_REQUIRED_PATTERNS = [
+  /жалоб|претенз|недоволен|ужасн|отврат|хамств|груб|скандал/i,
+  /угроз|опасн|безопасн|полици|суд|юрист|legal|complaint/i,
+  /дискримин|домогател|harass|assault/i,
+  /двойное\s+списание|списал[аи]?\s+деньги|ошибка\s+оплат|плат[её]ж\s+не\s+прошел|refund|chargeback|возврат/i,
+  /мошеннич|fraud|scam|взлом|hacked/i
+];
+
+const ESCALATION_CONFIRM_YES_PATTERNS = [
+  /^(да|ага|угу|ок|окей|okay|ok|yes|sure|конечно|давайте|хочу|пожалуйста|так)\b/i
+];
+
+const ESCALATION_CONFIRM_NO_PATTERNS = [
+  /^(нет|не\s+надо|не\s+нужно|не\s+хочу|no|nope|not\s+now|later|ні)\b/i
+];
+
 // Booking state storage key
 const BOOKING_STATE_KEY = 'booking_state';
 
@@ -70,6 +98,13 @@ let cancellationState = {
   stage: 'initial', // 'initial' | 'awaiting_search_params' | 'awaiting_confirmation'
   searchAttempts: 0,
   lastSearchType: null
+};
+
+// Escalation state (handoff to human)
+let escalationState = {
+  awaitingConfirmation: false,
+  isEscalated: false,
+  reason: null // 'requested' | 'required'
 };
 
 // Operator Mode State
@@ -366,6 +401,9 @@ export function stopOperatorSimulation() {
 
   operatorMode.connected = false;
   hideOperatorStatusBar();
+  escalationState.isEscalated = false;
+  escalationState.awaitingConfirmation = false;
+  escalationState.reason = null;
 
   // Restore original logo
   const logoContainer = document.getElementById('hotel-logo-container');
@@ -789,6 +827,38 @@ function detectBookingModificationIntent(message) {
   }
 
   return { hasIntent: false, type: null };
+}
+
+// Detect if user explicitly asks for a human
+function detectEscalationRequest(message) {
+  const text = message.toLowerCase();
+
+  if (ESCALATION_REQUEST_DIRECT_PATTERNS.some(pattern => pattern.test(text))) {
+    return true;
+  }
+
+  return ESCALATION_REQUEST_VERB_PATTERN.test(text) && ESCALATION_REQUEST_TARGET_PATTERN.test(text);
+}
+
+// Detect if the case should be escalated to a human
+function detectEscalationRequired(message) {
+  const text = message.toLowerCase();
+  return ESCALATION_REQUIRED_PATTERNS.some(pattern => pattern.test(text));
+}
+
+// Parse user confirmation for escalation
+function parseEscalationConfirmation(message) {
+  const text = message.trim().toLowerCase();
+
+  if (ESCALATION_CONFIRM_YES_PATTERNS.some(pattern => pattern.test(text))) {
+    return 'yes';
+  }
+
+  if (ESCALATION_CONFIRM_NO_PATTERNS.some(pattern => pattern.test(text))) {
+    return 'no';
+  }
+
+  return 'unknown';
 }
 
 // Show cancellation options
@@ -3004,6 +3074,59 @@ export async function getAIResponse(userMessage) {
   // Add user message to conversation history
   addToConversationHistory('user', userMessage);
 
+  // Handle escalation confirmation flow
+  if (escalationState.awaitingConfirmation) {
+    const decision = parseEscalationConfirmation(userMessage);
+    hideTyping();
+    setButtonLoading(false);
+    isGenerating = false;
+
+    if (decision === 'yes') {
+      escalationState.awaitingConfirmation = false;
+      escalationState.isEscalated = true;
+
+      const confirmText = 'Хорошо, соединяю вас с менеджером. Пожалуйста, подождите...';
+      addMessage(confirmText, 'ai');
+      addToConversationHistory('assistant', confirmText);
+      startOperatorSimulation();
+      return;
+    }
+
+    if (decision === 'no') {
+      escalationState.awaitingConfirmation = false;
+      const declineText = 'Хорошо, остаёмся в чате. Чем могу помочь дальше?';
+      addMessage(declineText, 'ai');
+      addToConversationHistory('assistant', declineText);
+      return;
+    }
+
+    const clarifyText = 'Подтвердите, пожалуйста: хотите, чтобы я соединил вас с менеджером?';
+    addMessage(clarifyText, 'ai');
+    addToConversationHistory('assistant', clarifyText);
+    return;
+  }
+
+  // Detect escalation request or required case
+  const wantsHuman = detectEscalationRequest(userMessage);
+  const needsHuman = detectEscalationRequired(userMessage);
+
+  if (!operatorMode.connected && !escalationState.isEscalated && (wantsHuman || needsHuman)) {
+    hideTyping();
+    setButtonLoading(false);
+    isGenerating = false;
+
+    escalationState.awaitingConfirmation = true;
+    escalationState.reason = wantsHuman ? 'requested' : 'required';
+
+    const confirmText = wantsHuman
+      ? 'Хотите, чтобы я соединил вас с менеджером?'
+      : 'Похоже, этот вопрос лучше решить с менеджером. Хотите, чтобы я соединил вас с менеджером?';
+
+    addMessage(confirmText, 'ai');
+    addToConversationHistory('assistant', confirmText);
+    return;
+  }
+
   // Check if user is in room selection mode (from menu)
   if (checkRoomSelectionInMessage(userMessage)) {
     hideTyping();
@@ -3311,6 +3434,13 @@ export function resetChat() {
     stage: 'initial',
     searchAttempts: 0,
     lastSearchType: null
+  };
+
+  // Reset escalation state
+  escalationState = {
+    awaitingConfirmation: false,
+    isEscalated: false,
+    reason: null
   };
 
   // Clear room context container

@@ -169,28 +169,6 @@
     <div class="admin-control">
       <span class="admin-label">Баннеры (при закрытом виджете)</span>
 
-      <!-- Price Popup -->
-      <div class="flex items-center justify-between mb-3 mt-1">
-        <span class="text-xs text-gray-500">Сравнение цен</span>
-        <label class="switch"><input type="checkbox" id="price-popup-toggle"><span class="slider"></span></label>
-      </div>
-
-      <div id="price-popup-settings" class="hidden pl-2 border-l-2 border-gray-100 mb-4 ms-2">
-        <div class="mb-3">
-          <label class="text-xs text-gray-600 block mb-1">Цена на Booking.com (€)</label>
-          <input type="number" id="booking-price-input" value="150" min="0"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-        </div>
-        <div class="mb-3">
-          <label class="text-xs text-gray-600 block mb-1">Цена на сайте (€)</label>
-          <input type="number" id="site-price-input" value="105" min="0"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-        </div>
-        <div class="text-xs text-gray-500 italic">
-          Экономия: <span id="savings-preview">€45</span>
-        </div>
-      </div>
-
       <!-- Cancellation Banner -->
       <div class="flex items-center justify-between mb-2">
         <span class="text-xs text-gray-500">Бесплатная отмена</span>
@@ -249,43 +227,6 @@
     </div>
 
     <hr class="border-gray-200 my-3">
-
-    <!-- Guest Guide Section -->
-    <div class="admin-control">
-      <span class="admin-label">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"
-          stroke="currentColor" stroke-width="1" class="inline mr-1">
-          <polygon
-            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-          </polygon>
-        </svg>
-        Guest Guide
-      </span>
-      <div class="flex items-center justify-between">
-        <span class="text-sm text-gray-600">Показувати</span>
-        <label class="switch">
-          <input type="checkbox" id="guide-toggle" checked>
-          <span class="slider"></span>
-        </label>
-      </div>
-    </div>
-
-    <div id="guide-admin-settings" class="mt-2">
-      <div class="admin-control">
-        <span class="admin-label text-xs">Елементи гайду</span>
-        <div id="guide-items-admin" class="guide-items-admin space-y-2">
-          <!-- Guide items will be rendered here -->
-        </div>
-        <button id="add-guide-item-btn" class="add-room-btn mt-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          Додати елемент
-        </button>
-      </div>
-    </div>
 
     <!-- Restaurant Menu Section -->
     <div class="admin-control">
@@ -484,21 +425,6 @@
         <path d="M70 70 L80 85 L95 78" stroke="currentColor" stroke-width="8" stroke-linecap="round"
           stroke-linejoin="round" fill="none" />
       </svg>
-    </div>
-  </div>
-
-  <!-- PRICE COMPARISON POPUP -->
-  <div id="price-popup" class="price-popup">
-    <div class="price-comparison">
-      <div class="price-card">
-        <div class="price-label">Booking.com</div>
-        <div class="price-value" id="popup-booking-price">€150</div>
-      </div>
-
-      <div class="price-card">
-        <div class="price-label">На сайте</div>
-        <div class="price-value" id="popup-site-price">€105</div>
-      </div>
     </div>
   </div>
 

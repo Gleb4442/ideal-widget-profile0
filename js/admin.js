@@ -189,15 +189,12 @@ export function initAdminPanelControls() {
 
   // Theme Toggle
   dom.themeToggle.addEventListener('change', (e) => {
-    const pricePopup = document.getElementById('price-popup');
     const cancellationBanner = document.getElementById('cancellation-banner');
     if (e.target.checked) {
       dom.chatWindow.classList.add('dark-mode');
-      if (pricePopup) pricePopup.classList.add('dark-mode');
       if (cancellationBanner) cancellationBanner.classList.add('dark-mode');
     } else {
       dom.chatWindow.classList.remove('dark-mode');
-      if (pricePopup) pricePopup.classList.remove('dark-mode');
       if (cancellationBanner) cancellationBanner.classList.remove('dark-mode');
     }
   });
@@ -1444,104 +1441,6 @@ function initOperatorMode() {
   }
 }
 
-// ========================================
-// GUEST GUIDE MANAGEMENT
-// ========================================
-
-const GUIDE_ITEMS_KEY = 'guide_items';
-
-const DEFAULT_GUIDE_ITEMS = [
-  { id: '1', icon: 'chef', text: 'Рекомендации нашего шефа' },
-  { id: '2', icon: 'spa', text: 'Wellness эксклюзивы' }
-];
-
-function loadGuideItems() {
-  try {
-    const saved = localStorage.getItem(GUIDE_ITEMS_KEY);
-    return saved ? JSON.parse(saved) : DEFAULT_GUIDE_ITEMS;
-  } catch (e) {
-    return DEFAULT_GUIDE_ITEMS;
-  }
-}
-
-function saveGuideItems(items) {
-  try {
-    localStorage.setItem(GUIDE_ITEMS_KEY, JSON.stringify(items));
-  } catch (e) {
-    console.error('Error saving guide items:', e);
-  }
-}
-
-function renderGuideAdminItems() {
-  const container = document.getElementById('guide-items-admin');
-  if (!container) return;
-
-  const items = loadGuideItems();
-
-  container.innerHTML = items.map((item, index) => `
-    <div class="guide-admin-item" data-id="${item.id}">
-      <input type="text" value="${item.text}" class="guide-item-input" data-index="${index}">
-      <button class="guide-item-delete" data-index="${index}">&times;</button>
-    </div>
-  `).join('');
-
-  // Add event listeners for editing
-  container.querySelectorAll('.guide-item-input').forEach(input => {
-    input.addEventListener('change', (e) => {
-      const index = parseInt(e.target.dataset.index);
-      const items = loadGuideItems();
-      if (items[index]) {
-        items[index].text = e.target.value;
-        saveGuideItems(items);
-      }
-    });
-  });
-
-  // Add event listeners for deletion
-  container.querySelectorAll('.guide-item-delete').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const index = parseInt(e.target.dataset.index);
-      const items = loadGuideItems();
-      items.splice(index, 1);
-      saveGuideItems(items);
-      renderGuideAdminItems();
-    });
-  });
-}
-
-function addGuideItem() {
-  const items = loadGuideItems();
-  const newItem = {
-    id: Date.now().toString(),
-    icon: 'star',
-    text: 'Новий елемент'
-  };
-  items.push(newItem);
-  saveGuideItems(items);
-  renderGuideAdminItems();
-}
-
-function initGuideManagement() {
-  // Toggle visibility
-  const toggle = document.getElementById('guide-toggle');
-  const badge = document.getElementById('guide-badge-btn');
-
-  if (toggle && badge) {
-    toggle.addEventListener('change', (e) => {
-      badge.style.display = e.target.checked ? 'flex' : 'none';
-    });
-  }
-
-  // Add item button
-  const addBtn = document.getElementById('add-guide-item-btn');
-  if (addBtn) {
-    addBtn.addEventListener('click', addGuideItem);
-  }
-
-  // Render initial items
-  renderGuideAdminItems();
-}
-
 // ===== ITEM PREVIEW MODAL =====
 
 // Open Item Preview Modal (for room/service cards)
@@ -1635,165 +1534,6 @@ function initItemPreview() {
       closeItemPreview();
     }
   });
-}
-
-// ========================================
-// PRICE POPUP MANAGEMENT
-// ========================================
-
-const PRICE_POPUP_SETTINGS_KEY = 'price_popup_settings';
-
-function loadPricePopupSettings() {
-  try {
-    const saved = localStorage.getItem(PRICE_POPUP_SETTINGS_KEY);
-    return saved ? JSON.parse(saved) : {
-      enabled: false,
-      bookingPrice: 150,
-      sitePrice: 105
-    };
-  } catch (e) {
-    return { enabled: false, bookingPrice: 150, sitePrice: 105 };
-  }
-}
-
-function savePricePopupSettings(settings) {
-  try {
-    localStorage.setItem(PRICE_POPUP_SETTINGS_KEY, JSON.stringify(settings));
-  } catch (e) {
-    console.error('Error saving price popup settings:', e);
-  }
-}
-
-function updatePricePopupDisplay(settings) {
-  const popup = document.getElementById('price-popup');
-  const bookingPriceEl = document.getElementById('popup-booking-price');
-  const sitePriceEl = document.getElementById('popup-site-price');
-
-  if (!popup || !bookingPriceEl || !sitePriceEl) return;
-
-  bookingPriceEl.textContent = `€${settings.bookingPrice}`;
-  sitePriceEl.textContent = `€${settings.sitePrice}`;
-}
-
-function updatePricePopupVisibility() {
-  const settings = loadPricePopupSettings();
-  const popup = document.getElementById('price-popup');
-  const chatWindow = document.getElementById('chat-window');
-
-  if (!popup || !chatWindow) return;
-
-  const isWidgetClosed = !chatWindow.classList.contains('open');
-
-  if (settings.enabled && isWidgetClosed) {
-    setTimeout(() => {
-      // Re-check conditions after timeout
-      if (!chatWindow.classList.contains('open')) {
-        popup.classList.add('show');
-        updateBannersCloseButton();
-      }
-    }, 1000); // Show after 1 second delay
-  } else {
-    popup.classList.remove('show');
-    updateBannersCloseButton();
-  }
-}
-
-function initPricePopup() {
-  const toggle = document.getElementById('price-popup-toggle');
-  const settingsDiv = document.getElementById('price-popup-settings');
-  const bookingInput = document.getElementById('booking-price-input');
-  const siteInput = document.getElementById('site-price-input');
-  const savingsPreview = document.getElementById('savings-preview');
-  const popup = document.getElementById('price-popup');
-  const closeBtn = document.getElementById('price-popup-close');
-  const widgetButton = document.getElementById('chat-widget-button');
-
-  // Load saved settings
-  const settings = loadPricePopupSettings();
-
-  if (toggle) {
-    toggle.checked = settings.enabled;
-
-    if (settings.enabled && settingsDiv) {
-      settingsDiv.classList.remove('hidden');
-    }
-
-    toggle.addEventListener('change', (e) => {
-      const newSettings = loadPricePopupSettings();
-      newSettings.enabled = e.target.checked;
-      savePricePopupSettings(newSettings);
-
-      if (settingsDiv) {
-        if (e.target.checked) {
-          settingsDiv.classList.remove('hidden');
-        } else {
-          settingsDiv.classList.add('hidden');
-        }
-      }
-
-      updatePricePopupVisibility();
-    });
-  }
-
-  // Price inputs
-  if (bookingInput) {
-    bookingInput.value = settings.bookingPrice;
-
-    bookingInput.addEventListener('input', (e) => {
-      const newSettings = loadPricePopupSettings();
-      newSettings.bookingPrice = parseInt(e.target.value) || 0;
-      savePricePopupSettings(newSettings);
-      updatePricePopupDisplay(newSettings);
-
-      if (savingsPreview) {
-        const savings = newSettings.bookingPrice - newSettings.sitePrice;
-        savingsPreview.textContent = `€${savings}`;
-      }
-    });
-  }
-
-  if (siteInput) {
-    siteInput.value = settings.sitePrice;
-
-    siteInput.addEventListener('input', (e) => {
-      const newSettings = loadPricePopupSettings();
-      newSettings.sitePrice = parseInt(e.target.value) || 0;
-      savePricePopupSettings(newSettings);
-      updatePricePopupDisplay(newSettings);
-
-      if (savingsPreview) {
-        const savings = newSettings.bookingPrice - newSettings.sitePrice;
-        savingsPreview.textContent = `€${savings}`;
-      }
-    });
-  }
-
-  // Close button
-  if (closeBtn && popup) {
-    closeBtn.addEventListener('click', () => {
-      popup.classList.remove('show');
-    });
-  }
-
-  // Initial display update
-  updatePricePopupDisplay(settings);
-
-  // Show popup if widget is closed and popup is enabled
-  updatePricePopupVisibility();
-
-  // Listen for widget open/close events
-  const chatWindow = document.getElementById('chat-window');
-  if (chatWindow) {
-    const observer = new MutationObserver(() => {
-      updatePricePopupVisibility();
-      updateBannersCloseButton();
-    });
-
-    observer.observe(chatWindow, {
-      attributes: true,
-      attributeFilter: ['class']
-    });
-  }
 }
 
 // ========================================
@@ -2113,18 +1853,16 @@ export function getMenuSettings() {
 
 export function updateBannersCloseButton() {
   const closeBtn = document.getElementById('banners-close-btn');
-  const pricePopup = document.getElementById('price-popup');
   const cancellationBanner = document.getElementById('cancellation-banner');
   const chatWindow = document.getElementById('chat-window');
 
   if (!closeBtn) return;
 
-  const isPriceShown = pricePopup && pricePopup.classList.contains('show');
   const isCancellationShown = cancellationBanner && cancellationBanner.classList.contains('show');
   const isChatOpen = chatWindow && chatWindow.classList.contains('open');
 
   // Show close button only if at least one banner is visible AND chat is closed
-  if ((isPriceShown || isCancellationShown) && !isChatOpen) {
+  if (isCancellationShown && !isChatOpen) {
     setTimeout(() => {
       closeBtn.classList.add('show');
     }, 300); // Show close button after banners appear
@@ -2134,11 +1872,9 @@ export function updateBannersCloseButton() {
 }
 
 function hideAllBanners() {
-  const pricePopup = document.getElementById('price-popup');
   const cancellationBanner = document.getElementById('cancellation-banner');
   const closeBtn = document.getElementById('banners-close-btn');
 
-  if (pricePopup) pricePopup.classList.remove('show');
   if (cancellationBanner) cancellationBanner.classList.remove('show');
   if (closeBtn) closeBtn.classList.remove('show');
 }
@@ -2168,9 +1904,7 @@ export function initAdmin() {
   initServiceManagement();
   initBookingsManagement();
   initOperatorMode();
-  initGuideManagement();
   initItemPreview();
-  initPricePopup();
   initCancellationBanner();
   initBannersCloseButton();
   initMenuManagement();
