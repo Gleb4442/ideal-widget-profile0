@@ -21,18 +21,15 @@ export function initLoginModal() {
     return;
   }
 
-  // Open login modal
+  // Demo button - no action (App Store & Google Play icons)
   loginBtn.addEventListener('click', (e) => {
-    // Prevent any other click handlers on this button (e.g. Guest Guide)
+    // Prevent any other click handlers on this button
     if (e) {
       e.preventDefault();
       e.stopImmediatePropagation();
     }
-    loginModal.classList.remove('hidden');
-    if (smsCodeInput) {
-      smsCodeInput.value = '';
-      smsCodeInput.focus();
-    }
+    // Demo button - no functionality
+    return;
   }, { capture: true });
 
   // Cancel login

@@ -24,6 +24,7 @@ let currentLang = localStorage.getItem(LANGUAGE_KEY) || 'en'; // Default to Engl
 let isGenerating = false;
 let selectedRoom = null;
 let chatMode = 'general'; // 'general' | 'room-context' | 'special-booking'
+let currentHistorySession = null; // Currently viewed history session
 
 // Special Booking Mode State
 let specialBookingState = {
@@ -3868,6 +3869,12 @@ export function initSpecialBookingListeners() {
     });
   }
 
+  // Continue chat from history
+  const continueChatBtn = document.getElementById('continue-chat-btn');
+  if (continueChatBtn) {
+    continueChatBtn.addEventListener('click', continueHistoryChat);
+  }
+
   // Close menu when clicking outside
   // Close menu when clicking outside (on backdrop)
   const menuBottomSheet = document.getElementById('menu-bottom-sheet');
@@ -4229,6 +4236,9 @@ function openHistoryDetail(session) {
 
   if (!detailView || !container) return;
 
+  // Store current session for continue chat functionality
+  currentHistorySession = session;
+
   container.innerHTML = '';
 
   // Set headers
@@ -4258,6 +4268,48 @@ function openHistoryDetail(session) {
   });
 
   detailView.classList.remove('hidden');
+}
+
+// Continue chat from history
+function continueHistoryChat() {
+  if (!currentHistorySession) return;
+
+  // Clear current messages but keep typing indicator
+  const indicatorHTML = dom.typingIndicator.outerHTML;
+  dom.messagesContainer.innerHTML = '';
+  dom.messagesContainer.innerHTML = indicatorHTML;
+  dom.updateTypingIndicator();
+
+  // Load messages from history
+  currentHistorySession.messages.forEach(msg => {
+    addMessage(msg.text, msg.sender);
+  });
+
+  // Update conversation history for AI context
+  bookingState.conversationHistory = currentHistorySession.messages.map(msg => ({
+    role: msg.sender === 'user' ? 'user' : 'assistant',
+    content: msg.text
+  }));
+
+  // Keep only last 10 messages
+  if (bookingState.conversationHistory.length > 10) {
+    bookingState.conversationHistory = bookingState.conversationHistory.slice(-10);
+  }
+
+  // Close history views
+  document.getElementById('history-detail-view')?.classList.add('hidden');
+  document.getElementById('history-view')?.classList.add('hidden');
+
+  // Scroll to bottom
+  if (dom.messagesContainer) {
+    dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+  }
+
+  // Focus on input
+  const messageInput = document.getElementById('message-input');
+  if (messageInput) {
+    messageInput.focus();
+  }
 }
 
 // ========================================

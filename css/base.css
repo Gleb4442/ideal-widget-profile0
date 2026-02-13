@@ -42,18 +42,7 @@ body {
 textarea#message-input::-webkit-scrollbar { display: none; }
 textarea#message-input { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Input container - always lit */
-.input-container-bg {
-  border: 1px solid var(--accent-color) !important;
-  box-shadow: 0 0 0 2px var(--accent-color) !important;
-  background-color: white !important;
-  transition: all 0.2s ease-out !important;
-}
-.input-container-bg:focus-within {
-  background-color: white !important;
-  border-color: var(--accent-color) !important;
-  box-shadow: 0 0 0 2px var(--accent-color) !important;
-}
+/* Input container styles moved to chat-window.css */
 
 /* Scrollbar hidden for messages */
 #chat-messages::-webkit-scrollbar { display: none; }
