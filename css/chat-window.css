@@ -502,10 +502,11 @@
 }
 
 .header-guide-btn svg {
-  fill: white;
-  stroke: white;
-  width: 16px;
-  height: 16px;
+  fill: currentColor;
+  stroke: currentColor;
+  width: 18px;
+  height: 18px;
+  opacity: 0.95;
 }
 
 .header-controls {
