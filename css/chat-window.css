@@ -152,7 +152,7 @@
 .input-container-bg:focus-within {
   background: white;
   border-color: var(--accent-color, #e28743);
-  box-shadow: 0 0 0 2px var(--accent-color, #e28743), 0 4px 12px rgba(15, 23, 42, 0.15);
+  box-shadow: 0 0 0 1px var(--accent-color, #e28743), 0 4px 12px rgba(15, 23, 42, 0.15);
 }
 
 #message-input {
@@ -191,7 +191,7 @@
 .dark-mode .input-container-bg:focus-within {
   background: #374151;
   border-color: var(--accent-color, #e28743);
-  box-shadow: 0 0 0 2px var(--accent-color, #e28743), 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 1px var(--accent-color, #e28743), 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .dark-mode #message-input {
