@@ -5,13 +5,12 @@
 
 .cancellation-banner {
     position: fixed;
-    bottom: calc(var(--widget-offset-y, 0px) + env(safe-area-inset-bottom, 0px) + 95px);
+    bottom: calc(var(--widget-offset-y, 0px) + env(safe-area-inset-bottom, 0px) + 105px);
     right: calc(var(--widget-offset-x, 0px) + 20px);
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 10px;
-    padding: 12px 16px 12px 20px;
+    padding: 12px 20px;
     background-color: rgba(255, 255, 255, 0.65);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -29,6 +28,7 @@
                 visibility 0s 0.3s;
     pointer-events: none;
     white-space: nowrap;
+    position: relative;
 }
 
 .cancellation-banner.show {
@@ -63,25 +63,29 @@
 }
 
 .cancellation-close-btn {
-    width: 20px;
-    height: 20px;
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.5);
-    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 50%;
     cursor: pointer;
-    flex-shrink: 0;
     color: #64748b;
     transition: all 0.2s ease;
     padding: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .cancellation-close-btn:hover {
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 1);
     color: #334155;
     transform: scale(1.1);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
 .cancellation-close-btn:active {
@@ -93,9 +97,9 @@
 /* Mobile Adjustments */
 @media (max-width: 768px) {
     .cancellation-banner {
-        bottom: calc(var(--widget-offset-y, 0px) + env(safe-area-inset-bottom, 0px) + 85px);
+        bottom: calc(var(--widget-offset-y, 0px) + env(safe-area-inset-bottom, 0px) + 95px);
         right: calc(var(--widget-offset-x, 0px) + 15px);
-        padding: 10px 12px 10px 16px;
+        padding: 10px 16px;
     }
 
     .cancellation-text {
@@ -107,8 +111,10 @@
     }
 
     .cancellation-close-btn {
-        width: 18px;
-        height: 18px;
+        width: 20px;
+        height: 20px;
+        top: -5px;
+        right: -5px;
     }
 
     .cancellation-close-btn svg {
