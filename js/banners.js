@@ -64,6 +64,7 @@ export function initTelegramBanner() {
 function collapseBanner() {
   const banner = document.getElementById('telegram-banner');
   const collapsed = document.getElementById('telegram-collapsed');
+  const policyBanner = document.getElementById('policy-consent-banner');
 
   if (!banner || !collapsed) return;
 
@@ -76,6 +77,12 @@ function collapseBanner() {
     collapsed.style.display = 'block';
     setTimeout(() => {
       collapsed.classList.add('show');
+
+      // Position above policy banner if it's still visible
+      if (policyBanner && !policyBanner.classList.contains('hidden')) {
+        collapsed.classList.add('above-banner');
+      }
+
       checkScrollButtonVisibility();
     }, 50);
   }, 300);

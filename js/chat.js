@@ -3390,6 +3390,14 @@ export function handleSendMessage() {
   // Hide policy consent banner after first message
   if (dom.policyConsentBanner && !dom.policyConsentBanner.classList.contains('hidden')) {
     dom.policyConsentBanner.classList.add('hidden');
+
+    // Move Telegram collapsed button down smoothly
+    const telegramCollapsed = document.getElementById('telegram-collapsed');
+    if (telegramCollapsed && telegramCollapsed.classList.contains('above-banner')) {
+      setTimeout(() => {
+        telegramCollapsed.classList.remove('above-banner');
+      }, 300); // Wait for banner to fade out
+    }
   }
 
   dom.messageInput.value = '';
