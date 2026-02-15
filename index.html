@@ -12,6 +12,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto:wght@400;500&family=Lato&family=Montserrat&family=Poppins&family=Oswald&family=Nunito&family=Rubik&family=Ubuntu&family=Exo+2&family=Work+Sans&family=Fira+Sans&family=Anton&family=Manrope&family=Mulish&family=Titillium+Web&family=PT+Sans&family=Bebas+Neue&family=Abril+Fatface&family=Lobster&family=Righteous&family=Russo+One&family=Permanent+Marker&family=Fjalla+One&family=Asap&family=Cairo&display=swap"
     rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 
   <!-- Widget Styles -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -410,18 +411,18 @@
 
   <!-- FREE CANCELLATION BANNER -->
   <div id="cancellation-banner" class="cancellation-banner">
-    <span class="cancellation-icon">🛡️</span>
-    <span class="cancellation-text">Бесплатная отмена</span>
+    <div class="cancellation-content">
+      <span class="material-symbols-outlined cancellation-icon" style="font-variation-settings: 'FILL' 1;">shield</span>
+      <span class="cancellation-text">Бесплатная отмена</span>
+    </div>
+    <button id="cancellation-close-btn" class="cancellation-close-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
   </div>
-
-  <!-- UNIFIED CLOSE BUTTON FOR BANNERS -->
-  <button id="banners-close-btn" class="banners-close-btn">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18"></line>
-      <line x1="6" y1="6" x2="18" y2="18"></line>
-    </svg>
-  </button>
 
   <!-- CHAT WINDOW -->
   <div id="chat-window">

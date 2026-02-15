@@ -1573,18 +1573,17 @@ function updateCancellationVisibility() {
       // Re-check conditions after timeout
       if (!chatWindow.classList.contains('open')) {
         banner.classList.add('show');
-        updateBannersCloseButton();
       }
     }, 1000); // Show after 1s delay
   } else {
     banner.classList.remove('show');
-    updateBannersCloseButton();
   }
 }
 
 function initCancellationBanner() {
   const toggle = document.getElementById('cancellation-banner-toggle');
   const banner = document.getElementById('cancellation-banner');
+  const closeBtn = document.getElementById('cancellation-close-btn');
 
   // Load saved settings
   const settings = loadCancellationSettings();
@@ -1605,6 +1604,16 @@ function initCancellationBanner() {
     });
   }
 
+  // Close button handler
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (banner) {
+        banner.classList.remove('show');
+      }
+    });
+  }
+
   // Initial visibility update
   updateCancellationVisibility();
 
@@ -1613,7 +1622,6 @@ function initCancellationBanner() {
   if (chatWindow) {
     const observer = new MutationObserver(() => {
       updateCancellationVisibility();
-      updateBannersCloseButton();
     });
 
     observer.observe(chatWindow, {
@@ -1847,52 +1855,6 @@ export function getMenuSettings() {
   return loadMenuSettings();
 }
 
-// ========================================
-// UNIFIED BANNERS CLOSE BUTTON
-// ========================================
-
-export function updateBannersCloseButton() {
-  const closeBtn = document.getElementById('banners-close-btn');
-  const cancellationBanner = document.getElementById('cancellation-banner');
-  const chatWindow = document.getElementById('chat-window');
-
-  if (!closeBtn) return;
-
-  const isCancellationShown = cancellationBanner && cancellationBanner.classList.contains('show');
-  const isChatOpen = chatWindow && chatWindow.classList.contains('open');
-
-  // Show close button only if at least one banner is visible AND chat is closed
-  if (isCancellationShown && !isChatOpen) {
-    setTimeout(() => {
-      // Re-check chat state to prevent showing button when chat just opened
-      const chatStillClosed = chatWindow && !chatWindow.classList.contains('open');
-      if (chatStillClosed) {
-        closeBtn.classList.add('show');
-      }
-    }, 300); // Show close button after banners appear
-  } else {
-    // Immediately hide close button when chat opens
-    closeBtn.classList.remove('show');
-  }
-}
-
-function hideAllBanners() {
-  const cancellationBanner = document.getElementById('cancellation-banner');
-  const closeBtn = document.getElementById('banners-close-btn');
-
-  if (cancellationBanner) cancellationBanner.classList.remove('show');
-  if (closeBtn) closeBtn.classList.remove('show');
-}
-
-function initBannersCloseButton() {
-  const closeBtn = document.getElementById('banners-close-btn');
-
-  if (closeBtn) {
-    closeBtn.addEventListener('click', () => {
-      hideAllBanners();
-    });
-  }
-}
 
 // Initialize All Admin Functions
 export function initAdmin() {
@@ -1911,6 +1873,5 @@ export function initAdmin() {
   initOperatorMode();
   initItemPreview();
   initCancellationBanner();
-  initBannersCloseButton();
   initMenuManagement();
 }

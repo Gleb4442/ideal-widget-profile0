@@ -5,48 +5,87 @@
 
 .cancellation-banner {
     position: fixed;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
-    left: 50%;
-    transform: translateX(-50%) translateY(10px);
+    bottom: calc(var(--widget-offset-y, 0px) + env(safe-area-inset-bottom, 0px) + 95px);
+    right: calc(var(--widget-offset-x, 0px) + 20px);
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 20px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: 100px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 16px 12px 20px;
+    background-color: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 9999px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+                0 2px 4px -1px rgba(0, 0, 0, 0.03),
+                inset 0 0 20px rgba(255, 255, 255, 0.5);
     z-index: 1010;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s 0.4s;
+    transform: translateY(10px) scale(0.95);
+    transition: opacity 0.3s ease,
+                transform 0.3s ease,
+                visibility 0s 0.3s;
     pointer-events: none;
-    cursor: default;
     white-space: nowrap;
 }
 
 .cancellation-banner.show {
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0) scale(1);
     pointer-events: auto;
-    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s 0s;
+    transition: opacity 0.3s ease,
+                transform 0.3s ease,
+                visibility 0s 0s;
+}
+
+.cancellation-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
 }
 
 .cancellation-icon {
     font-size: 20px;
     line-height: 1;
+    color: #0066FF;
     flex-shrink: 0;
 }
 
 .cancellation-text {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
-    color: #1f2937;
-    letter-spacing: -0.01em;
+    color: #334155;
+    letter-spacing: 0.02em;
+}
+
+.cancellation-close-btn {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.5);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    flex-shrink: 0;
+    color: #64748b;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.cancellation-close-btn:hover {
+    background: rgba(255, 255, 255, 0.8);
+    color: #334155;
+    transform: scale(1.1);
+}
+
+.cancellation-close-btn:active {
+    transform: scale(0.9);
 }
 
 
@@ -54,81 +93,27 @@
 /* Mobile Adjustments */
 @media (max-width: 768px) {
     .cancellation-banner {
-        bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
-        padding: 10px 16px;
+        bottom: calc(var(--widget-offset-y, 0px) + env(safe-area-inset-bottom, 0px) + 85px);
+        right: calc(var(--widget-offset-x, 0px) + 15px);
+        padding: 10px 12px 10px 16px;
     }
 
     .cancellation-text {
-        font-size: 14px;
+        font-size: 13px;
     }
 
     .cancellation-icon {
         font-size: 18px;
     }
+
+    .cancellation-close-btn {
+        width: 18px;
+        height: 18px;
+    }
+
+    .cancellation-close-btn svg {
+        width: 12px;
+        height: 12px;
+    }
 }
 
-/* ============================
-   UNIFIED BANNER CLOSE BUTTON
-   ============================ */
-
-.banners-close-btn {
-    position: fixed;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 68px);
-    left: 50%;
-    transform: translateX(-50%) scale(0.8);
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 1011;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    color: #6b7280;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease,
-                transform 0.3s ease,
-                visibility 0s 0.3s,
-                background 0.2s ease,
-                color 0.2s ease;
-}
-
-.banners-close-btn.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) scale(1);
-    transition: opacity 0.3s ease,
-                transform 0.3s ease,
-                visibility 0s 0s,
-                background 0.2s ease,
-                color 0.2s ease;
-}
-
-.banners-close-btn:hover {
-    background: rgba(255, 255, 255, 1);
-    color: #1f2937;
-    transform: translateX(-50%) scale(1.1);
-}
-
-.banners-close-btn:active {
-    transform: translateX(-50%) scale(0.95);
-}
-
-
-/* Dark mode support */
-.dark-mode .banners-close-btn {
-    background: rgba(31, 41, 55, 0.95);
-    color: #9ca3af;
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-.dark-mode .banners-close-btn:hover {
-    background: rgba(31, 41, 55, 1);
-    color: #e5e7eb;
-}
