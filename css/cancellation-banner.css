@@ -5,28 +5,24 @@
 
 .cancellation-banner {
     position: fixed;
-    bottom: calc(var(--widget-offset-y, 0px) + env(safe-area-inset-bottom, 0px) + 115px);
-    /* Directly ABOVE the chat button */
-    right: calc(var(--widget-offset-x, 0px) + 20px);
-    /* Aligned with the button */
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    padding: 6px 12px 6px 14px;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 9999px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 100px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     z-index: 1010;
-    /* Above the widget button */
     opacity: 0;
     visibility: hidden;
-    transform: translateY(10px) scale(0.9);
-    transition: opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
-                transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
-                visibility 0s 0.6s;
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s 0.4s;
     pointer-events: none;
     cursor: default;
     white-space: nowrap;
@@ -35,83 +31,39 @@
 .cancellation-banner.show {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0) scale(1);
+    transform: translateX(-50%) translateY(0);
     pointer-events: auto;
-    transition: opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
-                transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
-                visibility 0s 0s;
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s 0s;
 }
 
 .cancellation-icon {
-    width: 24px;
-    height: 24px;
-    background: #f0fdf4;
-    color: #16a34a;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 20px;
+    line-height: 1;
     flex-shrink: 0;
 }
 
 .cancellation-text {
     font-size: 15px;
-    font-weight: 700;
-    color: #374151;
+    font-weight: 600;
+    color: #1f2937;
     letter-spacing: -0.01em;
 }
 
-.cancellation-spiral-arrow {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #16a34a;
-    margin-left: -5px;
-    /* Pull it slightly into the banner flow */
-    margin-right: -4px;
-    flex-shrink: 0;
-    opacity: 0.9;
-    transform: rotate(15deg);
-    /* Point directly at the button below */
-}
-
-/* Position adjustments based on widget position */
-.widget-pos-left~.cancellation-banner {
-    left: 20px;
-    right: auto;
-}
-
-.widget-pos-center~.cancellation-banner {
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%) translateY(-10px) scale(0.95);
-}
-
-.widget-pos-center~.cancellation-banner.show {
-    transform: translateX(-50%) translateY(0) scale(1);
-}
 
 
 /* Mobile Adjustments */
 @media (max-width: 768px) {
     .cancellation-banner {
-        bottom: 8px;
-        right: 15px;
-        padding: 5px 10px 5px 12px;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+        padding: 10px 16px;
     }
 
     .cancellation-text {
-        font-size: 10px;
+        font-size: 14px;
     }
 
     .cancellation-icon {
-        width: 20px;
-        height: 20px;
-    }
-
-    .cancellation-spiral-arrow svg {
-        width: 30px;
-        height: 30px;
+        font-size: 18px;
     }
 }
 
@@ -121,8 +73,9 @@
 
 .banners-close-btn {
     position: fixed;
-    bottom: calc(var(--widget-offset-y, 0px) + env(safe-area-inset-bottom, 0px) + 185px);
-    right: calc(var(--widget-offset-x, 0px) + 20px);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 68px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.8);
     width: 28px;
     height: 28px;
     background: rgba(255, 255, 255, 0.95);
@@ -139,9 +92,8 @@
     color: #6b7280;
     opacity: 0;
     visibility: hidden;
-    transform: scale(0.8);
-    transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-                transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transition: opacity 0.3s ease,
+                transform 0.3s ease,
                 visibility 0s 0.3s,
                 background 0.2s ease,
                 color 0.2s ease;
@@ -150,9 +102,9 @@
 .banners-close-btn.show {
     opacity: 1;
     visibility: visible;
-    transform: scale(1);
-    transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-                transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform: translateX(-50%) scale(1);
+    transition: opacity 0.3s ease,
+                transform 0.3s ease,
                 visibility 0s 0s,
                 background 0.2s ease,
                 color 0.2s ease;
@@ -161,32 +113,13 @@
 .banners-close-btn:hover {
     background: rgba(255, 255, 255, 1);
     color: #1f2937;
-    transform: scale(1.1);
+    transform: translateX(-50%) scale(1.1);
 }
 
 .banners-close-btn:active {
-    transform: scale(0.95);
+    transform: translateX(-50%) scale(0.95);
 }
 
-/* Position adjustments based on widget position */
-.widget-pos-left~.banners-close-btn {
-    left: calc(20px + 230px);
-    right: auto;
-}
-
-.widget-pos-center~.banners-close-btn {
-    left: 50%;
-    right: auto;
-    transform: translateX(120px) scale(0.8);
-}
-
-.widget-pos-center~.banners-close-btn.show {
-    transform: translateX(120px) scale(1);
-}
-
-.widget-pos-center~.banners-close-btn:hover {
-    transform: translateX(120px) scale(1.1);
-}
 
 /* Dark mode support */
 .dark-mode .banners-close-btn {

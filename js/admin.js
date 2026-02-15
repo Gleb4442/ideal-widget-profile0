@@ -1864,9 +1864,14 @@ export function updateBannersCloseButton() {
   // Show close button only if at least one banner is visible AND chat is closed
   if (isCancellationShown && !isChatOpen) {
     setTimeout(() => {
-      closeBtn.classList.add('show');
+      // Re-check chat state to prevent showing button when chat just opened
+      const chatStillClosed = chatWindow && !chatWindow.classList.contains('open');
+      if (chatStillClosed) {
+        closeBtn.classList.add('show');
+      }
     }, 300); // Show close button after banners appear
   } else {
+    // Immediately hide close button when chat opens
     closeBtn.classList.remove('show');
   }
 }
