@@ -907,22 +907,27 @@
    =================================== */
 
 @media (max-width: 768px) {
+  body, html {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
   #chat-window {
-    top: auto;
+    top: auto !important;
     left: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
-    width: 100% !important;
-    height: 90dvh;
-    max-height: 90dvh;
+    width: 100vw !important;
+    height: 90dvh !important;
+    max-height: 90dvh !important;
     margin: 0 !important;
-    padding: 0;
-    border-radius: 24px 24px 0 0;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    padding: 0 !important;
+    border-radius: 24px 24px 0 0 !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
   }
 
   #chat-window.open {
-    transform: translateY(0);
+    transform: translateY(0) !important;
   }
 
   /* Adjust messages padding for mobile */
