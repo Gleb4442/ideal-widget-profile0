@@ -506,7 +506,8 @@
   stroke: currentColor;
   width: 18px;
   height: 18px;
-  opacity: 0.95;
+  opacity: 1;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.4));
 }
 
 .header-controls {
@@ -907,7 +908,9 @@
    =================================== */
 
 @media (max-width: 768px) {
-  body, html {
+
+  body,
+  html {
     margin: 0 !important;
     padding: 0 !important;
   }
