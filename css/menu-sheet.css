@@ -12,13 +12,11 @@
 }
 
 .menu-sheet-content {
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+    @apply transition-all duration-300 transform;
     max-width: 420px;
-    /* Match widget width on desktop */
     margin: 0 auto;
 }
 
-/* Slide up animation */
 #menu-bottom-sheet:not(.hidden) .menu-sheet-content {
     transform: translateY(0);
 }
@@ -27,215 +25,162 @@
     transform: translateY(100%);
 }
 
-.menu-sheet-btn {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 12px 16px;
-    background: white;
-    border: 1px solid #f3f4f6;
-    border-radius: 16px;
-    transition: all 0.2s;
+/* Glassmorphism Classes */
+.glass-sheet {
+    @apply bg-white/40 backdrop-blur-[25px];
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 }
 
-.menu-sheet-btn:hover {
-    background: #f9fafb;
-    border-color: #e5e7eb;
-    transform: translateY(-1px);
-}
-
-.menu-sheet-btn:active {
-    transform: translateY(0);
-    background: #f3f4f6;
-}
-
-/* Language Sheet */
-#language-sheet-modal.hidden {
-    opacity: 0;
-    pointer-events: none;
-    visibility: hidden;
-}
-
-#language-sheet-modal:not(.hidden) {
-    opacity: 1;
-    pointer-events: auto;
-    visibility: visible;
-}
-
-#language-sheet-modal > div {
-    max-width: 420px;
-    margin: 0 auto;
-    max-height: 70%;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
-}
-
-#language-sheet-list .language-option {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px;
-    border-bottom: 1px solid #f3f4f6;
-}
-
-#language-sheet-list .language-option:last-child {
-    border-bottom: none;
-}
-
-#language-sheet-list .language-option.active {
-    color: var(--accent-color);
-    font-weight: 600;
-    background: #eff6ff;
-    border-radius: 12px;
-}
-
-/* Special Booking Icon Animation */
-.special-booking-icon-frame {
-    position: relative;
-    z-index: 1;
-    background: white;
-    /* Ensure icon is on white */
-    padding: 10px;
-    /* Adjust padding for border space */
-    border-radius: 50%;
-    margin-right: 12px !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Gradient Border Setup */
-.special-booking-icon-frame::before {
-    content: "";
-    position: absolute;
-    inset: -2px;
-    /* Border width */
-    border-radius: 50%;
-    padding: 2px;
-    /* Match inset/border width */
-    background: linear-gradient(45deg, #ff00cc, #3333ff, #00ccff, #ff00cc);
-    background-size: 300% 300%;
-    -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    transition: all 0.3s ease;
-    filter: blur(0.5px);
-}
-
-/* Hover Animation */
-.menu-sheet-btn:hover .special-booking-icon-frame::before {
-    animation: gradient-spin 2s linear infinite;
-}
-
-@keyframes gradient-spin {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-/* ============================
-   GUIDE BOTTOM SHEET
-   ============================ */
-
-#guide-bottom-sheet.hidden {
-    opacity: 0;
-    pointer-events: none;
-    visibility: hidden;
-}
-
-#guide-bottom-sheet:not(.hidden) {
-    opacity: 1;
-    pointer-events: auto;
-    visibility: visible;
-}
-
-#guide-bottom-sheet:not(.hidden) .guide-sheet-content {
-    transform: translateY(0);
-}
-
-.guide-sheet-content {
-    max-width: 420px;
-    margin: 0 auto;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.guide-telegram-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    width: 100%;
-    padding: 14px 20px;
-    background: linear-gradient(180deg, #2AABEE 0%, #229ED9 100%);
-    color: white;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 15px;
+.dark .glass-sheet {
+    @apply bg-[#0c0d10]/60 backdrop-blur-[40px];
     border: none;
-    cursor: pointer;
-    transition: all 0.2s;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 -15px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-.guide-telegram-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(42, 171, 238, 0.4);
+.glass-item {
+    @apply bg-white/50 backdrop-blur-[10px];
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.guide-telegram-btn svg {
-    width: 24px;
-    height: 24px;
+.dark .glass-item {
+    @apply bg-white/[0.03] border-white/[0.08];
 }
 
-.guide-items-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+.glass-button {
+    @apply bg-white/60 backdrop-blur-[10px];
+    border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-.guide-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
-    background: #f9fafb;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
+.dark .glass-button {
+    @apply bg-white/[0.1] border-white/10 backdrop-blur-xl;
 }
 
-.guide-item:hover {
-    background: #f3f4f6;
+/* Icon Containers */
+.glass-icon-container {
+    @apply relative flex items-center justify-center rounded-full overflow-hidden transition-all duration-300;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-.guide-item-icon {
-    width: 40px;
-    height: 40px;
-    background: var(--accent-color, #2563eb);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    flex-shrink: 0;
+.dark .glass-icon-container {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2);
 }
 
-.guide-item-text {
-    flex: 1;
-    font-weight: 500;
-    color: #374151;
-    font-size: 14px;
+.glass-icon-bg {
+    @apply absolute inset-0 opacity-25;
 }
 
-.guide-item-arrow {
-    color: #9ca3af;
+/* Specific Icon container for special booking */
+.special-icon-border {
+    background: conic-gradient(from 180deg at 50% 50%, #3B82F6 0deg, #06B6D4 180deg, #3B82F6 360deg);
+    padding: 1.5px;
+    @apply rounded-full w-11 h-11 transition-all duration-300;
+}
+
+.dark .special-icon-border {
+    @apply border-2 border-cyan-400/50 bg-transparent shadow-[0_0_20px_rgba(34, 211, 238, 0.25)] p-0 flex items-center justify-center;
+}
+
+.special-icon-inner {
+    @apply bg-white/80 backdrop-blur-[40px] rounded-full flex items-center justify-center w-full h-full;
+}
+
+.dark .special-icon-inner {
+    @apply bg-transparent backdrop-blur-none;
+}
+
+/* Dark Mode Gradients */
+.glowing-border-top {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+    @apply absolute top-0 left-0 w-full h-[1px] opacity-0 transition-opacity duration-500;
+}
+
+.dark .glowing-border-top {
+    @apply opacity-100;
+}
+
+/* Icon Tints (Light) */
+.bg-tint-blue {
+    background-color: #3B82F6;
+}
+
+.bg-tint-purple {
+    background-color: #A855F7;
+}
+
+.bg-tint-orange {
+    background-color: #F97316;
+}
+
+.bg-tint-indigo {
+    background-color: #6366F1;
+}
+
+.bg-tint-green {
+    background-color: #22C55E;
+}
+
+/* Icon Tints (Dark) */
+.dark .bg-glass-blue {
+    background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.35), rgba(59, 130, 246, 0.05));
+}
+
+.dark .bg-glass-purple {
+    background: radial-gradient(circle at top left, rgba(168, 85, 247, 0.45), rgba(168, 85, 247, 0.1));
+}
+
+.dark .bg-glass-orange {
+    background: radial-gradient(circle at top left, rgba(249, 115, 22, 0.35), rgba(249, 115, 22, 0.05));
+}
+
+.dark .bg-glass-indigo {
+    background: radial-gradient(circle at top left, rgba(99, 102, 241, 0.35), rgba(99, 102, 241, 0.05));
+}
+
+.dark .bg-glass-green {
+    background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.35), rgba(34, 197, 94, 0.05));
+}
+
+/* Text Gradients (Dark) */
+.dark .text-gradient-blue {
+    background: linear-gradient(to bottom right, #60a5fa, #93c5fd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.dark .text-gradient-purple {
+    background: linear-gradient(to bottom right, #c084fc, #e9d5ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.dark .text-gradient-orange {
+    background: linear-gradient(to bottom right, #fb923c, #fdba74);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.dark .text-gradient-indigo {
+    background: linear-gradient(to bottom right, #818cf8, #a5b4fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.dark .text-gradient-green {
+    background: linear-gradient(to bottom right, #4ade80, #86efac);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.material-symbols-rounded {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 0px;
 }

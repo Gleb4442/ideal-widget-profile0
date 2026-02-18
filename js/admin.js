@@ -192,9 +192,11 @@ export function initAdminPanelControls() {
     const cancellationBanner = document.getElementById('cancellation-banner');
     if (e.target.checked) {
       dom.chatWindow.classList.add('dark-mode');
+      document.documentElement.classList.add('dark');
       if (cancellationBanner) cancellationBanner.classList.add('dark-mode');
     } else {
       dom.chatWindow.classList.remove('dark-mode');
+      document.documentElement.classList.remove('dark');
       if (cancellationBanner) cancellationBanner.classList.remove('dark-mode');
     }
   });
