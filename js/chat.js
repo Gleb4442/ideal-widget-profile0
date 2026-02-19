@@ -2235,7 +2235,6 @@ export function addRoomCarousel() {
       </div>
       <div class="room-carousel-info">
         <div class="room-carousel-name">${room.name || 'Без назви'}</div>
-        <div class="room-carousel-name">${room.name || 'Без назви'}</div>
         ${ratingHTML}
         ${priceHTML}
         <div class="room-carousel-area">${rooms.formatArea(room.area)}</div>
