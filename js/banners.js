@@ -92,21 +92,14 @@ function showModal() {
   const modal = document.getElementById('telegram-confirmation-modal');
   if (!modal) return;
 
-  modal.style.display = 'flex';
-  // Trigger animation
-  setTimeout(() => {
-    modal.style.opacity = '1';
-  }, 10);
+  modal.classList.add('active');
 }
 
 function hideModal() {
   const modal = document.getElementById('telegram-confirmation-modal');
   if (!modal) return;
 
-  modal.style.opacity = '0';
-  setTimeout(() => {
-    modal.style.display = 'none';
-  }, 200);
+  modal.classList.remove('active');
 }
 
 // Set Telegram link (can be called from config or admin panel)
