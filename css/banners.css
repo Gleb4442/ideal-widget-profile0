@@ -131,9 +131,14 @@
   opacity: 0;
 }
 
-/* Position above policy consent banner */
+/* Position above policy consent banner (branding visible) */
 .telegram-collapsed.above-banner {
-  bottom: 150px;
+  bottom: 149px;
+}
+
+/* Position above policy banner when branding is hidden */
+#chat-footer.no-branding .telegram-collapsed.above-banner {
+  bottom: 125px;
 }
 
 /* Position adjustment when branding is hidden to maintain 15px gap */
