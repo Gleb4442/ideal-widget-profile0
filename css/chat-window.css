@@ -921,11 +921,11 @@
     right: 0 !important;
     bottom: 0 !important;
     width: 100vw !important;
-    height: 90dvh !important;
-    max-height: 90dvh !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
     margin: 0 !important;
     padding: 0 !important;
-    border-radius: 24px 24px 0 0 !important;
+    border-radius: 0 !important;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
   }
 
