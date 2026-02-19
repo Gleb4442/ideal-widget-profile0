@@ -12,35 +12,8 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto:wght@400;500&family=Lato&family=Montserrat&family=Poppins&family=Oswald&family=Nunito&family=Rubik&family=Ubuntu&family=Exo+2&family=Work+Sans&family=Fira+Sans&family=Anton&family=Manrope&family=Mulish&family=Titillium+Web&family=PT+Sans&family=Bebas+Neue&family=Abril+Fatface&family=Lobster&family=Righteous&family=Russo+One&family=Permanent+Marker&family=Fjalla+One&family=Asap&family=Cairo&display=swap"
     rel="stylesheet">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
     rel="stylesheet">
-  <script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            primary: "#3B82F6",
-            "background-dark": "#050505",
-            "surface-dark": "rgba(20, 22, 27, 0.5)",
-          },
-          fontFamily: {
-            display: ["Inter", "sans-serif"],
-          },
-          borderRadius: {
-            'xl': '1.25rem',
-            '2xl': '1.5rem',
-            '3xl': '2rem',
-          },
-          boxShadow: {
-            'subtle': '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03)',
-            'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
-          }
-        },
-      },
-    };
-  </script>
 
   <!-- Widget Styles -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -738,12 +711,13 @@
     </div>
 
     <!-- Telegram Confirmation Modal -->
-    <div id="tg-confirmation-modal"
-      class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all p-4 pb-6">
-      <div
-        class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-        <div class="mx-auto w-12 h-12 flex items-center justify-center mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" viewBox="0 0 240.1 240.1">
+    <div id="tg-confirmation-modal" class="telegram-confirmation-overlay">
+      <div class="telegram-confirmation-modal">
+        <!-- Bottom Sheet Handle -->
+        <div class="telegram-modal-handle"></div>
+        
+        <div class="telegram-modal-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240.1 240.1">
             <linearGradient id="Oval_1_modal" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581" x2="-838.041"
               y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
               <stop offset="0" style="stop-color:#2AABEE" />
@@ -754,15 +728,13 @@
               d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z" />
           </svg>
         </div>
-        <h4 class="text-lg font-bold mb-2">Бажаєте перейти?</h4>
-        <p class="modal-text-secondary text-sm text-gray-500 mb-6">Ви будете перенаправлені у зовнішній додаток.</p>
-        <div class="flex flex-col gap-2">
-          <button id="confirm-tg-btn"
-            class="w-full py-2.5 bg-[#24A1DE] hover:bg-[#1e88bd] text-white font-medium rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2">
+        <h4 class="telegram-modal-title">Бажаєте перейти?</h4>
+        <p class="telegram-modal-subtitle">Ви будете перенаправлені у зовнішній додаток.</p>
+        <div class="telegram-modal-buttons">
+          <button id="confirm-tg-btn" class="telegram-proceed-button">
             <span>Перейти</span>
           </button>
-          <button id="cancel-tg-btn"
-            class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Скасувати</button>
+          <button id="cancel-tg-btn" class="telegram-cancel-button">Скасувати</button>
         </div>
       </div>
     </div>
@@ -1054,214 +1026,233 @@
 
     <!-- Menu Bottom Sheet Modal -->
     <div id="menu-bottom-sheet"
-      class="hidden absolute inset-0 z-[100] flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all duration-300">
+      class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all">
       <div
-        class="menu-sheet-content w-full max-w-md glass-sheet rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-glass relative overflow-hidden transition-all duration-300 transform translate-y-full">
-        <div class="glowing-border-top"></div>
-        <div class="w-full flex justify-center pt-4 pb-2">
-          <div class="w-10 h-1.5 bg-gray-400/30 dark:bg-white/20 rounded-full"></div>
+        class="menu-sheet-content bg-white w-full rounded-t-2xl p-4 pb-8 shadow-2xl transform translate-y-full transition-transform duration-300 ease-out">
+        <div class="flex justify-center mb-4">
+          <div class="w-12 h-1.5 bg-gray-200 rounded-full"></div>
         </div>
-        <div class="px-5 pb-8 space-y-3 pt-4 overflow-y-auto max-h-[80vh] custom-scrollbar">
-          <button id="reset-chat-btn"
-            class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 dark:hover:bg-white/[0.08] active:scale-[0.98] transition-all duration-200">
-            <div class="flex items-center space-x-4">
-              <div class="w-11 h-11 glass-icon-container dark:bg-glass-blue">
-                <div class="glass-icon-bg bg-tint-blue dark:hidden"></div>
-                <span
-                  class="material-symbols-rounded text-blue-600 dark:text-gradient-blue text-xl relative z-10 font-bold">add_comment</span>
-              </div>
-              <span class="text-gray-800 dark:text-white/90 font-semibold dark:font-medium text-[17px]"
-                data-i18n="newChat">Новий чат</span>
-            </div>
-            <span
-              class="material-symbols-rounded text-gray-400 dark:text-white/30 text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward_ios</span>
-          </button>
 
-          <button id="rooms-menu-btn"
-            class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 dark:hover:bg-white/[0.08] active:scale-[0.98] transition-all duration-200">
-            <div class="flex items-center space-x-4">
-              <div class="w-11 h-11 glass-icon-container dark:bg-glass-purple">
-                <div class="glass-icon-bg bg-tint-purple dark:hidden"></div>
-                <span
-                  class="material-symbols-rounded text-purple-600 dark:text-white dark:drop-shadow-[0_0_8px_rgba(192,132,252,0.8)] text-xl relative z-10 font-bold">home</span>
-              </div>
-              <span class="text-gray-800 dark:text-white/90 font-semibold dark:font-medium text-[17px]">Номери</span>
+        <div class="grid grid-cols-1 gap-2">
+          <button id="reset-chat-btn" class="menu-sheet-btn">
+            <div class="p-2 bg-blue-50 text-blue-600 rounded-full mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                <line x1="9" y1="10" x2="15" y2="10"></line>
+                <line x1="12" y1="7" x2="12" y2="13"></line>
+              </svg>
             </div>
-            <span
-              class="material-symbols-rounded text-gray-400 dark:text-white/30 text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward_ios</span>
-          </button>
-
-          <button id="special-booking-btn"
-            class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 dark:hover:bg-white/[0.08] active:scale-[0.98] transition-all duration-200">
-            <div class="flex items-center space-x-4">
-              <div class="special-icon-border">
-                <div class="special-icon-inner">
-                  <span
-                    class="material-symbols-rounded text-gray-800 dark:text-cyan-400 text-xl relative z-10 font-bold">auto_awesome</span>
-                </div>
-              </div>
-              <span class="text-gray-800 dark:text-white/90 font-semibold dark:font-medium text-[17px]"
-                data-i18n="specialBooking">Особливе бронювання</span>
-            </div>
-            <span
-              class="material-symbols-rounded text-gray-400 dark:text-white/30 text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward_ios</span>
-          </button>
-
-          <button id="history-menu-btn"
-            class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 dark:hover:bg-white/[0.08] active:scale-[0.98] transition-all duration-200">
-            <div class="flex items-center space-x-4">
-              <div class="w-11 h-11 glass-icon-container dark:bg-glass-orange">
-                <div class="glass-icon-bg bg-tint-orange dark:hidden"></div>
-                <span
-                  class="material-symbols-rounded text-orange-600 dark:text-gradient-orange text-xl relative z-10 font-bold">inventory_2</span>
-              </div>
-              <span class="text-gray-800 dark:text-white/90 font-semibold dark:font-medium text-[17px]">Previous
-                Dialogs</span>
-            </div>
-            <span
-              class="material-symbols-rounded text-gray-400 dark:text-white/30 text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward_ios</span>
-          </button>
-
-          <button id="sound-toggle-btn"
-            class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 dark:hover:bg-white/[0.08] active:scale-[0.98] transition-all duration-200">
-            <div class="flex items-center space-x-4">
-              <div class="w-11 h-11 glass-icon-container dark:bg-glass-indigo">
-                <div class="glass-icon-bg bg-tint-indigo dark:hidden"></div>
-                <span
-                  class="material-symbols-rounded text-indigo-600 dark:text-gradient-indigo text-xl relative z-10 font-bold">volume_up</span>
-              </div>
-              <span class="text-gray-800 dark:text-white/90 font-semibold dark:font-medium text-[17px]">Звук
-                сповіщень</span>
-            </div>
-            <div class="flex items-center space-x-1 text-gray-400 dark:text-white/30">
-              <span id="sound-status-text" class="text-[15px] dark:text-[14px] font-medium pr-1">Вкл</span>
-            </div>
-          </button>
-
-          <button id="language-menu-btn"
-            class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 dark:hover:bg-white/[0.08] active:scale-[0.98] transition-all duration-200">
-            <div class="flex items-center space-x-4">
-              <div class="w-11 h-11 glass-icon-container dark:bg-glass-green">
-                <div class="glass-icon-bg bg-tint-green dark:hidden"></div>
-                <span
-                  class="material-symbols-rounded text-green-700 dark:text-gradient-green text-xl relative z-10 font-bold">translate</span>
-              </div>
-              <span class="text-gray-800 dark:text-white/90 font-semibold dark:font-medium text-[17px]"
-                data-i18n="language">Мова</span>
-            </div>
-            <div class="flex items-center space-x-1 text-gray-400 dark:text-white/30">
-              <span id="current-lang-display" class="text-[15px] dark:text-[14px] font-medium uppercase">UK</span>
-              <span
-                class="material-symbols-rounded text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward_ios</span>
-            </div>
-          </button>
-
-          <div class="h-2"></div>
-          <button id="menu-sheet-close"
-            class="w-full py-4 glass-button rounded-2xl text-gray-800 dark:text-white font-bold dark:font-semibold text-[17px] active:scale-[0.98] hover:bg-white/70 dark:hover:bg-white/[0.15] transition-all duration-200 shadow-sm">
-            Закрити
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Language Submenu Modal (Nested) -->
-    <div id="language-sheet-modal"
-      class="hidden absolute inset-0 z-[60] flex items-end justify-center bg-black/40 backdrop-blur-sm">
-      <div class="bg-white w-full rounded-t-2xl p-4 pb-8 shadow-2xl animate-slide-up flex flex-col">
-        <div class="flex items-center justify-between mb-4 border-b pb-2">
-          <h3 class="font-bold text-lg">Выберите язык</h3>
-          <button id="language-sheet-close" class="p-2 bg-gray-100 rounded-full">
+            <span class="flex-1 text-left font-medium text-gray-700" data-i18n="newChat">New Chat</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
+              class="text-gray-400" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+
+          <!-- Rooms Button -->
+          <button id="rooms-menu-btn" class="menu-sheet-btn">
+            <div class="p-2 bg-purple-50 text-purple-600 rounded-full mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            </div>
+            <span class="flex-1 text-left font-medium text-gray-700">Номери</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              class="text-gray-400" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+
+          <button id="special-booking-btn" class="menu-sheet-btn">
+            <div class="p-2 rounded-full mr-3 special-booking-icon-frame">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962l6.135-1.582a2 2 0 0 0 1.437-1.437l1.582-6.135a.5.5 0 0 1 .963 0l1.582 6.135a2 2 0 0 0 1.437 1.437l6.135 1.582a.5.5 0 0 1 0 .962l-6.135 1.582a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+                <path d="M20 3v4" />
+                <path d="M22 5h-4" />
+                <path d="M4 17v2" />
+                <path d="M5 18H3" />
+              </svg>
+            </div>
+            <span class="flex-1 text-left font-medium text-gray-700" data-i18n="specialBooking">Special
+              Booking</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              class="text-gray-400" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+
+          <button id="history-menu-btn" class="menu-sheet-btn">
+            <div class="p-2 bg-orange-50 text-orange-500 rounded-full mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                <rect x="1" y="3" width="22" height="5"></rect>
+                <line x1="10" y1="12" x2="14" y2="12"></line>
+              </svg>
+            </div>
+            <span class="flex-1 text-left font-medium text-gray-700">Previous Dialogs</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              class="text-gray-400" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+
+          <!-- Sound Toggle Button -->
+          <button id="sound-toggle-btn" class="menu-sheet-btn">
+            <div class="p-2 bg-indigo-50 text-indigo-600 rounded-full mr-3">
+              <svg id="sound-icon-on" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+              <svg id="sound-icon-off" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <line x1="23" y1="9" x2="17" y2="15"></line>
+                <line x1="17" y1="9" x2="23" y2="15"></line>
+              </svg>
+            </div>
+            <span class="flex-1 text-left font-medium text-gray-700">Звук сповіщень</span>
+            <span id="sound-status-text" class="text-sm text-gray-400 mr-2">Вкл</span>
+          </button>
+
+          <button id="language-menu-btn" class="menu-sheet-btn">
+            <div class="p-2 bg-green-50 text-green-600 rounded-full mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m5 8 6 6" />
+                <path d="m4 14 6-6 2-3" />
+                <path d="M2 5h12" />
+                <path d="M7 2h1" />
+                <path d="m22 22-5-10-5 10" />
+                <path d="M14 14h6" />
+              </svg>
+            </div>
+            <span class="flex-1 text-left font-medium text-gray-700" data-i18n="language">Language</span>
+            <span id="current-lang-display" class="text-sm text-gray-400 mr-2 uppercase">EN</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              class="text-gray-400" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
           </button>
         </div>
-        <div id="language-sheet-list" class="flex-1 overflow-y-auto space-y-2">
-          <!-- Languages injected here -->
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Guide Bottom Sheet Modal -->
-  <div id="guide-bottom-sheet"
-    class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all">
-    <div
-      class="guide-sheet-content bg-white w-full rounded-t-2xl p-4 pb-8 shadow-2xl transform translate-y-full transition-transform duration-300 ease-out">
-      <div class="flex justify-center mb-4">
-        <div class="w-12 h-1.5 bg-gray-200 rounded-full"></div>
+        <button id="menu-sheet-close"
+          class="mt-6 w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">
+          Закрыть
+        </button>
       </div>
 
-      <h3 class="text-center text-lg font-bold text-gray-800 mb-2">персональная карточка гостя</h3>
-
-      <div id="guide-items-list" class="guide-items-list mb-4">
-        <!-- Guide items will be populated here -->
-      </div>
-
-      <button id="guide-telegram-btn" class="guide-telegram-btn">
-        <svg width="24" height="24" viewBox="0 0 240.1 240.1" fill="white">
-          <path d="M82.9,178.9c-3.4,0-2.9-1.3-4.1-4.5L66.1,129l113.6-67.5" />
-          <path d="M82.9,178.9c2.6,0,3.8-1.2,5.2-2.6l14-13.6l-29.2-17.6" />
-          <path
-            d="M72.9,145.1l70.8,52.2c8.1,4.5,13.9,2.1,15.9-7.5l28.8-135.8c2.9-11.8-4.5-17.1-12.2-13.6L38.6,108.2c-11.5,4.6-11.5,11-2.1,13.9l43.4,13.6l100.5-63.4c4.7-2.9,9.1-1.3,5.5,1.8" />
-        </svg>
-        <span>Получить в Telegram</span>
-      </button>
-
-      <button id="guide-sheet-close"
-        class="mt-3 w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">
-        Закрыть
-      </button>
-    </div>
-  </div>
-
-  <!-- Telegram Booking Confirmation Modal -->
-  <div id="telegram-booking-modal" class="telegram-confirmation-modal hidden">
-    <div class="telegram-header">
-      <button id="telegram-booking-close" class="telegram-back-btn">Закрыть</button>
-      <span class="telegram-header-title">Подтверждение</span>
-    </div>
-    <div class="telegram-content">
-      <div class="telegram-inner">
-        <div class="telegram-logo-container">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240.1 240.1">
-            <linearGradient id="telegram_gradient" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581"
-              x2="-838.041" y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
-              <stop offset="0" style="stop-color:#2AABEE" />
-              <stop offset="1" style="stop-color:#229ED9" />
-            </linearGradient>
-            <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#telegram_gradient)" cx="120.1" cy="120.1"
-              r="120.1" />
-            <path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF"
-              d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z" />
-          </svg>
-
-          <div class="telegram-success-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
+      <!-- Language Submenu Modal (Nested) -->
+      <div id="language-sheet-modal"
+        class="hidden absolute inset-0 z-[60] flex items-end justify-center bg-black/40 backdrop-blur-sm">
+        <div class="bg-white w-full rounded-t-2xl p-4 pb-8 shadow-2xl animate-slide-up flex flex-col">
+          <div class="flex items-center justify-between mb-4 border-b pb-2">
+            <h3 class="font-bold text-lg">Выберите язык</h3>
+            <button id="language-sheet-close" class="p-2 bg-gray-100 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          <div id="language-sheet-list" class="flex-1 overflow-y-auto space-y-2">
+            <!-- Languages injected here -->
           </div>
         </div>
-
-        <h2 class="telegram-modal-title">Бронирование завершено!</h2>
-        <p class="telegram-modal-subtitle">Перейдите в Telegram чтобы получить подтверждение о вашем бронировании</p>
-
-        <button class="telegram-confirm-button" id="telegram-booking-confirm">
-          <svg class="telegram-button-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.2-.04-.28-.02-.12.02-1.98 1.26-5.59 3.7-.53.37-.1.02-1.44.38-.67.19-1.19.3-1.14.65.03.19.21.38 1.48.68 1.05.27 2.44.58 3.18.68.64.08 1.35-.06 1.74-.2 1.16-.38 3.31-1.32 3.36-1.34.03-.02.1-.03.17-.03.13 0 .23.08.23.19z" />
-          </svg>
-          Перейти в Telegram
-        </button>
-
-        <button class="telegram-later-button" id="telegram-booking-later">Позже</button>
       </div>
     </div>
-  </div>
+
+    <!-- Guide Bottom Sheet Modal -->
+    <div id="guide-bottom-sheet"
+      class="hidden absolute inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm transition-all">
+      <div
+        class="guide-sheet-content bg-white w-full rounded-t-2xl p-4 pb-8 shadow-2xl transform translate-y-full transition-transform duration-300 ease-out">
+        <div class="flex justify-center mb-4">
+          <div class="w-12 h-1.5 bg-gray-200 rounded-full"></div>
+        </div>
+
+        <h3 class="text-center text-lg font-bold text-gray-800 mb-2">персональная карточка гостя</h3>
+
+        <div id="guide-items-list" class="guide-items-list mb-4">
+          <!-- Guide items will be populated here -->
+        </div>
+
+        <button id="guide-telegram-btn" class="guide-telegram-btn">
+          <svg width="24" height="24" viewBox="0 0 240.1 240.1" fill="white">
+            <path d="M82.9,178.9c-3.4,0-2.9-1.3-4.1-4.5L66.1,129l113.6-67.5" />
+            <path d="M82.9,178.9c2.6,0,3.8-1.2,5.2-2.6l14-13.6l-29.2-17.6" />
+            <path
+              d="M72.9,145.1l70.8,52.2c8.1,4.5,13.9,2.1,15.9-7.5l28.8-135.8c2.9-11.8-4.5-17.1-12.2-13.6L38.6,108.2c-11.5,4.6-11.5,11-2.1,13.9l43.4,13.6l100.5-63.4c4.7-2.9,9.1-1.3,5.5,1.8" />
+          </svg>
+          <span>Получить в Telegram</span>
+        </button>
+
+        <button id="guide-sheet-close"
+          class="mt-3 w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">
+          Закрыть
+        </button>
+      </div>
+    </div>
+
+    <!-- Telegram Booking Confirmation Modal -->
+    <div id="telegram-booking-modal" class="telegram-confirmation-modal hidden">
+      <div class="telegram-header">
+        <button id="telegram-booking-close" class="telegram-back-btn">Закрыть</button>
+        <span class="telegram-header-title">Подтверждение</span>
+      </div>
+      <div class="telegram-content">
+        <div class="telegram-inner">
+          <div class="telegram-logo-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240.1 240.1">
+              <linearGradient id="telegram_gradient" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581"
+                x2="-838.041" y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
+                <stop offset="0" style="stop-color:#2AABEE" />
+                <stop offset="1" style="stop-color:#229ED9" />
+              </linearGradient>
+              <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#telegram_gradient)" cx="120.1" cy="120.1"
+                r="120.1" />
+              <path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF"
+                d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z" />
+            </svg>
+
+            <div class="telegram-success-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <h2 class="telegram-modal-title">Бронирование завершено!</h2>
+          <p class="telegram-modal-subtitle">Перейдите в Telegram чтобы получить подтверждение о вашем бронировании</p>
+
+          <button class="telegram-confirm-button" id="telegram-booking-confirm">
+            <svg class="telegram-button-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+              fill="currentColor">
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.2-.04-.28-.02-.12.02-1.98 1.26-5.59 3.7-.53.37-.1.02-1.44.38-.67.19-1.19.3-1.14.65.03.19.21.38 1.48.68 1.05.27 2.44.58 3.18.68.64.08 1.35-.06 1.74-.2 1.16-.38 3.31-1.32 3.36-1.34.03-.02.1-.03.17-.03.13 0 .23.08.23.19z" />
+            </svg>
+            Перейти в Telegram
+          </button>
+
+          <button class="telegram-later-button" id="telegram-booking-later">Позже</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Room Edit Modal -->

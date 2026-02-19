@@ -13,9 +13,9 @@ export function initTelegramBanner() {
   const banner = document.getElementById('telegram-banner');
   const collapsed = document.getElementById('telegram-collapsed');
   const closeBtn = document.getElementById('telegram-close-btn');
-  const modal = document.getElementById('telegram-confirmation-modal');
-  const proceedBtn = document.getElementById('telegram-proceed-btn');
-  const cancelBtn = document.getElementById('telegram-cancel-btn');
+  const modal = document.getElementById('tg-confirmation-modal');
+  const proceedBtn = document.getElementById('confirm-tg-btn');
+  const cancelBtn = document.getElementById('cancel-tg-btn');
 
   if (!banner || !collapsed || !closeBtn || !modal || !proceedBtn || !cancelBtn) {
     console.warn('Telegram banner elements not found');
@@ -33,6 +33,14 @@ export function initTelegramBanner() {
   collapsed.addEventListener('click', (e) => {
     e.preventDefault();
     showModal();
+  });
+
+  // Banner click - show modal (instead of direct transition)
+  banner.addEventListener('click', (e) => {
+    if (!e.target.closest('#telegram-close-btn')) {
+      e.preventDefault();
+      showModal();
+    }
   });
 
   // Proceed button - open Telegram
@@ -89,14 +97,14 @@ function collapseBanner() {
 }
 
 function showModal() {
-  const modal = document.getElementById('telegram-confirmation-modal');
+  const modal = document.getElementById('tg-confirmation-modal');
   if (!modal) return;
 
   modal.classList.add('active');
 }
 
 function hideModal() {
-  const modal = document.getElementById('telegram-confirmation-modal');
+  const modal = document.getElementById('tg-confirmation-modal');
   if (!modal) return;
 
   modal.classList.remove('active');

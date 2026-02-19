@@ -49,8 +49,7 @@
 }
 
 /* Bottom Sheet Handle */
-.telegram-confirmation-modal::before {
-  content: '';
+.telegram-modal-handle {
   width: 40px;
   height: 4px;
   background: #e5e7eb;
