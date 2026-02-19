@@ -633,7 +633,7 @@
   bottom: 0;
   left: -12px;
   right: -12px;
-  height: 200px;
+  height: 150px;
   background: linear-gradient(to top,
       rgba(255, 255, 255, 1) 0%,
       rgba(255, 255, 255, 1) 30%,
@@ -652,11 +652,11 @@
 
 /* Footer blur adjustment when branding is hidden */
 #chat-footer.no-branding::before {
-  height: 150px;
+  height: 100px;
 }
 
 .dark-mode #chat-footer.no-branding::before {
-  height: 150px;
+  height: 100px;
 }
 
 /* Input area wrapper styling */
