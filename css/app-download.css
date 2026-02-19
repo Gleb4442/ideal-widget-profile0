@@ -1,0 +1,178 @@
+/*
+ * App Download Modal
+ * Shows after booking completion
+ */
+
+/* Reuse overlay styles from telegram confirmation if possible, or define here */
+.app-download-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.app-download-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.app-download-modal {
+    background: white;
+    border-radius: 24px 24px 0 0;
+    padding: 32px 24px 40px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.app-download-overlay.active .app-download-modal {
+    transform: translateY(0);
+}
+
+.app-download-icon {
+    width: 72px;
+    height: 72px;
+    margin-bottom: 20px;
+    background: #f3f4f6;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4b5563;
+}
+
+.app-download-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.app-download-subtitle {
+    font-size: 16px;
+    color: #6b7280;
+    margin-bottom: 24px;
+    max-width: 280px;
+}
+
+.app-store-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.store-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.store-button.app-store {
+    background: #000000;
+    color: white;
+}
+
+.store-button.google-play {
+    background: #ffffff;
+    color: #3c4043;
+    border-color: #dadce0;
+}
+
+.store-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.store-button svg {
+    width: 24px;
+    height: 24px;
+}
+
+.store-button-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.1;
+}
+
+.store-button-small {
+    font-size: 10px;
+    opacity: 0.8;
+}
+
+.store-button-large {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.app-download-later {
+    color: #9ca3af;
+    font-size: 14px;
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 16px;
+    transition: color 0.2s;
+}
+
+.app-download-later:hover {
+    color: #6b7280;
+}
+
+/* Dark Mode */
+.dark-mode .app-download-modal {
+    background: #1f2937;
+    border: 1px solid #374151;
+}
+
+.dark-mode .app-download-title {
+    color: #f3f4f6;
+}
+
+.dark-mode .app-download-subtitle {
+    color: #9ca3af;
+}
+
+.dark-mode .app-download-icon {
+    background: #374151;
+    color: #e5e7eb;
+}
+
+.dark-mode .store-button.google-play {
+    background: #374151;
+    color: #e5e7eb;
+    border-color: #4b5563;
+}
+
+.dark-mode .store-button.app-store {
+    background: #000000;
+    /* Apple button stays black usually */
+    border: 1px solid #374151;
+}

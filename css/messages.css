@@ -96,3 +96,46 @@
 .typing-indicator-bubble span:nth-child(2) {
   animation-delay: -0.16s;
 }
+
+.typing-indicator-bubble span:nth-child(3) {
+  animation-delay: 0s;
+}
+
+/* Menu Button in Chat */
+.chat-menu-button-container {
+  margin-left: 12px;
+  margin-bottom: 4px;
+}
+
+.chat-menu-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px 18px 18px 4px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-top: 4px;
+}
+
+.chat-menu-button:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.chat-menu-button:active {
+  transform: translateY(0);
+}
+
+.chat-menu-button svg {
+  color: var(--accent-color);
+  flex-shrink: 0;
+}

@@ -12,6 +12,8 @@ import * as gallery from './gallery.js';
 import * as bookings from './bookings.js';
 import * as roomService from './roomService.js';
 import { openMenuModal, isMenuAvailable } from './menu.js';
+import { getMenuSettings } from './admin.js';
+import { showAppDownloadModal, initAppDownloadModalListeners } from './app-download.js';
 
 // Language storage key
 const LANGUAGE_KEY = 'chat_language';
@@ -508,7 +510,7 @@ function updateBookingStateWithExtracted(extractedData) {
   if (bookingState.step === 'completed' && previousStep !== 'completed') {
     bookingState.hasActiveBooking = true;
     console.log('✅ Booking completed! hasActiveBooking set to true');
-    showTelegramBookingModal();
+    showAppDownloadModal();
   }
 
   if (updated) {
@@ -996,10 +998,10 @@ function handleCancellationConfirmed(action) {
     addToConversationHistory('assistant', 'Бронирование отменено. Если передумаете или у вас будут вопросы, обращайтесь!');
   }
 
-  // Show Telegram confirmation modal after cancellation
-  setTimeout(() => {
-    showTelegramBookingModal();
-  }, 800);
+  // Show Telegram confirmation modal after cancellation (Disabled)
+  // setTimeout(() => {
+  //   showTelegramBookingModal();
+  // }, 800);
 
   cancellationState.isActive = false;
   cancellationState.action = null;
@@ -1712,10 +1714,10 @@ function confirmBookingCancellation(bookingId, optionsContainer) {
     // Show success message
     addMessage(`✓ Бронирование для ${booking.guestName} успешно отменено.\n\nНомер: ${booking.roomName}\nДаты: ${bookings.formatBooking(booking).checkInFormatted} - ${bookings.formatBooking(booking).checkOutFormatted}\n\nЕсли нужна помощь с новым бронированием, обращайтесь!`, 'ai');
 
-    // Show Telegram confirmation modal
-    setTimeout(() => {
-      showTelegramBookingModal();
-    }, 800);
+    // Show Telegram confirmation modal (Disabled for cancellation)
+    // setTimeout(() => {
+    //   showTelegramBookingModal();
+    // }, 800);
 
     // Reset cancellation state
     resetCancellationState();
@@ -2666,6 +2668,49 @@ export function addServicesCarousel() {
   dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
 }
 
+/**
+ * Adds a message with a button to open the restaurant menu
+ */
+export function addMenuMessage() {
+  const settings = getMenuSettings();
+  if (!settings || !settings.enabled) return;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'message-wrapper ai animate-fade-in';
+
+  const messageId = 'menu-' + Date.now();
+  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  wrapper.innerHTML = `
+    <div class="message-time">${time}</div>
+    <div class="chat-menu-button-container">
+      <button id="${messageId}" class="chat-menu-button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+          <path d="M7 2v20"></path>
+          <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+        </svg>
+        <span>Ознайомитись з меню</span>
+      </button>
+    </div>
+  `;
+
+  dom.messagesContainer.insertBefore(wrapper, dom.typingIndicator);
+  scrollToBottom();
+
+  // Add click listener
+  const btn = document.getElementById(messageId);
+  if (btn) {
+    btn.addEventListener('click', () => {
+      if (settings.type === 'link' && settings.link) {
+        window.open(settings.link, '_blank');
+      } else if (settings.type === 'pdf' && settings.pdfData) {
+        openMenuModal();
+      }
+    });
+  }
+}
+
 // Show Room Service Form
 export function showRoomServiceForm(category = 'food') {
   const wrapper = document.createElement('div');
@@ -3309,9 +3354,9 @@ export async function getAIResponse(userMessage) {
         setTimeout(() => addServicesCarousel(), response.showRoomsCarousel ? 800 : 500);
       }
 
-      // Show menu modal if intent detected and menu is available
+      // Show menu button if intent detected and menu is available
       if (response.showMenu && isMenuAvailable()) {
-        setTimeout(() => openMenuModal(), response.showRoomsCarousel || response.showServicesCarousel ? 1000 : 500);
+        setTimeout(() => addMenuMessage(), response.showRoomsCarousel || response.showServicesCarousel ? 1000 : 500);
       }
     } else if (chatMode === 'room-context' && selectedRoom) {
       // Room-specific response
@@ -3363,9 +3408,9 @@ export async function getAIResponse(userMessage) {
         setTimeout(() => addServicesCarousel(), response.showRoomsCarousel ? 800 : 500);
       }
 
-      // Show menu modal if intent detected and menu is available
+      // Show menu button if intent detected and menu is available
       if (response.showMenu && isMenuAvailable()) {
-        setTimeout(() => openMenuModal(), response.showRoomsCarousel || response.showServicesCarousel ? 1000 : 500);
+        setTimeout(() => addMenuMessage(), response.showRoomsCarousel || response.showServicesCarousel ? 1000 : 500);
       }
     }
   } catch (error) {
@@ -3832,8 +3877,11 @@ export function initChatListeners() {
   // Welcome modal listeners
   initWelcomeListeners();
 
-  // Telegram booking modal listeners
-  initTelegramBookingModalListeners();
+  // Telegram booking modal listeners (Deprecated)
+  // initTelegramBookingModalListeners();
+
+  // App Download Modal listeners
+  initAppDownloadModalListeners();
 
   // Guide sheet listeners
   initGuideSheetListeners();
@@ -4045,9 +4093,9 @@ function confirmSpecialOffer() {
 
   addMessage('Отлично! Ваше бронирование подтверждено. Наш менеджер свяжется с вами в ближайшее время для финального подтверждения деталей. Благодарим за выбор нашего отеля!', 'ai');
 
-  // Show Telegram confirmation modal
+  // Show App Download modal
   setTimeout(() => {
-    showTelegramBookingModal();
+    showAppDownloadModal();
   }, 800);
 
   // Deactivate special mode
@@ -4067,7 +4115,8 @@ function editSpecialOffer() {
 // TELEGRAM BOOKING CONFIRMATION MODAL
 // ========================================
 
-// Show Telegram Booking Confirmation Modal
+// Show Telegram Booking Confirmation Modal (Deprecated)
+/*
 export function showTelegramBookingModal() {
   const modal = document.getElementById('telegram-booking-modal');
   if (!modal) return;
@@ -4128,6 +4177,7 @@ export function initTelegramBookingModalListeners() {
     }
   });
 }
+*/
 
 // Export state getters/setters
 export function setCurrentLang(lang) {
