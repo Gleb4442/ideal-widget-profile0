@@ -4475,10 +4475,15 @@ function hideGuideSheet() {
 // Initialize Guide Sheet Listeners
 function initGuideSheetListeners() {
   // Badge click - open sheet
-  if (dom.guideBadgeBtn && dom.guideBadgeBtn.dataset.role === 'guide') {
+  if (dom.guideBadgeBtn) {
     dom.guideBadgeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      showGuideSheet();
+      const role = dom.guideBadgeBtn.dataset.role;
+      if (role === 'app-download') {
+        showAppDownloadModal();
+      } else if (role === 'guide') {
+        showGuideSheet();
+      }
     });
   }
 
