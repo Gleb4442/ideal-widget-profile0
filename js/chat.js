@@ -4476,15 +4476,21 @@ function hideGuideSheet() {
 function initGuideSheetListeners() {
   // Badge click - open sheet
   if (dom.guideBadgeBtn) {
+    console.log('Setting up listener for guideBadgeBtn');
     dom.guideBadgeBtn.addEventListener('click', (e) => {
+      console.log('guideBadgeBtn clicked');
+      e.preventDefault();
       e.stopPropagation();
       const role = dom.guideBadgeBtn.dataset.role;
+      console.log('Role:', role);
       if (role === 'app-download') {
         showAppDownloadModal();
       } else if (role === 'guide') {
         showGuideSheet();
       }
     });
+  } else {
+    console.warn('dom.guideBadgeBtn not found during listener init');
   }
 
   // Close button

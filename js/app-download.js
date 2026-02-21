@@ -5,8 +5,12 @@
 
 // Show App Download Modal
 export function showAppDownloadModal() {
+    console.log('showAppDownloadModal called');
     const modal = document.getElementById('app-download-modal');
-    if (!modal) return;
+    if (!modal) {
+        console.error('Modal #app-download-modal not found');
+        return;
+    }
 
     // Show modal with animation
     modal.classList.remove('hidden');
@@ -14,8 +18,11 @@ export function showAppDownloadModal() {
 
     // Explicitly set style to ensure it's visible
     modal.style.display = 'flex';
+    modal.style.opacity = '1';
+    modal.style.pointerEvents = 'auto';
     setTimeout(() => {
         modal.classList.add('active');
+        console.log('Modal active class added');
     }, 10);
 }
 
