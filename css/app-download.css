@@ -1,7 +1,7 @@
-/*
- * App Download Modal
- * Shows after booking completion
- */
+/* App Download Modal - Shows from Header or after Booking */
+#app-download-modal.hidden {
+    display: none !important;
+}
 
 /* Reuse overlay styles from telegram confirmation if possible, or define here */
 .app-download-overlay {

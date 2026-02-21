@@ -10,8 +10,10 @@ export function showAppDownloadModal() {
 
     // Show modal with animation
     modal.classList.remove('hidden');
+    modal.classList.remove('hidden-important'); // Just in case it's used
 
-    // Use a small timeout to allow display:block to apply before adding opacity class
+    // Explicitly set style to ensure it's visible
+    modal.style.display = 'flex';
     setTimeout(() => {
         modal.classList.add('active');
     }, 10);
@@ -24,9 +26,9 @@ export function hideAppDownloadModal() {
 
     modal.classList.remove('active');
 
-    // Wait for animation to finish before hiding
+    // Wait for animation to finish before truly hiding
     setTimeout(() => {
-        modal.classList.add('hidden');
+        modal.style.display = 'none';
     }, 300);
 }
 
