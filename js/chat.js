@@ -2298,7 +2298,7 @@ export function addRoomCarousel() {
         const action = btn.dataset.action;
         const roomId = btn.dataset.roomId;
         if (action === 'book') {
-          openRoomDetailView(roomId);
+          enterBookingFlow(roomId);
         } else if (action === 'ask') {
           enterRoomContext(roomId);
         }
@@ -3713,6 +3713,30 @@ export function enterRoomContext(roomId) {
   addMessage(`Чудово! Тепер я відповідатиму на питання про номер "${room.name}". Що саме вас цікавить?`, 'ai');
 }
 
+// Enter Booking Flow - pre-fill selected room and start AI data collection
+export function enterBookingFlow(roomId) {
+  const room = rooms.getRoom(roomId);
+  if (!room) return;
+
+  // Close any open detail views
+  closeRoomDetailView();
+
+  // Pre-populate selected room in booking state
+  bookingState.collectedData.selectedRoom = room.name;
+  if (bookingState.step === 'initial' || bookingState.step === 'suggesting_rooms') {
+    bookingState.step = 'collecting_name';
+  }
+  saveBookingState();
+
+  // Send a user message that triggers the booking funnel
+  const triggerMessage = `Я хочу забронировать номер «${room.name}»`;
+  addMessage(triggerMessage, 'user');
+  addToConversationHistory('user', triggerMessage);
+
+  // Let the AI agent take over and start the collection funnel
+  getAIResponse(triggerMessage);
+}
+
 // View Room Photos
 export function viewRoomPhotos(roomId) {
   const room = rooms.getRoom(roomId);
@@ -3733,11 +3757,21 @@ export function viewRoomPhotos(roomId) {
 export function initRoomDetailListeners() {
   const backBtn = document.getElementById('room-detail-back');
   const askBtn = document.getElementById('room-ask-question-btn');
+  const bookNowBtn = document.getElementById('room-book-now-btn');
   const viewPhotosBtn = document.getElementById('room-view-photos-btn');
   const detailView = document.getElementById('room-detail-view');
 
   if (backBtn) {
     backBtn.addEventListener('click', closeRoomDetailView);
+  }
+
+  if (bookNowBtn) {
+    bookNowBtn.addEventListener('click', () => {
+      const roomId = detailView?.dataset.roomId;
+      if (roomId) {
+        enterBookingFlow(roomId);
+      }
+    });
   }
 
   if (askBtn) {
