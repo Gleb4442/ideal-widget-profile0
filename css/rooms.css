@@ -811,7 +811,7 @@
 /* ===== Room Context Container ===== */
 #room-context-container {
   position: absolute;
-  top: 76px;
+  top: 81px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 25;
