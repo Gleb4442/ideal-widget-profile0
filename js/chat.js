@@ -1904,7 +1904,7 @@ export function autoResize() {
 // Update scroll button position based on footer height
 export function updateScrollButtonPosition() {
   const footerHeight = dom.chatFooter?.offsetHeight || 100;
-  const baseOffset = 4;
+  const baseOffset = 16;
   const bottomPosition = footerHeight + baseOffset;
   document.documentElement.style.setProperty('--scroll-btn-bottom', `${bottomPosition}px`);
 }
