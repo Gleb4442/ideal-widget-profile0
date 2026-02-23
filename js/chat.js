@@ -2068,7 +2068,7 @@ export function addMessage(text, sender) {
   wrapper.className = `message-wrapper ${sender} animate-fade-in`;
 
   const messageElement = document.createElement('div');
-  messageElement.className = `chat-message-${sender} text-base leading-relaxed`;
+  messageElement.className = `chat-message-${sender}`;
   messageElement.innerHTML = text.replace(/\n/g, '<br>');
 
   const timeElement = document.createElement('span');
