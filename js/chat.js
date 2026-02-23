@@ -2305,9 +2305,9 @@ export function addRoomCarousel() {
       });
     });
 
-    // Click on card opens detail view
+    // Click on card opens fullscreen photo gallery
     card.addEventListener('click', () => {
-      openRoomDetailView(room.id);
+      viewRoomPhotos(room.id);
     });
 
     carousel.appendChild(card);
