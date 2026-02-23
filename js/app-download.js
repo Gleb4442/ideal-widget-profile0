@@ -68,7 +68,7 @@ export function initAppDownloadModalListeners() {
     if (googlePlayBtn) {
         googlePlayBtn.addEventListener('click', (e) => {
             // e.preventDefault();
-            console.log('Google Play clicked');
+            console.log('Google Market clicked');
             // window.open('https://play.google.com/...', '_blank');
             hideAppDownloadModal();
         });

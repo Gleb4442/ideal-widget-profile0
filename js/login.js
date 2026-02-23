@@ -16,21 +16,20 @@ export function initLoginModal() {
   const closeSuccessBtn = document.getElementById('close-success-btn');
   const successMessageTitle = document.getElementById('success-message-title');
 
-  if (!loginBtn || !loginModal || !successModal) {
-    console.warn('Login modal elements not found');
+  if (!loginBtn) {
+    console.warn('Login trigger button not found');
     return;
   }
 
-  // Demo button - no action (App Store & Google Play icons)
-  loginBtn.addEventListener('click', (e) => {
-    // Prevent any other click handlers on this button
-    if (e) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-    }
-    // Demo button - no functionality
+  // Header center button is reserved for App Download modal (handled in chat.js)
+  if (loginBtn.dataset.role === 'app-download') {
     return;
-  }, { capture: true });
+  }
+
+  if (!loginModal || !successModal) {
+    console.warn('Login modal elements not found');
+    return;
+  }
 
   // Cancel login
   cancelLoginBtn.addEventListener('click', () => {
