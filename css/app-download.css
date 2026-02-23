@@ -5,7 +5,7 @@
 
 /* Reuse overlay styles from telegram confirmation if possible, or define here */
 .app-download-overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
