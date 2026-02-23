@@ -689,15 +689,6 @@
   background: #e5e7eb;
 }
 
-.room-action-btn-book {
-  background: #16a34a;
-  color: white;
-}
-
-.room-action-btn-book:hover {
-  background: #15803d;
-}
-
 /* ===== Photo Gallery (Fullscreen) ===== */
 .photo-gallery-overlay {
   position: fixed;
