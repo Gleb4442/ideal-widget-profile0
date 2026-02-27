@@ -3907,6 +3907,20 @@ export function initSpecialBookingListeners() {
     });
   }
 
+  // Contact Manager menu button
+  const contactManagerBtn = document.getElementById('contact-manager-btn');
+  if (contactManagerBtn) {
+    contactManagerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeHeaderMenu(); // Close menu
+
+      // Adding a visual message before starting the simulation
+      addMessage('Ми вже шукаємо вільного менеджера для вас. Будь ласка, зачекайте...', 'ai');
+
+      startOperatorSimulation();
+    });
+  }
+
   // History modal listeners
   const historyView = document.getElementById('history-view');
   const historyCloseBtn = document.getElementById('history-close-btn');
