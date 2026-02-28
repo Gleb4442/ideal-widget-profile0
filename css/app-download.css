@@ -29,7 +29,7 @@
 
 /* Custom Liquid Glass Styles (moved from inline HTML) */
 .liquid-bg {
-    background: linear-gradient(135deg, rgba(245, 246, 248, 0.8), rgba(255, 255, 255, 0.4));
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7));
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
 }
