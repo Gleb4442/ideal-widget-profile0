@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>App Store Redirection</title>
+    <!-- Material Symbols -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Tailwind Config -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#256af4",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(37, 106, 244, 0.10)',
+                        'glass-button': '0 4px 15px -3px rgba(37, 106, 244, 0.2), 0 10px 40px -5px rgba(37, 106, 244, 0.1), inset 0 0 20px rgba(255, 255, 255, 0.5)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom Liquid Glass Styles */
+        .liquid-bg {
+            background: linear-gradient(135deg, rgba(245, 246, 248, 0.8), rgba(255, 255, 255, 0.4));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .liquid-button {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(235, 242, 255, 0.6) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .liquid-button:hover {
+                transform: translateY(-2px);
+                background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(210, 225, 255, 0.8) 100%);
+                box-shadow: 0 10px 25px -5px rgba(37, 106, 244, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.8);
+            }
+        }
+
+        .liquid-button:active {
+            transform: translateY(0px);
+        }
+
+        /* Ambient background blobs for presentation */
+        .ambient-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            z-index: 0;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body
+    class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 h-screen overflow-hidden selection:bg-primary/20">
+    <!-- Screen Container -->
+    <div class="relative w-full h-full flex flex-col items-center justify-end">
+        <!-- Background Imagery (Simulated App Context) -->
+        <div class="absolute inset-0 w-full h-full z-0 overflow-hidden bg-slate-100">
+            <!-- Abstract colored blobs to show off glassmorphism -->
+            <div class="ambient-blob w-96 h-96 bg-primary/30 top-[-20%] left-[-10%]"></div>
+            <div class="ambient-blob w-80 h-80 bg-purple-300 top-[20%] right-[-20%]"></div>
+            <div class="ambient-blob w-[500px] h-[500px] bg-blue-200 bottom-[-10%] left-[20%]"></div>
+            <!-- Mock Content behind -->
+            <div class="absolute inset-0 flex flex-col p-6 opacity-40 mix-blend-multiply pointer-events-none">
+                <div class="h-8 w-2/3 bg-slate-300 rounded mb-4"></div>
+                <div class="h-4 w-full bg-slate-200 rounded mb-2"></div>
+                <div class="h-4 w-5/6 bg-slate-200 rounded mb-2"></div>
+                <div class="h-4 w-4/5 bg-slate-200 rounded mb-8"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="h-40 bg-slate-200 rounded-xl"></div>
+                    <div class="h-40 bg-slate-200 rounded-xl"></div>
+                    <div class="h-40 bg-slate-200 rounded-xl"></div>
+                    <div class="h-40 bg-slate-200 rounded-xl"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Dark Overlay -->
+        <div class="absolute inset-0 bg-black/20 backdrop-blur-sm z-10"></div>
+        <!-- Bottom Sheet -->
+        <div
+            class="relative z-20 w-full max-w-md mx-auto liquid-bg rounded-t-[2.5rem] shadow-glass border-t border-white/50 h-[65vh] flex flex-col animate-slide-up">
+            <!-- Handle -->
+            <div class="w-full flex justify-center pt-5 pb-2">
+                <div class="w-12 h-1.5 bg-slate-300/60 rounded-full backdrop-blur-md"></div>
+            </div>
+            <!-- Content Container -->
+            <div class="flex-1 flex flex-col items-center px-8 pt-6 pb-10">
+                <!-- Title -->
+                <h2
+                    class="text-3xl font-bold text-center text-slate-800 mb-10 tracking-tight leading-tight drop-shadow-sm">
+                    Перейти в<br />приложение
+                </h2>
+                <!-- Buttons Stack -->
+                <div class="w-full flex flex-col gap-6 flex-1 justify-center">
+                    <!-- App Store Button -->
+                    <button
+                        class="liquid-button group relative w-full h-20 rounded-full flex items-center px-6 shadow-glass-button">
+                        <div
+                            class="flex items-center justify-center w-12 h-12 bg-black text-white rounded-full mr-5 shadow-lg md:group-hover:scale-110 transition-transform duration-300">
+                            <!-- Apple Logo -->
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/App_Store_%28iOS%29.svg/512px-App_Store_%28iOS%29.svg.png"
+                                alt="App Store" class="w-full h-full object-cover rounded-full" />
+                        </div>
+                        <div class="flex flex-col items-start">
+                            <span class="text-xs text-slate-500 font-medium tracking-wide uppercase">Download on
+                                the</span>
+                            <span class="text-xl text-slate-800 font-bold tracking-tight">App Store</span>
+                        </div>
+                        <div
+                            class="absolute right-6 opacity-100 text-slate-400 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 md:text-primary">
+                            <span class="material-symbols-outlined">arrow_forward_ios</span>
+                        </div>
+                    </button>
+                    <!-- Google Play Button -->
+                    <button
+                        class="liquid-button group relative w-full h-20 rounded-full flex items-center px-6 shadow-glass-button">
+                        <div
+                            class="flex items-center justify-center w-12 h-12 bg-white rounded-full mr-5 shadow-lg border border-slate-100 md:group-hover:scale-110 transition-transform duration-300">
+                            <!-- Google Play Logo -->
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Google_Play_Arrow_logo.svg/512px-Google_Play_Arrow_logo.svg.png"
+                                alt="Google Play" class="w-6 h-6 object-contain" />
+                        </div>
+                        <div class="flex flex-col items-start">
+                            <span class="text-xs text-slate-500 font-medium tracking-wide uppercase">GET IT ON</span>
+                            <span class="text-xl text-slate-800 font-bold tracking-tight">Google Play</span>
+                        </div>
+                        <div
+                            class="absolute right-6 opacity-100 text-slate-400 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 md:text-primary">
+                            <span class="material-symbols-outlined">arrow_forward_ios</span>
+                        </div>
+                    </button>
+                </div>
+                <!-- Footer / Close -->
+                <div class="mt-8 mb-4">
+                    <button
+                        class="px-6 py-3 rounded-full text-slate-500 md:hover:text-slate-800 md:hover:bg-slate-200/50 transition-all text-sm font-bold tracking-wide uppercase">
+                        Закрыть
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

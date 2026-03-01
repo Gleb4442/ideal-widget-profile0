@@ -239,3 +239,76 @@
 .guide-item-arrow {
     color: #9ca3af;
 }
+
+/* Glassmorphism Styles for Menu Sheet */
+.glass-sheet {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.glass-item {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-button {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.material-symbols-rounded {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.glass-icon-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.glass-icon-bg {
+    position: absolute;
+    inset: 0;
+    opacity: 0.25;
+}
+
+.bg-tint-blue {
+    background-color: #3B82F6;
+}
+
+.bg-tint-purple {
+    background-color: #A855F7;
+}
+
+.bg-tint-orange {
+    background-color: #F97316;
+}
+
+.bg-tint-indigo {
+    background-color: #6366F1;
+}
+
+.bg-tint-green {
+    background-color: #22C55E;
+}
+
+.bg-tint-sky {
+    background-color: #0EA5E9;
+}
+
+/* Override menu sheet content style for new design */
+.menu-sheet-content.glass-sheet {
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
