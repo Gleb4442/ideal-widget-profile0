@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>75% Height Language Menu Light</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        premium: "#ffffff",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .glass-bg {
+                background: rgba(255, 255, 255, 0.85);
+                backdrop-filter: blur(40px);
+                -webkit-backdrop-filter: blur(40px);
+                border-top: 1px solid rgba(0, 0, 0, 0.05);
+            }
+            .glass-item-selected {
+                background: rgba(0, 0, 0, 0.03);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                border: 1px solid rgba(0, 0, 0, 0.06);
+            }
+            .flag-container {
+                @apply w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-gray-100/50;
+                /* Обводка убрана */
+            }
+            .bg-mesh {
+                background-color: #f8fafc;
+                background-image: 
+                    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
+                    radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.05) 0px, transparent 50%);
+            }
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            height: 100dvh;
+            overflow: hidden;
+            margin: 0;
+        }
+        .bottom-sheet {
+            height: 75dvh;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-mesh font-display flex items-end justify-center text-gray-900">
+    <div class="bottom-sheet w-full max-w-md glass-bg rounded-t-[2.5rem] shadow-[0_-8px_32px_0_rgba(0,0,0,0.08)] relative flex flex-col">
+        <div class="w-full flex justify-center pt-5 pb-2">
+            <div class="w-9 h-1.5 bg-gray-300 rounded-full"></div>
+        </div>
+        
+        <div class="px-8 pt-6 pb-4 text-center">
+            <h1 class="text-[22px] font-bold tracking-tight text-gray-900">Виберіть мову</h1>
+            <p class="text-gray-500 text-[15px] mt-1.5">Оберіть мову для інтерфейсу додатка</p>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto px-6 py-4 space-y-2">
+            <!-- Selected Option -->
+            <button class="w-full flex items-center justify-between p-4 glass-item-selected rounded-[22px] transition-all duration-300">
+                <div class="flex items-center space-x-4">
+                    <div class="flag-container text-2xl">
+                        🇺🇦
+                    </div>
+                    <span class="font-semibold text-[17px] text-gray-900">Українська</span>
+                </div>
+                <span class="material-symbols-outlined text-[#3B82F6] text-[24px]">check_circle</span>
+            </button>
+            
+            <!-- Other Options -->
+            <button class="w-full group flex items-center justify-between p-4 rounded-[22px] hover:bg-gray-100 transition-all duration-200">
+                <div class="flex items-center space-x-4">
+                    <div class="flag-container text-2xl opacity-90 group-hover:opacity-100 transition-opacity">
+                        🇺🇸
+                    </div>
+                    <span class="font-medium text-[17px] text-gray-600 group-hover:text-gray-900 transition-colors">English</span>
+                </div>
+            </button>
+            
+            <button class="w-full group flex items-center justify-between p-4 rounded-[22px] hover:bg-gray-100 transition-all duration-200">
+                <div class="flex items-center space-x-4">
+                    <div class="flag-container text-2xl opacity-90 group-hover:opacity-100 transition-opacity">
+                        🇵🇱
+                    </div>
+                    <span class="font-medium text-[17px] text-gray-600 group-hover:text-gray-900 transition-colors">Polski</span>
+                </div>
+            </button>
+            
+            <button class="w-full group flex items-center justify-between p-4 rounded-[22px] hover:bg-gray-100 transition-all duration-200">
+                <div class="flex items-center space-x-4">
+                    <div class="flag-container text-2xl opacity-90 group-hover:opacity-100 transition-opacity">
+                        🇩🇪
+                    </div>
+                    <span class="font-medium text-[17px] text-gray-600 group-hover:text-gray-900 transition-colors">Deutsch</span>
+                </div>
+            </button>
+            
+            <button class="w-full group flex items-center justify-between p-4 rounded-[22px] hover:bg-gray-100 transition-all duration-200">
+                <div class="flex items-center space-x-4">
+                    <div class="flag-container text-2xl opacity-90 group-hover:opacity-100 transition-opacity">
+                        🇫🇷
+                    </div>
+                    <span class="font-medium text-[17px] text-gray-600 group-hover:text-gray-900 transition-colors">Français</span>
+                </div>
+            </button>
+            
+            <button class="w-full group flex items-center justify-between p-4 rounded-[22px] hover:bg-gray-100 transition-all duration-200">
+                <div class="flex items-center space-x-4">
+                    <div class="flag-container text-2xl opacity-90 group-hover:opacity-100 transition-opacity">
+                        🇪🇸
+                    </div>
+                    <span class="font-medium text-[17px] text-gray-600 group-hover:text-gray-900 transition-colors">Español</span>
+                </div>
+            </button>
+            
+            <button class="w-full group flex items-center justify-between p-4 rounded-[22px] hover:bg-gray-100 transition-all duration-200">
+                <div class="flex items-center space-x-4">
+                    <div class="flag-container text-2xl opacity-90 group-hover:opacity-100 transition-opacity">
+                        🇮🇹
+                    </div>
+                    <span class="font-medium text-[17px] text-gray-600 group-hover:text-gray-900 transition-colors">Italiano</span>
+                </div>
+            </button>
+        </div>
+        
+        <div class="px-6 pb-12 pt-6">
+            <button class="w-full py-4 h-[56px] flex items-center justify-center bg-gray-100 hover:bg-gray-200 active:scale-[0.98] transition-all rounded-2xl text-gray-900 font-semibold text-[17px] border border-gray-200">
+                Закрити
+            </button>
+        </div>
+    </div>
+</body>
+</html>м

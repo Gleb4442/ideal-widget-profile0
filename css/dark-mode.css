@@ -624,24 +624,6 @@
 }
 
 /* ===== Language Sheet Modal Dark Mode ===== */
-#chat-window.dark-mode #language-sheet-modal > div {
-  background: #1f2937;
-}
-
-#chat-window.dark-mode #language-sheet-list .language-option {
-  border-bottom-color: #374151;
-  color: #e5e7eb;
-}
-
-#chat-window.dark-mode #language-sheet-list .language-option:hover {
-  background: #374151;
-}
-
-#chat-window.dark-mode #language-sheet-list .language-option.active {
-  background: rgba(var(--accent-rgb, 37, 99, 235), 0.2);
-  color: var(--accent-color);
-}
-
 /* ===== Guide Bottom Sheet Dark Mode ===== */
 #chat-window.dark-mode .guide-sheet-content {
   background: #1f2937;
@@ -664,7 +646,6 @@
 }
 
 /* ===== Confirmation Modals Dark Mode ===== */
-#chat-window.dark-mode #reset-confirmation-modal .modal-content,
 #chat-window.dark-mode #tg-confirmation-modal .modal-content,
 #chat-window.dark-mode #login-modal .modal-content,
 #chat-window.dark-mode #login-success-modal .modal-content {
@@ -672,14 +653,12 @@
   color: #f3f4f6;
 }
 
-#chat-window.dark-mode #reset-confirmation-modal .modal-text-secondary,
 #chat-window.dark-mode #tg-confirmation-modal .modal-text-secondary,
 #chat-window.dark-mode #login-modal .modal-text-secondary,
 #chat-window.dark-mode #login-success-modal .modal-text-secondary {
   color: #9ca3af;
 }
 
-#chat-window.dark-mode #reset-confirmation-modal h3,
 #chat-window.dark-mode #tg-confirmation-modal h3,
 #chat-window.dark-mode #login-modal h3,
 #chat-window.dark-mode #login-success-modal h3 {

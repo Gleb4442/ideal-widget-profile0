@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>История диалогов | AI Assistant</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        }
+        .liquid-glass-button {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px rgba(19, 91, 236, 0.08), inset 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light text-slate-900 font-display min-h-screen flex flex-col relative overflow-x-hidden">
+<header class="px-6 pt-16 pb-4 flex flex-col gap-6">
+<h1 class="text-4xl font-bold tracking-tight text-slate-900">История диалогов</h1>
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+</div>
+<input class="w-full h-14 pl-12 pr-4 bg-white/60 border border-white/50 rounded-full focus:ring-2 focus:ring-primary/20 focus:border-primary/40 focus:outline-none placeholder:text-slate-400 transition-all text-base" placeholder="Поиск по диалогам..." type="text"/>
+</div>
+</header>
+<main class="flex-1 px-4 space-y-3 pb-40">
+<div class="px-2 pb-2">
+<p class="text-xs font-bold uppercase tracking-widest text-slate-400">Сегодня</p>
+</div>
+<div class="liquid-glass rounded-[2.5rem] p-4 flex items-center gap-4 active:scale-[0.98] transition-transform cursor-pointer">
+<div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary fill-1">chat_bubble</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<h3 class="font-bold text-slate-900 truncate">Booking Inquiry</h3>
+<span class="text-[10px] font-medium text-slate-400 uppercase tracking-tighter shrink-0 mt-1">14:20</span>
+</div>
+<p class="text-sm text-slate-500 line-clamp-1 leading-relaxed">
+                    AI: Your flight is confirmed for tomorrow morning at 9:00 AM
+                </p>
+</div>
+</div>
+<div class="liquid-glass rounded-[2.5rem] p-4 flex items-center gap-4 active:scale-[0.98] transition-transform cursor-pointer">
+<div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary fill-1">chat_bubble</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<h3 class="font-bold text-slate-900 truncate">Code Review Helper</h3>
+<span class="text-[10px] font-medium text-slate-400 uppercase tracking-tighter shrink-0 mt-1">11:05</span>
+</div>
+<p class="text-sm text-slate-500 line-clamp-1 leading-relaxed">
+                    AI: I have analyzed the pull request. There are 3 suggestions
+                </p>
+</div>
+</div>
+<div class="px-2 pt-4 pb-2">
+<p class="text-xs font-bold uppercase tracking-widest text-slate-400">Вчера</p>
+</div>
+<div class="liquid-glass rounded-[2.5rem] p-4 flex items-center gap-4 active:scale-[0.98] transition-transform cursor-pointer">
+<div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary fill-1">chat_bubble</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<h3 class="font-bold text-slate-900 truncate">Customer Support</h3>
+<span class="text-[10px] font-medium text-slate-400 uppercase tracking-tighter shrink-0 mt-1">Вчера</span>
+</div>
+<p class="text-sm text-slate-500 line-clamp-1 leading-relaxed">
+                    Can you help me with my subscription renewal process?
+                </p>
+</div>
+</div>
+<div class="liquid-glass rounded-[2.5rem] p-4 flex items-center gap-4 active:scale-[0.98] transition-transform cursor-pointer">
+<div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary fill-1">chat_bubble</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<h3 class="font-bold text-slate-900 truncate">Creative Writing</h3>
+<span class="text-[10px] font-medium text-slate-400 uppercase tracking-tighter shrink-0 mt-1">Вчера</span>
+</div>
+<p class="text-sm text-slate-500 line-clamp-1 leading-relaxed">
+                    Once upon a time in a digital landscape far away
+                </p>
+</div>
+</div>
+<div class="liquid-glass rounded-[2.5rem] p-4 flex items-center gap-4 active:scale-[0.98] transition-transform cursor-pointer">
+<div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary fill-1">chat_bubble</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<h3 class="font-bold text-slate-900 truncate">Language Practice</h3>
+<span class="text-[10px] font-medium text-slate-400 uppercase tracking-tighter shrink-0 mt-1">Вчера</span>
+</div>
+<p class="text-sm text-slate-500 line-clamp-1 leading-relaxed">
+                    AI: Comment dit-on glass en francais?
+                </p>
+</div>
+</div>
+</main>
+<div class="fixed bottom-0 left-0 right-0 px-6 pb-10 pt-10 bg-gradient-to-t from-background-light via-background-light/90 to-transparent pointer-events-none z-40">
+<button class="liquid-glass-button w-full py-4 rounded-full flex items-center justify-center gap-3 active:scale-95 transition-all pointer-events-auto">
+<span class="material-symbols-outlined text-slate-700">arrow_back_ios_new</span>
+<span class="text-lg font-semibold text-slate-800">Назад</span>
+</button>
+</div>
+<div class="fixed top-[-10%] left-[-10%] w-[50%] h-[40%] bg-primary/5 blur-[120px] pointer-events-none -z-10"></div>
+<div class="fixed bottom-[-10%] right-[-10%] w-[50%] h-[40%] bg-primary/10 blur-[120px] pointer-events-none -z-10"></div>
+
+</body></html>

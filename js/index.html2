@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>New Chat Confirmation Light - Refined</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#F85149",
+                        "coral-red": "#FF5A5F",
+                        "soft-grey": "#8E8E93",
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'liquid-glass': '0 8px 32px 0 rgba(0, 0, 0, 0.08)',
+                        'button-glow': '0 10px 20px rgba(255, 90, 95, 0.3)',
+                        'inner-shine': 'inset 0 1px 1px rgba(255, 255, 255, 0.4)',
+                        'sheet-top': '0 -10px 40px rgba(0,0,0,0.05)',
+                    },
+                    backdropBlur: {
+                        'xs': '2px',
+                        'xl': '24px',
+                        'heavy': '40px',
+                    },
+                },
+            },
+        };
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .liquid-glass-sheet {
+                @apply bg-white/70 backdrop-blur-heavy border-t border-white/60 shadow-sheet-top rounded-t-[2.5rem];
+            }
+            .liquid-glass-button-primary {
+                @apply bg-coral-red text-white shadow-button-glow border-t border-white/30 relative overflow-hidden;
+                background: linear-gradient(180deg, #FF6B6F 0%, #FF5A5F 100%);
+            }
+            .liquid-glass-button-secondary {
+                @apply bg-black/5 hover:bg-black/10 text-slate-600 backdrop-blur-md transition-all border border-white/40;
+            }
+            .shine-overlay {
+                background: linear-gradient(
+                    to bottom,
+                    rgba(255, 255, 255, 0.4) 0%,
+                    rgba(255, 255, 255, 0) 60%
+                );
+            }
+            .liquid-circle-red {
+                background: linear-gradient(135deg, #FF6B6F 0%, #F85149 100%);
+                @apply shadow-[0_12px_24px_rgba(248,81,73,0.35),inset_0_1px_2px_rgba(255,255,255,0.4)];
+            }
+        }
+    </style>
+<style>
+        body {
+            min-height: 100dvh;
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-[#f2f2f7] min-h-screen flex flex-col font-sans antialiased relative overflow-hidden">
+<div class="absolute inset-0 z-0">
+<div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-100/50 via-white to-purple-100/50 opacity-100"></div>
+<div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-[120px] opacity-20"></div>
+<div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-coral-red rounded-full mix-blend-multiply filter blur-[120px] opacity-10"></div>
+<div class="w-full h-full flex flex-col p-6 opacity-30 blur-[4px] pointer-events-none select-none">
+<div class="h-16 w-full bg-white rounded-2xl mb-6 shadow-sm"></div>
+<div class="flex gap-4 mb-6">
+<div class="h-32 w-full bg-white rounded-2xl shadow-sm"></div>
+</div>
+<div class="h-64 w-full bg-white rounded-2xl mb-6 shadow-sm"></div>
+<div class="h-20 w-full bg-white rounded-2xl shadow-sm"></div>
+</div>
+</div>
+<div class="fixed inset-0 bg-black/5 backdrop-blur-[12px] z-20"></div>
+<div class="fixed inset-x-0 bottom-0 z-30 flex items-end justify-center w-full">
+<div class="liquid-glass-sheet w-full max-w-lg mx-auto pb-12 pt-4 px-6 flex flex-col items-center relative transform transition-transform duration-500 translate-y-0">
+<div class="w-10 h-1.5 bg-black/10 rounded-full mb-8 mx-auto"></div>
+<div class="flex flex-col items-center text-center w-full max-w-sm mx-auto">
+<div class="relative w-20 h-20 mb-6 flex items-center justify-center">
+<div class="absolute inset-0 bg-coral-red/30 rounded-full blur-2xl opacity-60"></div>
+<div class="relative w-16 h-16 liquid-circle-red rounded-full flex items-center justify-center border border-white/30">
+<div class="relative w-9 h-9 flex items-center justify-center">
+<svg class="w-full h-full text-white fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z"></path>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center pb-1">
+<svg class="w-4 h-4 text-coral-red fill-none stroke-[4] stroke-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 5V19M5 12H19" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</div>
+</div>
+<h2 class="text-2xl font-bold text-gray-900 mb-2 tracking-tight">
+                    Начать новый чат?
+                </h2>
+<p class="text-[16px] text-soft-grey mb-10 leading-snug font-normal px-6">
+                    Текущая история чата будет сохранена в истории диалогов
+                </p>
+<div class="w-full space-y-3">
+<button class="w-full h-14 rounded-2xl liquid-glass-button-primary font-bold text-[17px] tracking-wide active:scale-[0.98] transition-transform flex items-center justify-center">
+<span class="shine-overlay absolute inset-0 pointer-events-none"></span>
+<span class="relative z-10">Начать</span>
+</button>
+<button class="w-full h-14 rounded-2xl liquid-glass-button-secondary font-semibold text-[17px] tracking-wide active:opacity-70 transition-opacity">
+                        Отмена
+                    </button>
+</div>
+</div>
+<div class="h-6 w-full"></div>
+</div>
+</div>
+
+</body></html>

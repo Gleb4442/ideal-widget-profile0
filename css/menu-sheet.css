@@ -62,33 +62,6 @@
     visibility: visible;
 }
 
-#language-sheet-modal>div {
-    max-width: 420px;
-    margin: 0 auto;
-    max-height: 70%;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
-}
-
-#language-sheet-list .language-option {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px;
-    border-bottom: 1px solid #f3f4f6;
-}
-
-#language-sheet-list .language-option:last-child {
-    border-bottom: none;
-}
-
-#language-sheet-list .language-option.active {
-    color: var(--accent-color);
-    font-weight: 600;
-    background: #eff6ff;
-    border-radius: 12px;
-}
-
 /* Special Booking Icon Animation */
 .special-booking-icon-frame {
     position: relative;
@@ -116,6 +89,9 @@
     background: linear-gradient(45deg, #ff00cc, #3333ff, #00ccff, #ff00cc);
     background-size: 300% 300%;
     -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    mask:
         linear-gradient(#fff 0 0) content-box,
         linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;

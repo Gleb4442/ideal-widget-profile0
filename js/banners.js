@@ -98,16 +98,26 @@ function collapseBanner() {
 
 function showModal() {
   const modal = document.getElementById('tg-confirmation-modal');
-  if (!modal) return;
+  const sheet = document.getElementById('tg-modal-sheet');
+  if (!modal || !sheet) return;
 
-  modal.classList.add('active');
+  modal.classList.remove('hidden');
+  // Small delay to allow display:block to apply before animating transform
+  setTimeout(() => {
+    sheet.classList.remove('translate-y-full');
+  }, 10);
 }
 
 function hideModal() {
   const modal = document.getElementById('tg-confirmation-modal');
-  if (!modal) return;
+  const sheet = document.getElementById('tg-modal-sheet');
+  if (!modal || !sheet) return;
 
-  modal.classList.remove('active');
+  sheet.classList.add('translate-y-full');
+  // Wait for animation to finish before hiding
+  setTimeout(() => {
+    modal.classList.add('hidden');
+  }, 500);
 }
 
 // Set Telegram link (can be called from config or admin panel)

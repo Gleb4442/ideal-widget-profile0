@@ -1771,26 +1771,32 @@ function renderLanguageMenu() {
   list.innerHTML = '';
   languagesList.forEach(lang => {
     const btn = document.createElement('button');
-    btn.className = 'language-option w-full text-left p-4 hover:bg-gray-50 rounded-xl flex items-center justify-between transition-colors';
-
-    if (lang.code === currentLang) {
-      btn.classList.add('bg-blue-50', 'text-blue-600', 'font-medium', 'active');
-    } else {
-      btn.classList.add('text-gray-700');
-    }
-
     btn.dataset.lang = lang.code;
-    btn.innerHTML = `
-      <div class="flex items-center gap-3">
-        <span class="text-xl">${lang.flag}</span>
-        <span class="text-base">${lang.name}</span>
-      </div>
-      ${lang.code === currentLang ? `
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      ` : ''}
-    `;
+
+    const isSelected = lang.code === currentLang;
+
+    if (isSelected) {
+      btn.className = 'language-option w-full flex items-center justify-between p-4 bg-black/[0.03] backdrop-blur-[10px] border border-black/[0.06] rounded-[22px] transition-all duration-300 active';
+      btn.innerHTML = `
+        <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-gray-100/50 text-2xl">
+                ${lang.flag}
+            </div>
+            <span class="font-semibold text-[17px] text-gray-900">${lang.name}</span>
+        </div>
+        <span class="material-symbols-outlined text-[#3B82F6] text-[24px]">check_circle</span>
+      `;
+    } else {
+      btn.className = 'language-option w-full group flex items-center justify-between p-4 rounded-[22px] hover:bg-gray-100 transition-all duration-200';
+      btn.innerHTML = `
+        <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-gray-100/50 text-2xl opacity-90 group-hover:opacity-100 transition-opacity">
+                ${lang.flag}
+            </div>
+            <span class="font-medium text-[17px] text-gray-600 group-hover:text-gray-900 transition-colors">${lang.name}</span>
+        </div>
+      `;
+    }
     list.appendChild(btn);
   });
 }
@@ -4256,29 +4262,63 @@ function showHistoryModal() {
 
   if (history.length === 0) {
     list.innerHTML = `
-        <div class="text-center text-gray-400 mt-10">
+        <div class="text-center text-slate-400 mt-10">
           <p>Немає збережених діалогів</p>
         </div>
     `;
   } else {
-    history.forEach(session => {
-      const date = new Date(session.timestamp);
-      const dateStr = date.toLocaleDateString();
-      const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    // Generate dates headers
+    const today = new Date().toDateString();
 
-      const item = document.createElement('div');
-      item.className = 'p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition cursor-pointer flex justify-between items-center border border-gray-100';
-      item.innerHTML = `
-            <div>
-                <div class="font-medium text-gray-800 text-sm">${session.summary}</div>
-                <div class="text-xs text-gray-500">${dateStr} • ${timeStr}</div>
+    // Group history
+    const groupedHistory = history.reduce((acc, session) => {
+      const date = new Date(session.timestamp).toDateString();
+      if (!acc[date]) acc[date] = [];
+      acc[date].push(session);
+      return acc;
+    }, {});
+
+    Object.keys(groupedHistory).forEach(dateStr => {
+      // Add date header
+      const header = document.createElement('div');
+      header.className = 'px-2 pt-4 pb-2';
+
+      const isToday = dateStr === today;
+      const labelText = isToday ? 'Сегодня' : new Date(dateStr).toLocaleDateString();
+
+      header.innerHTML = `<p class="text-xs font-bold uppercase tracking-widest text-slate-400">${labelText}</p>`;
+      list.appendChild(header);
+
+      // Add items for this date
+      groupedHistory[dateStr].forEach(session => {
+        const timeStr = new Date(session.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        // Find last message snippet
+        let snippet = "Диалог сохранен";
+        if (session.messages && session.messages.length > 0) {
+          const lastMsg = session.messages[session.messages.length - 1];
+          snippet = (lastMsg.sender === 'ai' ? 'AI: ' : 'Вы: ') + (lastMsg.text.replace(/<[^>]*>?/gm, '') || snippet);
+        }
+
+        const item = document.createElement('div');
+        item.className = 'liquid-glass rounded-[2.5rem] p-4 flex items-center gap-4 active:scale-[0.98] transition-transform cursor-pointer mb-3';
+        item.innerHTML = `
+          <div class="w-14 h-14 rounded-full bg-[#135bec]/10 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[#135bec] fill-1">chat_bubble</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-start mb-0.5">
+              <h3 class="font-bold text-slate-900 truncate">${session.summary}</h3>
+              <span class="text-[10px] font-medium text-slate-400 uppercase tracking-tighter shrink-0 mt-1">${timeStr}</span>
             </div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
+            <p class="text-sm text-slate-500 line-clamp-1 leading-relaxed">
+                              ${snippet}
+                          </p>
+          </div>
         `;
-      item.addEventListener('click', () => openHistoryDetail(session));
-      list.appendChild(item);
+        item.addEventListener('click', () => openHistoryDetail(session));
+        list.appendChild(item);
+      });
     });
   }
 
