@@ -77,9 +77,7 @@ export const policyLinks = document.querySelectorAll('.policy-link');
 // Special Booking Elements
 export const headerMenuBtn = document.getElementById('header-menu-btn');
 export const headerMenuDropdown = document.getElementById('header-menu-dropdown');
-export const specialBookingBtn = document.getElementById('special-booking-btn');
 export const specialBookingStatus = document.getElementById('special-booking-status');
-export const cancelSpecialBookingBtn = document.getElementById('cancel-special-booking-btn');
 export const specialOfferCard = document.getElementById('special-offer-card');
 export const offerRoomImage = document.getElementById('offer-room-image');
 export const offerRoomName = document.getElementById('offer-room-name');

@@ -3955,20 +3955,7 @@ export function initSpecialBookingListeners() {
     });
   }
 
-  // Special Booking button in menu
-  if (dom.specialBookingBtn) {
-    dom.specialBookingBtn.addEventListener('click', () => {
-      closeHeaderMenu();
-      activateSpecialBookingMode('manual');
-    });
-  }
 
-  // Cancel Special Booking button
-  if (dom.cancelSpecialBookingBtn) {
-    dom.cancelSpecialBookingBtn.addEventListener('click', () => {
-      deactivateSpecialBookingMode();
-    });
-  }
 
   // Offer Confirm button
   if (dom.offerConfirmBtn) {
