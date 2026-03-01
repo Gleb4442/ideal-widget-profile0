@@ -185,7 +185,8 @@
 /* Dark mode support for input */
 .dark-mode .input-container-bg {
   background: #2d3748;
-  border-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  /* Added stroke for dark mode */
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
