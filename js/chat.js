@@ -131,18 +131,85 @@ let notificationState = {
   isWidgetOpen: false
 };
 
-// Short beep sound as base64 (generated programmatically)
+// Notification sound sources
+const NOTIFICATION_SOUND_SRC = './assets/sounds/telegram-like-message.mp3';
+const NOTIFICATION_SOUND_WAV_FALLBACK_SRC = './assets/sounds/telegram-like-message.wav';
+const NOTIFICATION_SOUND_VOLUME = 0.5;
+
+// Legacy beep fallback as base64
 const NOTIFICATION_SOUND_BASE64 = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1gZGtyd3V0d3R0dnd3d3Z1c3BtaWViXVpYV1hZW11fYWNlZ2lrbG1tbm5tbGtqaGZjYV5bWFVSUE5NTE1OT1FSVFZYWlxeYGJkZWdoaWpqa2tqamlnZWNhXltYVVJPTEpIR0ZGRkdISUpMTlBSVFZYWVtcXV5fYGBhYWFgX15dW1lXVVJQTUtJR0VDQUA/Pj4+P0BCREdJTE5RU1VXWVpbXF1dXl5eXV1cW1lXVVNQTktIRkRBPzw6ODc2NjY3ODo8P0JFSEtOUVNVV1laW1xcXFxcW1pZV1VTUE1KRkNAPTo3NTIwLy4uLi8wMjU4O0BESExQU1ZYWltcXFxcW1pZV1VRUE1JRkI+Ojc0MC4rKSgnJygpKy4xNTo+Q0hMUFRXWltcXV1cW1pYVlNQTEhEQDw4NC8rKCUjISAgISIkJyovNDpAR0xSVllcXl9fXl1bWFVRTUlEPzo1MC0pJSIgHh0cHB0eICMnLDI5P0dOVVteYWNjY2FfXFhTTklDPTcxKyYiHx0bGRkZGhsdICQpLzY9RU5WWF1hZGVlY2BeWlVPS0Q9Ni8pIx8cGRcWFRUWFxkbHiImLDM7RE5WWF1iZWdnZmRhXFdRSkM8NC0mIR0aGBYVFBQUFRcZHCAkKjE4QEpTW2BiZmlqamdjXldQSUA4MCkjHhsYFhQTEhISExUXGh0iJyw0PEZQWWBkaWxub21pZF5XTkU8MysjHhoXFRMSEREREhQWGRwgJSsyOkRNV19lamtvcnJwbGVdVEpBOC8oIh4aFxUSERAPEBAREhUYHCAkKjE5Q0xWX2VrbnJzdnVybl9oXFJHPTQsJR8bFxQREA8ODg8QEhQXGyAmLTU+R1FaZGlwdHd5enl2c2xlW1BFOzIqIx0ZFhQREA4ODQ0OEBIUGBsgJi03QUpVXmhudnp9f4CBgIB9eXRqX1VLPzUtJh8aFhMQDg0MDAwODxMXGx8mLTVARE9YYWpxd3yAgYKCgYB9eXZwaGBWTEM6MikhHBgVEQ4NCwsMDQ8RFRkaHyUqLjY8Q0pRWF5iZ21wcnNzcnFua2ZgWlVQSUI6NC0oIh0aFhQRDw0MCwsNDg8RFhkdIS0xOz1ESFFYX2RnaWlqaWhoZmRgXFdTTkhCPTcxLCckIB0ZFhMRDw4NDAwNDxESFRkdIC0zPD9ERktRVVheYGFhYWBfXVtZVlNPTEhEPzs1MCwpJCAeGxgWExIQDg0MDQ4QExQYHCEqNDg/P0RHTEtOUFFSUlJRUU9NTElGQ0A8OTYyLCooIx4cGhcVExIQDw0NDQ4PERQWGRweIyowNzg8PERERU1PUFBQTk5MS0lGQ0A9Ojc0MC0pJiMfHBoYFhQTEhEQEBARERMVFxobHiElKi8zNjk8PkFDRUdISEdGRUNBPz06NzQxLiomIh8cGhcWFBMSEREQEBESExQWGBocHyIlKSwtMDI0NTY3ODk5OTg3NjQyMC4rKCYjIB4cGhgWFBMSEREREREREhMUFRcZGhwfISMlJyorLC0uLi4uLS0sKyooJyUjIR8eHBoZFxYVFBMSEhISEhITFBUWGBkaHB0fISIjJCUmJiYmJiUlJCMiIR8eHRsaGRgXFhUUFBMTExMTFBQVFhcYGRobHB0eHyAgISEhISEgIB8fHh0cGxoZGBcWFhUVFRQUFBQVFRYWFxgZGhobHB0dHh4eHx8fHx8eHh0dHBsaGRkYFxcWFhYVFRUVFhYWFxcYGRkKGhscHBwdHR0dHR0dHBwcGxsaGhkZGBgXFxcWFhYWFhYWFxcXGBgZGRoKGxsbGxwcHBwcHBwbGxsaGhoZGRkYGBgXFxcXFxcXFxcXFxgYGBkZGRoaGhsbGxsbGxsaGhoaGRkZGRkYGBgYGBcXFxcXFxcYGBgYGRkZGRoaGhoaGhoaGhoZGRkZGRkZGBgYGBgYGBgXFxcYGBgYGBkZGRkZGRkaGhoaGhoZGRkZGRkZGRkYGBgYGBgYGBgYGBgYGBkZGRkZGRkZGRoaGhoaGhkZGRkZGRkZGRkYGBgYGBgYGBgYGBgYGRkZGRkZGRkZGRkZGRoaGhkZGRkZGRkZGRkZGBgYGBgYGBgYGBgZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGBgYGBgYGBgZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZ';
 
 let notificationAudio = null;
+let notificationWavFallbackAudio = null;
+let notificationBase64FallbackAudio = null;
+let notificationSoundSource = 'base64';
+
+function createNotificationAudio(src) {
+  const audio = new Audio(src);
+  audio.volume = NOTIFICATION_SOUND_VOLUME;
+  audio.preload = 'auto';
+  return audio;
+}
+
+function switchToBase64Fallback(reason) {
+  if (!notificationBase64FallbackAudio) return false;
+
+  notificationAudio = notificationBase64FallbackAudio;
+  notificationSoundSource = 'base64';
+  console.warn(`Notification sound fallback to base64: ${reason}`);
+  return true;
+}
+
+function switchToWavFallback(reason) {
+  if (!notificationWavFallbackAudio || notificationSoundSource !== 'mp3') return false;
+
+  notificationAudio = notificationWavFallbackAudio;
+  notificationSoundSource = 'wav';
+  console.warn(`Notification sound fallback to wav: ${reason}`);
+  return true;
+}
+
+function tryReplayCurrentNotificationAudio(contextLabel) {
+  if (!notificationAudio) return;
+
+  try {
+    notificationAudio.currentTime = 0;
+    notificationAudio.play().catch(e => {
+      console.log(`Sound playback blocked (${contextLabel}):`, e);
+    });
+  } catch (e) {
+    console.log(`Error replaying sound (${contextLabel}):`, e);
+  }
+}
 
 // Initialize notification sound
 function initNotificationSound() {
   try {
-    notificationAudio = new Audio(NOTIFICATION_SOUND_BASE64);
-    notificationAudio.volume = 0.5;
+    notificationBase64FallbackAudio = createNotificationAudio(NOTIFICATION_SOUND_BASE64);
+    notificationWavFallbackAudio = createNotificationAudio(NOTIFICATION_SOUND_WAV_FALLBACK_SRC);
+    notificationAudio = createNotificationAudio(NOTIFICATION_SOUND_SRC);
+    notificationSoundSource = 'mp3';
+
+    notificationAudio.addEventListener('error', () => {
+      if (switchToWavFallback('primary mp3 failed to load')) {
+        tryReplayCurrentNotificationAudio('wav fallback after mp3 load error');
+      } else {
+        switchToBase64Fallback('primary mp3 failed to load');
+      }
+    }, { once: true });
+
+    notificationWavFallbackAudio.addEventListener('error', () => {
+      switchToBase64Fallback('wav fallback failed to load');
+    }, { once: true });
+
+    notificationAudio.load();
+    notificationWavFallbackAudio.load();
+    notificationBase64FallbackAudio.load();
   } catch (e) {
     console.log('Could not initialize notification sound:', e);
+    if (!switchToBase64Fallback('notification sound initialization failed')) {
+      notificationAudio = null;
+    }
   }
 }
 
@@ -177,7 +244,17 @@ function playNotificationSound() {
   try {
     notificationAudio.currentTime = 0;
     notificationAudio.play().catch(e => {
-      // Sound playback may be blocked by browser autoplay policy
+      if (notificationSoundSource === 'mp3' && switchToWavFallback('mp3 playback error')) {
+        tryReplayCurrentNotificationAudio('wav fallback after mp3 playback error');
+        return;
+      }
+
+      if (notificationSoundSource !== 'base64' && switchToBase64Fallback('fallback playback error')) {
+        tryReplayCurrentNotificationAudio('base64 fallback after playback error');
+        return;
+      }
+
+      // Playback may still be blocked by browser autoplay policy
       console.log('Sound playback blocked:', e);
     });
   } catch (e) {
