@@ -539,6 +539,68 @@ function determineBookingStep(data) {
   return 'completed';
 }
 
+function normalizeBookingField(value, fallback = '—') {
+  if (value === null || value === undefined) return fallback;
+  const normalized = String(value).trim();
+  return normalized || fallback;
+}
+
+function formatBookingDateForMessage(dateValue) {
+  if (!dateValue) return '—';
+
+  const parsed = new Date(dateValue);
+  if (Number.isNaN(parsed.getTime())) {
+    return normalizeBookingField(dateValue);
+  }
+
+  const locale = currentLang === 'en' ? 'en-US' : 'ru-RU';
+  return parsed.toLocaleDateString(locale);
+}
+
+function buildInstantBookingConfirmationMessage() {
+  const data = bookingState.collectedData || {};
+  const offer = specialBookingState.currentOffer || {};
+
+  const guestName = normalizeBookingField(data.fullName);
+  const roomName = normalizeBookingField(data.selectedRoom || offer.room_name);
+  const checkIn = formatBookingDateForMessage(data.checkIn || offer.check_in);
+  const checkOut = formatBookingDateForMessage(data.checkOut || offer.check_out);
+  const guests = normalizeBookingField(data.guests || offer.guests);
+  const phone = normalizeBookingField(data.phone);
+  const email = normalizeBookingField(data.email);
+
+  return [
+    '✅ Бронирование подтверждено.',
+    '',
+    'Детали бронирования:',
+    `• Гость: ${guestName}`,
+    `• Номер: ${roomName}`,
+    `• Даты: ${checkIn} — ${checkOut}`,
+    `• Гостей: ${guests}`,
+    `• Телефон: ${phone}`,
+    `• Email: ${email}`,
+    '',
+    'Откройте приложение, чтобы продолжить подтверждение и управление бронированием.'
+  ].join('\n');
+}
+
+function triggerInstantBookingConfirmation({ forceMessage = false } = {}) {
+  const alreadyConfirmed = bookingState.hasActiveBooking && bookingState.step === 'completed';
+  const shouldShowMessage = forceMessage || !alreadyConfirmed;
+
+  bookingState.hasActiveBooking = true;
+  bookingState.step = 'completed';
+  saveBookingState();
+
+  if (shouldShowMessage) {
+    const message = buildInstantBookingConfirmationMessage();
+    addMessage(escapeHtml(message), 'ai');
+    addToConversationHistory('assistant', message);
+  }
+
+  showAppDownloadModal();
+}
+
 // Update booking state with extracted data
 function updateBookingStateWithExtracted(extractedData) {
   if (!extractedData) return;
@@ -579,15 +641,20 @@ function updateBookingStateWithExtracted(extractedData) {
     updated = true;
   }
 
+  // Update selected room if available
+  const extractedRoom = extractedData.selectedRoom || extractedData.roomName || extractedData.room_name;
+  if (extractedRoom && !bookingState.collectedData.selectedRoom) {
+    bookingState.collectedData.selectedRoom = extractedRoom;
+    updated = true;
+  }
+
   // Update step based on collected data
   const previousStep = bookingState.step;
   bookingState.step = determineBookingStep(bookingState.collectedData);
 
   // If booking is completed, mark as active
   if (bookingState.step === 'completed' && previousStep !== 'completed') {
-    bookingState.hasActiveBooking = true;
-    console.log('✅ Booking completed! hasActiveBooking set to true');
-    showAppDownloadModal();
+    triggerInstantBookingConfirmation();
   }
 
   if (updated) {
@@ -4211,21 +4278,12 @@ function confirmSpecialOffer() {
     );
     if (matchedRoom) {
       bookingState.collectedData.selectedRoom = matchedRoom.name;
-      saveBookingState();
+    } else {
+      bookingState.collectedData.selectedRoom = specialBookingState.currentOffer.room_name;
     }
   }
 
-  // Mark booking as active
-  bookingState.hasActiveBooking = true;
-  bookingState.step = 'completed';
-  saveBookingState();
-
-  addMessage('Отлично! Ваше бронирование подтверждено. Наш менеджер свяжется с вами в ближайшее время для финального подтверждения деталей. Благодарим за выбор нашего отеля!', 'ai');
-
-  // Show App Download modal
-  setTimeout(() => {
-    showAppDownloadModal();
-  }, 800);
+  triggerInstantBookingConfirmation({ forceMessage: true });
 
   // Deactivate special mode
   deactivateSpecialBookingMode(true);

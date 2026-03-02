@@ -717,31 +717,28 @@
     </div>
 
     <!-- History Detail View (Internal Overlay) -->
-    <div id="history-detail-view" class="hidden absolute inset-0 z-[70] bg-white flex flex-col animate-slide-in-right">
-      <div class="px-6 py-4 border-b border-gray-100 flex items-center bg-white flex-shrink-0">
-        <button id="history-detail-back" class="p-2 -ml-2 rounded-full hover:bg-gray-100 transition text-gray-600 mr-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-        </button>
-        <div>
-          <h3 id="history-detail-date" class="font-bold text-slate-800 text-base"></h3>
-          <p id="history-detail-time" class="text-sm text-slate-500"></p>
-        </div>
-      </div>
+    <div id="history-detail-view"
+      class="hidden absolute inset-0 z-[70] bg-[#f8f9fa] flex flex-col animate-slide-in-right overflow-hidden">
+      <!-- Floating Back Button -->
+      <button id="history-detail-back"
+        class="absolute top-6 left-6 z-50 p-3 rounded-full bg-white/80 backdrop-blur-md shadow-lg border border-white/50 text-slate-600 hover:text-slate-900 active:scale-90 transition-all">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
 
-      <div id="history-detail-messages" class="flex-1 p-6 overflow-y-auto flex flex-col bg-[#f8f9fa] space-y-4">
+      <div id="history-detail-messages" class="flex-1 p-6 pt-24 pb-32 overflow-y-auto flex flex-col space-y-4">
         <!-- Messages will be injected here -->
       </div>
 
-      <footer class="p-6 bg-white border-t border-gray-100 flex-shrink-0">
+      <!-- Floating Continue Button -->
+      <div class="absolute bottom-8 left-0 right-0 flex justify-center px-6 z-50 pointer-events-none">
         <button id="continue-chat-btn"
-          class="w-full py-4 rounded-full bg-[#135bec] text-white text-lg font-bold hover:bg-[#114ecb] transition-all flex items-center justify-center gap-3 shadow-[0_8px_20px_rgba(19,91,236,0.2)] active:scale-95">
-          <span class="material-symbols-outlined">chat_bubble</span>
+          class="pointer-events-auto px-8 py-4 rounded-full bg-[#135bec] text-white text-lg font-bold hover:bg-[#114ecb] transition-all shadow-[0_12px_24px_rgba(19,91,236,0.3)] active:scale-95 whitespace-nowrap">
           <span>Продолжить чат</span>
         </button>
-      </footer>
+      </div>
     </div>
 
     <!-- Reset Confirmation Modal -->
