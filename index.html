@@ -677,8 +677,8 @@
 
     <!-- History View (Internal) -->
     <div id="history-view"
-      class="hidden absolute inset-0 z-[60] bg-[#f6f6f8] text-slate-900 font-display flex flex-col overflow-x-hidden animate-fade-in">
-      <header class="px-6 pt-16 pb-4 flex flex-col gap-6">
+      class="hidden absolute inset-0 z-[60] bg-[#f6f6f8] text-slate-900 font-display flex flex-col overflow-hidden animate-fade-in">
+      <header class="px-6 pt-16 pb-4 flex flex-col gap-6 flex-shrink-0">
         <h1 class="text-4xl font-bold tracking-tight text-slate-900">История диалогов</h1>
         <div class="relative group">
           <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
@@ -691,22 +691,21 @@
         </div>
       </header>
 
-      <main id="history-list" class="flex-1 px-4 space-y-3 pb-40 overflow-y-auto w-full">
+      <main id="history-list" class="flex-1 px-4 space-y-3 overflow-y-auto w-full">
         <!-- History items will be injected here -->
         <div class="text-center text-slate-400 mt-10">
           <p>Немає збережених діалогів</p>
         </div>
       </main>
 
-      <div
-        class="absolute bottom-0 left-0 right-0 px-6 pb-10 pt-10 bg-gradient-to-t from-[#f6f6f8] via-[#f6f6f8]/90 to-transparent pointer-events-none z-40">
+      <footer class="px-6 pb-10 pt-6 bg-gradient-to-t from-[#f6f6f8] to-[#f6f6f8]/0 z-40 flex-shrink-0">
         <button id="history-close-btn"
-          class="w-full py-4 rounded-full flex items-center justify-center gap-3 active:scale-95 transition-all pointer-events-auto shadow-[0_8px_32px_rgba(19,91,236,0.08),inset_0_0_15px_rgba(255,255,255,0.5)] bg-white/70 border border-white/50"
+          class="w-full py-4 rounded-full flex items-center justify-center gap-3 active:scale-95 transition-all shadow-[0_8px_32px_rgba(19,91,236,0.08),inset_0_0_15px_rgba(255,255,255,0.5)] bg-white/70 border border-white/50"
           style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
           <span class="material-symbols-outlined text-slate-700">arrow_back_ios_new</span>
           <span class="text-lg font-semibold text-slate-800">Назад</span>
         </button>
-      </div>
+      </footer>
 
       <div
         class="absolute top-[-10%] left-[-10%] w-[50%] h-[40%] bg-[#135bec]/5 blur-[120px] pointer-events-none -z-10">
