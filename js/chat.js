@@ -3200,19 +3200,18 @@ export function addRoomContextBadge(room) {
   badge.innerHTML = `
     ${room.mainPhoto
       ? `<img src="${room.mainPhoto}" alt="${room.name}">`
-      : `<div style="width:40px;height:40px;background:#f3f4f6;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      : `<div class="room-context-placeholder">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           </svg>
         </div>`
     }
-    <div class="room-context-badge-info">
+    <div class="room-context-details">
       <div class="room-context-badge-name">${room.name}</div>
-      <div class="room-context-badge-hint">Обговорюємо цей номер</div>
-    </div>
-    <div class="room-context-actions">
-      <button class="room-context-action room-context-book" data-action="book">Забронювати</button>
-      <button class="room-context-action room-context-change" data-action="change">Інший номер</button>
+      <div class="room-context-actions">
+        <button class="room-context-action room-context-book" data-action="book">Забронювати</button>
+        <button class="room-context-action room-context-change" data-action="change">Інший номер</button>
+      </div>
     </div>
   `;
 

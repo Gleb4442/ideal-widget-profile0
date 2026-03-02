@@ -835,50 +835,56 @@
 .room-context-badge {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
+  gap: 16px;
+  padding: 12px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border-radius: 24px;
+  border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  width: calc(100% - 32px);
+  margin: 0 auto;
 }
 
-.room-context-badge img {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+.room-context-badge img,
+.room-context-placeholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
   object-fit: cover;
   flex-shrink: 0;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.room-context-badge-info {
+.room-context-placeholder {
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.room-context-details {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   min-width: 0;
 }
 
 .room-context-badge-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: #111827;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 2px;
-}
-
-.room-context-badge-hint {
-  font-size: 11px;
-  color: #6b7280;
 }
 
 /* Action buttons */
 .room-context-actions {
   display: flex;
-  gap: 6px;
-  flex-shrink: 0;
+  gap: 8px;
 }
 
 .room-context-action {
