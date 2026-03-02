@@ -1,40 +1,51 @@
-/* Bottom Sheet Menu */
-#menu-bottom-sheet.hidden {
-    opacity: 0;
-    pointer-events: none;
+/* Bottom Sheet Modals - Base Container (Overlay) */
+#menu-bottom-sheet,
+#language-sheet-modal,
+#guide-bottom-sheet {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0);
     visibility: hidden;
+    pointer-events: none;
+    transition: background-color 0.4s ease, visibility 0.4s ease;
+}
+
+#menu-bottom-sheet.hidden,
+#language-sheet-modal.hidden,
+#guide-bottom-sheet.hidden {
+    display: flex !important;
+    /* Override Tailwind's display: none to allow transitions */
+    background-color: rgba(0, 0, 0, 0);
+    visibility: hidden;
+    pointer-events: none;
 }
 
 #menu-bottom-sheet:not(.hidden),
 #language-sheet-modal:not(.hidden),
 #guide-bottom-sheet:not(.hidden) {
-    opacity: 1;
-    pointer-events: auto;
+    background-color: rgba(0, 0, 0, 0.3);
     visibility: visible;
+    pointer-events: auto;
+}
+
+#language-sheet-modal {
+    z-index: 60;
 }
 
 .premium-sheet-transition {
     transition: transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1), opacity 0.4s ease !important;
+    will-change: transform, opacity;
 }
 
-.standard-modal-overlay {
-    transition: opacity 0.4s ease !important;
-}
-
+/* Transitions managed via JS and .premium-sheet-transition */
 .menu-sheet-content {
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
     max-width: 420px;
-    /* Match widget width on desktop */
     margin: 0 auto;
-}
-
-/* Slide up animation */
-#menu-bottom-sheet:not(.hidden) .menu-sheet-content {
-    transform: translateY(0);
-}
-
-#menu-bottom-sheet.hidden .menu-sheet-content {
-    transform: translateY(100%);
 }
 
 .menu-sheet-btn {
@@ -145,10 +156,7 @@
     visibility: visible;
 }
 
-#guide-bottom-sheet:not(.hidden) .guide-sheet-content {
-    transform: translateY(0);
-}
-
+/* Transitions managed via JS and .premium-sheet-transition */
 .guide-sheet-content {
     max-width: 420px;
     margin: 0 auto;
