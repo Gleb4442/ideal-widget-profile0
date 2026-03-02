@@ -5,38 +5,28 @@
 
 // Show App Download Modal
 export function showAppDownloadModal() {
-    console.log('showAppDownloadModal called');
     const modal = document.getElementById('app-download-modal');
-    if (!modal) {
-        console.error('Modal #app-download-modal not found');
-        return;
-    }
+    const content = document.getElementById('app-download-content-inner');
+    if (!modal || !content) return;
 
-    // Show modal with animation
     modal.classList.remove('hidden');
-    modal.classList.remove('hidden-important'); // Just in case it's used
-
-    // Explicitly set style to ensure it's visible
-    modal.style.display = 'flex';
-    modal.style.opacity = '1';
-    modal.style.pointerEvents = 'auto';
+    // Allow for display: flex to take effect before removing translate
     setTimeout(() => {
-        modal.classList.add('active');
-        console.log('Modal active class added');
+        content.classList.remove('translate-y-full');
     }, 10);
 }
 
 // Hide App Download Modal
 export function hideAppDownloadModal() {
     const modal = document.getElementById('app-download-modal');
-    if (!modal) return;
+    const content = document.getElementById('app-download-content-inner');
+    if (!modal || !content) return;
 
-    modal.classList.remove('active');
-
+    content.classList.add('translate-y-full');
     // Wait for animation to finish before truly hiding
     setTimeout(() => {
-        modal.style.display = 'none';
-    }, 300);
+        modal.classList.add('hidden');
+    }, 400);
 }
 
 // Initialize App Download Modal Listeners

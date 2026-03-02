@@ -1,6 +1,22 @@
 /* App Download Modal - Shows from Header or after Booking */
-#app-download-modal.hidden {
-    display: none !important;
+#app-download-modal {
+    position: absolute;
+    inset: 0;
+    z-index: 1000;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    background: rgba(0, 0, 0, 0);
+    visibility: hidden;
+    pointer-events: none;
+    transition: background-color 0.4s ease, visibility 0.4s ease;
+}
+
+#app-download-modal:not(.hidden) {
+    background: rgba(0, 0, 0, 0.4);
+    visibility: visible;
+    pointer-events: auto;
 }
 
 /* Base overlay from the new design */
@@ -52,15 +68,7 @@
     transform: translateY(0px) !important;
 }
 
-/* Adjustments for animation relying on active class */
-.app-download-overlay>div {
-    transform: translateY(100%);
-    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-.app-download-overlay.active>div {
-    transform: translateY(0);
-}
+/* Transitions managed via JS and .premium-sheet-transition in index.html */
 
 /* Dark Mode Overrides for new modal elements */
 .dark-mode .liquid-bg {
