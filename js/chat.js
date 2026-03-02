@@ -4072,7 +4072,7 @@ function toggleHeaderMenu() {
       setTimeout(() => content.classList.remove('translate-y-full'), 10);
     } else {
       content.classList.add('translate-y-full');
-      setTimeout(() => menuSheet.classList.add('hidden'), 500);
+      setTimeout(() => menuSheet.classList.add('hidden'), 400);
     }
   }
 }
@@ -4085,7 +4085,7 @@ function closeHeaderMenu() {
     content.classList.add('translate-y-full');
     setTimeout(() => {
       menuSheet.classList.add('hidden');
-    }, 500);
+    }, 400);
   } else if (menuSheet) {
     menuSheet.classList.add('hidden');
   }
@@ -4103,7 +4103,7 @@ function toggleLanguageSubmenu() {
       setTimeout(() => content.classList.remove('translate-y-full'), 10);
     } else {
       content.classList.add('translate-y-full');
-      setTimeout(() => langSheet.classList.add('hidden'), 500);
+      setTimeout(() => langSheet.classList.add('hidden'), 400);
     }
   }
 }
@@ -4116,7 +4116,7 @@ function closeLanguageSubmenu() {
     content.classList.add('translate-y-full');
     setTimeout(() => {
       langSheet.classList.add('hidden');
-    }, 500);
+    }, 400);
   } else if (langSheet) {
   }
 }
@@ -4571,7 +4571,7 @@ function hideGuideSheet() {
   content.classList.add('translate-y-full');
   setTimeout(() => {
     sheet.classList.add('hidden');
-  }, 500);
+  }, 400);
 }
 
 // Initialize Guide Sheet Listeners
