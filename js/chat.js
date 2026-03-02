@@ -4321,7 +4321,7 @@ function showHistoryModal() {
         }
 
         const item = document.createElement('div');
-        item.className = 'liquid-glass rounded-[2.5rem] p-4 flex items-center gap-4 active:scale-[0.98] transition-transform cursor-pointer mb-3';
+        item.className = 'bg-white shadow-sm border border-gray-100 rounded-[2.5rem] p-4 flex items-center gap-4 active:scale-[0.98] transition-transform cursor-pointer mb-3';
         item.innerHTML = `
           <div class="w-14 h-14 rounded-full bg-[#135bec]/10 flex items-center justify-center shrink-0">
             <span class="material-symbols-outlined text-[#135bec] fill-1">chat_bubble</span>
