@@ -113,6 +113,7 @@ export const guideBottomSheet = document.getElementById('guide-bottom-sheet');
 export const guideSheetClose = document.getElementById('guide-sheet-close');
 export const guideTelegramBtn = document.getElementById('guide-telegram-btn');
 export const guideItemsList = document.getElementById('guide-items-list');
+export const historySearchInput = document.getElementById('history-search-input');
 
 // Mutable reference for typing indicator (needs re-assignment after reset)
 export let typingIndicator = document.getElementById('typing-indicator');

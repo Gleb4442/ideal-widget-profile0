@@ -4272,26 +4272,52 @@ function archiveCurrentSession() {
 // Show History Modal (now internal view)
 function showHistoryModal() {
   const view = document.getElementById('history-view');
+  if (!view) return;
+
+  // Initialize search listener if not already done
+  if (dom.historySearchInput && !dom.historySearchInput.dataset.searchInited) {
+    dom.historySearchInput.addEventListener('input', (e) => {
+      renderHistoryItems(e.target.value);
+    });
+    dom.historySearchInput.dataset.searchInited = 'true';
+  }
+
+  // Clear search on open
+  if (dom.historySearchInput) dom.historySearchInput.value = '';
+
+  renderHistoryItems();
+  view.classList.remove('hidden');
+}
+
+// Render history items based on search query
+function renderHistoryItems(searchQuery = '') {
   const list = document.getElementById('history-list');
-  if (!view || !list) return;
+  if (!list) return;
 
-  // Load history
   const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-
   list.innerHTML = '';
 
-  if (history.length === 0) {
+  // Filter history if search query is present
+  const query = searchQuery.toLowerCase().trim();
+  const filteredHistory = query === ''
+    ? history
+    : history.filter(session => {
+      const inSummary = session.summary && session.summary.toLowerCase().includes(query);
+      const inMessages = session.messages && session.messages.some(msg =>
+        msg.text && msg.text.toLowerCase().includes(query)
+      );
+      return inSummary || inMessages;
+    });
+
+  if (filteredHistory.length === 0) {
     list.innerHTML = `
         <div class="text-center text-slate-400 mt-10">
-          <p>Немає збережених діалогів</p>
+          <p>${query === '' ? 'Немає збережених діалогів' : 'За вашим запитом нічого не знайдено'}</p>
         </div>
     `;
   } else {
-    // Generate dates headers
     const today = new Date().toDateString();
-
-    // Group history
-    const groupedHistory = history.reduce((acc, session) => {
+    const groupedHistory = filteredHistory.reduce((acc, session) => {
       const date = new Date(session.timestamp).toDateString();
       if (!acc[date]) acc[date] = [];
       acc[date].push(session);
@@ -4299,21 +4325,15 @@ function showHistoryModal() {
     }, {});
 
     Object.keys(groupedHistory).forEach(dateStr => {
-      // Add date header
       const header = document.createElement('div');
       header.className = 'px-2 pt-4 pb-2';
-
       const isToday = dateStr === today;
       const labelText = isToday ? 'Сегодня' : new Date(dateStr).toLocaleDateString();
-
       header.innerHTML = `<p class="text-xs font-bold uppercase tracking-widest text-slate-400">${labelText}</p>`;
       list.appendChild(header);
 
-      // Add items for this date
       groupedHistory[dateStr].forEach(session => {
         const timeStr = new Date(session.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-        // Find last message snippet
         let snippet = "Диалог сохранен";
         if (session.messages && session.messages.length > 0) {
           const lastMsg = session.messages[session.messages.length - 1];
@@ -4332,8 +4352,8 @@ function showHistoryModal() {
               <span class="text-[10px] font-medium text-slate-400 uppercase tracking-tighter shrink-0 mt-1">${timeStr}</span>
             </div>
             <p class="text-sm text-slate-500 line-clamp-1 leading-relaxed">
-                              ${snippet}
-                          </p>
+              ${snippet}
+            </p>
           </div>
         `;
         item.addEventListener('click', () => openHistoryDetail(session));
@@ -4341,8 +4361,6 @@ function showHistoryModal() {
       });
     });
   }
-
-  view.classList.remove('hidden');
 }
 
 // Open History Detail View
