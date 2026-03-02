@@ -9,9 +9,8 @@
   bottom: 110px;
   right: 20px;
   width: 280px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.4);
+  /* blur removed */
   border-radius: 16px;
   padding: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -20,9 +19,9 @@
   visibility: hidden;
   transform: translateY(20px) scale(0.9);
   transition: opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
-              transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
-              bottom 0.4s ease,
-              visibility 0s 0.6s;
+    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+    bottom 0.4s ease,
+    visibility 0s 0.6s;
   z-index: 999;
 }
 
@@ -36,9 +35,9 @@
   visibility: visible;
   transform: translateY(0) scale(1);
   transition: opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
-              transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
-              bottom 0.4s ease,
-              visibility 0s 0s;
+    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+    bottom 0.4s ease,
+    visibility 0s 0s;
 }
 
 /* Close Button - HIDDEN (using unified close button) */
