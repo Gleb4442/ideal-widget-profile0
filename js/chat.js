@@ -4030,7 +4030,6 @@ export function initSpecialBookingListeners() {
   if (historyView && historyCloseBtn) {
     historyCloseBtn.addEventListener('click', () => {
       historyView.classList.add('hidden');
-      toggleHeaderMenu(); // Return to menu
     });
   }
 
