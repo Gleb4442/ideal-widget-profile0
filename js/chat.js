@@ -1923,21 +1923,23 @@ function renderLanguageMenu() {
       btn.className = 'language-option active';
       btn.innerHTML = `
         <div class="flex items-center space-x-4">
-            <div class="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-gray-100/50 text-2xl">
+            <div class="w-[52px] h-[52px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-50 text-3xl shadow-sm border border-gray-100/50">
                 ${lang.flag}
             </div>
-            <span class="font-semibold text-[17px] text-gray-900">${lang.name}</span>
+            <span class="font-bold text-[17px] text-gray-900">${lang.name}</span>
         </div>
-        <span class="material-symbols-outlined text-[#3B82F6] text-[24px]">check_circle</span>
+        <div class="w-6 h-6 rounded-full bg-[#3B82F6] flex items-center justify-center shadow-sm">
+            <span class="material-symbols-rounded text-white text-[18px]">check</span>
+        </div>
       `;
     } else {
       btn.className = 'language-option';
       btn.innerHTML = `
         <div class="flex items-center space-x-4">
-            <div class="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-gray-100/50 text-2xl opacity-90 group-hover:opacity-100 transition-opacity">
+            <div class="w-[52px] h-[52px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-50/50 text-3xl opacity-90 group-hover:opacity-100 transition-opacity">
                 ${lang.flag}
             </div>
-            <span class="font-medium text-[17px] text-gray-600 group-hover:text-gray-900 transition-colors">${lang.name}</span>
+            <span class="font-medium text-[17px] text-gray-700 group-hover:text-gray-900 transition-colors">${lang.name}</span>
         </div>
       `;
     }
