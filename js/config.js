@@ -84,7 +84,8 @@ export const translations = {
     analyzingNeeds: "Analyzing your needs...",
     finalizingDetails: "Finalizing details...",
     generatingOffer: "Generating personal offer...",
-    newChat: "New Chat"
+    newChat: "New Chat",
+    contactManager: "Manager"
   },
   zh: {
     buttonText: "与酒店聊天",
@@ -105,7 +106,8 @@ export const translations = {
     analyzingNeeds: "正在分析您的需求...",
     finalizingDetails: "正在最终确定细节...",
     generatingOffer: "正在生成个人优惠...",
-    newChat: "新聊天"
+    newChat: "新聊天",
+    contactManager: "经理"
   },
   hi: {
     buttonText: "होटल से चैट करें",
@@ -126,7 +128,8 @@ export const translations = {
     analyzingNeeds: "आपकी जरूरतों का विश्लेषण कर रहे हैं...",
     finalizingDetails: "अंतिम विवरण तैयार कर रहे हैं...",
     generatingOffer: "व्यक्तिगत प्रस्ताव तैयार कर रहे हैं...",
-    newChat: "नई बातचीत"
+    newChat: "नई बातचीत",
+    contactManager: "प्रबंधक"
   },
   es: {
     buttonText: "Chat con el Hotel",
@@ -147,7 +150,8 @@ export const translations = {
     analyzingNeeds: "Analizando tus necesidades...",
     finalizingDetails: "Finalizando detalles...",
     generatingOffer: "Generando oferta personal...",
-    newChat: "Nueva conversación"
+    newChat: "Nueva conversación",
+    contactManager: "Gerente"
   },
   ar: {
     buttonText: "الدردشة مع الفندق",
@@ -168,7 +172,8 @@ export const translations = {
     analyzingNeeds: "جاري تحليل احتياجاتك...",
     finalizingDetails: "جاري إنهاء التفاصيل...",
     generatingOffer: "جاري إنشاء العرض الشخصي...",
-    newChat: "محادثة جديدة"
+    newChat: "محادثة جديدة",
+    contactManager: "مدير"
   },
   fr: {
     buttonText: "Chat avec l'Hôtel",
@@ -189,7 +194,8 @@ export const translations = {
     analyzingNeeds: "Analyse de vos besoins...",
     finalizingDetails: "Finalisation des détails...",
     generatingOffer: "Génération de l'offre personnelle...",
-    newChat: "Nouvelle discussion"
+    newChat: "Nouvelle discussion",
+    contactManager: "Directeur"
   },
   bn: {
     buttonText: "হোটেলের সাথে চ্যাট করুন",
@@ -210,7 +216,8 @@ export const translations = {
     analyzingNeeds: "আপনার চাহিদা বিশ্লেষণ করা হচ্ছে...",
     finalizingDetails: "চূড়ান্ত বিবরণ তৈরি করা হচ্ছে...",
     generatingOffer: "ব্যক্তিগত অফার তৈরি করা হচ্ছে...",
-    newChat: "নতুন চ্যাট"
+    newChat: "নতুন চ্যাট",
+    contactManager: "ম্যানেজার"
   },
   pt: {
     buttonText: "Chat com o Hotel",
@@ -231,7 +238,8 @@ export const translations = {
     analyzingNeeds: "Analisando suas necessidades...",
     finalizingDetails: "Finalizando detalhes...",
     generatingOffer: "Gerando oferta pessoal...",
-    newChat: "Novo chat"
+    newChat: "Novo chat",
+    contactManager: "Gerente"
   },
   ru: {
     buttonText: "Чат с отелем",
@@ -252,7 +260,8 @@ export const translations = {
     analyzingNeeds: "Учитываем ваши потребности...",
     finalizingDetails: "Уточняем финальные детали...",
     generatingOffer: "Формируем персональное предложение...",
-    newChat: "Новый чат"
+    newChat: "Новый чат",
+    contactManager: "Менеджер"
   },
   id: {
     buttonText: "Chat dengan Hotel",
@@ -273,7 +282,8 @@ export const translations = {
     analyzingNeeds: "Menganalisis kebutuhan Anda...",
     finalizingDetails: "Menyelesaikan detail...",
     generatingOffer: "Membuat penawaran pribadi...",
-    newChat: "Obrolan Baru"
+    newChat: "Obrolan Baru",
+    contactManager: "Manajer"
   },
   uk: {
     buttonText: "Чат з готелем",
@@ -294,7 +304,8 @@ export const translations = {
     analyzingNeeds: "Враховуємо ваші потреби...",
     finalizingDetails: "Уточнюємо фінальні деталі...",
     generatingOffer: "Формуємо персональну пропозицію...",
-    newChat: "Новий чат"
+    newChat: "Новий чат",
+    contactManager: "Менеджер"
   },
   de: {
     buttonText: "Chat mit Hotel",
@@ -336,7 +347,8 @@ export const translations = {
     analyzingNeeds: "ニーズを分析中...",
     finalizingDetails: "詳細を確定中...",
     generatingOffer: "個人オファーを作成中...",
-    newChat: "新しいチャット"
+    newChat: "新しいチャット",
+    contactManager: "マネージャー"
   },
   ko: {
     buttonText: "호텔과 채팅",
@@ -357,7 +369,8 @@ export const translations = {
     analyzingNeeds: "귀하의 필요 분석 중...",
     finalizingDetails: "세부 사항 마무리 중...",
     generatingOffer: "개인 제안 생성 중...",
-    newChat: "새 채팅"
+    newChat: "새 채팅",
+    contactManager: "매니저"
   },
   it: {
     buttonText: "Chat con Hotel",
@@ -378,7 +391,8 @@ export const translations = {
     analyzingNeeds: "Analisi delle tue esigenze...",
     finalizingDetails: "Finalizzazione dettagli...",
     generatingOffer: "Creazione offerta personale...",
-    newChat: "Nuova chat"
+    newChat: "Nuova chat",
+    contactManager: "Manager"
   },
   tr: {
     buttonText: "Otel ile Sohbet",
@@ -399,7 +413,8 @@ export const translations = {
     analyzingNeeds: "İhtiyaçlarınız analiz ediliyor...",
     finalizingDetails: "Detaylar tamamlanıyor...",
     generatingOffer: "Kişisel teklif oluşturuluyor...",
-    newChat: "Yeni sohbet"
+    newChat: "Yeni sohbet",
+    contactManager: "Yönetici"
   },
   nl: {
     buttonText: "Chat met Hotel",
@@ -420,7 +435,8 @@ export const translations = {
     analyzingNeeds: "Uw behoeften analyseren...",
     finalizingDetails: "Details afronden...",
     generatingOffer: "Persoonlijk aanbod maken...",
-    newChat: "Nieuwe chat"
+    newChat: "Nieuwe chat",
+    contactManager: "Manager"
   },
   pl: {
     buttonText: "Czat z Hotelem",
@@ -441,7 +457,8 @@ export const translations = {
     analyzingNeeds: "Analiza potrzeb...",
     finalizingDetails: "Finalizacja szczegółów...",
     generatingOffer: "Tworzenie osobistej oferty...",
-    newChat: "Nowy czat"
+    newChat: "Nowy czat",
+    contactManager: "Menedżer"
   },
   vi: {
     buttonText: "Trò chuyện với Khách sạn",
@@ -462,7 +479,8 @@ export const translations = {
     analyzingNeeds: "Đang phân tích nhu cầu của bạn...",
     finalizingDetails: "Đang hoàn thiện chi tiết...",
     generatingOffer: "Đang tạo ưu đãi cá nhân...",
-    newChat: "Trò chuyện mới"
+    newChat: "Trò chuyện mới",
+    contactManager: "Quản lý"
   },
   th: {
     buttonText: "แชทกับโรงแรม",
@@ -483,7 +501,8 @@ export const translations = {
     analyzingNeeds: "กำลังวิเคราะห์ความต้องการของคุณ...",
     finalizingDetails: "กำลังสรุปรายละเอียด...",
     generatingOffer: "กำลังสร้างข้อเสนอส่วนตัว...",
-    newChat: "แชทใหม่"
+    newChat: "แชทใหม่",
+    contactManager: "ผู้จัดการ"
   },
   // Legacy support for Ukrainian
   ua: {
