@@ -1776,7 +1776,7 @@ function renderLanguageMenu() {
     const isSelected = lang.code === currentLang;
 
     if (isSelected) {
-      btn.className = 'language-option w-full flex items-center justify-between p-4 bg-black/[0.03] backdrop-blur-[10px] border border-black/[0.06] rounded-[22px] transition-all duration-300 active';
+      btn.className = 'language-option active';
       btn.innerHTML = `
         <div class="flex items-center space-x-4">
             <div class="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-gray-100/50 text-2xl">
@@ -1787,7 +1787,7 @@ function renderLanguageMenu() {
         <span class="material-symbols-outlined text-[#3B82F6] text-[24px]">check_circle</span>
       `;
     } else {
-      btn.className = 'language-option w-full group flex items-center justify-between p-4 rounded-[22px] hover:bg-gray-100 transition-all duration-200';
+      btn.className = 'language-option';
       btn.innerHTML = `
         <div class="flex items-center space-x-4">
             <div class="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-gray-100/50 text-2xl opacity-90 group-hover:opacity-100 transition-opacity">
@@ -4065,15 +4065,28 @@ export function initSpecialBookingListeners() {
 // Toggle header menu (Bottom Sheet)
 function toggleHeaderMenu() {
   const menuSheet = document.getElementById('menu-bottom-sheet');
-  if (menuSheet) {
-    menuSheet.classList.toggle('hidden');
+  const content = document.getElementById('menu-sheet-content-inner');
+  if (menuSheet && content) {
+    if (menuSheet.classList.contains('hidden')) {
+      menuSheet.classList.remove('hidden');
+      setTimeout(() => content.classList.remove('translate-y-full'), 10);
+    } else {
+      content.classList.add('translate-y-full');
+      setTimeout(() => menuSheet.classList.add('hidden'), 500);
+    }
   }
 }
 
 // Close header menu
 function closeHeaderMenu() {
   const menuSheet = document.getElementById('menu-bottom-sheet');
-  if (menuSheet) {
+  const content = document.getElementById('menu-sheet-content-inner');
+  if (menuSheet && content) {
+    content.classList.add('translate-y-full');
+    setTimeout(() => {
+      menuSheet.classList.add('hidden');
+    }, 500);
+  } else if (menuSheet) {
     menuSheet.classList.add('hidden');
   }
   // Also close language submenu
@@ -4083,16 +4096,28 @@ function closeHeaderMenu() {
 // Toggle language submenu (Sheet)
 function toggleLanguageSubmenu() {
   const langSheet = document.getElementById('language-sheet-modal');
-  if (langSheet) {
-    langSheet.classList.toggle('hidden');
+  const content = document.getElementById('language-sheet-content-inner');
+  if (langSheet && content) {
+    if (langSheet.classList.contains('hidden')) {
+      langSheet.classList.remove('hidden');
+      setTimeout(() => content.classList.remove('translate-y-full'), 10);
+    } else {
+      content.classList.add('translate-y-full');
+      setTimeout(() => langSheet.classList.add('hidden'), 500);
+    }
   }
 }
 
 // Close language submenu
 function closeLanguageSubmenu() {
   const langSheet = document.getElementById('language-sheet-modal');
-  if (langSheet) {
-    langSheet.classList.add('hidden');
+  const content = document.getElementById('language-sheet-content-inner');
+  if (langSheet && content) {
+    content.classList.add('translate-y-full');
+    setTimeout(() => {
+      langSheet.classList.add('hidden');
+    }, 500);
+  } else if (langSheet) {
   }
 }
 
@@ -4526,29 +4551,27 @@ function renderGuideItems() {
 // Show guide sheet
 function showGuideSheet() {
   const sheet = dom.guideBottomSheet;
-  if (!sheet) return;
+  const content = document.getElementById('guide-sheet-content-inner');
+  if (!sheet || !content) return;
 
   renderGuideItems();
   sheet.classList.remove('hidden');
-
-  // Animate in
-  setTimeout(() => {
-    const content = sheet.querySelector('.guide-sheet-content');
-    if (content) content.style.transform = 'translateY(0)';
-  }, 10);
+  setTimeout(() => content.classList.remove('translate-y-full'), 10);
 }
 
 // Hide guide sheet
 function hideGuideSheet() {
   const sheet = dom.guideBottomSheet;
-  if (!sheet) return;
+  const content = document.getElementById('guide-sheet-content-inner');
+  if (!sheet || !content) {
+    if (sheet) sheet.classList.add('hidden');
+    return;
+  }
 
-  const content = sheet.querySelector('.guide-sheet-content');
-  if (content) content.style.transform = 'translateY(100%)';
-
+  content.classList.add('translate-y-full');
   setTimeout(() => {
     sheet.classList.add('hidden');
-  }, 300);
+  }, 500);
 }
 
 // Initialize Guide Sheet Listeners
