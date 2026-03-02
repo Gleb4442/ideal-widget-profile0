@@ -207,1096 +207,1104 @@
     </div>
 
     <div class="admin-control">
-      <span class="admin-label">Анимация кнопки</span>
+      <span class="admin-label">Режим "У додатку"</span>
       <div class="flex items-center justify-between">
-        <span class="text-sm text-gray-600">Включена</span>
-        <label class="switch"><input type="checkbox" id="animation-toggle" checked><span class="slider"></span></label>
+        <span class="text-sm text-gray-600">Сховати кнопку переходу</span>
+        <label class="switch"><input type="checkbox" id="in-app-toggle"><span class="slider"></span></label>
       </div>
     </div>
 
     <div class="admin-control">
-      <span class="admin-label">Темна тема</span>
-      <div class="flex items-center justify-between">
-        <span class="text-sm text-gray-600">Увімкнути</span>
-        <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider"></span></label>
-      </div>
-    </div>
 
-    <hr class="border-gray-200 my-4">
-
-    <!-- Operator Mode Section -->
-    <div class="admin-control">
-      <span class="admin-label">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline mr-1">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
-        Режим оператора
-      </span>
-      <div class="flex items-center justify-between">
-        <span class="text-sm text-gray-600">Імітація оператора</span>
-        <label class="switch"><input type="checkbox" id="operator-mode-toggle"><span class="slider"></span></label>
-      </div>
-    </div>
-
-    <div id="operator-settings" class="operator-settings hidden">
       <div class="admin-control">
-        <span class="admin-label text-xs">Ім'я оператора</span>
-        <input type="text" id="operator-name-input" class="admin-input" placeholder="Ім'я оператора" value="Денис">
+        <span class="admin-label">Темна тема</span>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-600">Увімкнути</span>
+          <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider"></span></label>
+        </div>
       </div>
+
+      <hr class="border-gray-200 my-4">
+
+      <!-- Operator Mode Section -->
       <div class="admin-control">
-        <span class="admin-label text-xs">Фото оператора</span>
-        <label class="file-upload-btn">
-          Обрати фото
-          <input type="file" id="operator-photo-input" accept="image/*" style="display: none;">
-        </label>
-        <div id="operator-photo-preview" class="operator-photo-preview mt-2"></div>
-      </div>
-    </div>
-
-    <hr class="border-gray-200 my-3">
-
-    <!-- Restaurant Menu Section -->
-    <div class="admin-control">
-      <span class="admin-label">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" class="inline mr-1">
-          <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
-          <path d="M7 2v20"></path>
-          <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
-        </svg>
-        Меню ресторану
-      </span>
-      <div class="flex items-center justify-between">
-        <span class="text-sm text-gray-600">Включити</span>
-        <label class="switch">
-          <input type="checkbox" id="menu-toggle">
-          <span class="slider"></span>
-        </label>
-      </div>
-    </div>
-
-    <div id="menu-admin-settings" class="mt-2 hidden">
-      <div class="admin-control">
-        <span class="admin-label text-xs">Тип меню</span>
-        <div class="flex gap-2 mb-3">
-          <label class="flex-1">
-            <input type="radio" name="menu-type" value="link" id="menu-type-link" checked class="mr-1">
-            <span class="text-xs">Посилання</span>
-          </label>
-          <label class="flex-1">
-            <input type="radio" name="menu-type" value="pdf" id="menu-type-pdf" class="mr-1">
-            <span class="text-xs">PDF файл</span>
-          </label>
-        </div>
-
-        <!-- Link input -->
-        <div id="menu-link-input-container" class="mb-3">
-          <label class="text-xs text-gray-600 block mb-1">Посилання на меню</label>
-          <input type="url" id="menu-link-input" placeholder="https://example.com/menu"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-        </div>
-
-        <!-- PDF upload -->
-        <div id="menu-pdf-input-container" class="mb-3 hidden">
-          <label class="text-xs text-gray-600 block mb-1">Завантажити PDF</label>
-          <div class="flex gap-2">
-            <input type="file" id="menu-pdf-input" accept=".pdf" class="hidden">
-            <button id="menu-pdf-upload-btn"
-              class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">
-              Вибрати файл
-            </button>
-            <button id="menu-pdf-clear-btn"
-              class="px-3 py-2 border border-red-300 text-red-600 rounded-lg text-sm hover:bg-red-50 transition hidden">
-              Очистити
-            </button>
-          </div>
-          <div id="menu-pdf-filename" class="text-xs text-gray-500 mt-1"></div>
-        </div>
-
-        <button id="menu-save-btn"
-          class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
-          Зберегти меню
-        </button>
-      </div>
-    </div>
-
-    <!-- Rooms Section -->
-    <div class="rooms-section">
-      <div class="rooms-section-header">
-        <span class="rooms-section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
-          Номери
-        </span>
-        <button id="add-room-btn" class="add-room-btn">
+        <span class="admin-label">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          Додати
-        </button>
-      </div>
-      <div id="rooms-admin-grid" class="rooms-admin-grid">
-        <!-- Rooms will be rendered here -->
-      </div>
-    </div>
-
-    <!-- Services Section -->
-    <div class="services-section">
-      <div class="services-section-header">
-        <span class="services-section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path
-              d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-            </path>
-          </svg>
-          Додаткові послуги
-        </span>
-        <button id="add-service-btn" class="add-service-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          Додати
-        </button>
-      </div>
-      <div id="services-admin-grid" class="services-admin-grid">
-        <!-- Services will be rendered here -->
-      </div>
-    </div>
-
-    <!-- Bookings Section -->
-    <div class="bookings-section">
-      <div class="bookings-section-header">
-        <span class="bookings-section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-            <line x1="16" y1="2" x2="16" y2="6"></line>
-            <line x1="8" y1="2" x2="8" y2="6"></line>
-            <line x1="3" y1="10" x2="21" y2="10"></line>
-          </svg>
-          Бронювання
-        </span>
-        <div class="bookings-controls">
-          <button id="generate-test-bookings-btn" class="add-room-btn" title="Згенерувати тестові дані">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
-            </svg>
-            Тестові
-          </button>
-        </div>
-      </div>
-
-      <!-- Search Bar -->
-      <div class="bookings-search">
-        <input type="text" id="booking-search-input" class="admin-input" placeholder="Пошук за ПІБ...">
-      </div>
-
-      <!-- Stats -->
-      <div class="bookings-stats">
-        <div class="booking-stat">
-          <span class="stat-label">Всього:</span>
-          <span id="stat-total" class="stat-value">0</span>
-        </div>
-        <div class="booking-stat">
-          <span class="stat-label">Активні:</span>
-          <span id="stat-active" class="stat-value">0</span>
-        </div>
-        <div class="booking-stat">
-          <span class="stat-label">Скасовані:</span>
-          <span id="stat-cancelled" class="stat-value">0</span>
-        </div>
-      </div>
-
-      <!-- Bookings List -->
-      <div id="bookings-list" class="bookings-list">
-        <!-- Bookings will be rendered here -->
-      </div>
-    </div>
-  </div>
-
-  <!-- WIDGET BUTTON -->
-  <button id="chat-widget-button" class="shape-pill" aria-label="Відкрити чат">
-    <div id="widget-icon-container">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white"
-        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-      </svg>
-    </div>
-    <span class="chat-button-text">Чат с отелем</span>
-    <span id="chat-notification-badge">1</span>
-  </button>
-
-  <!-- FREE CANCELLATION BANNER -->
-  <div id="cancellation-banner" class="cancellation-banner">
-    <div class="cancellation-content">
-      <span class="material-symbols-outlined cancellation-icon" style="font-variation-settings: 'FILL' 1;">shield</span>
-      <span class="cancellation-text">Бесплатная отмена</span>
-    </div>
-    <button id="cancellation-close-btn" class="cancellation-close-btn">
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
-  </div>
-
-  <!-- CHAT WINDOW -->
-  <div id="chat-window">
-    <!-- Floating Header Wrapper with Gradient Blur -->
-    <div class="chat-header-wrapper">
-      <!-- Unified Header Bar -->
-      <div class="chat-header-unified accent-bg text-white shadow-lg rounded-full">
-        <!-- Block 1: Identity (Logo + Name) -->
-        <div class="header-identity flex items-center gap-3">
-          <div class="relative">
-            <div id="hotel-logo-container"
-              class="w-10 h-10 rounded-full bg-white accent-text flex items-center justify-center shadow-sm overflow-hidden">
-              <span class="text-xl font-bold accent-text">H</span>
-            </div>
-            <div id="online-indicator"
-              class="absolute bottom-0 right-0 w-[12px] h-[12px] bg-green-400 border-2 accent-border rounded-full"
-              title="Онлайн"></div>
-          </div>
-          <div>
-            <h3 id="hotel-name-text" class="text-base font-bold leading-tight tracking-wide">Hilton</h3>
-          </div>
-        </div>
-
-        <!-- App Store & Google Play Buttons (integrated) -->
-        <button id="guide-badge-btn" class="header-guide-btn" title="Download App" data-role="app-download">
-          <!-- App Store Icon -->
-          <svg width="22" height="22" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
-            <linearGradient id="appstore_grad" gradientUnits="userSpaceOnUse" x1="400" y1="800" x2="400" y2="0"
-              gradientTransform="matrix(1 0 0 -1 0 800)">
-              <stop offset="0" stop-color="#18BFFB" />
-              <stop offset="1" stop-color="#2072F3" />
-            </linearGradient>
-            <path fill="url(#appstore_grad)"
-              d="M638.4,0H161.6C72.3,0,0,72.3,0,161.6v476.9C0,727.7,72.3,800,161.6,800h476.9c89.2,0,161.6-72.3,161.6-161.6V161.6C800,72.3,727.7,0,638.4,0z" />
-            <path fill="#FFFFFF"
-              d="M396.6,183.8l16.2-28c10-17.5,32.3-23.4,49.8-13.4s23.4,32.3,13.4,49.8L319.9,462.4h112.9c36.6,0,57.1,43,41.2,72.8H143c-20.2,0-36.4-16.2-36.4-36.4c0-20.2,16.2-36.4,36.4-36.4h92.8l118.8-205.9l-37.1-64.4c-10-17.5-4.1-39.6,13.4-49.8c17.5-10,39.6-4.1,49.8,13.4L396.6,183.8h0z M256.2,572.7l-35,60.7c-10,17.5-32.3,23.4-49.8,13.4S148,614.5,158,597l26-45C213.4,542.9,237.3,549.9,256.2,572.7z M557.6,462.6h94.7c20.2,0,36.4,16.2,36.4,36.4c0,20.2-16.2,36.4-36.4,36.4h-52.6l35.5,61.6c10,17.5,4.1,39.6-13.4,49.8c-17.5,10-39.6,4.1-49.8-13.4c-59.8-103.7-104.7-181.3-134.5-233c-30.5-52.6-8.7-105.4,12.8-123.3C474.2,318.1,509.9,380,557.6,462.6z" />
-          </svg>
-
-          <!-- Google Play Icon -->
-          <svg width="22" height="22" viewBox="30 336.7 120.9 129.2" xmlns="http://www.w3.org/2000/svg">
-            <path fill="#FFD400"
-              d="M119.2,421.2c15.3-8.4,27-14.8,28-15.3c3.2-1.7,6.5-6.2,0-9.7c-2.1-1.1-13.4-7.3-28-15.3l-20.1,20.2L119.2,421.2z" />
-            <path fill="#FF3333"
-              d="M99.1,401.1l-64.2,64.7c1.5,0.2,3.2-0.2,5.2-1.3c4.2-2.3,48.8-26.7,79.1-43.3L99.1,401.1L99.1,401.1z" />
-            <path fill="#48FF48" d="M99.1,401.1l20.1-20.2c0,0-74.6-40.7-79.1-43.1c-1.7-1-3.6-1.3-5.3-1L99.1,401.1z" />
-            <path fill="#3BCCFF"
-              d="M99.1,401.1l-64.3-64.3c-2.6,0.6-4.8,2.9-4.8,7.6c0,7.5,0,107.5,0,113.8c0,4.3,1.7,7.4,4.9,7.7L99.1,401.1z" />
-          </svg>
-        </button>
-
-        <!-- Status Pill (Special Booking / Operator Mode) -->
-        <div id="header-status-pill" class="header-status-pill hidden">
-          <div class="header-status-spinner"></div>
-          <span class="header-status-text">Загрузка...</span>
-        </div>
-
-        <!-- Block 2: Controls (Menu + Close) -->
-        <div class="header-controls flex items-center gap-1">
-          <!-- Header Menu (Hamburger) -->
-          <button id="header-menu-btn"
-            class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white" title="Меню">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="3" y1="12" x2="21" y2="12"></line>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-          </button>
-          <button id="chat-close-button"
-            class="text-white/80 hover:text-white hover:bg-white/10 rounded-full p-2 transition ml-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Room Context Container (Fixed) -->
-    <div id="room-context-container" class="hidden"></div>
-
-
-
-    <!-- Operator Mode Status Container -->
-    <div id="operator-status-bar" class="operator-status-bar hidden">
-      <div class="status-indicator">
-        <div class="operator-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline mr-1">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
-        </div>
-        <div class="operator-status-spinner"></div>
-        <span class="operator-status-text">Ищем специалиста...</span>
-      </div>
-    </div>
-
-    <!-- Messages Container -->
-    <div id="chat-messages" class="flex-1 p-4 overflow-y-auto flex flex-col bg-white relative">
-      <div id="typing-indicator" class="hidden" aria-hidden="true">
-        <div class="typing-indicator-bubble">
-          <span></span><span></span><span></span>
+          Режим оператора
+        </span>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-600">Імітація оператора</span>
+          <label class="switch"><input type="checkbox" id="operator-mode-toggle"><span class="slider"></span></label>
         </div>
       </div>
-    </div>
 
-    <!-- Room Detail View -->
-    <div id="room-detail-view" class="room-detail-view">
-      <div class="room-detail-header">
-        <button id="room-detail-back" class="room-detail-back">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="15 18 9 12 15 6"></polyline>
+      <div id="operator-settings" class="operator-settings hidden">
+        <div class="admin-control">
+          <span class="admin-label text-xs">Ім'я оператора</span>
+          <input type="text" id="operator-name-input" class="admin-input" placeholder="Ім'я оператора" value="Денис">
+        </div>
+        <div class="admin-control">
+          <span class="admin-label text-xs">Фото оператора</span>
+          <label class="file-upload-btn">
+            Обрати фото
+            <input type="file" id="operator-photo-input" accept="image/*" style="display: none;">
+          </label>
+          <div id="operator-photo-preview" class="operator-photo-preview mt-2"></div>
+        </div>
+      </div>
+
+      <hr class="border-gray-200 my-3">
+
+      <!-- Restaurant Menu Section -->
+      <div class="admin-control">
+        <span class="admin-label">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" class="inline mr-1">
+            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+            <path d="M7 2v20"></path>
+            <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
           </svg>
-        </button>
-        <span class="room-detail-title">Деталі номера</span>
+          Меню ресторану
+        </span>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-600">Включити</span>
+          <label class="switch">
+            <input type="checkbox" id="menu-toggle">
+            <span class="slider"></span>
+          </label>
+        </div>
       </div>
-      <div class="room-detail-content">
-        <img id="room-detail-image" class="room-detail-image" src="" alt="Room photo">
-        <div class="room-detail-info">
-          <h2 id="room-detail-name" class="room-detail-name"></h2>
-          <div class="room-detail-meta">
-            <span id="room-detail-area" class="room-detail-meta-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+
+      <div id="menu-admin-settings" class="mt-2 hidden">
+        <div class="admin-control">
+          <span class="admin-label text-xs">Тип меню</span>
+          <div class="flex gap-2 mb-3">
+            <label class="flex-1">
+              <input type="radio" name="menu-type" value="link" id="menu-type-link" checked class="mr-1">
+              <span class="text-xs">Посилання</span>
+            </label>
+            <label class="flex-1">
+              <input type="radio" name="menu-type" value="pdf" id="menu-type-pdf" class="mr-1">
+              <span class="text-xs">PDF файл</span>
+            </label>
+          </div>
+
+          <!-- Link input -->
+          <div id="menu-link-input-container" class="mb-3">
+            <label class="text-xs text-gray-600 block mb-1">Посилання на меню</label>
+            <input type="url" id="menu-link-input" placeholder="https://example.com/menu"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+          </div>
+
+          <!-- PDF upload -->
+          <div id="menu-pdf-input-container" class="mb-3 hidden">
+            <label class="text-xs text-gray-600 block mb-1">Завантажити PDF</label>
+            <div class="flex gap-2">
+              <input type="file" id="menu-pdf-input" accept=".pdf" class="hidden">
+              <button id="menu-pdf-upload-btn"
+                class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">
+                Вибрати файл
+              </button>
+              <button id="menu-pdf-clear-btn"
+                class="px-3 py-2 border border-red-300 text-red-600 rounded-lg text-sm hover:bg-red-50 transition hidden">
+                Очистити
+              </button>
+            </div>
+            <div id="menu-pdf-filename" class="text-xs text-gray-500 mt-1"></div>
+          </div>
+
+          <button id="menu-save-btn"
+            class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
+            Зберегти меню
+          </button>
+        </div>
+      </div>
+
+      <!-- Rooms Section -->
+      <div class="rooms-section">
+        <div class="rooms-section-header">
+          <span class="rooms-section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            Номери
+          </span>
+          <button id="add-room-btn" class="add-room-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Додати
+          </button>
+        </div>
+        <div id="rooms-admin-grid" class="rooms-admin-grid">
+          <!-- Rooms will be rendered here -->
+        </div>
+      </div>
+
+      <!-- Services Section -->
+      <div class="services-section">
+        <div class="services-section-header">
+          <span class="services-section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+              </path>
+            </svg>
+            Додаткові послуги
+          </span>
+          <button id="add-service-btn" class="add-service-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Додати
+          </button>
+        </div>
+        <div id="services-admin-grid" class="services-admin-grid">
+          <!-- Services will be rendered here -->
+        </div>
+      </div>
+
+      <!-- Bookings Section -->
+      <div class="bookings-section">
+        <div class="bookings-section-header">
+          <span class="bookings-section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            Бронювання
+          </span>
+          <div class="bookings-controls">
+            <button id="generate-test-bookings-btn" class="add-room-btn" title="Згенерувати тестові дані">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
               </svg>
-              <span></span>
-            </span>
+              Тестові
+            </button>
           </div>
-          <div class="room-detail-price">
-            <span id="room-detail-price-value"></span>
-            <span>/ ніч</span>
-          </div>
-          <!-- Room Description -->
-          <div id="room-detail-description" class="room-detail-description"></div>
         </div>
-      </div>
-      <!-- Reviews Section -->
-      <div id="room-detail-reviews" class="room-detail-reviews">
-        <h4 class="reviews-section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <polygon
-              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-          </svg>
-          <span>Відгуки</span>
-        </h4>
-        <div id="room-reviews-list" class="reviews-list"></div>
-      </div>
-      <div class="room-detail-actions">
-        <button id="room-ask-question-btn" class="room-action-btn room-action-btn-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-          </svg>
-          Задати питання
-        </button>
-        <button id="room-view-photos-btn" class="room-action-btn room-action-btn-secondary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-            <polyline points="21 15 16 10 5 21"></polyline>
-          </svg>
-          Переглянути фото
-        </button>
+
+        <!-- Search Bar -->
+        <div class="bookings-search">
+          <input type="text" id="booking-search-input" class="admin-input" placeholder="Пошук за ПІБ...">
+        </div>
+
+        <!-- Stats -->
+        <div class="bookings-stats">
+          <div class="booking-stat">
+            <span class="stat-label">Всього:</span>
+            <span id="stat-total" class="stat-value">0</span>
+          </div>
+          <div class="booking-stat">
+            <span class="stat-label">Активні:</span>
+            <span id="stat-active" class="stat-value">0</span>
+          </div>
+          <div class="booking-stat">
+            <span class="stat-label">Скасовані:</span>
+            <span id="stat-cancelled" class="stat-value">0</span>
+          </div>
+        </div>
+
+        <!-- Bookings List -->
+        <div id="bookings-list" class="bookings-list">
+          <!-- Bookings will be rendered here -->
+        </div>
       </div>
     </div>
 
-    <!-- Service Detail View -->
-    <div id="service-detail-view" class="service-detail-view">
-      <div class="service-detail-header">
-        <button id="service-detail-back" class="service-detail-back">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-        </button>
-        <span class="service-detail-title">Деталі послуги</span>
+    <!-- WIDGET BUTTON -->
+    <button id="chat-widget-button" class="shape-pill" aria-label="Відкрити чат">
+      <div id="widget-icon-container">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
       </div>
-      <div class="service-detail-content">
-        <img id="service-detail-image" class="service-detail-image" src="" alt="Service photo">
-        <div class="service-detail-info">
-          <h2 id="service-detail-name" class="service-detail-name"></h2>
-          <div id="service-detail-category" class="service-detail-category"></div>
-          <div class="service-detail-price">
-            <span id="service-detail-price-value"></span>
-          </div>
-          <!-- Service Description -->
-          <div id="service-detail-description" class="service-detail-description"></div>
-        </div>
-      </div>
-      <!-- Reviews Section -->
-      <div id="service-detail-reviews" class="service-detail-reviews">
-        <h4 class="reviews-section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <polygon
-              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-          </svg>
-          <span>Відгуки</span>
-        </h4>
-        <div id="service-reviews-list" class="reviews-list"></div>
-      </div>
-      <div class="service-detail-actions">
-        <button id="service-ask-question-btn" class="service-action-btn service-action-btn-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-          </svg>
-          Задати питання
-        </button>
-      </div>
-    </div>
-
-    <!-- Scroll to Bottom Button -->
-    <button id="scroll-to-bottom-btn" aria-label="Прокрутити вниз" title="До нових повідомлень">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="6 9 12 15 18 9"></polyline>
-      </svg>
+      <span class="chat-button-text">Чат с отелем</span>
+      <span id="chat-notification-badge">1</span>
     </button>
 
-    <!-- History View (Internal) -->
-    <div id="history-view"
-      class="hidden absolute inset-0 z-[60] bg-[#f6f6f8] text-slate-900 font-display flex flex-col overflow-x-hidden animate-fade-in">
-      <header class="px-6 pt-16 pb-4 flex flex-col gap-6">
-        <h1 class="text-4xl font-bold tracking-tight text-slate-900">История диалогов</h1>
-        <div class="relative group">
-          <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-            <span
-              class="material-symbols-outlined text-slate-400 group-focus-within:text-[#135bec] transition-colors">search</span>
-          </div>
-          <input id="history-search-input"
-            class="w-full h-14 pl-12 pr-4 bg-white/60 border border-white/50 rounded-full focus:ring-2 focus:ring-[#135bec]/20 focus:border-[#135bec]/40 focus:outline-none placeholder:text-slate-400 transition-all text-base"
-            placeholder="Поиск по диалогам..." type="text">
-        </div>
-      </header>
-
-      <main id="history-list" class="flex-1 px-4 space-y-3 pb-40 overflow-y-auto w-full">
-        <!-- History items will be injected here -->
-        <div class="text-center text-slate-400 mt-10">
-          <p>Немає збережених діалогів</p>
-        </div>
-      </main>
-
-      <div
-        class="absolute bottom-0 left-0 right-0 px-6 pb-10 pt-10 bg-gradient-to-t from-[#f6f6f8] via-[#f6f6f8]/90 to-transparent pointer-events-none z-40">
-        <button id="history-close-btn"
-          class="w-full py-4 rounded-full flex items-center justify-center gap-3 active:scale-95 transition-all pointer-events-auto shadow-[0_8px_32px_rgba(19,91,236,0.08),inset_0_0_15px_rgba(255,255,255,0.5)] bg-white/70 border border-white/50"
-          style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
-          <span class="material-symbols-outlined text-slate-700">arrow_back_ios_new</span>
-          <span class="text-lg font-semibold text-slate-800">Назад</span>
-        </button>
+    <!-- FREE CANCELLATION BANNER -->
+    <div id="cancellation-banner" class="cancellation-banner">
+      <div class="cancellation-content">
+        <span class="material-symbols-outlined cancellation-icon"
+          style="font-variation-settings: 'FILL' 1;">shield</span>
+        <span class="cancellation-text">Бесплатная отмена</span>
       </div>
-
-      <div
-        class="absolute top-[-10%] left-[-10%] w-[50%] h-[40%] bg-[#135bec]/5 blur-[120px] pointer-events-none -z-10">
-      </div>
-      <div
-        class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[40%] bg-[#135bec]/10 blur-[120px] pointer-events-none -z-10">
-      </div>
+      <button id="cancellation-close-btn" class="cancellation-close-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
     </div>
 
-    <!-- History Detail View (Internal Overlay) -->
-    <div id="history-detail-view"
-      class="hidden absolute inset-0 z-[70] bg-[#f8f9fa] flex flex-col animate-slide-in-right overflow-hidden">
-      <!-- Floating Back Button -->
-      <button id="history-detail-back"
-        class="absolute top-6 left-6 z-50 p-3 rounded-full bg-white/80 backdrop-blur-md shadow-lg border border-white/50 text-slate-600 hover:text-slate-900 active:scale-90 transition-all">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"></polyline>
+    <!-- CHAT WINDOW -->
+    <div id="chat-window">
+      <!-- Floating Header Wrapper with Gradient Blur -->
+      <div class="chat-header-wrapper">
+        <!-- Unified Header Bar -->
+        <div class="chat-header-unified accent-bg text-white shadow-lg rounded-full">
+          <!-- Block 1: Identity (Logo + Name) -->
+          <div class="header-identity flex items-center gap-3">
+            <div class="relative">
+              <div id="hotel-logo-container"
+                class="w-10 h-10 rounded-full bg-white accent-text flex items-center justify-center shadow-sm overflow-hidden">
+                <span class="text-xl font-bold accent-text">H</span>
+              </div>
+              <div id="online-indicator"
+                class="absolute bottom-0 right-0 w-[12px] h-[12px] bg-green-400 border-2 accent-border rounded-full"
+                title="Онлайн"></div>
+            </div>
+            <div>
+              <h3 id="hotel-name-text" class="text-base font-bold leading-tight tracking-wide">Hilton</h3>
+            </div>
+          </div>
+
+          <!-- App Store & Google Play Buttons (integrated) -->
+          <button id="guide-badge-btn" class="header-guide-btn" title="Download App" data-role="app-download">
+            <!-- App Store Icon -->
+            <svg width="22" height="22" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+              <linearGradient id="appstore_grad" gradientUnits="userSpaceOnUse" x1="400" y1="800" x2="400" y2="0"
+                gradientTransform="matrix(1 0 0 -1 0 800)">
+                <stop offset="0" stop-color="#18BFFB" />
+                <stop offset="1" stop-color="#2072F3" />
+              </linearGradient>
+              <path fill="url(#appstore_grad)"
+                d="M638.4,0H161.6C72.3,0,0,72.3,0,161.6v476.9C0,727.7,72.3,800,161.6,800h476.9c89.2,0,161.6-72.3,161.6-161.6V161.6C800,72.3,727.7,0,638.4,0z" />
+              <path fill="#FFFFFF"
+                d="M396.6,183.8l16.2-28c10-17.5,32.3-23.4,49.8-13.4s23.4,32.3,13.4,49.8L319.9,462.4h112.9c36.6,0,57.1,43,41.2,72.8H143c-20.2,0-36.4-16.2-36.4-36.4c0-20.2,16.2-36.4,36.4-36.4h92.8l118.8-205.9l-37.1-64.4c-10-17.5-4.1-39.6,13.4-49.8c17.5-10,39.6-4.1,49.8,13.4L396.6,183.8h0z M256.2,572.7l-35,60.7c-10,17.5-32.3,23.4-49.8,13.4S148,614.5,158,597l26-45C213.4,542.9,237.3,549.9,256.2,572.7z M557.6,462.6h94.7c20.2,0,36.4,16.2,36.4,36.4c0,20.2-16.2,36.4-36.4,36.4h-52.6l35.5,61.6c10,17.5,4.1,39.6-13.4,49.8c-17.5,10-39.6,4.1-49.8-13.4c-59.8-103.7-104.7-181.3-134.5-233c-30.5-52.6-8.7-105.4,12.8-123.3C474.2,318.1,509.9,380,557.6,462.6z" />
+            </svg>
+
+            <!-- Google Play Icon -->
+            <svg width="22" height="22" viewBox="30 336.7 120.9 129.2" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#FFD400"
+                d="M119.2,421.2c15.3-8.4,27-14.8,28-15.3c3.2-1.7,6.5-6.2,0-9.7c-2.1-1.1-13.4-7.3-28-15.3l-20.1,20.2L119.2,421.2z" />
+              <path fill="#FF3333"
+                d="M99.1,401.1l-64.2,64.7c1.5,0.2,3.2-0.2,5.2-1.3c4.2-2.3,48.8-26.7,79.1-43.3L99.1,401.1L99.1,401.1z" />
+              <path fill="#48FF48" d="M99.1,401.1l20.1-20.2c0,0-74.6-40.7-79.1-43.1c-1.7-1-3.6-1.3-5.3-1L99.1,401.1z" />
+              <path fill="#3BCCFF"
+                d="M99.1,401.1l-64.3-64.3c-2.6,0.6-4.8,2.9-4.8,7.6c0,7.5,0,107.5,0,113.8c0,4.3,1.7,7.4,4.9,7.7L99.1,401.1z" />
+            </svg>
+          </button>
+
+          <!-- Status Pill (Special Booking / Operator Mode) -->
+          <div id="header-status-pill" class="header-status-pill hidden">
+            <div class="header-status-spinner"></div>
+            <span class="header-status-text">Загрузка...</span>
+          </div>
+
+          <!-- Block 2: Controls (Menu + Close) -->
+          <div class="header-controls flex items-center gap-1">
+            <!-- Header Menu (Hamburger) -->
+            <button id="header-menu-btn"
+              class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white" title="Меню">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            </button>
+            <button id="chat-close-button"
+              class="text-white/80 hover:text-white hover:bg-white/10 rounded-full p-2 transition ml-1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Room Context Container (Fixed) -->
+      <div id="room-context-container" class="hidden"></div>
+
+
+
+      <!-- Operator Mode Status Container -->
+      <div id="operator-status-bar" class="operator-status-bar hidden">
+        <div class="status-indicator">
+          <div class="operator-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div class="operator-status-spinner"></div>
+          <span class="operator-status-text">Ищем специалиста...</span>
+        </div>
+      </div>
+
+      <!-- Messages Container -->
+      <div id="chat-messages" class="flex-1 p-4 overflow-y-auto flex flex-col bg-white relative">
+        <div id="typing-indicator" class="hidden" aria-hidden="true">
+          <div class="typing-indicator-bubble">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Room Detail View -->
+      <div id="room-detail-view" class="room-detail-view">
+        <div class="room-detail-header">
+          <button id="room-detail-back" class="room-detail-back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <span class="room-detail-title">Деталі номера</span>
+        </div>
+        <div class="room-detail-content">
+          <img id="room-detail-image" class="room-detail-image" src="" alt="Room photo">
+          <div class="room-detail-info">
+            <h2 id="room-detail-name" class="room-detail-name"></h2>
+            <div class="room-detail-meta">
+              <span id="room-detail-area" class="room-detail-meta-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                </svg>
+                <span></span>
+              </span>
+            </div>
+            <div class="room-detail-price">
+              <span id="room-detail-price-value"></span>
+              <span>/ ніч</span>
+            </div>
+            <!-- Room Description -->
+            <div id="room-detail-description" class="room-detail-description"></div>
+          </div>
+        </div>
+        <!-- Reviews Section -->
+        <div id="room-detail-reviews" class="room-detail-reviews">
+          <h4 class="reviews-section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+            <span>Відгуки</span>
+          </h4>
+          <div id="room-reviews-list" class="reviews-list"></div>
+        </div>
+        <div class="room-detail-actions">
+          <button id="room-ask-question-btn" class="room-action-btn room-action-btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Задати питання
+          </button>
+          <button id="room-view-photos-btn" class="room-action-btn room-action-btn-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            Переглянути фото
+          </button>
+        </div>
+      </div>
+
+      <!-- Service Detail View -->
+      <div id="service-detail-view" class="service-detail-view">
+        <div class="service-detail-header">
+          <button id="service-detail-back" class="service-detail-back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <span class="service-detail-title">Деталі послуги</span>
+        </div>
+        <div class="service-detail-content">
+          <img id="service-detail-image" class="service-detail-image" src="" alt="Service photo">
+          <div class="service-detail-info">
+            <h2 id="service-detail-name" class="service-detail-name"></h2>
+            <div id="service-detail-category" class="service-detail-category"></div>
+            <div class="service-detail-price">
+              <span id="service-detail-price-value"></span>
+            </div>
+            <!-- Service Description -->
+            <div id="service-detail-description" class="service-detail-description"></div>
+          </div>
+        </div>
+        <!-- Reviews Section -->
+        <div id="service-detail-reviews" class="service-detail-reviews">
+          <h4 class="reviews-section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+            <span>Відгуки</span>
+          </h4>
+          <div id="service-reviews-list" class="reviews-list"></div>
+        </div>
+        <div class="service-detail-actions">
+          <button id="service-ask-question-btn" class="service-action-btn service-action-btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Задати питання
+          </button>
+        </div>
+      </div>
+
+      <!-- Scroll to Bottom Button -->
+      <button id="scroll-to-bottom-btn" aria-label="Прокрутити вниз" title="До нових повідомлень">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </button>
 
-      <div id="history-detail-messages" class="flex-1 p-6 pt-24 pb-32 overflow-y-auto flex flex-col space-y-4">
-        <!-- Messages will be injected here -->
-      </div>
+      <!-- History View (Internal) -->
+      <div id="history-view"
+        class="hidden absolute inset-0 z-[60] bg-[#f6f6f8] text-slate-900 font-display flex flex-col overflow-x-hidden animate-fade-in">
+        <header class="px-6 pt-16 pb-4 flex flex-col gap-6">
+          <h1 class="text-4xl font-bold tracking-tight text-slate-900">История диалогов</h1>
+          <div class="relative group">
+            <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+              <span
+                class="material-symbols-outlined text-slate-400 group-focus-within:text-[#135bec] transition-colors">search</span>
+            </div>
+            <input id="history-search-input"
+              class="w-full h-14 pl-12 pr-4 bg-white/60 border border-white/50 rounded-full focus:ring-2 focus:ring-[#135bec]/20 focus:border-[#135bec]/40 focus:outline-none placeholder:text-slate-400 transition-all text-base"
+              placeholder="Поиск по диалогам..." type="text">
+          </div>
+        </header>
 
-      <!-- Floating Continue Button -->
-      <div class="absolute bottom-8 left-0 right-0 flex justify-center px-6 z-50 pointer-events-none">
-        <button id="continue-chat-btn"
-          class="pointer-events-auto px-8 py-4 rounded-full text-white text-lg font-bold hover:opacity-90 transition-all active:scale-95 whitespace-nowrap shadow-lg"
-          style="background-color: var(--accent-color, #135bec); box-shadow: 0 12px 24px rgba(0,0,0,0.15);">
-          <span>Продолжить чат</span>
-        </button>
-      </div>
-    </div>
+        <main id="history-list" class="flex-1 px-4 space-y-3 pb-40 overflow-y-auto w-full">
+          <!-- History items will be injected here -->
+          <div class="text-center text-slate-400 mt-10">
+            <p>Немає збережених діалогів</p>
+          </div>
+        </main>
 
-    <!-- Reset Confirmation Modal -->
-    <div id="reset-confirmation-modal"
-      class="hidden fixed inset-0 z-[70] flex flex-col justify-end standard-modal-overlay transition-all">
-      <div class="w-full relative transform transition-transform duration-500 translate-y-full" id="reset-modal-sheet">
         <div
-          class="bg-white/70 backdrop-blur-[12px] border-t border-white/60 rounded-t-[2.5rem] w-full max-w-lg mx-auto pb-12 pt-4 px-6 flex flex-col items-center relative"
-          style="box-shadow: 0 -10px 40px rgba(0,0,0,0.05); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);">
-          <div class="w-10 h-1.5 bg-black/10 rounded-full mb-8 mx-auto"></div>
+          class="absolute bottom-0 left-0 right-0 px-6 pb-10 pt-10 bg-gradient-to-t from-[#f6f6f8] via-[#f6f6f8]/90 to-transparent pointer-events-none z-40">
+          <button id="history-close-btn"
+            class="w-full py-4 rounded-full flex items-center justify-center gap-3 active:scale-95 transition-all pointer-events-auto shadow-[0_8px_32px_rgba(19,91,236,0.08),inset_0_0_15px_rgba(255,255,255,0.5)] bg-white/70 border border-white/50"
+            style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+            <span class="material-symbols-outlined text-slate-700">arrow_back_ios_new</span>
+            <span class="text-lg font-semibold text-slate-800">Назад</span>
+          </button>
+        </div>
 
-          <div class="flex flex-col items-center text-center w-full max-w-sm mx-auto">
-            <div class="relative w-20 h-20 mb-6 flex items-center justify-center">
-              <div class="absolute inset-0 bg-[#FF5A5F]/30 rounded-full blur-2xl opacity-60"></div>
-              <div class="relative w-16 h-16 rounded-full flex items-center justify-center border border-white/30"
-                style="background: linear-gradient(135deg, #FF6B6F 0%, #F85149 100%); box-shadow: 0 12px 24px rgba(248,81,73,0.35), inset 0 1px 2px rgba(255,255,255,0.4);">
-                <div class="relative w-9 h-9 flex items-center justify-center">
-                  <svg class="w-full h-full text-white fill-current" viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z"></path>
-                  </svg>
-                  <div class="absolute inset-0 flex items-center justify-center pb-1">
-                    <svg class="w-4 h-4 text-[#FF5A5F] fill-none stroke-[4] stroke-current" viewBox="0 0 24 24"
+        <div
+          class="absolute top-[-10%] left-[-10%] w-[50%] h-[40%] bg-[#135bec]/5 blur-[120px] pointer-events-none -z-10">
+        </div>
+        <div
+          class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[40%] bg-[#135bec]/10 blur-[120px] pointer-events-none -z-10">
+        </div>
+      </div>
+
+      <!-- History Detail View (Internal Overlay) -->
+      <div id="history-detail-view"
+        class="hidden absolute inset-0 z-[70] bg-[#f8f9fa] flex flex-col animate-slide-in-right overflow-hidden">
+        <!-- Floating Back Button -->
+        <button id="history-detail-back"
+          class="absolute top-6 left-6 z-50 p-3 rounded-full bg-white/80 backdrop-blur-md shadow-lg border border-white/50 text-slate-600 hover:text-slate-900 active:scale-90 transition-all">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <div id="history-detail-messages" class="flex-1 p-6 pt-24 pb-32 overflow-y-auto flex flex-col space-y-4">
+          <!-- Messages will be injected here -->
+        </div>
+
+        <!-- Floating Continue Button -->
+        <div class="absolute bottom-8 left-0 right-0 flex justify-center px-6 z-50 pointer-events-none">
+          <button id="continue-chat-btn"
+            class="pointer-events-auto px-8 py-4 rounded-full text-white text-lg font-bold hover:opacity-90 transition-all active:scale-95 whitespace-nowrap shadow-lg"
+            style="background-color: var(--accent-color, #135bec); box-shadow: 0 12px 24px rgba(0,0,0,0.15);">
+            <span>Продолжить чат</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Reset Confirmation Modal -->
+      <div id="reset-confirmation-modal"
+        class="hidden fixed inset-0 z-[70] flex flex-col justify-end standard-modal-overlay transition-all">
+        <div class="w-full relative transform transition-transform duration-500 translate-y-full"
+          id="reset-modal-sheet">
+          <div
+            class="bg-white/70 backdrop-blur-[12px] border-t border-white/60 rounded-t-[2.5rem] w-full max-w-lg mx-auto pb-12 pt-4 px-6 flex flex-col items-center relative"
+            style="box-shadow: 0 -10px 40px rgba(0,0,0,0.05); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);">
+            <div class="w-10 h-1.5 bg-black/10 rounded-full mb-8 mx-auto"></div>
+
+            <div class="flex flex-col items-center text-center w-full max-w-sm mx-auto">
+              <div class="relative w-20 h-20 mb-6 flex items-center justify-center">
+                <div class="absolute inset-0 bg-[#FF5A5F]/30 rounded-full blur-2xl opacity-60"></div>
+                <div class="relative w-16 h-16 rounded-full flex items-center justify-center border border-white/30"
+                  style="background: linear-gradient(135deg, #FF6B6F 0%, #F85149 100%); box-shadow: 0 12px 24px rgba(248,81,73,0.35), inset 0 1px 2px rgba(255,255,255,0.4);">
+                  <div class="relative w-9 h-9 flex items-center justify-center">
+                    <svg class="w-full h-full text-white fill-current" viewBox="0 0 24 24"
                       xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12 5V19M5 12H19" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z"></path>
                     </svg>
+                    <div class="absolute inset-0 flex items-center justify-center pb-1">
+                      <svg class="w-4 h-4 text-[#FF5A5F] fill-none stroke-[4] stroke-current" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V19M5 12H19" stroke-linecap="round" stroke-linejoin="round"></path>
+                      </svg>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <h2 class="text-2xl font-bold text-gray-900 mb-2 tracking-tight" data-i18n="resetConfirmTitle">
-              Начать новый чат?
-            </h2>
-            <p class="text-[16px] text-[#8E8E93] mb-10 leading-snug font-normal px-6" data-i18n="resetConfirmDesc">
-              Текущая история чата будет сохранена в истории диалогов
-            </p>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2 tracking-tight" data-i18n="resetConfirmTitle">
+                Начать новый чат?
+              </h2>
+              <p class="text-[16px] text-[#8E8E93] mb-10 leading-snug font-normal px-6" data-i18n="resetConfirmDesc">
+                Текущая история чата будет сохранена в истории диалогов
+              </p>
 
-            <div class="w-full space-y-3">
-              <button id="confirm-reset-btn"
-                class="w-full h-14 rounded-2xl text-white font-bold text-[17px] tracking-wide active:scale-[0.98] transition-transform flex items-center justify-center relative overflow-hidden border-t border-white/30"
-                style="background: linear-gradient(180deg, #FF6B6F 0%, #FF5A5F 100%); box-shadow: 0 10px 20px rgba(255, 90, 95, 0.3);">
-                <span class="absolute inset-0 pointer-events-none"
-                  style="background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);"></span>
-                <span class="relative z-10" data-i18n="resetConfirmSubmit">Начать</span>
-              </button>
-              <button id="cancel-reset-btn"
-                class="w-full h-14 rounded-2xl bg-black/5 hover:bg-black/10 text-slate-600 font-semibold text-[17px] tracking-wide active:opacity-70 transition-all border border-white/40 backdrop-blur-md"
-                data-i18n="resetConfirmCancel">
-                Отмена
-              </button>
+              <div class="w-full space-y-3">
+                <button id="confirm-reset-btn"
+                  class="w-full h-14 rounded-2xl text-white font-bold text-[17px] tracking-wide active:scale-[0.98] transition-transform flex items-center justify-center relative overflow-hidden border-t border-white/30"
+                  style="background: linear-gradient(180deg, #FF6B6F 0%, #FF5A5F 100%); box-shadow: 0 10px 20px rgba(255, 90, 95, 0.3);">
+                  <span class="absolute inset-0 pointer-events-none"
+                    style="background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);"></span>
+                  <span class="relative z-10" data-i18n="resetConfirmSubmit">Начать</span>
+                </button>
+                <button id="cancel-reset-btn"
+                  class="w-full h-14 rounded-2xl bg-black/5 hover:bg-black/10 text-slate-600 font-semibold text-[17px] tracking-wide active:opacity-70 transition-all border border-white/40 backdrop-blur-md"
+                  data-i18n="resetConfirmCancel">
+                  Отмена
+                </button>
+              </div>
             </div>
+            <div class="h-6 w-full"></div>
           </div>
-          <div class="h-6 w-full"></div>
         </div>
       </div>
-    </div>
 
-    <!-- Telegram Confirmation Modal -->
-    <div id="tg-confirmation-modal"
-      class="hidden fixed inset-0 z-[70] flex flex-col justify-end standard-modal-overlay transition-all">
-      <div class="w-full relative transform transition-transform duration-500 translate-y-full" id="tg-modal-sheet">
+      <!-- Telegram Confirmation Modal -->
+      <div id="tg-confirmation-modal"
+        class="hidden fixed inset-0 z-[70] flex flex-col justify-end standard-modal-overlay transition-all">
+        <div class="w-full relative transform transition-transform duration-500 translate-y-full" id="tg-modal-sheet">
+          <div
+            class="bg-white/80 backdrop-blur-xl border-t border-white/50 rounded-t-[2.5rem] w-full max-w-lg mx-auto pb-10 pt-4 px-6 flex flex-col items-center relative shadow-[0_-10px_40px_rgba(0,0,0,0.1)]"
+            style="-webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);">
+            <div class="w-12 h-1.5 bg-gray-300/80 rounded-full mb-8 mx-auto"></div>
+
+            <div class="flex flex-col items-center text-center w-full max-w-sm mx-auto">
+              <!-- Telegram Logo -->
+              <div class="relative w-24 h-24 mb-6 flex items-center justify-center">
+                <div class="absolute inset-0 bg-[#2AABEE] rounded-full blur-2xl opacity-40"></div>
+                <svg class="relative w-20 h-20 shadow-xl shadow-blue-500/30 rounded-full"
+                  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                  viewBox="0 0 240.1 240.1">
+                  <linearGradient id="Oval_1_" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581" x2="-838.041"
+                    y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
+                    <stop offset="0" style="stop-color:#2AABEE" />
+                    <stop offset="1" style="stop-color:#229ED9" />
+                  </linearGradient>
+                  <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#Oval_1_)" cx="120.1" cy="120.1"
+                    r="120.1" />
+                  <path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF"
+                    d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z" />
+                </svg>
+              </div>
+
+              <h2 class="text-2xl font-bold text-gray-900 mb-3 tracking-tight" data-i18n="tgConfirmTitle">
+                Вы хотите продолжить?
+              </h2>
+
+              <p class="text-base text-gray-500 mb-10 leading-relaxed font-medium px-4" data-i18n="tgConfirmDesc">
+                Вы будете перенаправлены во внешнее приложение Telegram.
+              </p>
+
+              <div class="w-full space-y-4 mb-safe">
+                <button id="confirm-tg-btn"
+                  class="w-full h-14 rounded-2xl bg-[#2AABEE] text-white font-bold text-[17px] tracking-wide shadow-[0_0_20px_rgba(42,171,238,0.5)] border-t border-white/20 active:scale-[0.98] flex items-center justify-center group relative overflow-hidden transition-all">
+                  <span class="absolute inset-0 pointer-events-none"
+                    style="background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 100%);"></span>
+                  <span class="relative z-10 flex items-center gap-2">
+                    <span data-i18n="tgConfirmProceed">Продолжить</span>
+                    <i
+                      class="fa-solid fa-arrow-right text-sm opacity-80 group-hover:translate-x-1 transition-transform"></i>
+                  </span>
+                </button>
+                <button id="cancel-tg-btn"
+                  class="w-full h-12 rounded-2xl bg-transparent hover:bg-black/5 text-slate-500 font-semibold text-[17px] tracking-wide active:opacity-70 backdrop-blur-md transition-all border border-transparent"
+                  data-i18n="tgConfirmCancel">
+                  Отмена
+                </button>
+              </div>
+            </div>
+            <div class="h-6 w-full"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Login Modal -->
+      <div id="login-modal"
+        class="hidden absolute inset-0 z-50 flex items-end justify-center standard-modal-overlay transition-all p-4 pb-6">
         <div
-          class="bg-white/80 backdrop-blur-xl border-t border-white/50 rounded-t-[2.5rem] w-full max-w-lg mx-auto pb-10 pt-4 px-6 flex flex-col items-center relative shadow-[0_-10px_40px_rgba(0,0,0,0.1)]"
-          style="-webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);">
-          <div class="w-12 h-1.5 bg-gray-300/80 rounded-full mb-8 mx-auto"></div>
+          class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
+          <h4 class="text-lg font-bold mb-4">Подтверждение по SMS</h4>
+          <input type="text" id="sms-code-input" inputmode="numeric" pattern="[0-9]*" placeholder="Код из SMS"
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl text-center text-base mb-6 focus:outline-none focus:border-blue-500 transition-colors">
+          <div class="flex flex-col gap-2">
+            <button id="confirm-login-btn"
+              class="w-full py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors shadow-sm">
+              <span>Подтвердить</span>
+            </button>
+            <button id="cancel-login-btn"
+              class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Отменить</button>
+          </div>
+        </div>
+      </div>
 
-          <div class="flex flex-col items-center text-center w-full max-w-sm mx-auto">
-            <!-- Telegram Logo -->
-            <div class="relative w-24 h-24 mb-6 flex items-center justify-center">
-              <div class="absolute inset-0 bg-[#2AABEE] rounded-full blur-2xl opacity-40"></div>
-              <svg class="relative w-20 h-20 shadow-xl shadow-blue-500/30 rounded-full"
-                xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 240.1 240.1">
-                <linearGradient id="Oval_1_" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581" x2="-838.041"
-                  y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
+      <!-- Login Success Modal -->
+      <div id="login-success-modal"
+        class="hidden absolute inset-0 z-50 flex items-end justify-center standard-modal-overlay transition-all p-4 pb-6">
+        <div
+          class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
+          <div class="mx-auto w-16 h-16 flex items-center justify-center mb-4 bg-green-100 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-600" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <h4 id="success-message-title" class="text-lg font-bold mb-2">Вы успешно вошли в свой аккаунт</h4>
+          <p class="modal-text-secondary text-sm text-gray-500 mb-6">Теперь вы можете продолжить использование чата</p>
+          <button id="close-success-btn"
+            class="w-full py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors shadow-sm">
+            <span>Отлично</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Special Offer Card -->
+      <div id="special-offer-card" class="special-offer-card hidden">
+        <div class="offer-header">
+          <div class="offer-header-content">
+            <span class="offer-badge">Персональное предложение</span>
+            <span class="offer-subtitle">Подобрано специально для вас</span>
+          </div>
+          <span class="offer-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+              </polygon>
+            </svg>
+          </span>
+        </div>
+        <div class="offer-content">
+          <div class="offer-room">
+            <div class="offer-room-image-container">
+              <img id="offer-room-image" class="offer-room-image" src="" alt="">
+              <div class="offer-room-image-placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="offer-room-info">
+              <h3 id="offer-room-name" class="offer-room-name"></h3>
+              <p id="offer-room-price" class="offer-room-price"></p>
+            </div>
+          </div>
+          <div class="offer-details">
+            <div class="offer-detail-item">
+              <span class="detail-label">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                Даты
+              </span>
+              <span id="offer-dates" class="detail-value"></span>
+            </div>
+            <div class="offer-detail-item">
+              <span class="detail-label">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                Гости
+              </span>
+              <span id="offer-guests" class="detail-value"></span>
+            </div>
+            <div class="offer-detail-item offer-total">
+              <span class="detail-label">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                Итого
+              </span>
+              <span id="offer-total" class="detail-value total-value"></span>
+            </div>
+            <div class="offer-special-notes">
+              <span class="notes-label">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 11 12 14 22 4"></polyline>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+                Учтённые пожелания
+              </span>
+              <ul id="offer-notes-list" class="notes-list"></ul>
+            </div>
+          </div>
+        </div>
+        <div class="offer-actions">
+          <button id="offer-confirm-btn" class="offer-btn primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Подтвердить бронирование
+          </button>
+          <button id="offer-edit-btn" class="offer-btn secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            Изменить детали
+          </button>
+        </div>
+      </div>
+
+      <!-- Footer with full blur coverage -->
+      <footer id="chat-footer"
+        class="border-t-0 bg-transparent flex-shrink-0 flex flex-col relative z-20 transition-all px-3 pb-2 gap-1">
+        <!-- Policy Consent Banner -->
+        <div id="policy-consent-banner" class="policy-consent-banner">
+          <div class="policy-consent-text">
+            Начиная чат вы соглашаетесь с
+            <a href="#" class="policy-link" data-url="https://roomie.user-agreement.hotelmol.com/">Условиями
+              использования</a>
+            и
+            <a href="#" class="policy-link" data-url="https://roomie.privacy-policy.hotelmol.com/">Политикой
+              конфиденциальности</a>
+          </div>
+        </div>
+
+        <!-- Telegram Banner (Expanded) -->
+        <div id="telegram-banner" class="telegram-banner expanded">
+          <div class="telegram-banner-content">
+            <div class="telegram-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240.1 240.1">
+                <linearGradient id="telegram_gradient" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581"
+                  x2="-838.041" y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
                   <stop offset="0" style="stop-color:#2AABEE" />
                   <stop offset="1" style="stop-color:#229ED9" />
                 </linearGradient>
-                <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#Oval_1_)" cx="120.1" cy="120.1" r="120.1" />
+                <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#telegram_gradient)" cx="120.1" cy="120.1"
+                  r="120.1" />
                 <path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF"
                   d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z" />
               </svg>
             </div>
-
-            <h2 class="text-2xl font-bold text-gray-900 mb-3 tracking-tight" data-i18n="tgConfirmTitle">
-              Вы хотите продолжить?
-            </h2>
-
-            <p class="text-base text-gray-500 mb-10 leading-relaxed font-medium px-4" data-i18n="tgConfirmDesc">
-              Вы будете перенаправлены во внешнее приложение Telegram.
-            </p>
-
-            <div class="w-full space-y-4 mb-safe">
-              <button id="confirm-tg-btn"
-                class="w-full h-14 rounded-2xl bg-[#2AABEE] text-white font-bold text-[17px] tracking-wide shadow-[0_0_20px_rgba(42,171,238,0.5)] border-t border-white/20 active:scale-[0.98] flex items-center justify-center group relative overflow-hidden transition-all">
-                <span class="absolute inset-0 pointer-events-none"
-                  style="background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 100%);"></span>
-                <span class="relative z-10 flex items-center gap-2">
-                  <span data-i18n="tgConfirmProceed">Продолжить</span>
-                  <i
-                    class="fa-solid fa-arrow-right text-sm opacity-80 group-hover:translate-x-1 transition-transform"></i>
-                </span>
-              </button>
-              <button id="cancel-tg-btn"
-                class="w-full h-12 rounded-2xl bg-transparent hover:bg-black/5 text-slate-500 font-semibold text-[17px] tracking-wide active:opacity-70 backdrop-blur-md transition-all border border-transparent"
-                data-i18n="tgConfirmCancel">
-                Отмена
-              </button>
+            <div class="telegram-text">
+              <div class="telegram-title">Перейти в Telegram</div>
+              <div class="telegram-subtitle">Быстрее и удобнее</div>
             </div>
           </div>
-          <div class="h-6 w-full"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Login Modal -->
-    <div id="login-modal"
-      class="hidden absolute inset-0 z-50 flex items-end justify-center standard-modal-overlay transition-all p-4 pb-6">
-      <div
-        class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-        <h4 class="text-lg font-bold mb-4">Подтверждение по SMS</h4>
-        <input type="text" id="sms-code-input" inputmode="numeric" pattern="[0-9]*" placeholder="Код из SMS"
-          class="w-full px-4 py-3 border border-gray-300 rounded-xl text-center text-base mb-6 focus:outline-none focus:border-blue-500 transition-colors">
-        <div class="flex flex-col gap-2">
-          <button id="confirm-login-btn"
-            class="w-full py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors shadow-sm">
-            <span>Подтвердить</span>
+          <button class="telegram-close-btn" id="telegram-close-btn" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </button>
-          <button id="cancel-login-btn"
-            class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Отменить</button>
         </div>
-      </div>
-    </div>
 
-    <!-- Login Success Modal -->
-    <div id="login-success-modal"
-      class="hidden absolute inset-0 z-50 flex items-end justify-center standard-modal-overlay transition-all p-4 pb-6">
-      <div
-        class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-        <div class="mx-auto w-16 h-16 flex items-center justify-center mb-4 bg-green-100 rounded-full">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-600" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
+        <!-- Telegram Collapsed Button -->
+        <button id="telegram-collapsed" class="telegram-collapsed" style="display: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240.1 240.1">
+            <linearGradient id="telegram_gradient_collapsed" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581"
+              x2="-838.041" y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
+              <stop offset="0" style="stop-color:#2AABEE" />
+              <stop offset="1" style="stop-color:#229ED9" />
+            </linearGradient>
+            <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#telegram_gradient_collapsed)" cx="120.1"
+              cy="120.1" r="120.1" />
+            <path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF"
+              d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z" />
           </svg>
-        </div>
-        <h4 id="success-message-title" class="text-lg font-bold mb-2">Вы успешно вошли в свой аккаунт</h4>
-        <p class="modal-text-secondary text-sm text-gray-500 mb-6">Теперь вы можете продолжить использование чата</p>
-        <button id="close-success-btn"
-          class="w-full py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors shadow-sm">
-          <span>Отлично</span>
         </button>
-      </div>
-    </div>
 
-    <!-- Special Offer Card -->
-    <div id="special-offer-card" class="special-offer-card hidden">
-      <div class="offer-header">
-        <div class="offer-header-content">
-          <span class="offer-badge">Персональное предложение</span>
-          <span class="offer-subtitle">Подобрано специально для вас</span>
-        </div>
-        <span class="offer-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon
-              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-            </polygon>
-          </svg>
-        </span>
-      </div>
-      <div class="offer-content">
-        <div class="offer-room">
-          <div class="offer-room-image-container">
-            <img id="offer-room-image" class="offer-room-image" src="" alt="">
-            <div class="offer-room-image-placeholder">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        <!-- Input Area -->
+        <div id="input-area-wrapper" class="px-0 pb-0 pt-0">
+          <div class="input-container-bg">
+            <textarea id="message-input" rows="1" placeholder="Введите сообщение..." autocomplete="off"></textarea>
+            <button id="send-button" title="Надіслати">
+              <svg id="btn-icon-send" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
               </svg>
-            </div>
-          </div>
-          <div class="offer-room-info">
-            <h3 id="offer-room-name" class="offer-room-name"></h3>
-            <p id="offer-room-price" class="offer-room-price"></p>
+              <div class="spinner"></div>
+            </button>
           </div>
         </div>
-        <div class="offer-details">
-          <div class="offer-detail-item">
-            <span class="detail-label">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-              Даты
-            </span>
-            <span id="offer-dates" class="detail-value"></span>
-          </div>
-          <div class="offer-detail-item">
-            <span class="detail-label">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-              Гости
-            </span>
-            <span id="offer-guests" class="detail-value"></span>
-          </div>
-          <div class="offer-detail-item offer-total">
-            <span class="detail-label">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="1" x2="12" y2="23"></line>
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-              </svg>
-              Итого
-            </span>
-            <span id="offer-total" class="detail-value total-value"></span>
-          </div>
-          <div class="offer-special-notes">
-            <span class="notes-label">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 11 12 14 22 4"></polyline>
-                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-              </svg>
-              Учтённые пожелания
-            </span>
-            <ul id="offer-notes-list" class="notes-list"></ul>
-          </div>
-        </div>
-      </div>
-      <div class="offer-actions">
-        <button id="offer-confirm-btn" class="offer-btn primary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-          Подтвердить бронирование
-        </button>
-        <button id="offer-edit-btn" class="offer-btn secondary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-          </svg>
-          Изменить детали
-        </button>
-      </div>
-    </div>
 
-    <!-- Footer with full blur coverage -->
-    <footer id="chat-footer"
-      class="border-t-0 bg-transparent flex-shrink-0 flex flex-col relative z-20 transition-all px-3 pb-2 gap-1">
-      <!-- Policy Consent Banner -->
-      <div id="policy-consent-banner" class="policy-consent-banner">
-        <div class="policy-consent-text">
-          Начиная чат вы соглашаетесь с
-          <a href="#" class="policy-link" data-url="https://roomie.user-agreement.hotelmol.com/">Условиями
-            использования</a>
-          и
-          <a href="#" class="policy-link" data-url="https://roomie.privacy-policy.hotelmol.com/">Политикой
-            конфиденциальности</a>
+        <!-- Powered By - Independent Block -->
+        <div id="powered-by-container" class="text-center">
+          <span class="text-sm text-gray-400 font-medium">powered by <a href="https://hotelmol.com" target="_blank"
+              class="accent-text hover:underline cursor-pointer">hotelmol.com</a></span>
+        </div>
+      </footer>
+
+
+      <!-- Legal Modal (Iframe) -->
+      <div id="legal-modal" class="legal-modal hidden">
+        <div class="legal-header">
+          <button id="legal-back-btn" class="legal-back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Назад
+          </button>
+          <span class="legal-title">Документ</span>
+        </div>
+        <div class="legal-content">
+          <iframe id="legal-iframe" src="" frameborder="0"></iframe>
         </div>
       </div>
 
-      <!-- Telegram Banner (Expanded) -->
-      <div id="telegram-banner" class="telegram-banner expanded">
-        <div class="telegram-banner-content">
-          <div class="telegram-icon">
+      <!-- Restaurant Menu Modal -->
+      <div id="menu-modal" class="legal-modal hidden">
+        <div class="legal-header">
+          <button id="menu-back-btn" class="legal-back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Назад
+          </button>
+          <span class="legal-title">Меню ресторану</span>
+        </div>
+        <div class="legal-content">
+          <iframe id="menu-iframe" src="" frameborder="0"></iframe>
+        </div>
+      </div>
+
+      <!-- Telegram Confirmation Modal -->
+      <div id="telegram-confirmation-modal" class="telegram-confirmation-overlay" style="display: none;">
+        <div class="telegram-confirmation-modal">
+          <div class="telegram-modal-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240.1 240.1">
-              <linearGradient id="telegram_gradient" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581"
+              <linearGradient id="telegram_gradient_modal" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581"
                 x2="-838.041" y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
                 <stop offset="0" style="stop-color:#2AABEE" />
                 <stop offset="1" style="stop-color:#229ED9" />
               </linearGradient>
-              <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#telegram_gradient)" cx="120.1" cy="120.1"
+              <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#telegram_gradient_modal)" cx="120.1" cy="120.1"
                 r="120.1" />
               <path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF"
                 d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z" />
             </svg>
           </div>
-          <div class="telegram-text">
-            <div class="telegram-title">Перейти в Telegram</div>
-            <div class="telegram-subtitle">Быстрее и удобнее</div>
+          <div class="telegram-modal-title">Хотите перейти?</div>
+          <div class="telegram-modal-buttons">
+            <button id="telegram-proceed-btn" class="telegram-proceed-button">Перейти</button>
+            <button id="telegram-cancel-btn" class="telegram-cancel-button">Отменить</button>
           </div>
         </div>
-        <button class="telegram-close-btn" id="telegram-close-btn" type="button">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
       </div>
 
-      <!-- Telegram Collapsed Button -->
-      <button id="telegram-collapsed" class="telegram-collapsed" style="display: none;">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240.1 240.1">
-          <linearGradient id="telegram_gradient_collapsed" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581"
-            x2="-838.041" y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
-            <stop offset="0" style="stop-color:#2AABEE" />
-            <stop offset="1" style="stop-color:#229ED9" />
-          </linearGradient>
-          <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#telegram_gradient_collapsed)" cx="120.1" cy="120.1"
-            r="120.1" />
-          <path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF"
-            d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z" />
-        </svg>
-      </button>
+      <!-- Menu Bottom Sheet Modal -->
+      <div id="menu-bottom-sheet" class="hidden">
+        <div id="menu-sheet-content-inner"
+          class="menu-sheet-content glass-sheet w-full max-w-md rounded-t-[2.5rem] sm:rounded-t-[2.5rem] pb-4 sm:pb-6 shadow-glass relative overflow-hidden premium-sheet-transition transform translate-y-full mx-auto">
+          <div class="w-full flex justify-center pt-4 pb-2">
+            <div class="w-10 h-1.5 bg-gray-400/30 rounded-full"></div>
+          </div>
+          <div class="px-5 pb-4 space-y-2 pt-4">
+            <!-- Reset Chat Button -->
+            <button id="reset-chat-btn"
+              class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 transition-all duration-200">
+              <div class="flex items-center space-x-4">
+                <div class="w-11 h-11 glass-icon-container">
+                  <div class="glass-icon-bg bg-tint-blue"></div>
+                  <span class="material-symbols-rounded text-blue-600 text-xl relative z-10">add_comment</span>
+                </div>
+                <span class="text-gray-800 font-semibold text-[17px]" data-i18n="newChat">Новий чат</span>
+              </div>
+              <span class="material-symbols-rounded text-gray-400 text-[18px]">arrow_forward_ios</span>
+            </button>
 
-      <!-- Input Area -->
-      <div id="input-area-wrapper" class="px-0 pb-0 pt-0">
-        <div class="input-container-bg shadow-lg bg-white">
-          <textarea id="message-input" rows="1" placeholder="Введите сообщение..." autocomplete="off"></textarea>
-          <button id="send-button" title="Надіслати">
-            <svg id="btn-icon-send" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="12" y1="19" x2="12" y2="5"></line>
-              <polyline points="5 12 12 5 19 12"></polyline>
+            <!-- Rooms Button -->
+            <button id="rooms-menu-btn"
+              class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 transition-all duration-200">
+              <div class="flex items-center space-x-4">
+                <div class="w-11 h-11 glass-icon-container">
+                  <div class="glass-icon-bg bg-tint-purple"></div>
+                  <span class="material-symbols-rounded text-purple-600 text-xl relative z-10">home</span>
+                </div>
+                <span class="text-gray-800 font-semibold text-[17px]">Номери</span>
+              </div>
+              <span class="material-symbols-rounded text-gray-400 text-[18px]">arrow_forward_ios</span>
+            </button>
+
+            <!-- Contact Manager Button -->
+            <button id="contact-manager-btn"
+              class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 transition-all duration-200">
+              <div class="flex items-center space-x-4">
+                <div class="w-11 h-11 glass-icon-container">
+                  <div class="glass-icon-bg bg-tint-sky"></div>
+                  <span class="material-symbols-rounded text-sky-600 text-xl relative z-10">headset_mic</span>
+                </div>
+                <span class="text-gray-800 font-semibold text-[17px]" data-i18n="contactManager">Менеджер</span>
+              </div>
+              <span class="material-symbols-rounded text-gray-400 text-[18px]">arrow_forward_ios</span>
+            </button>
+
+            <!-- Previous Dialogs Button -->
+            <button id="history-menu-btn"
+              class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 transition-all duration-200">
+              <div class="flex items-center space-x-4">
+                <div class="w-11 h-11 glass-icon-container">
+                  <div class="glass-icon-bg bg-tint-orange"></div>
+                  <span class="material-symbols-rounded text-orange-600 text-xl relative z-10">inventory_2</span>
+                </div>
+                <span class="text-gray-800 font-semibold text-[17px]">Previous Dialogs</span>
+              </div>
+              <span class="material-symbols-rounded text-gray-400 text-[18px]">arrow_forward_ios</span>
+            </button>
+
+            <!-- Sound Toggle Button -->
+            <button id="sound-toggle-btn"
+              class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 transition-all duration-200">
+              <div class="flex items-center space-x-4">
+                <div class="w-11 h-11 glass-icon-container">
+                  <div class="glass-icon-bg bg-tint-indigo"></div>
+                  <span id="sound-icon-on"
+                    class="material-symbols-rounded text-indigo-600 text-xl relative z-10">volume_up</span>
+                  <span id="sound-icon-off"
+                    class="hidden material-symbols-rounded text-gray-400 text-xl relative z-10">volume_off</span>
+                </div>
+                <span class="text-gray-800 font-semibold text-[17px]">Звук сповіщень</span>
+              </div>
+              <span id="sound-status-text" class="text-gray-500 text-[15px] font-medium pr-1">Вкл</span>
+            </button>
+
+            <!-- Language Button -->
+            <button id="language-menu-btn"
+              class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 transition-all duration-200">
+              <div class="flex items-center space-x-4">
+                <div class="w-11 h-11 glass-icon-container">
+                  <div class="glass-icon-bg bg-tint-green"></div>
+                  <span class="material-symbols-rounded text-green-700 text-xl relative z-10">translate</span>
+                </div>
+                <span class="text-gray-800 font-semibold text-[17px]" data-i18n="language">Мова</span>
+              </div>
+              <div class="flex items-center space-x-1 text-gray-400">
+                <span id="current-lang-display" class="text-[15px] font-medium uppercase">UK</span>
+                <span class="material-symbols-rounded text-[18px]">arrow_forward_ios</span>
+              </div>
+            </button>
+
+            <button id="menu-sheet-close"
+              class="w-full py-4 glass-button rounded-2xl text-gray-800 font-bold text-[17px] active:scale-[0.98] hover:bg-white/70 transition-all duration-200 shadow-sm">
+              Закрыть
+            </button>
+          </div>
+        </div>
+
+        <!-- Language Submenu Modal (Nested) -->
+        <div id="language-sheet-modal" class="hidden">
+          <div id="language-sheet-content-inner"
+            class="w-full max-w-md bg-white/85 backdrop-blur-[40px] border-t border-black/5 rounded-t-[2.5rem] shadow-[0_-8px_32px_0_rgba(0,0,0,0.08)] relative flex flex-col premium-sheet-transition transform translate-y-full"
+            style="height: 80dvh; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);">
+            <div class="px-8 pt-10 pb-4 text-center">
+              <h1 class="text-[24px] font-bold tracking-tight text-gray-900" data-i18n="selectLanguageTitle">Выберите
+                язык
+              </h1>
+              <p class="text-gray-500 text-[15px] mt-1.5" data-i18n="selectLanguageDesc">Выберите язык для интерфейса
+              </p>
+            </div>
+
+            <div id="language-sheet-list" class="flex-1 overflow-y-auto px-6 py-4 space-y-2">
+              <!-- Languages injected here -->
+            </div>
+
+            <div class="px-6 pb-6 pt-6">
+              <button id="language-sheet-close"
+                class="w-full py-4 h-[56px] flex items-center justify-center bg-gray-100 hover:bg-gray-200 active:scale-[0.98] transition-all rounded-2xl text-gray-900 font-semibold text-[17px] border border-gray-200">
+                Закрыть
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guide Bottom Sheet Modal -->
+      <div id="guide-bottom-sheet" class="hidden">
+        <div id="guide-sheet-content-inner"
+          class="guide-sheet-content bg-white w-full rounded-t-2xl p-4 pb-8 shadow-2xl transform translate-y-full premium-sheet-transition">
+          <div class="flex justify-center mb-4">
+            <div class="w-12 h-1.5 bg-gray-200 rounded-full"></div>
+          </div>
+
+          <h3 class="text-center text-lg font-bold text-gray-800 mb-2">персональная карточка гостя</h3>
+
+          <div id="guide-items-list" class="guide-items-list mb-4">
+            <!-- Guide items will be populated here -->
+          </div>
+
+          <button id="guide-telegram-btn" class="guide-telegram-btn">
+            <svg width="24" height="24" viewBox="0 0 240.1 240.1" fill="white">
+              <path d="M82.9,178.9c-3.4,0-2.9-1.3-4.1-4.5L66.1,129l113.6-67.5" />
+              <path d="M82.9,178.9c2.6,0,3.8-1.2,5.2-2.6l14-13.6l-29.2-17.6" />
+              <path
+                d="M72.9,145.1l70.8,52.2c8.1,4.5,13.9,2.1,15.9-7.5l28.8-135.8c2.9-11.8-4.5-17.1-12.2-13.6L38.6,108.2c-11.5,4.6-11.5,11-2.1,13.9l43.4,13.6l100.5-63.4c4.7-2.9,9.1-1.3,5.5,1.8" />
             </svg>
-            <div class="spinner"></div>
-          </button>
-        </div>
-      </div>
-
-      <!-- Powered By - Independent Block -->
-      <div id="powered-by-container" class="text-center">
-        <span class="text-sm text-gray-400 font-medium">powered by <a href="https://hotelmol.com" target="_blank"
-            class="accent-text hover:underline cursor-pointer">hotelmol.com</a></span>
-      </div>
-    </footer>
-
-
-    <!-- Legal Modal (Iframe) -->
-    <div id="legal-modal" class="legal-modal hidden">
-      <div class="legal-header">
-        <button id="legal-back-btn" class="legal-back-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-          Назад
-        </button>
-        <span class="legal-title">Документ</span>
-      </div>
-      <div class="legal-content">
-        <iframe id="legal-iframe" src="" frameborder="0"></iframe>
-      </div>
-    </div>
-
-    <!-- Restaurant Menu Modal -->
-    <div id="menu-modal" class="legal-modal hidden">
-      <div class="legal-header">
-        <button id="menu-back-btn" class="legal-back-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-          Назад
-        </button>
-        <span class="legal-title">Меню ресторану</span>
-      </div>
-      <div class="legal-content">
-        <iframe id="menu-iframe" src="" frameborder="0"></iframe>
-      </div>
-    </div>
-
-    <!-- Telegram Confirmation Modal -->
-    <div id="telegram-confirmation-modal" class="telegram-confirmation-overlay" style="display: none;">
-      <div class="telegram-confirmation-modal">
-        <div class="telegram-modal-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240.1 240.1">
-            <linearGradient id="telegram_gradient_modal" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581"
-              x2="-838.041" y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
-              <stop offset="0" style="stop-color:#2AABEE" />
-              <stop offset="1" style="stop-color:#229ED9" />
-            </linearGradient>
-            <circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#telegram_gradient_modal)" cx="120.1" cy="120.1"
-              r="120.1" />
-            <path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF"
-              d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z" />
-          </svg>
-        </div>
-        <div class="telegram-modal-title">Хотите перейти?</div>
-        <div class="telegram-modal-buttons">
-          <button id="telegram-proceed-btn" class="telegram-proceed-button">Перейти</button>
-          <button id="telegram-cancel-btn" class="telegram-cancel-button">Отменить</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Menu Bottom Sheet Modal -->
-    <div id="menu-bottom-sheet" class="hidden">
-      <div id="menu-sheet-content-inner"
-        class="menu-sheet-content glass-sheet w-full max-w-md rounded-t-[2.5rem] sm:rounded-t-[2.5rem] pb-4 sm:pb-6 shadow-glass relative overflow-hidden premium-sheet-transition transform translate-y-full mx-auto">
-        <div class="w-full flex justify-center pt-4 pb-2">
-          <div class="w-10 h-1.5 bg-gray-400/30 rounded-full"></div>
-        </div>
-        <div class="px-5 pb-4 space-y-2 pt-4">
-          <!-- Reset Chat Button -->
-          <button id="reset-chat-btn"
-            class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 transition-all duration-200">
-            <div class="flex items-center space-x-4">
-              <div class="w-11 h-11 glass-icon-container">
-                <div class="glass-icon-bg bg-tint-blue"></div>
-                <span class="material-symbols-rounded text-blue-600 text-xl relative z-10">add_comment</span>
-              </div>
-              <span class="text-gray-800 font-semibold text-[17px]" data-i18n="newChat">Новий чат</span>
-            </div>
-            <span class="material-symbols-rounded text-gray-400 text-[18px]">arrow_forward_ios</span>
+            <span>Получить в Telegram</span>
           </button>
 
-          <!-- Rooms Button -->
-          <button id="rooms-menu-btn"
-            class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 transition-all duration-200">
-            <div class="flex items-center space-x-4">
-              <div class="w-11 h-11 glass-icon-container">
-                <div class="glass-icon-bg bg-tint-purple"></div>
-                <span class="material-symbols-rounded text-purple-600 text-xl relative z-10">home</span>
-              </div>
-              <span class="text-gray-800 font-semibold text-[17px]">Номери</span>
-            </div>
-            <span class="material-symbols-rounded text-gray-400 text-[18px]">arrow_forward_ios</span>
-          </button>
-
-          <!-- Contact Manager Button -->
-          <button id="contact-manager-btn"
-            class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 transition-all duration-200">
-            <div class="flex items-center space-x-4">
-              <div class="w-11 h-11 glass-icon-container">
-                <div class="glass-icon-bg bg-tint-sky"></div>
-                <span class="material-symbols-rounded text-sky-600 text-xl relative z-10">headset_mic</span>
-              </div>
-              <span class="text-gray-800 font-semibold text-[17px]" data-i18n="contactManager">Менеджер</span>
-            </div>
-            <span class="material-symbols-rounded text-gray-400 text-[18px]">arrow_forward_ios</span>
-          </button>
-
-          <!-- Previous Dialogs Button -->
-          <button id="history-menu-btn"
-            class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 transition-all duration-200">
-            <div class="flex items-center space-x-4">
-              <div class="w-11 h-11 glass-icon-container">
-                <div class="glass-icon-bg bg-tint-orange"></div>
-                <span class="material-symbols-rounded text-orange-600 text-xl relative z-10">inventory_2</span>
-              </div>
-              <span class="text-gray-800 font-semibold text-[17px]">Previous Dialogs</span>
-            </div>
-            <span class="material-symbols-rounded text-gray-400 text-[18px]">arrow_forward_ios</span>
-          </button>
-
-          <!-- Sound Toggle Button -->
-          <button id="sound-toggle-btn"
-            class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 transition-all duration-200">
-            <div class="flex items-center space-x-4">
-              <div class="w-11 h-11 glass-icon-container">
-                <div class="glass-icon-bg bg-tint-indigo"></div>
-                <span id="sound-icon-on"
-                  class="material-symbols-rounded text-indigo-600 text-xl relative z-10">volume_up</span>
-                <span id="sound-icon-off"
-                  class="hidden material-symbols-rounded text-gray-400 text-xl relative z-10">volume_off</span>
-              </div>
-              <span class="text-gray-800 font-semibold text-[17px]">Звук сповіщень</span>
-            </div>
-            <span id="sound-status-text" class="text-gray-500 text-[15px] font-medium pr-1">Вкл</span>
-          </button>
-
-          <!-- Language Button -->
-          <button id="language-menu-btn"
-            class="w-full group flex items-center justify-between p-4 glass-item rounded-2xl shadow-subtle hover:bg-white/60 transition-all duration-200">
-            <div class="flex items-center space-x-4">
-              <div class="w-11 h-11 glass-icon-container">
-                <div class="glass-icon-bg bg-tint-green"></div>
-                <span class="material-symbols-rounded text-green-700 text-xl relative z-10">translate</span>
-              </div>
-              <span class="text-gray-800 font-semibold text-[17px]" data-i18n="language">Мова</span>
-            </div>
-            <div class="flex items-center space-x-1 text-gray-400">
-              <span id="current-lang-display" class="text-[15px] font-medium uppercase">UK</span>
-              <span class="material-symbols-rounded text-[18px]">arrow_forward_ios</span>
-            </div>
-          </button>
-
-          <button id="menu-sheet-close"
-            class="w-full py-4 glass-button rounded-2xl text-gray-800 font-bold text-[17px] active:scale-[0.98] hover:bg-white/70 transition-all duration-200 shadow-sm">
+          <button id="guide-sheet-close"
+            class="mt-3 w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">
             Закрыть
           </button>
         </div>
       </div>
 
-      <!-- Language Submenu Modal (Nested) -->
-      <div id="language-sheet-modal" class="hidden">
-        <div id="language-sheet-content-inner"
-          class="w-full max-w-md bg-white/85 backdrop-blur-[40px] border-t border-black/5 rounded-t-[2.5rem] shadow-[0_-8px_32px_0_rgba(0,0,0,0.08)] relative flex flex-col premium-sheet-transition transform translate-y-full"
-          style="height: 80dvh; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);">
-          <div class="px-8 pt-10 pb-4 text-center">
-            <h1 class="text-[24px] font-bold tracking-tight text-gray-900" data-i18n="selectLanguageTitle">Выберите язык
-            </h1>
-            <p class="text-gray-500 text-[15px] mt-1.5" data-i18n="selectLanguageDesc">Выберите язык для интерфейса</p>
-          </div>
-
-          <div id="language-sheet-list" class="flex-1 overflow-y-auto px-6 py-4 space-y-2">
-            <!-- Languages injected here -->
-          </div>
-
-          <div class="px-6 pb-6 pt-6">
-            <button id="language-sheet-close"
-              class="w-full py-4 h-[56px] flex items-center justify-center bg-gray-100 hover:bg-gray-200 active:scale-[0.98] transition-all rounded-2xl text-gray-900 font-semibold text-[17px] border border-gray-200">
-              Закрыть
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Guide Bottom Sheet Modal -->
-    <div id="guide-bottom-sheet" class="hidden">
-      <div id="guide-sheet-content-inner"
-        class="guide-sheet-content bg-white w-full rounded-t-2xl p-4 pb-8 shadow-2xl transform translate-y-full premium-sheet-transition">
-        <div class="flex justify-center mb-4">
-          <div class="w-12 h-1.5 bg-gray-200 rounded-full"></div>
-        </div>
-
-        <h3 class="text-center text-lg font-bold text-gray-800 mb-2">персональная карточка гостя</h3>
-
-        <div id="guide-items-list" class="guide-items-list mb-4">
-          <!-- Guide items will be populated here -->
-        </div>
-
-        <button id="guide-telegram-btn" class="guide-telegram-btn">
-          <svg width="24" height="24" viewBox="0 0 240.1 240.1" fill="white">
-            <path d="M82.9,178.9c-3.4,0-2.9-1.3-4.1-4.5L66.1,129l113.6-67.5" />
-            <path d="M82.9,178.9c2.6,0,3.8-1.2,5.2-2.6l14-13.6l-29.2-17.6" />
-            <path
-              d="M72.9,145.1l70.8,52.2c8.1,4.5,13.9,2.1,15.9-7.5l28.8-135.8c2.9-11.8-4.5-17.1-12.2-13.6L38.6,108.2c-11.5,4.6-11.5,11-2.1,13.9l43.4,13.6l100.5-63.4c4.7-2.9,9.1-1.3,5.5,1.8" />
-          </svg>
-          <span>Получить в Telegram</span>
-        </button>
-
-        <button id="guide-sheet-close"
-          class="mt-3 w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">
-          Закрыть
-        </button>
-      </div>
-    </div>
-
-    <!-- Telegram Booking Confirmation Modal (Deprecated/Disabled) -->
-    <!--
+      <!-- Telegram Booking Confirmation Modal (Deprecated/Disabled) -->
+      <!--
     <div id="telegram-booking-modal" class="telegram-confirmation-modal hidden">
       <div class="telegram-header">
         <button id="telegram-booking-close" class="telegram-back-btn">Закрыть</button>
@@ -1343,556 +1351,556 @@
     </div>
     -->
 
-    <!-- App Download Modal -->
-    <div id="app-download-modal" class="hidden">
-      <div id="app-download-content-inner"
-        class="relative z-20 w-full max-w-md mx-auto liquid-bg rounded-t-[2.5rem] shadow-glass border-t border-white/50 h-[65vh] flex flex-col bg-white dark:bg-slate-900 mt-auto premium-sheet-transition transform translate-y-full">
-        <!-- Handle -->
-        <div class="w-full flex justify-center pt-5 pb-2">
-          <div class="w-12 h-1.5 bg-slate-300/60 rounded-full backdrop-blur-md"></div>
-        </div>
-        <!-- Content Container -->
-        <div class="flex-1 flex flex-col items-center px-8 pt-6 pb-10">
-          <!-- Title -->
-          <h2
-            class="text-3xl font-bold text-center text-slate-800 dark:text-slate-100 mb-10 tracking-tight leading-tight drop-shadow-sm">
-            Перейти в<br />приложение
-          </h2>
-          <!-- Buttons Stack -->
-          <div class="w-full flex flex-col gap-6 flex-1 justify-center">
-            <!-- App Store Button -->
-            <button id="btn-app-store"
-              class="liquid-button group relative w-full h-20 rounded-full flex items-center px-6 shadow-glass-button bg-white dark:bg-slate-800">
-              <div
-                class="flex items-center justify-center w-12 h-12 bg-black text-white rounded-full mr-5 shadow-lg md:group-hover:scale-110 transition-transform duration-300 shrink-0">
-                <!-- Apple Logo -->
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/App_Store_%28iOS%29.svg/512px-App_Store_%28iOS%29.svg.png"
-                  alt="App Store" class="w-full h-full object-cover rounded-full" />
-              </div>
-              <div class="flex flex-col items-start whitespace-nowrap overflow-hidden">
-                <span class="text-[0.65rem] sm:text-xs text-slate-500 font-medium tracking-wide uppercase">Download on
-                  the</span>
-                <span class="text-lg sm:text-xl text-slate-800 dark:text-slate-100 font-bold tracking-tight">App
-                  Store</span>
-              </div>
-              <div
-                class="absolute right-6 opacity-100 text-slate-400 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 md:text-primary">
-                <span class="material-symbols-outlined">arrow_forward_ios</span>
-              </div>
-            </button>
-            <!-- Google Play Button -->
-            <button id="btn-google-play"
-              class="liquid-button group relative w-full h-20 rounded-full flex items-center px-6 shadow-glass-button bg-white dark:bg-slate-800">
-              <div
-                class="flex items-center justify-center w-12 h-12 bg-white rounded-full mr-5 shadow-lg border border-slate-100 md:group-hover:scale-110 transition-transform duration-300 shrink-0">
-                <!-- Google Play Logo -->
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Google_Play_Arrow_logo.svg/512px-Google_Play_Arrow_logo.svg.png"
-                  alt="Google Play" class="w-6 h-6 object-contain" />
-              </div>
-              <div class="flex flex-col items-start whitespace-nowrap overflow-hidden">
-                <span class="text-[0.7rem] sm:text-xs text-slate-500 font-medium tracking-wide uppercase">GET IT
-                  ON</span>
-                <span class="text-lg sm:text-xl text-slate-800 dark:text-slate-100 font-bold tracking-tight">Google
-                  Play</span>
-              </div>
-              <div
-                class="absolute right-6 opacity-100 text-slate-400 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 md:text-primary">
-                <span class="material-symbols-outlined">arrow_forward_ios</span>
-              </div>
-            </button>
+      <!-- App Download Modal -->
+      <div id="app-download-modal" class="hidden">
+        <div id="app-download-content-inner"
+          class="relative z-20 w-full max-w-md mx-auto liquid-bg rounded-t-[2.5rem] shadow-glass border-t border-white/50 h-[65vh] flex flex-col bg-white dark:bg-slate-900 mt-auto premium-sheet-transition transform translate-y-full">
+          <!-- Handle -->
+          <div class="w-full flex justify-center pt-5 pb-2">
+            <div class="w-12 h-1.5 bg-slate-300/60 rounded-full backdrop-blur-md"></div>
           </div>
-          <!-- Footer / Close -->
-          <div class="mt-8 mb-4">
-            <button id="app-download-later"
-              class="px-6 py-3 rounded-full text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 transition-all text-sm font-bold tracking-wide uppercase">
-              Закрыть
-            </button>
+          <!-- Content Container -->
+          <div class="flex-1 flex flex-col items-center px-8 pt-6 pb-10">
+            <!-- Title -->
+            <h2
+              class="text-3xl font-bold text-center text-slate-800 dark:text-slate-100 mb-10 tracking-tight leading-tight drop-shadow-sm">
+              Перейти в<br />приложение
+            </h2>
+            <!-- Buttons Stack -->
+            <div class="w-full flex flex-col gap-6 flex-1 justify-center">
+              <!-- App Store Button -->
+              <button id="btn-app-store"
+                class="liquid-button group relative w-full h-20 rounded-full flex items-center px-6 shadow-glass-button bg-white dark:bg-slate-800">
+                <div
+                  class="flex items-center justify-center w-12 h-12 bg-black text-white rounded-full mr-5 shadow-lg md:group-hover:scale-110 transition-transform duration-300 shrink-0">
+                  <!-- Apple Logo -->
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/App_Store_%28iOS%29.svg/512px-App_Store_%28iOS%29.svg.png"
+                    alt="App Store" class="w-full h-full object-cover rounded-full" />
+                </div>
+                <div class="flex flex-col items-start whitespace-nowrap overflow-hidden">
+                  <span class="text-[0.65rem] sm:text-xs text-slate-500 font-medium tracking-wide uppercase">Download on
+                    the</span>
+                  <span class="text-lg sm:text-xl text-slate-800 dark:text-slate-100 font-bold tracking-tight">App
+                    Store</span>
+                </div>
+                <div
+                  class="absolute right-6 opacity-100 text-slate-400 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 md:text-primary">
+                  <span class="material-symbols-outlined">arrow_forward_ios</span>
+                </div>
+              </button>
+              <!-- Google Play Button -->
+              <button id="btn-google-play"
+                class="liquid-button group relative w-full h-20 rounded-full flex items-center px-6 shadow-glass-button bg-white dark:bg-slate-800">
+                <div
+                  class="flex items-center justify-center w-12 h-12 bg-white rounded-full mr-5 shadow-lg border border-slate-100 md:group-hover:scale-110 transition-transform duration-300 shrink-0">
+                  <!-- Google Play Logo -->
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Google_Play_Arrow_logo.svg/512px-Google_Play_Arrow_logo.svg.png"
+                    alt="Google Play" class="w-6 h-6 object-contain" />
+                </div>
+                <div class="flex flex-col items-start whitespace-nowrap overflow-hidden">
+                  <span class="text-[0.7rem] sm:text-xs text-slate-500 font-medium tracking-wide uppercase">GET IT
+                    ON</span>
+                  <span class="text-lg sm:text-xl text-slate-800 dark:text-slate-100 font-bold tracking-tight">Google
+                    Play</span>
+                </div>
+                <div
+                  class="absolute right-6 opacity-100 text-slate-400 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 md:text-primary">
+                  <span class="material-symbols-outlined">arrow_forward_ios</span>
+                </div>
+              </button>
+            </div>
+            <!-- Footer / Close -->
+            <div class="mt-8 mb-4">
+              <button id="app-download-later"
+                class="px-6 py-3 rounded-full text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 transition-all text-sm font-bold tracking-wide uppercase">
+                Закрыть
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
 
-  <!-- Room Edit Modal -->
-  <div id="room-modal-overlay" class="room-modal-overlay">
-    <div class="room-modal">
-      <div class="room-modal-header">
-        <h3 id="room-modal-title" class="room-modal-title">Новий номер</h3>
-        <button id="room-modal-close" class="room-modal-close">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-      <div class="room-modal-body">
-        <input type="hidden" id="room-edit-id">
-
-        <div class="room-form-group">
-          <label class="room-form-label">Назва номера</label>
-          <input type="text" id="room-name-input" class="room-form-input" placeholder="Наприклад: Люкс Панорама">
+    <!-- Room Edit Modal -->
+    <div id="room-modal-overlay" class="room-modal-overlay">
+      <div class="room-modal">
+        <div class="room-modal-header">
+          <h3 id="room-modal-title" class="room-modal-title">Новий номер</h3>
+          <button id="room-modal-close" class="room-modal-close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
+        <div class="room-modal-body">
+          <input type="hidden" id="room-edit-id">
 
-        <div class="room-form-group">
-          <label class="room-form-label">Опис</label>
-          <textarea id="room-description-input" class="room-form-textarea"
-            placeholder="Детальний опис номера..."></textarea>
-        </div>
-
-        <div class="room-form-row">
           <div class="room-form-group">
-            <label class="room-form-label">Площа (м²)</label>
-            <input type="number" id="room-area-input" class="room-form-input" placeholder="45" min="1">
+            <label class="room-form-label">Назва номера</label>
+            <input type="text" id="room-name-input" class="room-form-input" placeholder="Наприклад: Люкс Панорама">
           </div>
-          <div class="room-form-group">
-            <label class="room-form-label">Ціна за ніч ($)</label>
-            <input type="number" id="room-price-input" class="room-form-input" placeholder="150" min="1">
-          </div>
-        </div>
 
-        <div class="room-form-group">
-          <label class="room-form-label">Заглавне фото</label>
-          <div id="main-photo-upload" class="photo-upload-area">
-            <div class="photo-upload-placeholder">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                <polyline points="21 15 16 10 5 21"></polyline>
-              </svg>
-              <span>Натисніть для завантаження</span>
+          <div class="room-form-group">
+            <label class="room-form-label">Опис</label>
+            <textarea id="room-description-input" class="room-form-textarea"
+              placeholder="Детальний опис номера..."></textarea>
+          </div>
+
+          <div class="room-form-row">
+            <div class="room-form-group">
+              <label class="room-form-label">Площа (м²)</label>
+              <input type="number" id="room-area-input" class="room-form-input" placeholder="45" min="1">
+            </div>
+            <div class="room-form-group">
+              <label class="room-form-label">Ціна за ніч ($)</label>
+              <input type="number" id="room-price-input" class="room-form-input" placeholder="150" min="1">
             </div>
           </div>
-          <input type="file" id="main-photo-input" accept="image/*" style="display: none;">
-        </div>
 
-        <div class="room-form-group">
-          <label class="room-form-label">Галерея фото</label>
-          <div id="gallery-upload-grid" class="gallery-upload-grid">
-            <div id="gallery-add-btn" class="gallery-add-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              <span>Додати</span>
-            </div>
-          </div>
-          <input type="file" id="gallery-photo-input" accept="image/*" multiple style="display: none;">
-        </div>
-
-        <div class="room-toggle-group">
-          <span class="room-toggle-label">Кнопка "Задати питання"</span>
-          <label class="switch">
-            <input type="checkbox" id="room-ask-toggle" checked>
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <!-- Marketing Section -->
-        <div class="room-form-section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2">
-            <polygon
-              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-            </polygon>
-          </svg>
-          Маркетинг
-        </div>
-
-        <div class="room-form-group">
-          <label class="room-form-label">Бейдж</label>
-          <select id="room-badge-input" class="room-form-select">
-            <option value="">Без бейджа</option>
-            <option value="popular">Most Popular</option>
-            <option value="new">New</option>
-            <option value="limited">Limited</option>
-            <option value="recommended">Recommended</option>
-            <option value="bestseller">Bestseller</option>
-          </select>
-        </div>
-
-        <div class="room-form-group">
-          <label class="room-form-label">Залишилось номерів (0 = не показувати)</label>
-          <input type="number" id="room-left-count-input" class="room-form-input" placeholder="0" min="0" max="99">
-        </div>
-
-        <div class="room-form-row">
           <div class="room-form-group">
-            <label class="room-form-label">Знижка (%)</label>
-            <input type="number" id="room-discount-input" class="room-form-input" placeholder="0" min="0" max="99">
-          </div>
-          <div class="room-form-group">
-            <label class="room-form-label">Стара ціна ($)</label>
-            <input type="number" id="room-original-price-input" class="room-form-input" placeholder="0" min="0">
-          </div>
-        </div>
-
-        <!-- Reviews Section -->
-        <div class="room-form-section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2">
-            <path
-              d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
-            </path>
-          </svg>
-          Відгуки
-        </div>
-
-        <div class="room-form-group">
-          <div id="room-reviews-list" class="reviews-list">
-            <!-- Reviews will be rendered here -->
-          </div>
-
-          <div class="add-review-form">
-            <div class="room-form-label">Додати відгук</div>
-            <div class="review-inputs-row">
-              <input type="text" id="room-review-author" class="room-form-input" placeholder="Ім'я гостя">
-              <select id="room-review-rating" class="room-form-select" style="width: 80px;">
-                <option value="5">5 ★</option>
-                <option value="4">4 ★</option>
-                <option value="3">3 ★</option>
-                <option value="2">2 ★</option>
-                <option value="1">1 ★</option>
-              </select>
-              <input type="date" id="room-review-date" class="room-form-input" style="width: 130px;">
+            <label class="room-form-label">Заглавне фото</label>
+            <div id="main-photo-upload" class="photo-upload-area">
+              <div class="photo-upload-placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <span>Натисніть для завантаження</span>
+              </div>
             </div>
-            <textarea id="room-review-text" class="room-form-textarea" placeholder="Текст відгуку..." rows="2"
-              style="margin-top: 8px;"></textarea>
-            <button type="button" id="room-add-review-btn" class="room-btn room-btn-secondary"
-              style="margin-top: 8px; width: 100%;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              Додати відгук
-            </button>
+            <input type="file" id="main-photo-input" accept="image/*" style="display: none;">
           </div>
-        </div>
 
-        <!-- Calendar Section -->
-        <div class="room-form-group">
-          <label class="room-form-label">Календарь доступности</label>
-          <div class="calendar-controls">
-            <button type="button" id="calendar-prev-month" class="calendar-nav-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="15 18 9 12 15 6"></polyline>
-              </svg>
-            </button>
-            <span id="calendar-month-label" class="calendar-month-label">Январь 2026</span>
-            <button type="button" id="calendar-next-month" class="calendar-nav-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </button>
-            <button type="button" id="calendar-generate-random"
-              class="room-btn room-btn-secondary calendar-generate-btn">
-              Сгенерировать
-            </button>
+          <div class="room-form-group">
+            <label class="room-form-label">Галерея фото</label>
+            <div id="gallery-upload-grid" class="gallery-upload-grid">
+              <div id="gallery-add-btn" class="gallery-add-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Додати</span>
+              </div>
+            </div>
+            <input type="file" id="gallery-photo-input" accept="image/*" multiple style="display: none;">
           </div>
-          <div class="calendar-weekdays">
-            <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+
+          <div class="room-toggle-group">
+            <span class="room-toggle-label">Кнопка "Задати питання"</span>
+            <label class="switch">
+              <input type="checkbox" id="room-ask-toggle" checked>
+              <span class="slider"></span>
+            </label>
           </div>
-          <div id="room-calendar" class="room-calendar-grid"></div>
-          <div class="calendar-legend">
-            <span class="legend-item legend-available"><span class="legend-dot"></span>Свободно</span>
-            <span class="legend-item legend-booked"><span class="legend-dot"></span>Занято</span>
+
+          <!-- Marketing Section -->
+          <div class="room-form-section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+              </polygon>
+            </svg>
+            Маркетинг
           </div>
-        </div>
-      </div>
-      <div class="room-modal-footer">
-        <button id="room-delete-btn" class="room-btn room-btn-danger" style="display: none;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 6h18"></path>
-            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-          </svg>
-        </button>
-        <button id="room-cancel-btn" class="room-btn room-btn-secondary">Скасувати</button>
-        <button id="room-save-btn" class="room-btn room-btn-primary">Зберегти</button>
-      </div>
-    </div>
-  </div>
 
-  <!-- Service Edit Modal -->
-  <div id="service-modal-overlay" class="service-modal-overlay">
-    <div class="service-modal">
-      <div class="service-modal-header">
-        <h3 id="service-modal-title" class="service-modal-title">Нова послуга</h3>
-        <button id="service-modal-close" class="service-modal-close">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-      <div class="service-modal-body">
-        <input type="hidden" id="service-edit-id">
-
-        <div class="service-form-group">
-          <label class="service-form-label">Назва послуги</label>
-          <input type="text" id="service-name-input" class="service-form-input" placeholder="Наприклад: SPA масаж">
-        </div>
-
-        <div class="service-form-group">
-          <label class="service-form-label">Опис</label>
-          <textarea id="service-description-input" class="service-form-textarea"
-            placeholder="Детальний опис послуги..."></textarea>
-        </div>
-
-        <div class="service-form-row">
-          <div class="service-form-group">
-            <label class="service-form-label">Ціна ($)</label>
-            <input type="number" id="service-price-input" class="service-form-input" placeholder="100" min="0">
-          </div>
-          <div class="service-form-group">
-            <label class="service-form-label">Тип ціни</label>
-            <select id="service-price-type-input" class="service-form-select">
-              <option value="fixed">Фіксована</option>
-              <option value="per_hour">За годину</option>
-              <option value="per_day">За день</option>
-              <option value="on_request">За запитом</option>
+          <div class="room-form-group">
+            <label class="room-form-label">Бейдж</label>
+            <select id="room-badge-input" class="room-form-select">
+              <option value="">Без бейджа</option>
+              <option value="popular">Most Popular</option>
+              <option value="new">New</option>
+              <option value="limited">Limited</option>
+              <option value="recommended">Recommended</option>
+              <option value="bestseller">Bestseller</option>
             </select>
           </div>
-        </div>
 
-        <div class="service-form-group">
-          <label class="service-form-label">Категорія</label>
-          <select id="service-category-input" class="service-form-select">
-            <option value="spa">SPA & Wellness</option>
-            <option value="restaurant">Ресторан</option>
-            <option value="transport">Трансфер</option>
-            <option value="entertainment">Розваги</option>
-            <option value="business">Бізнес</option>
-            <option value="kids">Для дітей</option>
-            <option value="general" selected>Інше</option>
-          </select>
-        </div>
+          <div class="room-form-group">
+            <label class="room-form-label">Залишилось номерів (0 = не показувати)</label>
+            <input type="number" id="room-left-count-input" class="room-form-input" placeholder="0" min="0" max="99">
+          </div>
 
-        <div class="service-form-group">
-          <label class="service-form-label">Заглавне фото</label>
-          <div id="service-main-photo-upload" class="photo-upload-area">
-            <div class="photo-upload-placeholder">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                <polyline points="21 15 16 10 5 21"></polyline>
-              </svg>
-              <span>Натисніть для завантаження</span>
+          <div class="room-form-row">
+            <div class="room-form-group">
+              <label class="room-form-label">Знижка (%)</label>
+              <input type="number" id="room-discount-input" class="room-form-input" placeholder="0" min="0" max="99">
+            </div>
+            <div class="room-form-group">
+              <label class="room-form-label">Стара ціна ($)</label>
+              <input type="number" id="room-original-price-input" class="room-form-input" placeholder="0" min="0">
             </div>
           </div>
-          <input type="file" id="service-main-photo-input" accept="image/*" style="display: none;">
-        </div>
 
-        <div class="service-form-group">
-          <label class="service-form-label">Галерея фото</label>
-          <div id="service-gallery-upload-grid" class="service-gallery-upload-grid">
-            <div id="service-gallery-add-btn" class="service-gallery-add-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              <span>Додати</span>
+          <!-- Reviews Section -->
+          <div class="room-form-section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path
+                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+              </path>
+            </svg>
+            Відгуки
+          </div>
+
+          <div class="room-form-group">
+            <div id="room-reviews-list" class="reviews-list">
+              <!-- Reviews will be rendered here -->
+            </div>
+
+            <div class="add-review-form">
+              <div class="room-form-label">Додати відгук</div>
+              <div class="review-inputs-row">
+                <input type="text" id="room-review-author" class="room-form-input" placeholder="Ім'я гостя">
+                <select id="room-review-rating" class="room-form-select" style="width: 80px;">
+                  <option value="5">5 ★</option>
+                  <option value="4">4 ★</option>
+                  <option value="3">3 ★</option>
+                  <option value="2">2 ★</option>
+                  <option value="1">1 ★</option>
+                </select>
+                <input type="date" id="room-review-date" class="room-form-input" style="width: 130px;">
+              </div>
+              <textarea id="room-review-text" class="room-form-textarea" placeholder="Текст відгуку..." rows="2"
+                style="margin-top: 8px;"></textarea>
+              <button type="button" id="room-add-review-btn" class="room-btn room-btn-secondary"
+                style="margin-top: 8px; width: 100%;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Додати відгук
+              </button>
             </div>
           </div>
-          <input type="file" id="service-gallery-photo-input" accept="image/*" multiple style="display: none;">
-        </div>
 
-        <div class="service-toggle-group">
-          <span class="service-toggle-label">Кнопка "Задати питання"</span>
-          <label class="switch">
-            <input type="checkbox" id="service-ask-toggle" checked>
-            <span class="slider"></span>
-          </label>
+          <!-- Calendar Section -->
+          <div class="room-form-group">
+            <label class="room-form-label">Календарь доступности</label>
+            <div class="calendar-controls">
+              <button type="button" id="calendar-prev-month" class="calendar-nav-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+              <span id="calendar-month-label" class="calendar-month-label">Январь 2026</span>
+              <button type="button" id="calendar-next-month" class="calendar-nav-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+              <button type="button" id="calendar-generate-random"
+                class="room-btn room-btn-secondary calendar-generate-btn">
+                Сгенерировать
+              </button>
+            </div>
+            <div class="calendar-weekdays">
+              <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+            </div>
+            <div id="room-calendar" class="room-calendar-grid"></div>
+            <div class="calendar-legend">
+              <span class="legend-item legend-available"><span class="legend-dot"></span>Свободно</span>
+              <span class="legend-item legend-booked"><span class="legend-dot"></span>Занято</span>
+            </div>
+          </div>
         </div>
-
-        <div class="service-toggle-group">
-          <span class="service-toggle-label">Кнопка "Додати до бронювання"</span>
-          <label class="switch">
-            <input type="checkbox" id="service-add-booking-toggle" checked>
-            <span class="slider"></span>
-          </label>
+        <div class="room-modal-footer">
+          <button id="room-delete-btn" class="room-btn room-btn-danger" style="display: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+            </svg>
+          </button>
+          <button id="room-cancel-btn" class="room-btn room-btn-secondary">Скасувати</button>
+          <button id="room-save-btn" class="room-btn room-btn-primary">Зберегти</button>
         </div>
+      </div>
+    </div>
 
-        <!-- Marketing Section -->
-        <div class="service-form-section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2">
-            <polygon
-              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-            </polygon>
-          </svg>
-          Маркетинг
+    <!-- Service Edit Modal -->
+    <div id="service-modal-overlay" class="service-modal-overlay">
+      <div class="service-modal">
+        <div class="service-modal-header">
+          <h3 id="service-modal-title" class="service-modal-title">Нова послуга</h3>
+          <button id="service-modal-close" class="service-modal-close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
+        <div class="service-modal-body">
+          <input type="hidden" id="service-edit-id">
 
-        <div class="service-form-group">
-          <label class="service-form-label">Бейдж</label>
-          <select id="service-badge-input" class="service-form-select">
-            <option value="">Без бейджа</option>
-            <option value="popular">Most Popular</option>
-            <option value="new">New</option>
-            <option value="limited">Limited</option>
-            <option value="recommended">Recommended</option>
-            <option value="bestseller">Bestseller</option>
-          </select>
-        </div>
-
-        <div class="service-form-group">
-          <label class="service-form-label">Залишилось місць (0 = не показувати)</label>
-          <input type="number" id="service-left-count-input" class="service-form-input" placeholder="0" min="0"
-            max="99">
-        </div>
-
-        <div class="service-form-row">
           <div class="service-form-group">
-            <label class="service-form-label">Знижка (%)</label>
-            <input type="number" id="service-discount-input" class="service-form-input" placeholder="0" min="0"
+            <label class="service-form-label">Назва послуги</label>
+            <input type="text" id="service-name-input" class="service-form-input" placeholder="Наприклад: SPA масаж">
+          </div>
+
+          <div class="service-form-group">
+            <label class="service-form-label">Опис</label>
+            <textarea id="service-description-input" class="service-form-textarea"
+              placeholder="Детальний опис послуги..."></textarea>
+          </div>
+
+          <div class="service-form-row">
+            <div class="service-form-group">
+              <label class="service-form-label">Ціна ($)</label>
+              <input type="number" id="service-price-input" class="service-form-input" placeholder="100" min="0">
+            </div>
+            <div class="service-form-group">
+              <label class="service-form-label">Тип ціни</label>
+              <select id="service-price-type-input" class="service-form-select">
+                <option value="fixed">Фіксована</option>
+                <option value="per_hour">За годину</option>
+                <option value="per_day">За день</option>
+                <option value="on_request">За запитом</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="service-form-group">
+            <label class="service-form-label">Категорія</label>
+            <select id="service-category-input" class="service-form-select">
+              <option value="spa">SPA & Wellness</option>
+              <option value="restaurant">Ресторан</option>
+              <option value="transport">Трансфер</option>
+              <option value="entertainment">Розваги</option>
+              <option value="business">Бізнес</option>
+              <option value="kids">Для дітей</option>
+              <option value="general" selected>Інше</option>
+            </select>
+          </div>
+
+          <div class="service-form-group">
+            <label class="service-form-label">Заглавне фото</label>
+            <div id="service-main-photo-upload" class="photo-upload-area">
+              <div class="photo-upload-placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <span>Натисніть для завантаження</span>
+              </div>
+            </div>
+            <input type="file" id="service-main-photo-input" accept="image/*" style="display: none;">
+          </div>
+
+          <div class="service-form-group">
+            <label class="service-form-label">Галерея фото</label>
+            <div id="service-gallery-upload-grid" class="service-gallery-upload-grid">
+              <div id="service-gallery-add-btn" class="service-gallery-add-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Додати</span>
+              </div>
+            </div>
+            <input type="file" id="service-gallery-photo-input" accept="image/*" multiple style="display: none;">
+          </div>
+
+          <div class="service-toggle-group">
+            <span class="service-toggle-label">Кнопка "Задати питання"</span>
+            <label class="switch">
+              <input type="checkbox" id="service-ask-toggle" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="service-toggle-group">
+            <span class="service-toggle-label">Кнопка "Додати до бронювання"</span>
+            <label class="switch">
+              <input type="checkbox" id="service-add-booking-toggle" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- Marketing Section -->
+          <div class="service-form-section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+              </polygon>
+            </svg>
+            Маркетинг
+          </div>
+
+          <div class="service-form-group">
+            <label class="service-form-label">Бейдж</label>
+            <select id="service-badge-input" class="service-form-select">
+              <option value="">Без бейджа</option>
+              <option value="popular">Most Popular</option>
+              <option value="new">New</option>
+              <option value="limited">Limited</option>
+              <option value="recommended">Recommended</option>
+              <option value="bestseller">Bestseller</option>
+            </select>
+          </div>
+
+          <div class="service-form-group">
+            <label class="service-form-label">Залишилось місць (0 = не показувати)</label>
+            <input type="number" id="service-left-count-input" class="service-form-input" placeholder="0" min="0"
               max="99">
           </div>
-          <div class="service-form-group">
-            <label class="service-form-label">Стара ціна ($)</label>
-            <input type="number" id="service-original-price-input" class="service-form-input" placeholder="0" min="0">
-          </div>
-        </div>
 
-        <!-- Reviews Section -->
-        <div class="service-form-section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2">
-            <path
-              d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
-            </path>
-          </svg>
-          Відгуки
-        </div>
-
-        <div class="service-form-group">
-          <div id="service-reviews-list" class="reviews-list">
-            <!-- Reviews will be rendered here -->
-          </div>
-
-          <div class="add-review-form">
-            <div class="service-form-label">Додати відгук</div>
-            <div class="review-inputs-row">
-              <input type="text" id="service-review-author" class="service-form-input" placeholder="Ім'я гостя">
-              <select id="service-review-rating" class="service-form-select" style="width: 80px;">
-                <option value="5">5 ★</option>
-                <option value="4">4 ★</option>
-                <option value="3">3 ★</option>
-                <option value="2">2 ★</option>
-                <option value="1">1 ★</option>
-              </select>
-              <input type="date" id="service-review-date" class="service-form-input" style="width: 130px;">
+          <div class="service-form-row">
+            <div class="service-form-group">
+              <label class="service-form-label">Знижка (%)</label>
+              <input type="number" id="service-discount-input" class="service-form-input" placeholder="0" min="0"
+                max="99">
             </div>
-            <textarea id="service-review-text" class="service-form-textarea" placeholder="Текст відгуку..." rows="2"
-              style="margin-top: 8px;"></textarea>
-            <button type="button" id="service-add-review-btn" class="service-btn service-btn-secondary"
-              style="margin-top: 8px; width: 100%;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              Додати відгук
-            </button>
+            <div class="service-form-group">
+              <label class="service-form-label">Стара ціна ($)</label>
+              <input type="number" id="service-original-price-input" class="service-form-input" placeholder="0" min="0">
+            </div>
+          </div>
+
+          <!-- Reviews Section -->
+          <div class="service-form-section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path
+                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+              </path>
+            </svg>
+            Відгуки
+          </div>
+
+          <div class="service-form-group">
+            <div id="service-reviews-list" class="reviews-list">
+              <!-- Reviews will be rendered here -->
+            </div>
+
+            <div class="add-review-form">
+              <div class="service-form-label">Додати відгук</div>
+              <div class="review-inputs-row">
+                <input type="text" id="service-review-author" class="service-form-input" placeholder="Ім'я гостя">
+                <select id="service-review-rating" class="service-form-select" style="width: 80px;">
+                  <option value="5">5 ★</option>
+                  <option value="4">4 ★</option>
+                  <option value="3">3 ★</option>
+                  <option value="2">2 ★</option>
+                  <option value="1">1 ★</option>
+                </select>
+                <input type="date" id="service-review-date" class="service-form-input" style="width: 130px;">
+              </div>
+              <textarea id="service-review-text" class="service-form-textarea" placeholder="Текст відгуку..." rows="2"
+                style="margin-top: 8px;"></textarea>
+              <button type="button" id="service-add-review-btn" class="service-btn service-btn-secondary"
+                style="margin-top: 8px; width: 100%;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Додати відгук
+              </button>
+            </div>
           </div>
         </div>
+        <div class="service-modal-footer">
+          <button id="service-delete-btn" class="service-btn service-btn-danger" style="display: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+            </svg>
+          </button>
+          <button id="service-cancel-btn" class="service-btn service-btn-secondary">Скасувати</button>
+          <button id="service-save-btn" class="service-btn service-btn-primary">Зберегти</button>
+        </div>
       </div>
-      <div class="service-modal-footer">
-        <button id="service-delete-btn" class="service-btn service-btn-danger" style="display: none;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+    </div>
+
+    <!-- Item Preview Modal (for Room/Service cards in admin) -->
+    <div id="item-preview-overlay" class="item-preview-overlay">
+      <div class="item-preview-modal">
+        <button class="item-preview-close">&times;</button>
+        <div class="item-preview-image">
+          <img id="preview-image" src="" alt="">
+          <div class="item-preview-no-image">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            <span>Немає фото</span>
+          </div>
+        </div>
+        <div class="item-preview-content">
+          <h3 id="preview-title"></h3>
+          <div id="preview-price" class="item-preview-price"></div>
+          <div class="item-preview-description-wrapper">
+            <p id="preview-description" class="item-preview-description"></p>
+          </div>
+          <button id="preview-edit-btn" class="item-preview-edit-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            Редагувати
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Photo Gallery Overlay -->
+    <div id="photo-gallery-overlay" class="photo-gallery-overlay">
+      <div class="photo-gallery-header">
+        <span id="photo-gallery-counter" class="photo-gallery-counter">1 / 5</span>
+        <button id="photo-gallery-close" class="photo-gallery-close">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 6h18"></path>
-            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
-        <button id="service-cancel-btn" class="service-btn service-btn-secondary">Скасувати</button>
-        <button id="service-save-btn" class="service-btn service-btn-primary">Зберегти</button>
       </div>
-    </div>
-  </div>
-
-  <!-- Item Preview Modal (for Room/Service cards in admin) -->
-  <div id="item-preview-overlay" class="item-preview-overlay">
-    <div class="item-preview-modal">
-      <button class="item-preview-close">&times;</button>
-      <div class="item-preview-image">
-        <img id="preview-image" src="" alt="">
-        <div class="item-preview-no-image">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1.5">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-            <polyline points="21 15 16 10 5 21"></polyline>
+      <div class="photo-gallery-content">
+        <button id="photo-gallery-prev" class="photo-gallery-nav prev">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
-          <span>Немає фото</span>
-        </div>
-      </div>
-      <div class="item-preview-content">
-        <h3 id="preview-title"></h3>
-        <div id="preview-price" class="item-preview-price"></div>
-        <div class="item-preview-description-wrapper">
-          <p id="preview-description" class="item-preview-description"></p>
-        </div>
-        <button id="preview-edit-btn" class="item-preview-edit-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </button>
+        <img id="photo-gallery-image" class="photo-gallery-image" src="" alt="Room photo">
+        <button id="photo-gallery-next" class="photo-gallery-nav next">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
-          Редагувати
         </button>
       </div>
+      <div id="photo-gallery-dots" class="photo-gallery-dots"></div>
     </div>
-  </div>
-
-  <!-- Photo Gallery Overlay -->
-  <div id="photo-gallery-overlay" class="photo-gallery-overlay">
-    <div class="photo-gallery-header">
-      <span id="photo-gallery-counter" class="photo-gallery-counter">1 / 5</span>
-      <button id="photo-gallery-close" class="photo-gallery-close">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-    </div>
-    <div class="photo-gallery-content">
-      <button id="photo-gallery-prev" class="photo-gallery-nav prev">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-      </button>
-      <img id="photo-gallery-image" class="photo-gallery-image" src="" alt="Room photo">
-      <button id="photo-gallery-next" class="photo-gallery-nav next">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="9 18 15 12 9 6"></polyline>
-        </svg>
-      </button>
-    </div>
-    <div id="photo-gallery-dots" class="photo-gallery-dots"></div>
-  </div>
 
 
 
 
 
 
-  <!-- Application Scripts -->
-  <script type="module" src="js/app.js"></script>
+    <!-- Application Scripts -->
+    <script type="module" src="js/app.js"></script>
 
 </body>
 

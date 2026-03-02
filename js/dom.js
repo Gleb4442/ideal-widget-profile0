@@ -51,6 +51,7 @@ export const widgetIconContainer = document.getElementById('widget-icon-containe
 // Toggles
 export const tgToggle = document.getElementById('tg-toggle');
 export const cancellationBannerToggle = document.getElementById('cancellation-banner-toggle');
+export const inAppToggle = document.getElementById('in-app-toggle');
 
 // Banners
 export const banners = {

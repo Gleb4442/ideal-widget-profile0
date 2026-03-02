@@ -26,6 +26,7 @@ let currentServiceReviews = []; // Reviews state
 
 // Hotel info storage key
 const HOTEL_INFO_KEY = 'hotel_info';
+const IN_APP_MODE_KEY = 'in_app_mode';
 
 // Russian month names
 const MONTH_NAMES_RU = [
@@ -1580,6 +1581,54 @@ function updateCancellationVisibility() {
   }
 }
 
+// ========================================
+// IN APP MODE MANAGEMENT
+// ========================================
+
+export function loadInAppMode() {
+  try {
+    const saved = localStorage.getItem(IN_APP_MODE_KEY);
+    return saved ? JSON.parse(saved) : { enabled: false };
+  } catch (e) {
+    return { enabled: false };
+  }
+}
+
+export function saveInAppMode(settings) {
+  try {
+    localStorage.setItem(IN_APP_MODE_KEY, JSON.stringify(settings));
+    return true;
+  } catch (e) {
+    console.error('Error saving in-app mode settings:', e);
+    return false;
+  }
+}
+
+export function updateInAppVisibility() {
+  const settings = loadInAppMode();
+  if (dom.guideBadgeBtn) {
+    if (settings.enabled) {
+      dom.guideBadgeBtn.style.setProperty('display', 'none', 'important');
+    } else {
+      dom.guideBadgeBtn.style.setProperty('display', 'flex', 'important');
+    }
+  }
+}
+
+function initInAppMode() {
+  if (dom.inAppToggle) {
+    const settings = loadInAppMode();
+    dom.inAppToggle.checked = settings.enabled;
+
+    dom.inAppToggle.addEventListener('change', (e) => {
+      const enabled = e.target.checked;
+      saveInAppMode({ enabled });
+      updateInAppVisibility();
+    });
+  }
+  updateInAppVisibility();
+}
+
 function initCancellationBanner() {
   const toggle = document.getElementById('cancellation-banner-toggle');
   const banner = document.getElementById('cancellation-banner');
@@ -1873,5 +1922,6 @@ export function initAdmin() {
   initOperatorMode();
   initItemPreview();
   initCancellationBanner();
+  initInAppMode();
   initMenuManagement();
 }
