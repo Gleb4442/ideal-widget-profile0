@@ -8,8 +8,8 @@ const repoRoot = process.cwd();
 const chatPath = path.join(repoRoot, 'js', 'chat.js');
 const chatSource = fs.readFileSync(chatPath, 'utf8');
 
-const MP3_SRC = './assets/sounds/telegram-like-message.mp3';
-const WAV_SRC = './assets/sounds/telegram-like-message.wav';
+const PRIMARY_SRC = './assets/sounds/received-message.caf';
+const WAV_SRC = './assets/sounds/received-message.wav';
 
 function buildNotificationHarness({ rejectPlayFor = new Set() } = {}) {
   const sectionStart = chatSource.indexOf('// ===== NOTIFICATION SYSTEM =====');
@@ -97,60 +97,60 @@ async function flushMicrotasks() {
 test('notification sources and fallback constants are configured', () => {
   assert.match(
     chatSource,
-    /const NOTIFICATION_SOUND_SRC = '\.\/assets\/sounds\/telegram-like-message\.mp3';/
+    /const NOTIFICATION_SOUND_SRC = '\.\/assets\/sounds\/received-message\.caf';/
   );
   assert.match(
     chatSource,
-    /const NOTIFICATION_SOUND_WAV_FALLBACK_SRC = '\.\/assets\/sounds\/telegram-like-message\.wav';/
+    /const NOTIFICATION_SOUND_WAV_FALLBACK_SRC = '\.\/assets\/sounds\/received-message\.wav';/
   );
   assert.match(chatSource, /audio\.preload = 'auto';/);
 });
 
 test('sound files exist in assets/sounds and are non-empty', () => {
-  const mp3Path = path.join(repoRoot, 'assets', 'sounds', 'telegram-like-message.mp3');
-  const wavPath = path.join(repoRoot, 'assets', 'sounds', 'telegram-like-message.wav');
+  const primaryPath = path.join(repoRoot, 'assets', 'sounds', 'received-message.caf');
+  const wavPath = path.join(repoRoot, 'assets', 'sounds', 'received-message.wav');
 
-  const mp3Stat = fs.statSync(mp3Path);
+  const primaryStat = fs.statSync(primaryPath);
   const wavStat = fs.statSync(wavPath);
 
-  assert.ok(mp3Stat.isFile(), 'mp3 file must exist');
+  assert.ok(primaryStat.isFile(), 'primary sound file must exist');
   assert.ok(wavStat.isFile(), 'wav fallback file must exist');
-  assert.ok(mp3Stat.size > 0, 'mp3 file must be non-empty');
+  assert.ok(primaryStat.size > 0, 'primary sound file must be non-empty');
   assert.ok(wavStat.size > 0, 'wav file must be non-empty');
 });
 
-test('init fallback: mp3 load error switches playback to wav', async () => {
+test('init fallback: primary load error switches playback to wav', async () => {
   const harness = buildNotificationHarness();
   harness.initNotificationSound();
 
   const instances = harness.getInstances();
-  const mp3 = instances.find((a) => a.src === MP3_SRC);
+  const primary = instances.find((a) => a.src === PRIMARY_SRC);
   const wav = instances.find((a) => a.src === WAV_SRC);
 
-  assert.ok(mp3, 'mp3 audio instance should exist');
+  assert.ok(primary, 'primary audio instance should exist');
   assert.ok(wav, 'wav fallback instance should exist');
-  assert.equal(mp3.preload, 'auto');
+  assert.equal(primary.preload, 'auto');
   assert.equal(wav.preload, 'auto');
 
-  mp3.emit('error');
+  primary.emit('error');
   await flushMicrotasks();
 
-  assert.ok(wav.playCalls >= 1, 'wav should be replayed after mp3 load error');
+  assert.ok(wav.playCalls >= 1, 'wav should be replayed after primary load error');
 });
 
-test('playback fallback: mp3 play rejection switches to wav', async () => {
-  const harness = buildNotificationHarness({ rejectPlayFor: new Set([MP3_SRC]) });
+test('playback fallback: primary play rejection switches to wav', async () => {
+  const harness = buildNotificationHarness({ rejectPlayFor: new Set([PRIMARY_SRC]) });
   harness.initNotificationSound();
 
   const instances = harness.getInstances();
-  const mp3 = instances.find((a) => a.src === MP3_SRC);
+  const primary = instances.find((a) => a.src === PRIMARY_SRC);
   const wav = instances.find((a) => a.src === WAV_SRC);
 
   harness.playNotificationSound();
   await flushMicrotasks();
 
-  assert.equal(mp3.playCalls, 1, 'mp3 should be attempted first');
-  assert.ok(wav.playCalls >= 1, 'wav should be used after mp3 play rejection');
+  assert.equal(primary.playCalls, 1, 'primary sound should be attempted first');
+  assert.ok(wav.playCalls >= 1, 'wav should be used after primary play rejection');
 });
 
 test('new-message notification trigger conditions remain unchanged', () => {

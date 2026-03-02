@@ -132,8 +132,8 @@ let notificationState = {
 };
 
 // Notification sound sources
-const NOTIFICATION_SOUND_SRC = './assets/sounds/telegram-like-message.mp3';
-const NOTIFICATION_SOUND_WAV_FALLBACK_SRC = './assets/sounds/telegram-like-message.wav';
+const NOTIFICATION_SOUND_SRC = './assets/sounds/received-message.caf';
+const NOTIFICATION_SOUND_WAV_FALLBACK_SRC = './assets/sounds/received-message.wav';
 const NOTIFICATION_SOUND_VOLUME = 0.5;
 
 // Legacy beep fallback as base64
@@ -161,7 +161,7 @@ function switchToBase64Fallback(reason) {
 }
 
 function switchToWavFallback(reason) {
-  if (!notificationWavFallbackAudio || notificationSoundSource !== 'mp3') return false;
+  if (!notificationWavFallbackAudio || notificationSoundSource !== 'primary') return false;
 
   notificationAudio = notificationWavFallbackAudio;
   notificationSoundSource = 'wav';
@@ -188,13 +188,13 @@ function initNotificationSound() {
     notificationBase64FallbackAudio = createNotificationAudio(NOTIFICATION_SOUND_BASE64);
     notificationWavFallbackAudio = createNotificationAudio(NOTIFICATION_SOUND_WAV_FALLBACK_SRC);
     notificationAudio = createNotificationAudio(NOTIFICATION_SOUND_SRC);
-    notificationSoundSource = 'mp3';
+    notificationSoundSource = 'primary';
 
     notificationAudio.addEventListener('error', () => {
-      if (switchToWavFallback('primary mp3 failed to load')) {
-        tryReplayCurrentNotificationAudio('wav fallback after mp3 load error');
+      if (switchToWavFallback('primary sound failed to load')) {
+        tryReplayCurrentNotificationAudio('wav fallback after primary load error');
       } else {
-        switchToBase64Fallback('primary mp3 failed to load');
+        switchToBase64Fallback('primary sound failed to load');
       }
     }, { once: true });
 
@@ -244,8 +244,8 @@ function playNotificationSound() {
   try {
     notificationAudio.currentTime = 0;
     notificationAudio.play().catch(e => {
-      if (notificationSoundSource === 'mp3' && switchToWavFallback('mp3 playback error')) {
-        tryReplayCurrentNotificationAudio('wav fallback after mp3 playback error');
+      if (notificationSoundSource === 'primary' && switchToWavFallback('primary playback error')) {
+        tryReplayCurrentNotificationAudio('wav fallback after primary playback error');
         return;
       }
 
