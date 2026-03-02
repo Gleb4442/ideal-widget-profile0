@@ -812,12 +812,13 @@
 #room-context-container {
   position: absolute;
   top: 81px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
   z-index: 25;
-  width: calc(100% - 32px);
-  max-width: 400px;
+  width: 100%;
   padding: 0;
+  display: flex;
+  justify-content: center;
   background: transparent;
   border: none;
   pointer-events: none;
@@ -835,17 +836,17 @@
 .room-context-badge {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px;
+  justify-content: center;
+  gap: 10px;
+  padding: 8px 12px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.4);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  width: auto;
-  max-width: 90%;
-  margin: 0 auto;
+  width: calc(100% - 24px);
+  max-width: 420px;
 }
 
 .room-context-badge img,
@@ -866,11 +867,11 @@
 }
 
 .room-context-details {
-  flex: 1;
+  flex: 0 1 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
 }
 
