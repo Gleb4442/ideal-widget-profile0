@@ -27,6 +27,7 @@ let currentServiceReviews = []; // Reviews state
 // Hotel info storage key
 const HOTEL_INFO_KEY = 'hotel_info';
 const IN_APP_MODE_KEY = 'in_app_mode';
+const THEME_MODE_KEY = 'theme_mode';
 
 // Russian month names
 const MONTH_NAMES_RU = [
@@ -190,15 +191,39 @@ export function initAdminPanelControls() {
 
   // Theme Toggle
   dom.themeToggle.addEventListener('change', (e) => {
-    const cancellationBanner = document.getElementById('cancellation-banner');
-    if (e.target.checked) {
-      dom.chatWindow.classList.add('dark-mode');
-      if (cancellationBanner) cancellationBanner.classList.add('dark-mode');
-    } else {
-      dom.chatWindow.classList.remove('dark-mode');
-      if (cancellationBanner) cancellationBanner.classList.remove('dark-mode');
-    }
+    const isDark = e.target.checked;
+    saveTheme(isDark);
+    applyTheme(isDark);
   });
+}
+
+export function loadTheme() {
+  const saved = localStorage.getItem(THEME_MODE_KEY);
+  return saved ? JSON.parse(saved) : { enabled: false };
+}
+
+export function saveTheme(settings) {
+  localStorage.setItem(THEME_MODE_KEY, JSON.stringify(settings));
+}
+
+export function applyTheme(isDark) {
+  const cancellationBanner = document.getElementById('cancellation-banner');
+  if (isDark) {
+    document.body.classList.add('dark-mode');
+    dom.chatWindow.classList.add('dark-mode');
+    if (cancellationBanner) cancellationBanner.classList.add('dark-mode');
+    if (dom.themeToggle) dom.themeToggle.checked = true;
+  } else {
+    document.body.classList.remove('dark-mode');
+    dom.chatWindow.classList.remove('dark-mode');
+    if (cancellationBanner) cancellationBanner.classList.remove('dark-mode');
+    if (dom.themeToggle) dom.themeToggle.checked = false;
+  }
+}
+
+export function initTheme() {
+  const settings = loadTheme();
+  applyTheme(settings.enabled);
 }
 
 // Initialize Position Selector
@@ -1912,6 +1937,7 @@ export function initAdmin() {
   initShapeSelector();
   initOffsetControls();
   initAdminPanelControls();
+  initTheme();
   initPositionSelector();
   initFooterLayout();
   initHotelInfo();
