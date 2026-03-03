@@ -16,3 +16,21 @@
 .rating-count {
     color: #9ca3af;
 }
+
+/* History Modal States */
+#history-modal-wrapper.show {
+    display: flex !important;
+}
+
+.history-view-active {
+    transform: translateY(0) !important;
+}
+
+#history-modal-wrapper.show-detail #history-view {
+    transform: translateX(-100%) !important;
+}
+
+#history-modal-wrapper.show-detail #history-detail-view {
+    display: flex !important;
+    transform: translateY(0) !important;
+}

@@ -4093,11 +4093,30 @@ export function initSpecialBookingListeners() {
   }
 
   // History modal listeners
+  const historyModalWrapper = document.getElementById('history-modal-wrapper');
   const historyView = document.getElementById('history-view');
   const historyCloseBtn = document.getElementById('history-close-btn');
-  if (historyView && historyCloseBtn) {
-    historyCloseBtn.addEventListener('click', () => {
-      historyView.classList.add('hidden');
+
+  function closeHistoryModal() {
+    if (!historyView || !historyModalWrapper) return;
+    historyView.classList.remove('history-view-active');
+    setTimeout(() => {
+      historyModalWrapper.classList.add('hidden');
+      historyModalWrapper.classList.remove('show');
+      historyModalWrapper.classList.remove('show-detail');
+      document.getElementById('history-detail-view')?.classList.add('hidden');
+    }, 500);
+  }
+
+  if (historyCloseBtn) {
+    historyCloseBtn.addEventListener('click', closeHistoryModal);
+  }
+
+  if (historyModalWrapper) {
+    historyModalWrapper.addEventListener('click', (e) => {
+      if (e.target === historyModalWrapper) {
+        closeHistoryModal();
+      }
     });
   }
 
@@ -4105,7 +4124,14 @@ export function initSpecialBookingListeners() {
   const historyDetailBack = document.getElementById('history-detail-back');
   if (historyDetailBack) {
     historyDetailBack.addEventListener('click', () => {
-      document.getElementById('history-detail-view').classList.add('hidden');
+      const detailView = document.getElementById('history-detail-view');
+      if (detailView) {
+        detailView.classList.add('translate-y-full');
+        setTimeout(() => {
+          historyModalWrapper.classList.remove('show-detail');
+          detailView.classList.add('hidden');
+        }, 500);
+      }
     });
   }
 
@@ -4430,10 +4456,11 @@ function archiveCurrentSession() {
   }
 }
 
-// Show History Modal (now internal view)
+// Show History Modal (now internal view as modal)
 function showHistoryModal() {
+  const wrapper = document.getElementById('history-modal-wrapper');
   const view = document.getElementById('history-view');
-  if (!view) return;
+  if (!wrapper || !view) return;
 
   // Initialize search listener if not already done
   if (dom.historySearchInput && !dom.historySearchInput.dataset.searchInited) {
@@ -4447,7 +4474,13 @@ function showHistoryModal() {
   if (dom.historySearchInput) dom.historySearchInput.value = '';
 
   renderHistoryItems();
-  view.classList.remove('hidden');
+
+  wrapper.classList.remove('hidden');
+  wrapper.classList.add('show');
+  requestAnimationFrame(() => {
+    view.classList.add('history-view-active');
+    view.classList.remove('translate-y-full');
+  });
 }
 
 // Render history items based on search query
@@ -4565,6 +4598,13 @@ function openHistoryDetail(session) {
   });
 
   detailView.classList.remove('hidden');
+  const wrapperMod = document.getElementById('history-modal-wrapper');
+  if (wrapperMod) {
+    wrapperMod.classList.add('show-detail');
+    requestAnimationFrame(() => {
+      detailView.classList.remove('translate-y-full');
+    });
+  }
 }
 
 // Continue chat from history
@@ -4593,9 +4633,22 @@ function continueHistoryChat() {
     bookingState.conversationHistory = bookingState.conversationHistory.slice(-10);
   }
 
-  // Close history views
-  document.getElementById('history-detail-view')?.classList.add('hidden');
-  document.getElementById('history-view')?.classList.add('hidden');
+  // Close history views with animation
+  const historyView = document.getElementById('history-view');
+  const historyDetailView = document.getElementById('history-detail-view');
+  const historyModalWrapper = document.getElementById('history-modal-wrapper');
+
+  if (historyView && historyModalWrapper) {
+    historyView.classList.remove('history-view-active');
+    historyDetailView?.classList.add('translate-y-full');
+
+    setTimeout(() => {
+      historyModalWrapper.classList.add('hidden');
+      historyModalWrapper.classList.remove('show');
+      historyModalWrapper.classList.remove('show-detail');
+      historyDetailView?.classList.add('hidden');
+    }, 500);
+  }
 
   // Scroll to bottom
   if (dom.messagesContainer) {

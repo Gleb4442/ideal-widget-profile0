@@ -675,70 +675,75 @@
       </svg>
     </button>
 
-    <!-- History View (Internal) -->
-    <div id="history-view"
-      class="hidden absolute inset-0 z-[60] bg-[#f6f6f8] text-slate-900 font-display flex flex-col overflow-x-hidden animate-fade-in">
-      <header class="px-6 pt-16 pb-4 flex flex-col gap-6">
-        <h1 class="text-4xl font-bold tracking-tight text-slate-900">История диалогов</h1>
-        <div class="relative group">
-          <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-            <span
-              class="material-symbols-outlined text-slate-400 group-focus-within:text-[#135bec] transition-colors">search</span>
+    <!-- History Modal Wrapper -->
+    <div id="history-modal-wrapper"
+      class="hidden fixed inset-0 z-[60] flex flex-col justify-end standard-modal-overlay">
+
+      <!-- History View (Internal) -->
+      <div id="history-view"
+        class="w-full h-[90%] bg-[#f6f6f8] dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-display flex flex-col overflow-x-hidden rounded-t-[2.5rem] shadow-2xl transform transition-transform duration-500 translate-y-full relative">
+        <header class="px-6 pt-12 pb-4 flex flex-col gap-6">
+          <h1 class="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">История диалогов</h1>
+          <div class="relative group">
+            <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+              <span
+                class="material-symbols-outlined text-slate-400 group-focus-within:text-[#135bec] transition-colors">search</span>
+            </div>
+            <input id="history-search-input"
+              class="w-full h-14 pl-12 pr-4 bg-white/60 dark:bg-slate-800/60 border border-white/50 dark:border-slate-700/50 rounded-full focus:ring-2 focus:ring-[#135bec]/20 focus:border-[#135bec]/40 focus:outline-none placeholder:text-slate-400 transition-all text-base text-slate-900 dark:text-slate-100"
+              placeholder="Поиск по диалогам..." type="text">
           </div>
-          <input id="history-search-input"
-            class="w-full h-14 pl-12 pr-4 bg-white/60 border border-white/50 rounded-full focus:ring-2 focus:ring-[#135bec]/20 focus:border-[#135bec]/40 focus:outline-none placeholder:text-slate-400 transition-all text-base"
-            placeholder="Поиск по диалогам..." type="text">
+        </header>
+
+        <main id="history-list" class="flex-1 px-4 space-y-3 pb-40 overflow-y-auto w-full">
+          <!-- History items will be injected here -->
+          <div class="text-center text-slate-400 mt-10">
+            <p>Немає збережених діалогів</p>
+          </div>
+        </main>
+
+        <div
+          class="absolute bottom-0 left-0 right-0 px-6 pb-10 pt-10 bg-gradient-to-t from-[#f6f6f8] dark:from-slate-900 via-[#f6f6f8]/90 dark:via-slate-900/90 to-transparent pointer-events-none z-40">
+          <button id="history-close-btn"
+            class="w-full py-4 rounded-full flex items-center justify-center gap-3 active:scale-95 transition-all pointer-events-auto shadow-[0_8px_32px_rgba(19,91,236,0.08),inset_0_0_15px_rgba(255,255,255,0.5)] bg-white/70 dark:bg-slate-800/70 border border-white/50 dark:border-slate-700/50"
+            style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+            <span class="material-symbols-outlined text-slate-700 dark:text-slate-300">arrow_back_ios_new</span>
+            <span class="text-lg font-semibold text-slate-800 dark:text-slate-200">Назад</span>
+          </button>
         </div>
-      </header>
 
-      <main id="history-list" class="flex-1 px-4 space-y-3 pb-40 overflow-y-auto w-full">
-        <!-- History items will be injected here -->
-        <div class="text-center text-slate-400 mt-10">
-          <p>Немає збережених діалогів</p>
+        <div
+          class="absolute top-[-10%] left-[-10%] w-[50%] h-[40%] bg-[#135bec]/5 blur-[120px] pointer-events-none -z-10">
         </div>
-      </main>
+        <div
+          class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[40%] bg-[#135bec]/10 blur-[120px] pointer-events-none -z-10">
+        </div>
+      </div>
 
-      <div
-        class="absolute bottom-0 left-0 right-0 px-6 pb-10 pt-10 bg-gradient-to-t from-[#f6f6f8] via-[#f6f6f8]/90 to-transparent pointer-events-none z-40">
-        <button id="history-close-btn"
-          class="w-full py-4 rounded-full flex items-center justify-center gap-3 active:scale-95 transition-all pointer-events-auto shadow-[0_8px_32px_rgba(19,91,236,0.08),inset_0_0_15px_rgba(255,255,255,0.5)] bg-white/70 border border-white/50"
-          style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
-          <span class="material-symbols-outlined text-slate-700">arrow_back_ios_new</span>
-          <span class="text-lg font-semibold text-slate-800">Назад</span>
+      <!-- History Detail View (Internal Overlay) -->
+      <div id="history-detail-view"
+        class="hidden w-full h-[90%] bg-[#f8f9fa] dark:bg-slate-900 flex flex-col rounded-t-[2.5rem] shadow-2xl transform transition-transform duration-500 translate-y-full absolute bottom-0 left-0 overflow-hidden">
+        <!-- Floating Back Button -->
+        <button id="history-detail-back"
+          class="absolute top-6 left-6 z-50 p-3 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-md shadow-lg border border-white/50 dark:border-slate-700/50 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white active:scale-90 transition-all">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
         </button>
-      </div>
 
-      <div
-        class="absolute top-[-10%] left-[-10%] w-[50%] h-[40%] bg-[#135bec]/5 blur-[120px] pointer-events-none -z-10">
-      </div>
-      <div
-        class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[40%] bg-[#135bec]/10 blur-[120px] pointer-events-none -z-10">
-      </div>
-    </div>
+        <div id="history-detail-messages" class="flex-1 p-6 pt-24 pb-32 overflow-y-auto flex flex-col space-y-4">
+          <!-- Messages will be injected here -->
+        </div>
 
-    <!-- History Detail View (Internal Overlay) -->
-    <div id="history-detail-view"
-      class="hidden absolute inset-0 z-[70] bg-[#f8f9fa] flex flex-col animate-slide-in-right overflow-hidden">
-      <!-- Floating Back Button -->
-      <button id="history-detail-back"
-        class="absolute top-6 left-6 z-50 p-3 rounded-full bg-white/80 backdrop-blur-md shadow-lg border border-white/50 text-slate-600 hover:text-slate-900 active:scale-90 transition-all">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-      </button>
-
-      <div id="history-detail-messages" class="flex-1 p-6 pt-24 pb-32 overflow-y-auto flex flex-col space-y-4">
-        <!-- Messages will be injected here -->
-      </div>
-
-      <!-- Floating Continue Button -->
-      <div class="absolute bottom-8 left-0 right-0 flex justify-center px-6 z-50 pointer-events-none">
-        <button id="continue-chat-btn"
-          class="pointer-events-auto px-8 py-4 rounded-full text-white text-lg font-bold hover:opacity-90 transition-all active:scale-95 whitespace-nowrap shadow-lg"
-          style="background-color: var(--accent-color, #135bec); box-shadow: 0 12px 24px rgba(0,0,0,0.15);">
-          <span>Продолжить чат</span>
-        </button>
+        <!-- Floating Continue Button -->
+        <div class="absolute bottom-10 left-0 right-0 flex justify-center px-6 z-50 pointer-events-none">
+          <button id="continue-chat-btn"
+            class="pointer-events-auto px-8 py-4 rounded-full text-white text-lg font-bold hover:opacity-90 transition-all active:scale-95 whitespace-nowrap shadow-lg"
+            style="background-color: var(--accent-color, #135bec); box-shadow: 0 12px 24px rgba(0,0,0,0.15);">
+            <span>Продолжить чат</span>
+          </button>
+        </div>
       </div>
     </div>
 

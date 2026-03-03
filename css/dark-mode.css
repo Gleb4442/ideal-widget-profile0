@@ -759,6 +759,16 @@
   color: #d1d5db;
 }
 
+.dark-mode .liquid-glass {
+  background: rgba(31, 41, 55, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode #history-list p.text-xs.font-bold {
+  color: #6b7280;
+}
+
 .dark-mode .add-review-form {
   background: #374151;
 }
