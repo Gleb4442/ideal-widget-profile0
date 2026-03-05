@@ -4099,13 +4099,25 @@ export function initSpecialBookingListeners() {
 
   function closeHistoryModal() {
     if (!historyView || !historyModalWrapper) return;
+
+    // Start closing animations
     historyView.classList.remove('history-view-active');
+    historyModalWrapper.classList.remove('show');
+
+    // Also handle detail view if it's open
+    const historyDetailView = document.getElementById('history-detail-view');
+    if (historyDetailView) {
+      historyDetailView.classList.add('translate-y-full');
+    }
+
+    // Wait for animation to finish
     setTimeout(() => {
       historyModalWrapper.classList.add('hidden');
-      historyModalWrapper.classList.remove('show');
       historyModalWrapper.classList.remove('show-detail');
-      document.getElementById('history-detail-view')?.classList.add('hidden');
-    }, 500);
+      if (historyDetailView) {
+        historyDetailView.classList.add('hidden');
+      }
+    }, 400); // Matches CSS transition duration
   }
 
   if (historyCloseBtn) {
@@ -4475,9 +4487,12 @@ function showHistoryModal() {
 
   renderHistoryItems();
 
+  // Show wrapper (overlay)
   wrapper.classList.remove('hidden');
-  wrapper.classList.add('show');
+
+  // Force reflow and add animations
   requestAnimationFrame(() => {
+    wrapper.classList.add('show');
     view.classList.add('history-view-active');
     view.classList.remove('translate-y-full');
   });
@@ -4640,14 +4655,14 @@ function continueHistoryChat() {
 
   if (historyView && historyModalWrapper) {
     historyView.classList.remove('history-view-active');
+    historyModalWrapper.classList.remove('show');
     historyDetailView?.classList.add('translate-y-full');
 
     setTimeout(() => {
       historyModalWrapper.classList.add('hidden');
-      historyModalWrapper.classList.remove('show');
       historyModalWrapper.classList.remove('show-detail');
       historyDetailView?.classList.add('hidden');
-    }, 500);
+    }, 400);
   }
 
   // Scroll to bottom

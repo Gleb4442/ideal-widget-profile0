@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<link rel="stylesheet" href="css/menu-sheet.css">
+<style>body { background: #fee; padding: 50px; }</style>
+</head>
+<body>
+<div style="width: 300px; display: flex; gap: 20px;">
+    <!-- With fix -->
+    <div class="glass-icon-container" style="width:48px; height:48px;">
+        <div class="glass-icon-bg bg-tint-blue"></div>
+        <span style="z-index: 2;">A</span>
+    </div>
+
+    <!-- Original broken version (simulated) -->
+    <div style="position: relative; display: flex; align-items: center; justify-content: center; border-radius: 14px; background: white; border: 1px solid rgba(0, 0, 0, 0.05); box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5); width:48px; height:48px;">
+        <div style="position: absolute; inset: 0; opacity: 0.12; filter: blur(4px); background-color: #3B82F6;"></div>
+        <span style="z-index: 2;">B</span>
+    </div>
+</div>
+</body>
+</html>

@@ -37,6 +37,8 @@ const MONTH_NAMES_RU = [
 
 // Initialize Font Selector
 export function initFontSelector() {
+  if (!dom.fontSelect) return;
+
   fontsList.forEach(font => {
     const option = document.createElement('option');
     option.value = font;
@@ -53,6 +55,8 @@ export function initFontSelector() {
 
 // Initialize Icon Selector
 export function initIconSelector() {
+  if (!dom.iconSelector) return;
+
   iconsList.forEach((icon, index) => {
     const div = document.createElement('div');
     div.className = `icon-option ${index === 0 ? 'active' : ''}`;
@@ -68,25 +72,31 @@ export function initIconSelector() {
       document.querySelectorAll('.icon-option').forEach(el => el.classList.remove('active'));
       div.classList.add('active');
 
-      if (icon.id === 'custom-logo') {
-        dom.widgetButton.classList.add('custom-logo-selected');
-      } else {
-        dom.widgetButton.classList.remove('custom-logo-selected');
+      if (dom.widgetButton) {
+        if (icon.id === 'custom-logo') {
+          dom.widgetButton.classList.add('custom-logo-selected');
+        } else {
+          dom.widgetButton.classList.remove('custom-logo-selected');
+        }
       }
 
       const mainStr = icon.stroke === 'none' ? 'none' : 'white';
       const mainFill = icon.fill === 'currentColor' ? 'white' : 'none';
       const mainSize = icon.size || "24";
 
-      if (icon.id === 'custom-logo') {
-        dom.widgetButton.style.setProperty('--widget-padding', '2px 18px 2px 11px');
-        dom.widgetButton.style.gap = '4px';
-      } else {
-        dom.widgetButton.style.removeProperty('--widget-padding');
-        dom.widgetButton.style.removeProperty('gap');
+      if (dom.widgetButton) {
+        if (icon.id === 'custom-logo') {
+          dom.widgetButton.style.setProperty('--widget-padding', '2px 18px 2px 11px');
+          dom.widgetButton.style.gap = '4px';
+        } else {
+          dom.widgetButton.style.removeProperty('--widget-padding');
+          dom.widgetButton.style.removeProperty('gap');
+        }
       }
 
-      dom.widgetIconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${mainSize}" height="${mainSize}" viewBox="${vb}" fill="${mainFill}" stroke="${mainStr}" stroke-width="${strW}" stroke-linecap="round" stroke-linejoin="round">${icon.svg}</svg>`;
+      if (dom.widgetIconContainer) {
+        dom.widgetIconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${mainSize}" height="${mainSize}" viewBox="${vb}" fill="${mainFill}" stroke="${mainStr}" stroke-width="${strW}" stroke-linecap="round" stroke-linejoin="round">${icon.svg}</svg>`;
+      }
     };
 
     dom.iconSelector.appendChild(div);
@@ -95,13 +105,17 @@ export function initIconSelector() {
 
 // Initialize Shape Selector
 export function initShapeSelector() {
+  if (!dom.shapeSelector) return;
+
   dom.shapeSelector.querySelectorAll('.shape-option').forEach(opt => {
     opt.addEventListener('click', () => {
       dom.shapeSelector.querySelectorAll('.shape-option').forEach(el => el.classList.remove('active'));
       opt.classList.add('active');
       const shapeClass = opt.dataset.shape;
-      dom.widgetButton.classList.remove('shape-pill', 'shape-rounded', 'shape-circle');
-      dom.widgetButton.classList.add(shapeClass);
+      if (dom.widgetButton) {
+        dom.widgetButton.classList.remove('shape-pill', 'shape-rounded', 'shape-circle');
+        dom.widgetButton.classList.add(shapeClass);
+      }
     });
   });
 }
@@ -109,92 +123,110 @@ export function initShapeSelector() {
 // Initialize Offset Controls
 export function initOffsetControls() {
   const updateOffset = () => {
-    const x = dom.inputOffsetX.value;
-    const y = dom.inputOffsetY.value;
+    const x = dom.inputOffsetX?.value || 0;
+    const y = dom.inputOffsetY?.value || 0;
     document.documentElement.style.setProperty('--widget-offset-x', `${x}px`);
     document.documentElement.style.setProperty('--widget-offset-y', `${y}px`);
-    dom.valOffsetX.textContent = `${x}px`;
-    dom.valOffsetY.textContent = `${y}px`;
+    if (dom.valOffsetX) dom.valOffsetX.textContent = `${x}px`;
+    if (dom.valOffsetY) dom.valOffsetY.textContent = `${y}px`;
   };
 
-  dom.inputOffsetX.addEventListener('input', updateOffset);
-  dom.inputOffsetY.addEventListener('input', updateOffset);
+  if (dom.inputOffsetX) dom.inputOffsetX.addEventListener('input', updateOffset);
+  if (dom.inputOffsetY) dom.inputOffsetY.addEventListener('input', updateOffset);
 
-  dom.inputScale.addEventListener('input', (e) => {
-    const val = e.target.value;
-    document.documentElement.style.setProperty('--widget-scale', val);
-    dom.valScale.textContent = parseFloat(val).toFixed(1);
-  });
+  if (dom.inputScale) {
+    dom.inputScale.addEventListener('input', (e) => {
+      const val = e.target.value;
+      document.documentElement.style.setProperty('--widget-scale', val);
+      if (dom.valScale) dom.valScale.textContent = parseFloat(val).toFixed(1);
+    });
+  }
 }
 
 // Initialize Admin Panel Controls
 export function initAdminPanelControls() {
-  dom.closeAdminBtn.addEventListener('click', () => {
-    dom.adminPanel.classList.add('hidden-panel');
-    dom.openAdminBtn.classList.remove('hidden-btn');
-  });
+  if (dom.closeAdminBtn) {
+    dom.closeAdminBtn.addEventListener('click', () => {
+      if (dom.adminPanel) dom.adminPanel.classList.add('hidden-panel');
+      if (dom.openAdminBtn) dom.openAdminBtn.classList.remove('hidden-btn');
+    });
+  }
 
-  dom.openAdminBtn.addEventListener('click', () => {
-    dom.adminPanel.classList.remove('hidden-panel');
-    dom.openAdminBtn.classList.add('hidden-btn');
-  });
+  if (dom.openAdminBtn) {
+    dom.openAdminBtn.addEventListener('click', () => {
+      if (dom.adminPanel) dom.adminPanel.classList.remove('hidden-panel');
+      if (dom.openAdminBtn) dom.openAdminBtn.classList.add('hidden-btn');
+    });
+  }
 
-  dom.hotelNameInput.addEventListener('input', (e) => {
-    dom.hotelNameText.textContent = e.target.value || "Hilton";
-  });
+  if (dom.hotelNameInput && dom.hotelNameText) {
+    dom.hotelNameInput.addEventListener('input', (e) => {
+      dom.hotelNameText.textContent = e.target.value || "Hilton";
+    });
+  }
 
-  dom.logoUpload.addEventListener('change', function (e) {
-    if (this.files && this.files[0]) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        dom.hotelLogoContainer.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full" alt="Logo">`;
-      };
-      reader.readAsDataURL(this.files[0]);
-    }
-  });
+  if (dom.logoUpload && dom.hotelLogoContainer) {
+    dom.logoUpload.addEventListener('change', function (e) {
+      if (this.files && this.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          dom.hotelLogoContainer.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full" alt="Logo">`;
+        };
+        reader.readAsDataURL(this.files[0]);
+      }
+    });
+  }
 
-  dom.animationToggle.addEventListener('change', (e) => {
-    if (e.target.checked) {
-      dom.widgetButton.classList.remove('no-animation');
-    } else {
-      dom.widgetButton.classList.add('no-animation');
-    }
-  });
+  if (dom.animationToggle && dom.widgetButton) {
+    dom.animationToggle.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        dom.widgetButton.classList.remove('no-animation');
+      } else {
+        dom.widgetButton.classList.add('no-animation');
+      }
+    });
+  }
 
   // Accent Color Logic
-  dom.accentColorPicker.addEventListener('input', (e) => {
-    const color = e.target.value;
-    dom.colorValueText.textContent = color;
-    document.documentElement.style.setProperty('--accent-color', color);
+  if (dom.accentColorPicker && dom.colorValueText) {
+    dom.accentColorPicker.addEventListener('input', (e) => {
+      const color = e.target.value;
+      dom.colorValueText.textContent = color;
+      document.documentElement.style.setProperty('--accent-color', color);
 
-    const hexToRgb = (hex) => {
-      let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '37, 99, 235';
-    };
-    document.documentElement.style.setProperty('--accent-rgb', hexToRgb(color));
+      const hexToRgb = (hex) => {
+        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '37, 99, 235';
+      };
+      document.documentElement.style.setProperty('--accent-rgb', hexToRgb(color));
 
-    const darkenColor = (hex, percent) => {
-      let num = parseInt(hex.replace("#", ""), 16);
-      let amt = Math.round(2.55 * percent);
-      let R = (num >> 16) - amt;
-      let G = (num >> 8 & 0x00FF) - amt;
-      let B = (num & 0x0000FF) - amt;
-      return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
-    };
-    document.documentElement.style.setProperty('--accent-hover', darkenColor(color, 20));
-  });
+      const darkenColor = (hex, percent) => {
+        let num = parseInt(hex.replace("#", ""), 16);
+        let amt = Math.round(2.55 * percent);
+        let R = (num >> 16) - amt;
+        let G = (num >> 8 & 0x00FF) - amt;
+        let B = (num & 0x0000FF) - amt;
+        return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+      };
+      document.documentElement.style.setProperty('--accent-hover', darkenColor(color, 20));
+    });
+  }
 
   // Button Text
-  dom.buttonTextSelect.addEventListener('change', (e) => {
-    dom.chatButtonText.textContent = e.target.value;
-  });
+  if (dom.buttonTextSelect && dom.chatButtonText) {
+    dom.buttonTextSelect.addEventListener('change', (e) => {
+      dom.chatButtonText.textContent = e.target.value;
+    });
+  }
 
   // Theme Toggle
-  dom.themeToggle.addEventListener('change', (e) => {
-    const isDark = e.target.checked;
-    saveTheme(isDark);
-    applyTheme(isDark);
-  });
+  if (dom.themeToggle) {
+    dom.themeToggle.addEventListener('change', (e) => {
+      const isDark = e.target.checked;
+      saveTheme({ enabled: isDark });
+      applyTheme(isDark);
+    });
+  }
 }
 
 export function loadTheme() {
@@ -228,14 +260,15 @@ export function initTheme() {
 
 // Initialize Position Selector
 export function initPositionSelector() {
+  if (!dom.positionSelect) return;
   dom.positionSelect.addEventListener('change', (e) => {
     const posClass = e.target.value;
     ['widget-pos-right', 'widget-pos-center', 'widget-pos-left'].forEach(cls => {
-      dom.widgetButton.classList.remove(cls);
-      dom.chatWindow.classList.remove(cls);
+      if (dom.widgetButton) dom.widgetButton.classList.remove(cls);
+      if (dom.chatWindow) dom.chatWindow.classList.remove(cls);
     });
-    dom.widgetButton.classList.add(posClass);
-    dom.chatWindow.classList.add(posClass);
+    if (dom.widgetButton) dom.widgetButton.classList.add(posClass);
+    if (dom.chatWindow) dom.chatWindow.classList.add(posClass);
   });
 }
 

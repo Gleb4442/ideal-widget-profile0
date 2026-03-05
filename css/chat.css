@@ -22,12 +22,18 @@
     display: flex !important;
 }
 
+#history-view,
+#history-detail-view {
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease !important;
+}
+
 .history-view-active {
     transform: translateY(0) !important;
 }
 
 #history-modal-wrapper.show-detail #history-view {
     transform: translateX(-100%) !important;
+    opacity: 0;
 }
 
 #history-modal-wrapper.show-detail #history-detail-view {
