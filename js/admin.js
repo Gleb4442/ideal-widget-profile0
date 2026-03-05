@@ -243,11 +243,15 @@ export function applyTheme(isDark) {
   if (isDark) {
     document.body.classList.add('dark-mode');
     dom.chatWindow.classList.add('dark-mode');
+    // Add 'dark' class to <html> so Tailwind dark: utility classes activate
+    document.documentElement.classList.add('dark');
     if (cancellationBanner) cancellationBanner.classList.add('dark-mode');
     if (dom.themeToggle) dom.themeToggle.checked = true;
   } else {
     document.body.classList.remove('dark-mode');
     dom.chatWindow.classList.remove('dark-mode');
+    // Remove 'dark' class from <html>
+    document.documentElement.classList.remove('dark');
     if (cancellationBanner) cancellationBanner.classList.remove('dark-mode');
     if (dom.themeToggle) dom.themeToggle.checked = false;
   }
