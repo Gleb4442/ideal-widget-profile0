@@ -12,7 +12,7 @@ import * as gallery from './gallery.js';
 import * as bookings from './bookings.js';
 import * as roomService from './roomService.js';
 import { openMenuModal, isMenuAvailable } from './menu.js';
-import { getMenuSettings } from './admin.js';
+import { getMenuSettings, loadInAppMode } from './admin.js';
 import { showAppDownloadModal, initAppDownloadModalListeners } from './app-download.js';
 
 // Language storage key
@@ -35,6 +35,13 @@ let specialBookingState = {
   stage: 'collecting', // 'collecting' | 'analyzing' | 'finalizing' | 'offer_ready'
   requirements: [],
   currentOffer: null
+};
+
+// In-App Service Request State (towels / cleaning / minibar)
+let inAppServiceState = {
+  active: false,
+  category: null,
+  step: null // 'clarifying' | 'confirmed'
 };
 
 // Status messages for Special Booking stages
@@ -3191,6 +3198,148 @@ function initRoomServiceFormListeners(container, initialCategory) {
   }
 }
 
+// ============================================================
+// IN-APP ROOM SERVICE — Conversational Flow
+// ============================================================
+
+// Clarifying questions per category
+const IN_APP_SERVICE_QUESTIONS = {
+  towels: 'Что именно принести? Банные полотенца 🛁, халаты или дополнительные подушки/одеяла?',
+  cleaning: 'Когда вам удобно? Могу организовать уборку прямо сейчас или в удобное для вас время.',
+  minibar: 'Что именно пополнить — напитки, снеки или полностью обновить весь мини-бар?',
+  food: null // food falls through to regular form
+};
+
+// Labels for the task card
+const IN_APP_SERVICE_LABELS = {
+  towels: 'Принести полотенца',
+  cleaning: 'Уборка номера',
+  minibar: 'Пополнение мини-бара',
+  food: 'Заказ еды в номер'
+};
+
+const IN_APP_SERVICE_TIMES = {
+  towels: '10–15 минут',
+  cleaning: '15–25 минут',
+  minibar: '10–20 минут',
+  food: '30–45 минут'
+};
+
+// SVG icons for the header pill (inline, white stroke)
+const IN_APP_SERVICE_ICONS = {
+  towels: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3"/><path d="M12 12v6"/></svg>`,
+  cleaning: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9v.01"/><path d="M9 12v.01"/><path d="M9 15v.01"/><path d="M9 18v.01"/></svg>`,
+  minibar: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2h8"/><path d="M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.788a4 4 0 0 0-.672-2.22l-.656-.984A4 4 0 0 1 15 4.79V2"/><path d="M7 15h10"/></svg>`,
+  food: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>`
+};
+
+// Start the in-app conversational service request
+export function startInAppServiceRequest(category, _userMessage) {
+  const question = IN_APP_SERVICE_QUESTIONS[category];
+  if (!question) {
+    // food — fall back to regular form
+    showRoomServiceForm(category);
+    return;
+  }
+
+  inAppServiceState = { active: true, category, step: 'clarifying' };
+
+  // Show the neon header pill immediately
+  showServiceStatusIcon(category);
+
+  // Ask the clarifying question
+  addMessage(question, 'ai');
+  addToConversationHistory('assistant', question);
+}
+
+// Handle the user's reply to the clarifying question
+function handleInAppServiceFollowUp(userMessage) {
+  hideTyping();
+  setButtonLoading(false);
+  isGenerating = false;
+
+  const { category } = inAppServiceState;
+
+  // Reset state first
+  inAppServiceState = { active: false, category: null, step: null };
+
+  // Submit the order (minimal data)
+  roomService.createOrder('—', category);
+  roomService.setSpecialInstructions(userMessage);
+  roomService.submitOrder();
+
+  // Show animated task card in chat
+  addServiceTaskCard(category, userMessage);
+
+  // Auto-hide the header icon after 9 seconds
+  setTimeout(() => hideServiceStatusIcon(), 9000);
+}
+
+// Show neon service status icon in header (replacing app-store button slot)
+function showServiceStatusIcon(category) {
+  // Remove any existing service icon
+  hideServiceStatusIcon();
+
+  const guideBadgeBtn = document.getElementById('guide-badge-btn');
+  if (!guideBadgeBtn) return;
+
+  const pill = document.createElement('button');
+  pill.id = 'service-status-pill';
+  pill.className = 'header-guide-btn service-status-neon';
+  pill.setAttribute('aria-label', IN_APP_SERVICE_LABELS[category] || 'Заявка');
+  pill.innerHTML = `
+    ${IN_APP_SERVICE_ICONS[category] || ''}
+    <span class="service-status-ring"></span>
+  `;
+
+  // Insert right before the guide-badge-btn (or in its parent)
+  guideBadgeBtn.parentNode.insertBefore(pill, guideBadgeBtn);
+  // Animate in
+  requestAnimationFrame(() => pill.classList.add('service-status-visible'));
+}
+
+// Remove the header service icon (with fade-out)
+function hideServiceStatusIcon() {
+  const pill = document.getElementById('service-status-pill');
+  if (!pill) return;
+  pill.classList.remove('service-status-visible');
+  pill.classList.add('service-status-hiding');
+  setTimeout(() => pill.remove(), 600);
+}
+
+// Add animated "task created" card inside chat
+function addServiceTaskCard(category, details) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'message-wrapper ai animate-fade-in';
+
+  const label = IN_APP_SERVICE_LABELS[category] || 'Заявка принята';
+  const time = IN_APP_SERVICE_TIMES[category] || '15–30 минут';
+  const icon = IN_APP_SERVICE_ICONS[category] || '';
+
+  wrapper.innerHTML = `
+    <div class="service-task-card">
+      <div class="stc-header">
+        <div class="stc-icon-wrap">${icon}</div>
+        <div class="stc-check">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="stc-title">Задача создана</div>
+      </div>
+      <div class="stc-body">
+        <div class="stc-label">${label}</div>
+        ${details ? `<div class="stc-details">${details}</div>` : ''}
+        <div class="stc-time">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Ожидаемое время: <strong>${time}</strong>
+        </div>
+      </div>
+    </div>
+  `;
+
+  dom.messagesContainer.insertBefore(wrapper, dom.typingIndicator);
+  dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+}
+
 // Add Room Context Badge
 export function addRoomContextBadge(room) {
   const container = document.getElementById('room-context-container');
@@ -3272,6 +3421,12 @@ export async function getAIResponse(userMessage) {
   // Add user message to conversation history
   addToConversationHistory('user', userMessage);
 
+  // ── In-App service follow-up: handle reply to clarifying question ──
+  if (inAppServiceState.active && inAppServiceState.step === 'clarifying') {
+    handleInAppServiceFollowUp(userMessage);
+    return;
+  }
+
   // Handle escalation confirmation flow
   if (escalationState.awaitingConfirmation) {
     const decision = parseEscalationConfirmation(userMessage);
@@ -3339,7 +3494,12 @@ export async function getAIResponse(userMessage) {
     hideTyping();
     setButtonLoading(false);
     isGenerating = false;
-    showRoomServiceForm(rsIntent.category);
+    const inApp = loadInAppMode();
+    if (inApp.enabled) {
+      startInAppServiceRequest(rsIntent.category, userMessage);
+    } else {
+      showRoomServiceForm(rsIntent.category);
+    }
     return;
   }
 
