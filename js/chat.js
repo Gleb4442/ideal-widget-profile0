@@ -2450,7 +2450,9 @@ export function addRoomCarousel() {
         const action = btn.dataset.action;
         const roomId = btn.dataset.roomId;
         if (action === 'book') {
-          openRoomDetailView(roomId);
+          // Directly start booking flow with this room
+          const roomData = rooms.getRoom(roomId);
+          if (roomData) startRoomBookingFlow(roomData);
         } else if (action === 'ask') {
           enterRoomContext(roomId);
         }
@@ -3219,8 +3221,8 @@ export function addRoomContextBadge(room) {
 
   // Add action button listeners
   badge.querySelector('[data-action="book"]').addEventListener('click', () => {
-    // Add booking message
-    addMessage('Чудово! Для бронювання номера, будь ласка, зверніться до нашого менеджера або залиште ваші контактні дані.', 'ai');
+    // Start full AI booking flow for this room
+    startRoomBookingFlow(room);
   });
 
   badge.querySelector('[data-action="change"]').addEventListener('click', () => {
@@ -3864,6 +3866,43 @@ export function enterRoomContext(roomId) {
   addMessage(`Чудово! Тепер я відповідатиму на питання про номер "${room.name}". Що саме вас цікавить?`, 'ai');
 }
 
+// Start Room Booking Flow — pre-fills room into bookingState and kicks off AI booking conversation
+export function startRoomBookingFlow(room) {
+  if (!room) return;
+
+  // 1. Close any open detail / context views
+  closeRoomDetailView();
+
+  // 2. Reset special booking mode if active
+  if (specialBookingState && specialBookingState.isActive) {
+    deactivateSpecialBookingMode(true);
+  }
+
+  // 3. Clear room context badge silently
+  if (selectedRoom) {
+    clearRoomContext(true);
+  }
+
+  // 4. Pre-fill selected room into booking state
+  bookingState.collectedData.selectedRoom = room.name;
+  saveBookingState();
+
+  // 5. Switch to general booking mode so getAIResponse picks up bookingState
+  chatMode = 'general';
+  selectedRoom = null;
+
+  // 6. Compose the initiating user message and show it in chat
+  const priceStr = rooms.formatPrice(room.pricePerNight);
+  const userMessage = `Хочу забронювати номер "${room.name}" (${priceStr}/ніч)`;
+  addMessage(userMessage, 'user');
+
+  // 7. Let the AI take over — it will see selectedRoom in bookingState and start collecting data
+  setButtonLoading(true);
+  showTyping();
+  isGenerating = true;
+  getAIResponse(userMessage);
+}
+
 // View Room Photos
 export function viewRoomPhotos(roomId) {
   const room = rooms.getRoom(roomId);
@@ -3885,6 +3924,7 @@ export function initRoomDetailListeners() {
   const backBtn = document.getElementById('room-detail-back');
   const askBtn = document.getElementById('room-ask-question-btn');
   const viewPhotosBtn = document.getElementById('room-view-photos-btn');
+  const bookBtn = document.getElementById('room-book-btn');
   const detailView = document.getElementById('room-detail-view');
 
   if (backBtn) {
@@ -3905,6 +3945,16 @@ export function initRoomDetailListeners() {
       const roomId = detailView?.dataset.roomId;
       if (roomId) {
         viewRoomPhotos(roomId);
+      }
+    });
+  }
+
+  if (bookBtn) {
+    bookBtn.addEventListener('click', () => {
+      const roomId = detailView?.dataset.roomId;
+      if (roomId) {
+        const room = rooms.getRoom(roomId);
+        if (room) startRoomBookingFlow(room);
       }
     });
   }
@@ -4196,6 +4246,7 @@ export function initSpecialBookingListeners() {
       showRoomsViaAgent();
     });
   }
+
 
   // Language menu button
   const languageMenuBtn = document.getElementById('language-menu-btn');

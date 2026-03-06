@@ -689,6 +689,24 @@
   background: #e5e7eb;
 }
 
+/* ===== Book Button (accent / CTA) ===== */
+.room-action-btn-book {
+  background: var(--accent-color, #2563eb);
+  color: white;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+
+.room-action-btn-book:hover {
+  filter: brightness(1.07);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45);
+  transform: translateY(-1px);
+}
+
+.room-action-btn-book:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
 /* ===== Photo Gallery (Fullscreen) ===== */
 .photo-gallery-overlay {
   position: fixed;
