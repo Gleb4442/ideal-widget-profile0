@@ -2524,6 +2524,52 @@ export function showRoomsViaAgent() {
   roomSelectionMode = true;
 }
 
+// Show all services via agent (from Shop menu)
+export function showServicesViaAgent() {
+  const allServices = services.getAllServices();
+
+  if (allServices.length === 0) {
+    addMessage('На жаль, наразі немає доступних послуг.', 'ai');
+    return;
+  }
+
+  // Build services text description
+  let servicesText = '🛍️ <strong>Наші послуги:</strong>\n\n';
+
+  allServices.forEach((service, index) => {
+    servicesText += `<strong>${index + 1}. ${service.name}</strong>\n`;
+
+    // Format price
+    let priceText = '';
+    if (service.price > 0) {
+      priceText = `💵 ${service.price} ₴`;
+      if (service.priceType === 'per_hour') priceText += '/год';
+      if (service.priceType === 'per_person') priceText += '/ос';
+    } else {
+      priceText = 'Безкоштовно';
+    }
+    servicesText += `   ${priceText}\n`;
+
+    if (service.description) {
+      const shortDesc = service.description.length > 80
+        ? service.description.slice(0, 80) + '...'
+        : service.description;
+      servicesText += `   ${shortDesc}\n`;
+    }
+    servicesText += '\n';
+  });
+
+  servicesText += '---\nЯка послуга вас цікавить? Напишіть мені, і я допоможу оформити замовлення.';
+
+  addMessage(servicesText, 'ai');
+  addToConversationHistory('assistant', servicesText);
+
+  // Show services carousel
+  setTimeout(() => {
+    addServicesCarousel();
+  }, 300);
+}
+
 // Offer additional services after room selection
 export function offerServicesAfterRoomSelection(selectedRoomName) {
   const allServices = services.getAllServices();
@@ -4413,6 +4459,15 @@ export function initSpecialBookingListeners() {
     roomsMenuBtn.addEventListener('click', () => {
       closeHeaderMenu();
       showRoomsViaAgent();
+    });
+  }
+
+  // Shop menu button (In-App Mode)
+  const shopMenuBtn = document.getElementById('shop-menu-btn');
+  if (shopMenuBtn) {
+    shopMenuBtn.addEventListener('click', () => {
+      closeHeaderMenu();
+      showServicesViaAgent();
     });
   }
 

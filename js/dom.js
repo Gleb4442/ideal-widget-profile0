@@ -116,6 +116,11 @@ export const guideTelegramBtn = document.getElementById('guide-telegram-btn');
 export const guideItemsList = document.getElementById('guide-items-list');
 export const historySearchInput = document.getElementById('history-search-input');
 
+// Menu Buttons for In-App Logic
+export const roomsMenuBtn = document.getElementById('rooms-menu-btn');
+export const shopMenuBtn = document.getElementById('shop-menu-btn');
+export const telegramMenuBtn = document.getElementById('telegram-menu-btn');
+
 // Mutable reference for typing indicator (needs re-assignment after reset)
 export let typingIndicator = document.getElementById('typing-indicator');
 

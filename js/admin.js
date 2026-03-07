@@ -1668,12 +1668,29 @@ export function saveInAppMode(settings) {
 
 export function updateInAppVisibility() {
   const settings = loadInAppMode();
-  if (dom.guideBadgeBtn) {
-    if (settings.enabled) {
-      dom.guideBadgeBtn.style.setProperty('display', 'none', 'important');
-    } else {
-      dom.guideBadgeBtn.style.setProperty('display', 'flex', 'important');
-    }
+
+  if (settings.enabled) {
+    // Hide Telegram features
+    if (dom.guideBadgeBtn) dom.guideBadgeBtn.style.setProperty('display', 'none', 'important');
+    if (dom.guideTelegramBtn) dom.guideTelegramBtn.style.display = 'none';
+    if (dom.modals.telegram) dom.modals.telegram.style.display = 'none';
+    if (dom.banners.telegram) dom.banners.telegram.classList.add('hidden');
+    if (dom.telegramMenuBtn) dom.telegramMenuBtn.style.display = 'none';
+
+    // Swap Rooms for Shop
+    if (dom.roomsMenuBtn) dom.roomsMenuBtn.style.display = 'none';
+    if (dom.shopMenuBtn) dom.shopMenuBtn.style.display = 'block';
+
+  } else {
+    // Show Telegram features
+    if (dom.guideBadgeBtn) dom.guideBadgeBtn.style.setProperty('display', 'flex', 'important');
+    if (dom.guideTelegramBtn) dom.guideTelegramBtn.style.display = '';
+    // Let banners.js control the banner and modal normally, just reset inline styles
+    if (dom.telegramMenuBtn) dom.telegramMenuBtn.style.display = '';
+
+    // Swap Shop for Rooms
+    if (dom.roomsMenuBtn) dom.roomsMenuBtn.style.display = '';
+    if (dom.shopMenuBtn) dom.shopMenuBtn.style.display = 'none';
   }
 }
 
