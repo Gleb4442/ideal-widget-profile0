@@ -264,7 +264,7 @@ export function getOrderHistory() {
 export function getCategoryIcon(categoryId) {
   const icons = {
     food: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
-    cleaning: '<path d="M12 2L12 6"/><path d="M12 18L12 22"/><path d="M4.93 4.93L7.76 7.76"/><path d="M16.24 16.24L19.07 19.07"/><path d="M2 12L6 12"/><path d="M18 12L22 12"/><path d="M4.93 19.07L7.76 16.24"/><path d="M16.24 7.76L19.07 4.93"/><circle cx="12" cy="12" r="4"/>',
+    cleaning: '<path d="M20 3v4a2 2 0 0 1-2 2h-1.63L14 14.8V21a1 1 0 0 1-2 0v-6.2L9.63 9H8a2 2 0 0 1-2-2V3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1ZM7 21h4v-7H7v7l0 0z" /> <path d="M12 9l-4 4-2-2 4-4" />',
     towels: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3"/><path d="M12 12v6"/>',
     minibar: '<path d="M8 2h8"/><path d="M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.788a4 4 0 0 0-.672-2.22l-.656-.984A4 4 0 0 1 15 4.79V2"/><path d="M7 15h10"/>'
   };
