@@ -2919,7 +2919,7 @@ export function addMenuMessage() {
 }
 
 // Show Room Service Form
-export function showRoomServiceForm(category = 'food') {
+export function showRoomServiceForm(category = 'cleaning') {
   const wrapper = document.createElement('div');
   wrapper.className = 'message-wrapper ai animate-fade-in';
 
@@ -2997,9 +2997,7 @@ function generateRoomServiceFormHTML(category) {
 
 // Generate content based on category
 function generateCategoryContent(category) {
-  if (category === 'food') {
-    return generateFoodMenuContent();
-  } else if (category === 'cleaning') {
+  if (category === 'cleaning') {
     return generateOptionsContent(roomService.CLEANING_OPTIONS, 'cleaning');
   } else if (category === 'towels') {
     return generateOptionsContent(roomService.TOWEL_OPTIONS, 'towels');
@@ -3228,9 +3226,7 @@ function initRoomServiceFormListeners(container, initialCategory) {
       }
       confirmationText += `\nОрієнтовний час виконання: `;
 
-      if (currentCategory === 'food') {
-        confirmationText += '30-45 хвилин';
-      } else if (currentCategory === 'cleaning') {
+      if (currentCategory === 'cleaning') {
         confirmationText += '15-20 хвилин';
       } else if (currentCategory === 'towels') {
         confirmationText += '10-15 хвилин';
@@ -3252,38 +3248,33 @@ function initRoomServiceFormListeners(container, initialCategory) {
 const IN_APP_SERVICE_QUESTIONS = {
   towels: 'Что именно принести? Банные полотенца 🛁, халаты или дополнительные подушки/одеяла?',
   cleaning: 'Когда вам удобно? Могу организовать уборку прямо сейчас или в удобное для вас время.',
-  minibar: 'Что именно пополнить — напитки, снеки или полностью обновить весь мини-бар?',
-  food: null // food falls through to regular form
+  minibar: 'Что именно пополнить — напитки, снеки или полностью обновить весь мини-бар?'
 };
 
 // Labels for the task card
 const IN_APP_SERVICE_LABELS = {
   towels: 'Принести полотенца',
   cleaning: 'Уборка номера',
-  minibar: 'Пополнение мини-бара',
-  food: 'Заказ еды в номер'
+  minibar: 'Пополнение мини-бара'
 };
 
 const IN_APP_SERVICE_TIMES = {
   towels: '10–15 минут',
   cleaning: '15–25 минут',
-  minibar: '10–20 минут',
-  food: '30–45 минут'
+  minibar: '10–20 минут'
 };
 
 // SVG icons for the header pill (inline, white stroke)
 const IN_APP_SERVICE_ICONS = {
-  towels: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3"/><path d="M12 12v6"/></svg>`,
-  cleaning: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 5l-5 5"/><path d="M14 12L10 8c-2 1.5-3.5 3.5-5 6 1.5 2.5 3.5 4 6 5 2.5-.5 4.5-2 6-4-.5-1.5-1.5-2.5-3-3Z"/><path d="M8.5 13.5l3 3"/><path d="M4 5v2m-1-1h2 M7 3v2m-1-1h2"/><circle cx="4" cy="10" r="1.5"/><circle cx="7" cy="13" r="1"/></svg>`,
-  minibar: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2h8"/><path d="M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.788a4 4 0 0 0-.672-2.22l-.656-.984A4 4 0 0 1 15 4.79V2"/><path d="M7 15h10"/></svg>`,
-  food: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>`
+  towels: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/><line x1="10" y1="5" x2="8" y2="7"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="7" y1="19" x2="7" y2="21"/><line x1="17" y1="19" x2="17" y2="21"/></svg>`,
+  cleaning: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h.01"/><path d="M15 9V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/><path d="M19 9v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9"/><path d="m11 16-2-2"/><path d="m15 16-2-2"/><path d="M7 9h10"/></svg>`,
+  minibar: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8"/><path d="M7 10h10"/><path d="M12 15v7"/><path d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z"/></svg>`
 };
 
 // Start the in-app conversational service request
 export function startInAppServiceRequest(category, _userMessage) {
   const question = IN_APP_SERVICE_QUESTIONS[category];
   if (!question) {
-    // food — fall back to regular form
     showRoomServiceForm(category);
     return;
   }

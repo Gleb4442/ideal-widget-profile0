@@ -7,12 +7,6 @@ const STORAGE_KEY = 'room_service_orders';
 
 // Room service categories
 export const SERVICE_CATEGORIES = {
-  food: {
-    id: 'food',
-    name: 'Room Service',
-    nameUa: 'Їжа в номер',
-    icon: 'utensils'
-  },
   cleaning: {
     id: 'cleaning',
     name: 'Room Cleaning',
@@ -30,47 +24,6 @@ export const SERVICE_CATEGORIES = {
     name: 'Minibar',
     nameUa: 'Мінібар',
     icon: 'wine'
-  }
-};
-
-// Sample restaurant menu
-export const RESTAURANT_MENU = {
-  breakfast: {
-    name: 'Сніданок',
-    items: [
-      { id: 'b1', name: 'Континентальний сніданок', price: 18, description: 'Круасан, сік, кава' },
-      { id: 'b2', name: 'Американський сніданок', price: 24, description: 'Яйця, бекон, тости, кава' },
-      { id: 'b3', name: 'Здоровий старт', price: 20, description: 'Йогурт, гранола, свіжі фрукти' },
-      { id: 'b4', name: 'Омлет з овочами', price: 16, description: 'Омлет з томатами, перцем, цибулею' }
-    ]
-  },
-  lunch: {
-    name: 'Обід',
-    items: [
-      { id: 'l1', name: 'Салат Цезар', price: 16, description: 'Романо, пармезан, грінки' },
-      { id: 'l2', name: 'Клаб сендвіч', price: 18, description: 'Тристоровий з картоплею фрі' },
-      { id: 'l3', name: 'Паста Примавера', price: 22, description: 'Свіжі овочі, оливкова олія' },
-      { id: 'l4', name: 'Бургер з яловичини', price: 20, description: 'З сиром чеддер та беконом' }
-    ]
-  },
-  dinner: {
-    name: 'Вечеря',
-    items: [
-      { id: 'd1', name: 'Лосось на грилі', price: 32, description: 'Зі спаржею та рисом' },
-      { id: 'd2', name: 'Стейк Рібай', price: 38, description: '250г з овочами' },
-      { id: 'd3', name: 'Різотто з грибами', price: 26, description: 'Білі гриби та трюфель' },
-      { id: 'd4', name: 'Курка по-київськи', price: 28, description: 'Класичний рецепт з пюре' }
-    ]
-  },
-  drinks: {
-    name: 'Напої',
-    items: [
-      { id: 'dr1', name: 'Вода в пляшці', price: 4, description: 'Газована або негазована' },
-      { id: 'dr2', name: 'Безалкогольні напої', price: 5, description: 'Кола, Спрайт, Фанта' },
-      { id: 'dr3', name: 'Свіжий сік', price: 8, description: 'Апельсин, яблуко, грейпфрут' },
-      { id: 'dr4', name: 'Вино (бокал)', price: 12, description: 'Червоне або біле' },
-      { id: 'dr5', name: 'Пиво', price: 7, description: 'Місцеве крафтове' }
-    ]
   }
 };
 
@@ -97,17 +50,7 @@ export const MINIBAR_OPTIONS = [
   { id: 'special', name: 'Особливе замовлення', description: 'Конкретні напої чи снеки' }
 ];
 
-// Intent patterns for room service
 const ROOM_SERVICE_PATTERNS = [
-  // Food delivery (Russian, Ukrainian, English)
-  /room\s*service|рум\s*сервіс|рум\s*сервис/i,
-  /доставк.*в\s*номер|еду.*в\s*номер|їжу.*в\s*номер/i,
-  /заказ.*еды|замовлен.*їжі|замовити.*їжу/i,
-  /хочу\s*(поесть|поїсти)|голодн|hungry/i,
-  /завтрак.*номер|сніданок.*номер|обід.*номер|обед.*номер/i,
-  /ужин.*номер|вечер.*номер/i,
-  /принес.*еду|принес.*їжу/i,
-  /меню.*ресторан|ресторан.*меню/i,
 
   // Cleaning (Russian, Ukrainian, English)
   /убор.*номер|прибр.*номер|прибирання/i,
@@ -143,10 +86,6 @@ export function detectRoomServiceIntent(message) {
 }
 
 function detectCategory(message) {
-  // Food keywords
-  if (/еду|їжу|food|завтрак|сніданок|обід|обед|ужин|вечер|hungry|голод|поесть|поїсти|меню|ресторан|room\s*service|рум\s*серв/i.test(message)) {
-    return 'food';
-  }
   // Cleaning keywords
   if (/убор|прибр|clean|почист/i.test(message)) {
     return 'cleaning';
@@ -159,7 +98,7 @@ function detectCategory(message) {
   if (/минибар|мінібар|minibar|мини.*бар|міні.*бар/i.test(message)) {
     return 'minibar';
   }
-  return 'food'; // Default
+  return 'cleaning'; // Default
 }
 
 // Current order state
@@ -260,13 +199,11 @@ export function getOrderHistory() {
   }
 }
 
-// Get category icon SVG
 export function getCategoryIcon(categoryId) {
   const icons = {
-    food: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
-    cleaning: '<path d="M17 5l-5 5"/><path d="M14 12L10 8c-2 1.5-3.5 3.5-5 6 1.5 2.5 3.5 4 6 5 2.5-.5 4.5-2 6-4-.5-1.5-1.5-2.5-3-3Z"/><path d="M8.5 13.5l3 3"/><path d="M4 5v2m-1-1h2 M7 3v2m-1-1h2"/><circle cx="4" cy="10" r="1.5"/><circle cx="7" cy="13" r="1"/>',
-    towels: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3"/><path d="M12 12v6"/>',
-    minibar: '<path d="M8 2h8"/><path d="M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.788a4 4 0 0 0-.672-2.22l-.656-.984A4 4 0 0 1 15 4.79V2"/><path d="M7 15h10"/>'
+    cleaning: '<path d="M3 3h.01"/><path d="M15 9V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/><path d="M19 9v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9"/><path d="m11 16-2-2"/><path d="m15 16-2-2"/><path d="M7 9h10"/>',
+    towels: '<path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/><line x1="10" y1="5" x2="8" y2="7"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="7" y1="19" x2="7" y2="21"/><line x1="17" y1="19" x2="17" y2="21"/>',
+    minibar: '<path d="M8 22h8"/><path d="M7 10h10"/><path d="M12 15v7"/><path d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z"/>'
   };
-  return icons[categoryId] || icons.food;
+  return icons[categoryId] || icons.cleaning;
 }

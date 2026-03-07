@@ -1679,7 +1679,7 @@ export function updateInAppVisibility() {
 
     // Swap Rooms for Shop
     if (dom.roomsMenuBtn) dom.roomsMenuBtn.style.display = 'none';
-    if (dom.shopMenuBtn) dom.shopMenuBtn.style.display = 'block';
+    if (dom.shopMenuBtn) dom.shopMenuBtn.style.display = 'flex';
 
   } else {
     // Show Telegram features
