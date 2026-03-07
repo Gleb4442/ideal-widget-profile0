@@ -4208,9 +4208,10 @@ export function initChatListeners() {
       closeHeaderMenu();
       const sheet = document.getElementById('reset-modal-sheet');
       dom.modals.reset.classList.remove('hidden');
-      if (sheet) {
-        setTimeout(() => sheet.classList.remove('translate-y-full'), 10);
-      }
+      setTimeout(() => {
+        dom.modals.reset.classList.add('show');
+        if (sheet) sheet.classList.remove('translate-y-full');
+      }, 10);
     });
   }
   const confirmReset = document.getElementById('confirm-reset-btn');
@@ -4223,11 +4224,15 @@ export function initChatListeners() {
       const sheet = document.getElementById('reset-modal-sheet');
       if (sheet) {
         sheet.classList.add('translate-y-full');
+        dom.modals.reset.classList.remove('show');
         setTimeout(() => {
           if (dom.modals.reset) dom.modals.reset.classList.add('hidden');
         }, 500);
       } else {
-        if (dom.modals.reset) dom.modals.reset.classList.add('hidden');
+        if (dom.modals.reset) {
+          dom.modals.reset.classList.remove('show');
+          dom.modals.reset.classList.add('hidden');
+        }
       }
     });
   }
@@ -4237,11 +4242,15 @@ export function initChatListeners() {
       const sheet = document.getElementById('reset-modal-sheet');
       if (sheet) {
         sheet.classList.add('translate-y-full');
+        dom.modals.reset.classList.remove('show');
         setTimeout(() => {
           if (dom.modals.reset) dom.modals.reset.classList.add('hidden');
         }, 500);
       } else {
-        if (dom.modals.reset) dom.modals.reset.classList.add('hidden');
+        if (dom.modals.reset) {
+          dom.modals.reset.classList.remove('show');
+          dom.modals.reset.classList.add('hidden');
+        }
       }
     });
   }

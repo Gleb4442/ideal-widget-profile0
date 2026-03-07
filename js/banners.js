@@ -104,6 +104,7 @@ function showModal() {
   modal.classList.remove('hidden');
   // Small delay to allow display:block to apply before animating transform
   setTimeout(() => {
+    modal.classList.add('show');
     sheet.classList.remove('translate-y-full');
   }, 10);
 }
@@ -114,6 +115,7 @@ function hideModal() {
   if (!modal || !sheet) return;
 
   sheet.classList.add('translate-y-full');
+  modal.classList.remove('show');
   // Wait for animation to finish before hiding
   setTimeout(() => {
     modal.classList.add('hidden');
