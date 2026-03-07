@@ -1671,7 +1671,10 @@ export function updateInAppVisibility() {
 
   if (settings.enabled) {
     // Hide Telegram features
-    if (dom.guideBadgeBtn) dom.guideBadgeBtn.style.setProperty('display', 'none', 'important');
+    if (dom.guideBadgeBtn) {
+      dom.guideBadgeBtn.style.setProperty('visibility', 'hidden', 'important');
+      dom.guideBadgeBtn.style.setProperty('pointer-events', 'none', 'important');
+    }
     if (dom.guideTelegramBtn) dom.guideTelegramBtn.style.display = 'none';
     if (dom.modals.telegram) dom.modals.telegram.style.display = 'none';
     if (dom.banners.telegram) dom.banners.telegram.classList.add('hidden');
@@ -1683,7 +1686,10 @@ export function updateInAppVisibility() {
 
   } else {
     // Show Telegram features
-    if (dom.guideBadgeBtn) dom.guideBadgeBtn.style.setProperty('display', 'flex', 'important');
+    if (dom.guideBadgeBtn) {
+      dom.guideBadgeBtn.style.setProperty('visibility', 'visible', 'important');
+      dom.guideBadgeBtn.style.setProperty('pointer-events', 'auto', 'important');
+    }
     if (dom.guideTelegramBtn) dom.guideTelegramBtn.style.display = '';
     // Let banners.js control the banner and modal normally, just reset inline styles
     if (dom.telegramMenuBtn) dom.telegramMenuBtn.style.display = '';

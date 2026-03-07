@@ -2768,9 +2768,7 @@ export function addServicesCarousel() {
       <div class="service-carousel-info">
         <div class="service-carousel-name">${service.name || 'Без назви'}</div>
         ${ratingHTML}
-        ${service.description ? `<div class="service-carousel-description">${service.description}</div>` : ''}
         ${priceHTML}
-        <span class="service-carousel-category">${services.getCategoryName(service.category)}</span>
       </div>
     `;
 
@@ -3458,118 +3456,97 @@ export async function getAIResponse(userMessage) {
   // Add user message to conversation history
   addToConversationHistory('user', userMessage);
 
-  // ── In-App service follow-up: handle reply to clarifying question ──
-  if (inAppServiceState.active && inAppServiceState.step === 'clarifying') {
-    handleInAppServiceFollowUp(userMessage);
-    return;
-  }
+  try {
+    // ── In-App service follow-up: handle reply to clarifying question ──
+    if (inAppServiceState.active && inAppServiceState.step === 'clarifying') {
+      handleInAppServiceFollowUp(userMessage);
+      return;
+    }
 
-  // Handle escalation confirmation flow
-  if (escalationState.awaitingConfirmation) {
-    const decision = parseEscalationConfirmation(userMessage);
-    hideTyping();
-    setButtonLoading(false);
-    isGenerating = false;
+    // Handle escalation confirmation flow
+    if (escalationState.awaitingConfirmation) {
+      const decision = parseEscalationConfirmation(userMessage);
 
-    if (decision === 'yes') {
-      escalationState.awaitingConfirmation = false;
-      escalationState.isEscalated = true;
+      if (decision === 'yes') {
+        escalationState.awaitingConfirmation = false;
+        escalationState.isEscalated = true;
 
-      const confirmText = 'Хорошо, соединяю вас с менеджером. Пожалуйста, подождите...';
+        const confirmText = 'Хорошо, соединяю вас с менеджером. Пожалуйста, подождите...';
+        addMessage(confirmText, 'ai');
+        addToConversationHistory('assistant', confirmText);
+        startOperatorSimulation();
+        return;
+      }
+
+      if (decision === 'no') {
+        escalationState.awaitingConfirmation = false;
+        const declineText = 'Хорошо, остаёмся в чате. Чем могу помочь дальше?';
+        addMessage(declineText, 'ai');
+        addToConversationHistory('assistant', declineText);
+        return;
+      }
+
+      const clarifyText = 'Подтвердите, пожалуйста: хотите, чтобы я соединил вас с менеджером?';
+      addMessage(clarifyText, 'ai');
+      addToConversationHistory('assistant', clarifyText);
+      return;
+    }
+
+    // Detect escalation request or required case
+    const wantsHuman = detectEscalationRequest(userMessage);
+    const needsHuman = detectEscalationRequired(userMessage);
+
+    if (!operatorMode.connected && !escalationState.isEscalated && (wantsHuman || needsHuman)) {
+      escalationState.awaitingConfirmation = true;
+      escalationState.reason = wantsHuman ? 'requested' : 'required';
+
+      const confirmText = wantsHuman
+        ? 'Хотите, чтобы я соединил вас с менеджером?'
+        : 'Похоже, этот вопрос лучше решить с менеджером. Хотите, чтобы я соединил вас с менеджером?';
+
       addMessage(confirmText, 'ai');
       addToConversationHistory('assistant', confirmText);
-      startOperatorSimulation();
       return;
     }
 
-    if (decision === 'no') {
-      escalationState.awaitingConfirmation = false;
-      const declineText = 'Хорошо, остаёмся в чате. Чем могу помочь дальше?';
-      addMessage(declineText, 'ai');
-      addToConversationHistory('assistant', declineText);
+    // Check if user is in room selection mode (from menu)
+    if (checkRoomSelectionInMessage(userMessage)) {
       return;
     }
 
-    const clarifyText = 'Подтвердите, пожалуйста: хотите, чтобы я соединил вас с менеджером?';
-    addMessage(clarifyText, 'ai');
-    addToConversationHistory('assistant', clarifyText);
-    return;
-  }
-
-  // Detect escalation request or required case
-  const wantsHuman = detectEscalationRequest(userMessage);
-  const needsHuman = detectEscalationRequired(userMessage);
-
-  if (!operatorMode.connected && !escalationState.isEscalated && (wantsHuman || needsHuman)) {
-    hideTyping();
-    setButtonLoading(false);
-    isGenerating = false;
-
-    escalationState.awaitingConfirmation = true;
-    escalationState.reason = wantsHuman ? 'requested' : 'required';
-
-    const confirmText = wantsHuman
-      ? 'Хотите, чтобы я соединил вас с менеджером?'
-      : 'Похоже, этот вопрос лучше решить с менеджером. Хотите, чтобы я соединил вас с менеджером?';
-
-    addMessage(confirmText, 'ai');
-    addToConversationHistory('assistant', confirmText);
-    return;
-  }
-
-  // Check if user is in room selection mode (from menu)
-  if (checkRoomSelectionInMessage(userMessage)) {
-    hideTyping();
-    setButtonLoading(false);
-    isGenerating = false;
-    return;
-  }
-
-  // Check for room service intent
-  const rsIntent = roomService.detectRoomServiceIntent(userMessage);
-  if (rsIntent.hasIntent) {
-    hideTyping();
-    setButtonLoading(false);
-    isGenerating = false;
-    const inApp = loadInAppMode();
-    if (inApp.enabled) {
-      startInAppServiceRequest(rsIntent.category, userMessage);
-    } else {
-      showRoomServiceForm(rsIntent.category);
+    // Check for room service intent
+    const rsIntent = roomService.detectRoomServiceIntent(userMessage);
+    if (rsIntent.hasIntent) {
+      const inApp = loadInAppMode();
+      if (inApp.enabled) {
+        startInAppServiceRequest(rsIntent.category, userMessage);
+      } else {
+        showRoomServiceForm(rsIntent.category);
+      }
+      return;
     }
-    return;
-  }
 
-  // Check if user wants to cancel/edit booking (with type detection)
-  const modificationIntent = detectBookingModificationIntent(userMessage);
-  const hasCancellationIntent = detectCancellationIntent(userMessage);
+    // Check if user wants to cancel/edit booking (with type detection)
+    const modificationIntent = detectBookingModificationIntent(userMessage);
+    const hasCancellationIntent = detectCancellationIntent(userMessage);
 
-  // Handle booking modification (cancel or edit) by searching in database
-  if ((modificationIntent.hasIntent || hasCancellationIntent) && !cancellationState.isActive) {
-    hideTyping();
-    setButtonLoading(false);
-    isGenerating = false;
+    // Handle booking modification (cancel or edit) by searching in database
+    if ((modificationIntent.hasIntent || hasCancellationIntent) && !cancellationState.isActive) {
+      // Store the modification type for later use
+      cancellationState.modificationType = modificationIntent.type || 'cancel';
 
-    // Store the modification type for later use
-    cancellationState.modificationType = modificationIntent.type || 'cancel';
+      // Start cancellation/edit process with interactive search
+      handleBookingCancellationByName(userMessage);
+      return;
+    }
 
-    // Start cancellation/edit process with interactive search
-    handleBookingCancellationByName(userMessage);
-    return;
-  }
+    // If already in cancellation process, let the search form handle it
+    if (cancellationState.isActive && cancellationState.stage === 'awaiting_search_params') {
+      // User might be providing search parameters in follow-up message
+      performBookingSearch(userMessage, document.getElementById('booking-search-form'));
+      return;
+    }
 
-  // If already in cancellation process, let the search form handle it
-  if (cancellationState.isActive && cancellationState.stage === 'awaiting_search_params') {
-    hideTyping();
-    setButtonLoading(false);
-    isGenerating = false;
-
-    // User might be providing search parameters in follow-up message
-    performBookingSearch(userMessage, document.getElementById('booking-search-form'));
-    return;
-  }
-
-  try {
     let response;
 
     // Check if we should auto-activate Special Booking mode
@@ -3589,10 +3566,6 @@ export async function getAIResponse(userMessage) {
         bookingState.conversationHistory,
         determineSpecialBookingStage()
       );
-
-      hideTyping();
-      setButtonLoading(false);
-      isGenerating = false;
 
       // Update booking state with extracted data
       if (response.extractedData) {
@@ -3644,10 +3617,6 @@ export async function getAIResponse(userMessage) {
         stage
       );
 
-      hideTyping();
-      setButtonLoading(false);
-      isGenerating = false;
-
       // Update booking state with extracted data
       if (response.extractedData) {
         updateBookingStateWithExtracted(response.extractedData);
@@ -3682,9 +3651,6 @@ export async function getAIResponse(userMessage) {
         bookingState,
         bookingState.conversationHistory
       );
-      hideTyping();
-      setButtonLoading(false);
-      isGenerating = false;
 
       // Update booking state with extracted data
       if (response.extractedData) {
@@ -3717,9 +3683,6 @@ export async function getAIResponse(userMessage) {
         bookingState,
         bookingState.conversationHistory
       );
-      hideTyping();
-      setButtonLoading(false);
-      isGenerating = false;
 
       // Update booking state with extracted data
       if (response.extractedData) {
@@ -3736,9 +3699,6 @@ export async function getAIResponse(userMessage) {
         bookingState,
         bookingState.conversationHistory
       );
-      hideTyping();
-      setButtonLoading(false);
-      isGenerating = false;
 
       // Update booking state with extracted data
       if (response.extractedData) {
@@ -3764,11 +3724,15 @@ export async function getAIResponse(userMessage) {
       }
     }
   } catch (error) {
+    console.error('Error in getAIResponse:', error);
+    addMessage('Вибачте, сталася помилка. Спробуйте ще раз.', 'ai');
+  } finally {
+    // ALWAYS unlock UI
     hideTyping();
     setButtonLoading(false);
     isGenerating = false;
-    addMessage('Вибачте, сталася помилка. Спробуйте ще раз.', 'ai');
   }
+}
 }
 
 // Handle Send Message
@@ -4080,8 +4044,10 @@ export function startRoomBookingFlow(room) {
     clearRoomContext(true);
   }
 
-  // 4. Pre-fill selected room into booking state
+  // 4. Pre-fill selected room into booking state and reset funnel progress
   bookingState.collectedData.selectedRoom = room.name;
+  bookingState.hasActiveBooking = false; // Reset so AI doesn't think we're discussing an existing booking
+  bookingState.step = 'initial'; // Reset step to allow transition to 'completed' and trigger confirmation
   saveBookingState();
 
   // 5. Switch to general booking mode so getAIResponse picks up bookingState
@@ -4090,7 +4056,15 @@ export function startRoomBookingFlow(room) {
 
   // 6. Compose the initiating user message and show it in chat
   const priceStr = rooms.formatPrice(room.pricePerNight);
-  const userMessage = `Хочу забронювати номер "${room.name}" (${priceStr}/ніч)`;
+  let userMessage = `Хочу забронювати номер "${room.name}" (${priceStr}/ніч)`;
+
+  // Localized message
+  if (currentLang === 'ru') {
+    userMessage = `Хочу забронировать номер "${room.name}" (${priceStr}/ночь)`;
+  } else if (currentLang === 'en') {
+    userMessage = `I want to book room "${room.name}" (${priceStr}/night)`;
+  }
+
   addMessage(userMessage, 'user');
 
   // 7. Let the AI take over — it will see selectedRoom in bookingState and start collecting data
@@ -4357,19 +4331,19 @@ export function initSpecialBookingListeners() {
     if (!historyView || !historyModalWrapper) return;
 
     // Start closing animations
-    historyView.classList.remove('history-view-active');
-    historyModalWrapper.classList.remove('show');
+    historyView.classList.replace('translate-y-0', 'translate-y-full');
+    historyModalWrapper.classList.replace('opacity-100', 'opacity-0');
+    historyModalWrapper.classList.replace('pointer-events-auto', 'pointer-events-none');
 
     // Also handle detail view if it's open
     const historyDetailView = document.getElementById('history-detail-view');
     if (historyDetailView) {
-      historyDetailView.classList.add('translate-y-full');
+      historyDetailView.classList.replace('translate-y-0', 'translate-y-full');
     }
 
     // Wait for animation to finish
     setTimeout(() => {
       historyModalWrapper.classList.add('hidden');
-      historyModalWrapper.classList.remove('show-detail');
       if (historyDetailView) {
         historyDetailView.classList.add('hidden');
       }
@@ -4393,12 +4367,16 @@ export function initSpecialBookingListeners() {
   if (historyDetailBack) {
     historyDetailBack.addEventListener('click', () => {
       const detailView = document.getElementById('history-detail-view');
-      if (detailView) {
-        detailView.classList.add('translate-y-full');
+      const historyView = document.getElementById('history-view');
+      const wrapperMod = document.getElementById('history-modal-wrapper'); // Added this line
+      if (detailView && historyView && wrapperMod) { // Modified this line
+        detailView.classList.replace('translate-y-0', 'translate-y-full');
+        historyView.classList.remove('-translate-x-full');
+        wrapperMod.classList.remove('show-detail'); // Added this line
+
         setTimeout(() => {
-          historyModalWrapper.classList.remove('show-detail');
           detailView.classList.add('hidden');
-        }, 500);
+        }, 400); // match transition
       }
     });
   }
@@ -4758,9 +4736,9 @@ function showHistoryModal() {
 
   // Force reflow and add animations
   requestAnimationFrame(() => {
-    wrapper.classList.add('show');
-    view.classList.add('history-view-active');
-    view.classList.remove('translate-y-full');
+    wrapper.classList.replace('opacity-0', 'opacity-100');
+    wrapper.classList.replace('pointer-events-none', 'pointer-events-auto');
+    view.classList.replace('translate-y-full', 'translate-y-0');
   });
 }
 
