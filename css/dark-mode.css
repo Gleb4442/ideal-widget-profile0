@@ -233,20 +233,134 @@
 }
 
 /* ===== Menu Sheet Dark Mode ===== */
-#chat-window.dark-mode .menu-sheet {
-  background: #1f2937;
+#chat-window.dark-mode .glass-sheet {
+  background: rgba(30, 35, 50, 0.85);
+  border-top-color: rgba(255, 255, 255, 0.08);
 }
 
-#chat-window.dark-mode .menu-sheet-btn {
+#chat-window.dark-mode .glass-item {
+  background: rgba(55, 65, 81, 0.7);
+  border-color: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+#chat-window.dark-mode .glass-item:hover {
+  background: rgba(75, 85, 99, 0.8);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+#chat-window.dark-mode .glass-button {
+  background: rgba(55, 65, 81, 0.7);
+  border-color: rgba(255, 255, 255, 0.08);
   color: #e5e7eb;
 }
 
+#chat-window.dark-mode .glass-button:hover {
+  background: rgba(75, 85, 99, 0.9);
+  color: #f9fafb;
+}
+
+#chat-window.dark-mode .glass-icon-container {
+  background: rgba(30, 35, 50, 0.6);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Menu sheet text overrides (hardcoded Tailwind classes) */
+#chat-window.dark-mode #menu-sheet-content-inner .text-gray-800 {
+  color: #e5e7eb;
+}
+#chat-window.dark-mode #menu-sheet-content-inner .text-gray-400 {
+  color: #6b7280;
+}
+#chat-window.dark-mode #menu-sheet-content-inner .text-gray-500 {
+  color: #9ca3af;
+}
+
+/* Legacy selectors kept for compatibility */
+#chat-window.dark-mode .menu-sheet-btn {
+  color: #e5e7eb;
+}
 #chat-window.dark-mode .menu-sheet-btn:hover {
   background: #374151;
 }
-
 #chat-window.dark-mode .menu-divider {
   background: #374151;
+}
+
+/* ===== Language Sheet Modal Dark Mode ===== */
+#chat-window.dark-mode #language-sheet-content-inner {
+  background: rgba(30, 35, 50, 0.9) !important;
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+#chat-window.dark-mode #language-sheet-content-inner .text-gray-900 {
+  color: #f3f4f6;
+}
+
+#chat-window.dark-mode #language-sheet-content-inner .text-gray-500 {
+  color: #9ca3af;
+}
+
+#chat-window.dark-mode .language-option:hover {
+  background: rgba(75, 85, 99, 0.5);
+}
+
+#chat-window.dark-mode .language-option.active {
+  background: rgba(55, 65, 81, 0.9);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+#chat-window.dark-mode .language-option.active:hover {
+  background: rgba(55, 65, 81, 0.9);
+}
+
+#chat-window.dark-mode #language-sheet-close {
+  background: rgba(55, 65, 81, 0.7);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #e5e7eb;
+}
+
+#chat-window.dark-mode #language-sheet-close:hover {
+  background: rgba(75, 85, 99, 0.9);
+}
+
+/* ===== Reset Confirmation Sheet Dark Mode ===== */
+#chat-window.dark-mode #reset-modal-sheet > div {
+  background: rgba(25, 30, 45, 0.92) !important;
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+#chat-window.dark-mode #reset-modal-sheet h2 {
+  color: #f3f4f6;
+}
+
+#chat-window.dark-mode #reset-modal-sheet p {
+  color: #9ca3af;
+}
+
+#chat-window.dark-mode #cancel-reset-btn {
+  background: rgba(55, 65, 81, 0.7);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #d1d5db;
+}
+
+#chat-window.dark-mode #cancel-reset-btn:hover {
+  background: rgba(75, 85, 99, 0.8);
+}
+
+/* ===== TG Confirmation Sheet Dark Mode ===== */
+#chat-window.dark-mode #tg-modal-sheet > div {
+  background: rgba(25, 30, 45, 0.92) !important;
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+#chat-window.dark-mode #tg-modal-sheet h2 {
+  color: #f3f4f6;
+}
+
+#chat-window.dark-mode #tg-modal-sheet p {
+  color: #9ca3af;
 }
 
 /* ===== Welcome Modal Dark Mode ===== */
@@ -302,7 +416,7 @@
 
 /* ===== Telegram Confirmation Modal Dark Mode ===== */
 #chat-window.dark-mode .telegram-confirmation-overlay {
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.5);
 }
 
 #chat-window.dark-mode .telegram-confirmation-modal {
@@ -623,18 +737,27 @@
   border-top-color: #374151;
 }
 
-/* ===== Language Sheet Modal Dark Mode ===== */
 /* ===== Guide Bottom Sheet Dark Mode ===== */
 #chat-window.dark-mode .guide-sheet-content {
   background: #1f2937;
 }
 
+#chat-window.dark-mode .guide-sheet-content h3 {
+  color: #f3f4f6;
+}
+
 #chat-window.dark-mode .guide-item {
   background: #374151;
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
 #chat-window.dark-mode .guide-item:hover {
   background: #4b5563;
+}
+
+#chat-window.dark-mode .guide-item-icon {
+  background: #4b5563;
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 #chat-window.dark-mode .guide-item-text {
@@ -643,6 +766,15 @@
 
 #chat-window.dark-mode .guide-item-arrow {
   color: #6b7280;
+}
+
+#chat-window.dark-mode #guide-sheet-close {
+  background: rgba(55, 65, 81, 0.7);
+  color: #d1d5db;
+}
+
+#chat-window.dark-mode #guide-sheet-close:hover {
+  background: rgba(75, 85, 99, 0.9);
 }
 
 /* ===== Confirmation Modals Dark Mode ===== */
@@ -802,4 +934,177 @@
 
 .dark-mode #open-admin-btn:hover {
   color: var(--accent-color);
+}
+
+/* ===== Unified Modal/Sheet Dark Theme ===== */
+#chat-window.dark-mode .standard-modal-overlay.show {
+  background-color: rgba(2, 6, 23, 0.62) !important;
+}
+
+#chat-window.dark-mode #menu-bottom-sheet:not(.hidden),
+#chat-window.dark-mode #language-sheet-modal:not(.hidden),
+#chat-window.dark-mode #guide-bottom-sheet:not(.hidden) {
+  background-color: rgba(2, 6, 23, 0.58);
+}
+
+#chat-window.dark-mode #app-download-modal:not(.hidden) {
+  background: rgba(2, 6, 23, 0.6);
+}
+
+#chat-window.dark-mode #menu-sheet-content-inner,
+#chat-window.dark-mode #language-sheet-content-inner,
+#chat-window.dark-mode #guide-sheet-content-inner,
+#chat-window.dark-mode #reset-modal-sheet > div,
+#chat-window.dark-mode #tg-modal-sheet > div {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.94) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border-top-color: rgba(148, 163, 184, 0.22);
+  box-shadow: 0 -20px 40px rgba(2, 6, 23, 0.55);
+}
+
+#chat-window.dark-mode #menu-sheet-content-inner > .w-full.flex.justify-center.pt-4.pb-2 > div,
+#chat-window.dark-mode #guide-sheet-content-inner > .flex.justify-center.mb-4 > div,
+#chat-window.dark-mode #reset-modal-sheet > div > div:first-child,
+#chat-window.dark-mode #tg-modal-sheet > div > div:first-child,
+#chat-window.dark-mode #app-download-content-inner > .w-full.flex.justify-center.pt-5.pb-2 > div {
+  background: rgba(148, 163, 184, 0.35) !important;
+}
+
+#chat-window.dark-mode #menu-sheet-content-inner .glass-item {
+  background: rgba(30, 41, 59, 0.86);
+  border-color: rgba(148, 163, 184, 0.2);
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.34);
+}
+
+#chat-window.dark-mode #menu-sheet-content-inner .glass-item:hover {
+  background: rgba(51, 65, 85, 0.92);
+  border-color: rgba(148, 163, 184, 0.3);
+  box-shadow: 0 12px 24px rgba(2, 6, 23, 0.42);
+}
+
+#chat-window.dark-mode #menu-sheet-content-inner .glass-button {
+  background: rgba(51, 65, 85, 0.85);
+  border-color: rgba(148, 163, 184, 0.24);
+  color: #e2e8f0;
+}
+
+#chat-window.dark-mode #menu-sheet-content-inner .glass-button:hover {
+  background: rgba(71, 85, 105, 0.92);
+  color: #f8fafc;
+}
+
+#chat-window.dark-mode #menu-sheet-content-inner .glass-icon-container {
+  background: rgba(15, 23, 42, 0.86);
+  border-color: rgba(148, 163, 184, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+#chat-window.dark-mode #menu-sheet-content-inner .text-gray-800,
+#chat-window.dark-mode #language-sheet-content-inner .text-gray-900,
+#chat-window.dark-mode #guide-sheet-content-inner .text-gray-800 {
+  color: #e2e8f0 !important;
+}
+
+#chat-window.dark-mode #menu-sheet-content-inner .text-gray-500,
+#chat-window.dark-mode #menu-sheet-content-inner .text-gray-400,
+#chat-window.dark-mode #language-sheet-content-inner .text-gray-500 {
+  color: #94a3b8 !important;
+}
+
+#chat-window.dark-mode #language-sheet-list .language-option {
+  background: rgba(30, 41, 59, 0.46);
+  border-color: transparent;
+}
+
+#chat-window.dark-mode #language-sheet-list .language-option:hover {
+  background: rgba(51, 65, 85, 0.7);
+}
+
+#chat-window.dark-mode #language-sheet-list .language-option.active {
+  background: rgba(51, 65, 85, 0.9);
+  border-color: rgba(96, 165, 250, 0.28);
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.38);
+}
+
+#chat-window.dark-mode #language-sheet-list .language-option > div > div {
+  background: rgba(15, 23, 42, 0.8) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
+
+#chat-window.dark-mode #language-sheet-list .language-option > div > span {
+  color: #e2e8f0 !important;
+}
+
+#chat-window.dark-mode #language-sheet-list .language-option.active > div > span {
+  color: #f8fafc !important;
+}
+
+#chat-window.dark-mode #language-sheet-close,
+#chat-window.dark-mode #guide-sheet-close,
+#chat-window.dark-mode #cancel-reset-btn,
+#chat-window.dark-mode #cancel-tg-btn {
+  background: rgba(51, 65, 85, 0.7);
+  border-color: rgba(148, 163, 184, 0.24);
+  color: #e2e8f0 !important;
+}
+
+#chat-window.dark-mode #language-sheet-close:hover,
+#chat-window.dark-mode #guide-sheet-close:hover,
+#chat-window.dark-mode #cancel-reset-btn:hover,
+#chat-window.dark-mode #cancel-tg-btn:hover {
+  background: rgba(71, 85, 105, 0.84);
+  color: #f8fafc !important;
+}
+
+#chat-window.dark-mode #guide-sheet-content-inner .guide-item-icon {
+  background: rgba(15, 23, 42, 0.86);
+  border-color: rgba(148, 163, 184, 0.2);
+  color: #93c5fd;
+}
+
+#chat-window.dark-mode #guide-sheet-content-inner h3,
+#chat-window.dark-mode #reset-modal-sheet h2,
+#chat-window.dark-mode #tg-modal-sheet h2,
+#chat-window.dark-mode #login-modal h4,
+#chat-window.dark-mode #login-success-modal h4 {
+  color: #f8fafc !important;
+}
+
+#chat-window.dark-mode #reset-modal-sheet p,
+#chat-window.dark-mode #tg-modal-sheet p,
+#chat-window.dark-mode #app-download-content-inner .text-slate-500,
+#chat-window.dark-mode #app-download-content-inner .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+#chat-window.dark-mode #login-modal .modal-content,
+#chat-window.dark-mode #login-success-modal .modal-content {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+}
+
+#chat-window.dark-mode #sms-code-input {
+  background: rgba(15, 23, 42, 0.82);
+  border-color: rgba(148, 163, 184, 0.32);
+  color: #f8fafc;
+}
+
+#chat-window.dark-mode #sms-code-input::placeholder {
+  color: #94a3b8;
+}
+
+#chat-window.dark-mode #cancel-login-btn {
+  background: rgba(51, 65, 85, 0.72);
+  color: #e2e8f0;
+}
+
+#chat-window.dark-mode #cancel-login-btn:hover {
+  background: rgba(71, 85, 105, 0.82);
+}
+
+#chat-window.dark-mode #login-success-modal .bg-green-100 {
+  background: rgba(34, 197, 94, 0.18) !important;
+}
+
+#chat-window.dark-mode #login-success-modal .text-green-600 {
+  color: #4ade80 !important;
 }

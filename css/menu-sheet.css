@@ -27,7 +27,7 @@
 #menu-bottom-sheet:not(.hidden),
 #language-sheet-modal:not(.hidden),
 #guide-bottom-sheet:not(.hidden) {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.5);
     visibility: visible;
     pointer-events: auto;
 }
@@ -160,6 +160,7 @@
 .guide-sheet-content {
     max-width: 420px;
     margin: 0 auto;
+    background: white;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
 }
 

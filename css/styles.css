@@ -53,7 +53,7 @@
 }
 
 .standard-modal-overlay.show {
-    background-color: rgba(0, 0, 0, 0.4) !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
     pointer-events: auto;
     opacity: 1;
 }
