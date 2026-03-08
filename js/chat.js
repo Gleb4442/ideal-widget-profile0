@@ -3733,7 +3733,6 @@ export async function getAIResponse(userMessage) {
     isGenerating = false;
   }
 }
-}
 
 // Handle Send Message
 export function handleSendMessage() {
