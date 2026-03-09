@@ -9,7 +9,7 @@ import * as rooms from './rooms.js';
 import * as bookings from './bookings.js';
 import * as services from './services.js';
 import * as orchestra from './orchestra.js';
-import { startOperatorSimulation, stopOperatorSimulation, setOperatorSettings, updateScrollButtonPosition } from './chat.js';
+import { startOperatorSimulation, stopOperatorSimulation, setOperatorSettings, updateScrollButtonPosition, addQuickReplies } from './chat.js';
 
 // Room editing state
 let currentEditRoomId = null;
@@ -1728,6 +1728,9 @@ function initInAppMode() {
       const enabled = e.target.checked;
       saveInAppMode({ enabled });
       updateInAppVisibility();
+      
+      // Update quick replies immediately when mode changes
+      addQuickReplies();
     });
   }
   updateInAppVisibility();

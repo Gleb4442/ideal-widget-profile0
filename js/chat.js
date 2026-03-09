@@ -2308,14 +2308,33 @@ function getQuickReplyMode() {
   const inApp = loadInAppMode();
   if (inApp && inApp.enabled) return 'inApp';
   if (chatContext.mode === 'single') return 'single';
-  return 'discovery'; // multi/orchestra = discovery
+  
+  // If discovery is active or in multi mode
+  return 'discovery';
 }
 
-// Add Quick Reply Buttons after welcome message
-function addQuickReplies() {
+// Remove Quick Reply Buttons
+export function removeQuickReplies() {
+  const container = document.getElementById('quick-replies');
+  if (container) {
+    container.classList.add('quick-replies-exit');
+    setTimeout(() => {
+      if (container.parentNode) container.remove();
+    }, 300);
+  }
+}
+
+// Add Quick Reply Buttons
+export function addQuickReplies() {
+  // Remove existing ones first
+  const existing = document.getElementById('quick-replies');
+  if (existing) existing.remove();
+
   const mode = getQuickReplyMode();
   const lang = currentLang in QUICK_REPLIES[mode] ? currentLang : 'en';
   const buttons = QUICK_REPLIES[mode][lang];
+
+  if (!buttons || buttons.length === 0) return;
 
   const container = document.createElement('div');
   container.className = 'quick-replies-container animate-fade-in';
@@ -2329,8 +2348,7 @@ function addQuickReplies() {
 
     chip.addEventListener('click', () => {
       // Remove quick replies
-      container.classList.add('quick-replies-exit');
-      setTimeout(() => container.remove(), 300);
+      removeQuickReplies();
 
       // Send the message
       dom.messageInput.value = btn.text;
@@ -2638,6 +2656,9 @@ export function setSingleProperty(propertyId) {
 
     addMessage(`Ви вибрали готель "${prop.name}". Як я можу допомогти вам з плануванням вашого перебування?`, 'ai');
     addToConversationHistory('assistant', `Ви вибрали готель "${prop.name}". Як я можу допомогти вам з плануванням вашого перебування?`);
+    
+    // Update quick replies for single mode
+    setTimeout(() => addQuickReplies(), 500);
   }
 }
 
@@ -2653,6 +2674,9 @@ export function resetToMultiProperty() {
 
   addMessage('Ви повернулися до загального пошуку. Який готель або місто вас цікавить?', 'ai');
   addToConversationHistory('assistant', 'Ви повернулися до загального пошуку. Який готель або місто вас цікавить?');
+  
+  // Update quick replies for discovery mode
+  setTimeout(() => addQuickReplies(), 500);
 }
 
 // Add Property Shortlist to Chat
@@ -4046,11 +4070,7 @@ export function handleSendMessage() {
   addMessage(text, 'user');
 
   // Dismiss quick reply chips if still visible
-  const quickReplies = document.getElementById('quick-replies');
-  if (quickReplies) {
-    quickReplies.classList.add('quick-replies-exit');
-    setTimeout(() => quickReplies.remove(), 300);
-  }
+  removeQuickReplies();
 
   // Hide policy consent banner after first message
   if (dom.policyConsentBanner && !dom.policyConsentBanner.classList.contains('hidden')) {
