@@ -107,6 +107,7 @@
 
 #voice-input-button.is-recording {
   color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
 }
 
 #voice-input-button.is-unsupported {
@@ -122,4 +123,6 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
-.dark-mode #voice-input-button.is-recording {}
+.dark-mode #voice-input-button.is-recording {
+  background: rgba(239, 68, 68, 0.15);
+}
