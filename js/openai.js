@@ -102,7 +102,20 @@ const ROOM_INTENT_PATTERNS = [
   /посмотреть/i,
   /see/i,
   /show/i,
-  /list/i
+  /list/i,
+  // Booking / accommodation intent — also implies wanting to see rooms
+  /бронювання|бронирование|booking/i,
+  /забронювати|забронировать|book\s*(a\s*room|now)?/i,
+  /зупинитись|остановиться|stay/i,
+  /заселитись|заселиться|check[\s-]*in/i,
+  /проживання|проживание|accommodation/i,
+  /хочу\s*(жити|жить|поселитись|поселиться|зупинитись|остановиться)/i,
+  /хочу\s*номер|хочу\s*кімнату|хочу\s*комнату/i,
+  /є\s*місця|есть\s*места|є\s*вільні|есть\s*свободн/i,
+  /ціна\s*(номер|кімнат|проживан)|цена\s*(номер|комнат|проживан)/i,
+  /скільки\s*коштує\s*(номер|кімнат|проживан)|сколько\s*стоит\s*(номер|комнат|проживан)/i,
+  /яку\s*кімнату|какой\s*номер|який\s*номер/i,
+  /люкс|suite|стандарт|standard|делюкс|deluxe|апартамент|apartment/i
 ];
 
 // Service intent keywords for detecting when user wants to see additional services
@@ -127,7 +140,23 @@ const SERVICE_INTENT_PATTERNS = [
   /прокат|rental/i,
   /велосипед|bicycle|bike/i,
   /йога|yoga/i,
-  /оздоровл|wellness/i
+  /оздоровл|wellness/i,
+  // Additional contextual service triggers
+  /що можна\s*(замовити|зробити|відвідати)|что можно\s*(заказать|сделать|посетить)/i,
+  /що входить|что входит|що доступно|что доступно/i,
+  /можна\s*замовити|можно\s*заказать/i,
+  /розслаб|расслаб|relax/i,
+  /відпочин|отдохнуть|rest/i,
+  /процедур|treatment/i,
+  /активн|activity|activities/i,
+  /розваг|развлечен|entertainment|fun/i,
+  /пропозиц|предложен|offer/i,
+  /бар|bar|лаунж|lounge/i,
+  /пральн|прачечн|laundry/i,
+  /хімчистк|dry\s*clean/i,
+  /паркінг|парковк|parking/i,
+  /аеропорт.*зустріч|аэропорт.*встреч|airport.*pick/i,
+  /замовити|заказать|order/i
 ];
 
 // Menu intent keywords for detecting when user wants to see restaurant menu
@@ -549,13 +578,54 @@ ${hotelInfo || 'Информация не указана.'}
 }
 
 // Check if message indicates room intent
-export function hasRoomIntent(message) {
-  return ROOM_INTENT_PATTERNS.some(pattern => pattern.test(message));
+// Context continuation patterns — vague follow-ups that continue a previous topic
+const ROOM_CONTEXT_CONTINUATION = [
+  /скільки|сколько|how much|ціна|цена|price|cost/i,
+  /розкаж|расскаж|tell me|детальн|подробн/i,
+  /що включ|что включ|what.*includ/i,
+  /так|да|yes|ок|ok|окей|добре|хорошо/i,
+  /хочу|want|хотів|хотел/i,
+  /цікав|интересн|interest/i,
+  /підходить|подходит|suit/i,
+  /а\s*(що|які|какие|как)/i,
+];
+
+const SERVICE_CONTEXT_CONTINUATION = [
+  /скільки|сколько|how much|ціна|цена|price|cost/i,
+  /розкаж|расскаж|tell me|детальн|подробн/i,
+  /як\s*(замовити|заказать)|how.*order/i,
+  /доступн|available/i,
+  /хочу|want|хотів|хотел/i,
+  /цікав|интересн|interest/i,
+  /так|да|yes|ок|ok|окей|добре|хорошо/i,
+];
+
+export function hasRoomIntent(message, conversationHistory = []) {
+  // Direct intent in current message
+  if (ROOM_INTENT_PATTERNS.some(pattern => pattern.test(message))) return true;
+
+  // Context-aware: check if last 3 assistant+user messages were about rooms/booking
+  // and current message is a continuation
+  const recentMessages = conversationHistory.slice(-6);
+  const recentText = recentMessages.map(m => m.content || '').join(' ');
+  const recentHasRoomContext = ROOM_INTENT_PATTERNS.some(p => p.test(recentText));
+  if (recentHasRoomContext && ROOM_CONTEXT_CONTINUATION.some(p => p.test(message))) return true;
+
+  return false;
 }
 
 // Check if message indicates service intent (additional services)
-export function hasServiceIntent(message) {
-  return SERVICE_INTENT_PATTERNS.some(pattern => pattern.test(message));
+export function hasServiceIntent(message, conversationHistory = []) {
+  // Direct intent in current message
+  if (SERVICE_INTENT_PATTERNS.some(pattern => pattern.test(message))) return true;
+
+  // Context-aware: check if recent conversation was about services
+  const recentMessages = conversationHistory.slice(-6);
+  const recentText = recentMessages.map(m => m.content || '').join(' ');
+  const recentHasServiceContext = SERVICE_INTENT_PATTERNS.some(p => p.test(recentText));
+  if (recentHasServiceContext && SERVICE_CONTEXT_CONTINUATION.some(p => p.test(message))) return true;
+
+  return false;
 }
 
 // Check if message indicates menu intent (restaurant menu)
@@ -840,11 +910,11 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
   // Add current user message
   messages.push({ role: 'user', content: userMessage });
 
-  // Check for room intent
-  const showRooms = hasRoomIntent(userMessage);
+  // Check for room intent (pass history for context-aware detection)
+  const showRooms = hasRoomIntent(userMessage, conversationHistory);
 
-  // Check for services intent
-  const showServices = hasServiceIntent(userMessage);
+  // Check for services intent (pass history for context-aware detection)
+  const showServices = hasServiceIntent(userMessage, conversationHistory);
 
   // Check for menu intent
   const showMenu = hasMenuIntent(userMessage);
@@ -922,11 +992,11 @@ export async function getGeneralAIResponseStreaming(userMessage, hotelName = 'Hi
   // Add current user message
   messages.push({ role: 'user', content: userMessage });
 
-  // Check for room intent
-  const showRooms = hasRoomIntent(userMessage);
+  // Check for room intent (pass history for context-aware detection)
+  const showRooms = hasRoomIntent(userMessage, conversationHistory);
 
-  // Check for services intent
-  const showServices = hasServiceIntent(userMessage);
+  // Check for services intent (pass history for context-aware detection)
+  const showServices = hasServiceIntent(userMessage, conversationHistory);
 
   // Check for menu intent
   const showMenu = hasMenuIntent(userMessage);
