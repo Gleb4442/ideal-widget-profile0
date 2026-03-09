@@ -5,12 +5,49 @@
 
 import { getAllRooms, isRangeAvailable, getAvailableRoomsForRange } from './rooms.js';
 import { getAllServices, formatPrice as formatServicePrice, getCategoryName } from './services.js';
-import { extractBookingData, parseDateFromText } from './utils.js';
-import { getCurrentLanguage, getLanguageName } from './localization.js';
 import { languagesList } from './config.js';
 import { chatContext } from './chat.js';
 import * as orchestra from './orchestra.js';
 import * as discovery from './discovery.js';
+
+// Language code to full name mapping
+const LANGUAGE_NAMES = {
+  'en': 'English',
+  'zh': 'Chinese (Mandarin)',
+  'hi': 'Hindi',
+  'es': 'Spanish',
+  'ar': 'Arabic',
+  'fr': 'French',
+  'bn': 'Bengali',
+  'pt': 'Portuguese',
+  'ru': 'Russian',
+  'id': 'Indonesian',
+  'uk': 'Ukrainian',
+  'de': 'German',
+  'ja': 'Japanese',
+  'ko': 'Korean',
+  'it': 'Italian',
+  'tr': 'Turkish',
+  'nl': 'Dutch',
+  'pl': 'Polish',
+  'vi': 'Vietnamese',
+  'th': 'Thai',
+  'ua': 'Ukrainian'  // Legacy support
+};
+
+// Get language name from code
+function getLanguageName(langCode) {
+  return LANGUAGE_NAMES[langCode] || 'English';
+}
+
+// Get current language from localStorage
+function getCurrentLanguage() {
+  try {
+    return localStorage.getItem('chat_language') || 'en';
+  } catch (e) {
+    return 'en';
+  }
+}
 
 // API Configuration
 let OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY_HERE';
