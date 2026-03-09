@@ -2299,9 +2299,10 @@ export function setDiscoveryHeader() {
   if (dom.hotelNameText) {
     dom.hotelNameText.textContent = 'Roomie AI';
   }
-  // Hide app store buttons — not relevant in discovery mode
+  // Hide app store button but keep its space so header width stays fixed
   if (dom.guideBadgeBtn) {
-    dom.guideBadgeBtn.style.display = 'none';
+    dom.guideBadgeBtn.style.visibility = 'hidden';
+    dom.guideBadgeBtn.style.pointerEvents = 'none';
   }
 }
 
@@ -2311,6 +2312,7 @@ export function setOrchestraHeader(hotelName, logoUrl) {
   if (logoContainer) {
     if (logoUrl) {
       logoContainer.innerHTML = `<img src="${logoUrl}" style="width:100%;height:100%;object-fit:cover;" alt="${hotelName}">`;
+      logoContainer.style.background = 'transparent';
     } else {
       logoContainer.innerHTML = `<span class="text-xl font-bold accent-text">${(hotelName || 'H')[0].toUpperCase()}</span>`;
       logoContainer.style.background = '';
@@ -2319,9 +2321,10 @@ export function setOrchestraHeader(hotelName, logoUrl) {
   if (dom.hotelNameText) {
     dom.hotelNameText.textContent = hotelName || '';
   }
-  // Show app store buttons in orchestra mode
+  // Restore app store button visibility
   if (dom.guideBadgeBtn) {
-    dom.guideBadgeBtn.style.display = '';
+    dom.guideBadgeBtn.style.visibility = '';
+    dom.guideBadgeBtn.style.pointerEvents = '';
   }
 }
 
