@@ -2687,8 +2687,8 @@ export function addPropertyShortlist(propertyIds) {
 
     const tagsHTML = prop.discoveryTags
       ? prop.discoveryTags.split(',').map(t => t.trim()).filter(Boolean)
-          .map(t => `<span class="inline-block bg-indigo-50 text-indigo-600 text-[10px] font-medium px-2 py-0.5 rounded-full">${t}</span>`)
-          .join('')
+        .map(t => `<span class="inline-block bg-indigo-50 text-indigo-600 text-[10px] font-medium px-2 py-0.5 rounded-full">${t}</span>`)
+        .join('')
       : '';
 
     card.innerHTML = `
@@ -3521,11 +3521,19 @@ export function startInAppServiceRequest(category, _userMessage) {
 
   inAppServiceState = { active: true, category, step: 'clarifying' };
 
-  // Show the neon header pill immediately
-  showServiceStatusIcon(category);
+  // Task preparing animation HTML
+  const taskPreparingHtml = `
+    <div class="task-preparing-bubble-anim">
+      <div class="task-preparing-icon-wrap">
+        ${IN_APP_SERVICE_ICONS[category] || ''}
+      </div>
+      <div class="task-preparing-spinner"></div>
+      <span class="task-preparing-text">Формируем задачу...</span>
+    </div>
+  `;
 
-  // Ask the clarifying question
-  addMessage(question, 'ai');
+  // Ask the clarifying question with prepended animation
+  addMessage(taskPreparingHtml + question, 'ai');
   addToConversationHistory('assistant', question);
 }
 
@@ -3547,41 +3555,6 @@ function handleInAppServiceFollowUp(userMessage) {
 
   // Show animated task card in chat
   addServiceTaskCard(category, userMessage);
-
-  // Auto-hide the header icon after 9 seconds
-  setTimeout(() => hideServiceStatusIcon(), 9000);
-}
-
-// Show neon service status icon in header (replacing app-store button slot)
-function showServiceStatusIcon(category) {
-  // Remove any existing service icon
-  hideServiceStatusIcon();
-
-  const guideBadgeBtn = document.getElementById('guide-badge-btn');
-  if (!guideBadgeBtn) return;
-
-  const pill = document.createElement('button');
-  pill.id = 'service-status-pill';
-  pill.className = 'header-guide-btn service-status-neon';
-  pill.setAttribute('aria-label', IN_APP_SERVICE_LABELS[category] || 'Заявка');
-  pill.innerHTML = `
-    ${IN_APP_SERVICE_ICONS[category] || ''}
-    <span class="service-status-ring"></span>
-  `;
-
-  // Insert right before the guide-badge-btn (or in its parent)
-  guideBadgeBtn.parentNode.insertBefore(pill, guideBadgeBtn);
-  // Animate in
-  requestAnimationFrame(() => pill.classList.add('service-status-visible'));
-}
-
-// Remove the header service icon (with fade-out)
-function hideServiceStatusIcon() {
-  const pill = document.getElementById('service-status-pill');
-  if (!pill) return;
-  pill.classList.remove('service-status-visible');
-  pill.classList.add('service-status-hiding');
-  setTimeout(() => pill.remove(), 600);
 }
 
 // Add animated "task created" card inside chat
