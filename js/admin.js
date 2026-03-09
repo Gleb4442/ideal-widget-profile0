@@ -9,7 +9,7 @@ import * as rooms from './rooms.js';
 import * as bookings from './bookings.js';
 import * as services from './services.js';
 import * as orchestra from './orchestra.js';
-import { startOperatorSimulation, stopOperatorSimulation, setOperatorSettings, updateScrollButtonPosition, addQuickReplies, setDiscoveryHeader, setOrchestraHeader } from './chat.js';
+import { startOperatorSimulation, stopOperatorSimulation, setOperatorSettings, updateScrollButtonPosition, addQuickReplies, setDiscoveryHeader, setOrchestraHeader, getGuestCheckedIn, setGuestCheckedIn } from './chat.js';
 
 // Room editing state
 let currentEditRoomId = null;
@@ -1684,10 +1684,6 @@ export function updateInAppVisibility() {
     if (dom.banners.telegram) dom.banners.telegram.classList.add('hidden');
     if (dom.telegramMenuBtn) dom.telegramMenuBtn.style.display = 'none';
 
-    // Enable Discovery Mode toggle if in Orchestrator settings
-    const discoveryToggle = document.getElementById('discovery-mode-toggle');
-    if (discoveryToggle) discoveryToggle.disabled = false;
-
     // Swap Rooms for Shop
     if (dom.roomsMenuBtn) dom.roomsMenuBtn.style.display = 'none';
     if (dom.shopMenuBtn) dom.shopMenuBtn.style.display = 'flex';
@@ -1699,24 +1695,15 @@ export function updateInAppVisibility() {
       dom.guideBadgeBtn.style.setProperty('pointer-events', 'auto', 'important');
     }
     if (dom.guideTelegramBtn) dom.guideTelegramBtn.style.display = '';
-    // Let banners.js control the banner and modal normally, just reset inline styles
     if (dom.telegramMenuBtn) dom.telegramMenuBtn.style.display = '';
-
-    // Disable Discovery Mode toggle
-    const discoveryToggle = document.getElementById('discovery-mode-toggle');
-    if (discoveryToggle) {
-      discoveryToggle.disabled = true;
-      if (discoveryToggle.checked) {
-        // Auto turn off discovery if In-App mode is off
-        discoveryToggle.checked = false;
-        import('./orchestra.js').then(orch => orch.setDiscoveryMode(false));
-      }
-    }
 
     // Swap Shop for Rooms
     if (dom.roomsMenuBtn) dom.roomsMenuBtn.style.display = '';
     if (dom.shopMenuBtn) dom.shopMenuBtn.style.display = 'none';
   }
+
+  // Update checked-in toggle visibility
+  updateCheckedInVisibility();
 }
 
 function initInAppMode() {
@@ -2172,56 +2159,33 @@ export function initOrchestraManagement() {
 
   if (toggle && settingsDiv) {
     const isEnabled = orchestra.getOrchestraMode();
-    const discoverySettingsDiv = document.getElementById('discovery-mode-container');
 
     toggle.checked = isEnabled;
     if (isEnabled) {
       settingsDiv.classList.remove('hidden');
-      if (discoverySettingsDiv) discoverySettingsDiv.style.display = '';
     } else {
       settingsDiv.classList.add('hidden');
-      if (discoverySettingsDiv) discoverySettingsDiv.style.display = 'none';
     }
 
     toggle.addEventListener('change', (e) => {
       const active = e.target.checked;
       orchestra.setOrchestraMode(active);
+
       if (active) {
         settingsDiv.classList.remove('hidden');
-        discoverySettingsDiv.style.display = '';
-        // If discovery mode is not active, apply orchestra header
-        if (!orchestra.getDiscoveryMode()) {
-          setOrchestraHeader();
+        // Auto-disable Discovery (mutually exclusive)
+        const discoveryToggle = document.getElementById('discovery-mode-toggle');
+        if (discoveryToggle && discoveryToggle.checked) {
+          discoveryToggle.checked = false;
+          orchestra.setDiscoveryMode(false);
         }
+        setOrchestraHeader();
       } else {
         settingsDiv.classList.add('hidden');
-        discoverySettingsDiv.style.display = 'none';
-        // Orchestra off — reset header to default (no special mode)
         setOrchestraHeader();
       }
+      addQuickReplies();
     });
-
-    // Discovery Settings Init
-    const discoveryToggle = document.getElementById('discovery-mode-toggle');
-    const discoveryAutostartToggle = document.getElementById('discovery-autostart-toggle');
-
-    if (discoveryToggle) {
-      discoveryToggle.checked = orchestra.getDiscoveryMode();
-      discoveryToggle.addEventListener('change', (e) => {
-        orchestra.setDiscoveryMode(e.target.checked);
-        // Update header immediately when discovery mode toggles
-        if (e.target.checked) {
-          setDiscoveryHeader();
-        } else {
-          setOrchestraHeader();
-        }
-      });
-    }
-
-    if (discoveryAutostartToggle) {
-      discoveryAutostartToggle.checked = orchestra.getDiscoveryAutoStart();
-      discoveryAutostartToggle.addEventListener('change', (e) => orchestra.setDiscoveryAutoStart(e.target.checked));
-    }
   }
 
   // Photo upload handlers
@@ -2273,6 +2237,73 @@ export function initOrchestraManagement() {
   renderOrchestraGrid();
 }
 
+// Discovery Mode Init (independent from Orchestra)
+function initDiscoveryMode() {
+  const discoveryToggle = document.getElementById('discovery-mode-toggle');
+  const discoveryAutostartToggle = document.getElementById('discovery-autostart-toggle');
+
+  if (discoveryToggle) {
+    discoveryToggle.checked = orchestra.getDiscoveryMode();
+    discoveryToggle.addEventListener('change', (e) => {
+      const active = e.target.checked;
+      orchestra.setDiscoveryMode(active);
+
+      if (active) {
+        // Auto-disable Orchestrator (mutually exclusive)
+        const orchestraToggle = document.getElementById('orchestra-mode-toggle');
+        const settingsDiv = document.getElementById('orchestra-settings');
+        if (orchestraToggle && orchestraToggle.checked) {
+          orchestraToggle.checked = false;
+          orchestra.setOrchestraMode(false);
+          if (settingsDiv) settingsDiv.classList.add('hidden');
+        }
+        setDiscoveryHeader();
+      } else {
+        setOrchestraHeader();
+      }
+      addQuickReplies();
+    });
+  }
+
+  if (discoveryAutostartToggle) {
+    discoveryAutostartToggle.checked = orchestra.getDiscoveryAutoStart();
+    discoveryAutostartToggle.addEventListener('change', (e) => orchestra.setDiscoveryAutoStart(e.target.checked));
+  }
+}
+
+// Guest Checked-In Toggle Init
+function initCheckedInToggle() {
+  const checkedInToggle = document.getElementById('checked-in-toggle');
+  const checkedInContainer = document.getElementById('checked-in-container');
+
+  if (checkedInToggle) {
+    checkedInToggle.checked = getGuestCheckedIn();
+    checkedInToggle.addEventListener('change', (e) => {
+      setGuestCheckedIn(e.target.checked);
+      addQuickReplies();
+    });
+  }
+
+  // Show/hide based on In-App state
+  updateCheckedInVisibility();
+}
+
+function updateCheckedInVisibility() {
+  const checkedInContainer = document.getElementById('checked-in-container');
+  const settings = loadInAppMode();
+  if (checkedInContainer) {
+    checkedInContainer.style.display = settings.enabled ? '' : 'none';
+  }
+  // If In-App is off, also reset checked-in state
+  if (!settings.enabled) {
+    const checkedInToggle = document.getElementById('checked-in-toggle');
+    if (checkedInToggle && checkedInToggle.checked) {
+      checkedInToggle.checked = false;
+      setGuestCheckedIn(false);
+    }
+  }
+}
+
 // Export for use in other modules
 export function getMenuSettings() {
   return loadMenuSettings();
@@ -2300,5 +2331,7 @@ export function initAdmin() {
   initInAppMode();
   initMenuManagement();
   initOrchestraManagement();
+  initDiscoveryMode();
+  initCheckedInToggle();
 }
 

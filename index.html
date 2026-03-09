@@ -151,28 +151,6 @@
       </div>
     </div>
 
-    <div class="admin-control mt-2" id="discovery-mode-container"
-      style="display: none; border-left: 3px solid #6366f1; padding-left: 10px;">
-      <span class="admin-label flex items-center mb-2">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          class="inline mr-1 text-indigo-500">
-          <circle cx="12" cy="12" r="10"></circle>
-          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
-        </svg>
-        Режим "Discovery"
-      </span>
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-sm text-gray-600">Авто-рекомендації (Лише In App)</span>
-        <label class="switch"><input type="checkbox" id="discovery-mode-toggle"><span class="slider"></span></label>
-      </div>
-      <div class="flex items-center justify-between">
-        <span class="text-sm text-gray-600">Автозапуск (при неточному пошуку)</span>
-        <label class="switch"><input type="checkbox" id="discovery-autostart-toggle" checked><span
-            class="slider"></span></label>
-      </div>
-    </div>
-
     <!-- Properties Management -->
     <div id="orchestra-settings" class="hidden mt-4">
       <div class="services-section-header mb-2">
@@ -188,6 +166,28 @@
       </div>
       <div id="properties-admin-list" class="flex flex-col gap-2">
         <!-- Properties will be rendered here -->
+      </div>
+    </div>
+
+    <!-- Discovery Mode Section (independent from Orchestra) -->
+    <div class="admin-control mt-3" id="discovery-mode-container">
+      <span class="admin-label flex items-center mb-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="inline mr-1 text-indigo-500">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+        </svg>
+        Режим "Discovery"
+      </span>
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm text-gray-600">Пошук та рекомендації готелів</span>
+        <label class="switch"><input type="checkbox" id="discovery-mode-toggle"><span class="slider"></span></label>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-gray-600">Автозапуск (при неточному пошуку)</span>
+        <label class="switch"><input type="checkbox" id="discovery-autostart-toggle" checked><span
+            class="slider"></span></label>
       </div>
     </div>
 
@@ -263,6 +263,22 @@
       <div class="flex items-center justify-between">
         <span class="text-sm text-gray-600">Сховати кнопку переходу</span>
         <label class="switch"><input type="checkbox" id="in-app-toggle"><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <div class="admin-control mt-2" id="checked-in-container" style="display: none; border-left: 3px solid #10b981; padding-left: 10px;">
+      <span class="admin-label flex items-center mb-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="inline mr-1 text-emerald-500">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        Гість заселений
+      </span>
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-gray-600">Режим заселеного гостя</span>
+        <label class="switch"><input type="checkbox" id="checked-in-toggle"><span class="slider"></span></label>
       </div>
     </div>
 

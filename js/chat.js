@@ -46,6 +46,25 @@ let inAppServiceState = {
   step: null // 'clarifying' | 'confirmed'
 };
 
+// Guest Check-In State
+const GUEST_CHECKED_IN_KEY = 'guest_checked_in';
+
+export function getGuestCheckedIn() {
+  try {
+    return JSON.parse(localStorage.getItem(GUEST_CHECKED_IN_KEY)) || false;
+  } catch (e) {
+    return false;
+  }
+}
+
+export function setGuestCheckedIn(value) {
+  try {
+    localStorage.setItem(GUEST_CHECKED_IN_KEY, JSON.stringify(!!value));
+  } catch (e) {
+    console.error('Error saving guest check-in state:', e);
+  }
+}
+
 // Orchestra Mode Context State
 export let chatContext = {
   mode: 'multi', // 'multi' | 'single'
@@ -2222,8 +2241,33 @@ export function hideTyping() {
   dom.typingIndicator.classList.add('hidden');
 }
 
-// Quick Reply Button Definitions per Mode
+// Quick Reply Button Definitions per Mode (5 modes)
 const QUICK_REPLIES = {
+  // Mode 1: Checked-In Guest — action-oriented service triggers
+  checkedIn: {
+    en: [
+      { label: 'Order extra towels', text: 'I need extra towels in my room' },
+      { label: 'Request room cleaning', text: 'Can I get my room cleaned please?' },
+      { label: 'Restock minibar', text: 'Please restock the minibar in my room' },
+      { label: 'Order room service', text: 'I would like to order food to my room' },
+      { label: 'Wi-Fi password', text: 'What is the Wi-Fi password?' },
+    ],
+    ru: [
+      { label: 'Заказать доп. полотенца', text: 'Мне нужны дополнительные полотенца в номер' },
+      { label: 'Заказать уборку номера', text: 'Можно убрать мой номер?' },
+      { label: 'Обновить мини-бар', text: 'Пополните мини-бар в моём номере' },
+      { label: 'Заказать еду в номер', text: 'Хочу заказать еду в номер' },
+      { label: 'Пароль от Wi-Fi', text: 'Какой пароль от Wi-Fi?' },
+    ],
+    uk: [
+      { label: 'Замовити рушники', text: 'Мені потрібні додаткові рушники в номер' },
+      { label: 'Замовити прибирання', text: 'Чи можна прибрати мій номер?' },
+      { label: 'Оновити міні-бар', text: 'Поповніть міні-бар у моєму номері' },
+      { label: 'Замовити їжу в номер', text: 'Хочу замовити їжу в номер' },
+      { label: 'Пароль від Wi-Fi', text: 'Який пароль від Wi-Fi?' },
+    ],
+  },
+  // Mode 2: Discovery — informational, exploration
   discovery: {
     en: [
       { label: 'Find hotel by budget', text: 'Help me find a hotel within my budget' },
@@ -2244,29 +2288,49 @@ const QUICK_REPLIES = {
       { label: 'Готелі з басейном або пляжем', text: 'Покажіть готелі з басейном або пляжем' },
     ],
   },
-  inApp: {
+  // Mode 3: Orchestrator — network browse
+  orchestra: {
     en: [
-      { label: 'Order to room', text: 'I would like to order food to my room' },
-      { label: 'Housekeeping or towels', text: 'Can I get housekeeping or fresh towels?' },
-      { label: 'Wi-Fi password', text: 'What is the Wi-Fi password?' },
-      { label: 'Book a restaurant table', text: 'I would like to book a table at the restaurant' },
-      { label: 'Contact reception', text: 'Please connect me to the reception' },
+      { label: 'Show all chain hotels', text: 'Show me all hotels in your network' },
+      { label: 'Compare options', text: 'Help me compare hotels in your chain' },
+      { label: 'Filter by location', text: 'What hotels do you have in this area?' },
+      { label: 'Best deals in network', text: 'What are the best deals in your hotel network?' },
     ],
     ru: [
-      { label: 'Заказать в номер', text: 'Хочу заказать еду в номер' },
-      { label: 'Уборка или полотенца', text: 'Мне нужна уборка или чистые полотенца' },
-      { label: 'Пароль от Wi-Fi', text: 'Какой пароль от Wi-Fi?' },
-      { label: 'Забронировать стол в ресторане', text: 'Хочу забронировать стол в ресторане' },
-      { label: 'Связаться с ресепшн', text: 'Соедините меня с ресепшн' },
+      { label: 'Показать все отели сети', text: 'Покажите все отели вашей сети' },
+      { label: 'Сравнить варианты', text: 'Помогите сравнить отели вашей сети' },
+      { label: 'Подобрать по расположению', text: 'Какие отели есть в этом районе?' },
+      { label: 'Лучшие предложения сети', text: 'Какие лучшие предложения в вашей сети отелей?' },
     ],
     uk: [
-      { label: 'Замовити в номер', text: 'Хочу замовити їжу в номер' },
-      { label: 'Прибирання або рушники', text: 'Мені потрібне прибирання або чисті рушники' },
-      { label: 'Пароль від Wi-Fi', text: 'Який пароль від Wi-Fi?' },
-      { label: 'Забронювати стіл у ресторані', text: 'Хочу забронювати стіл у ресторані' },
-      { label: 'Зв\'язатися з ресепшн', text: 'З\'єднайте мене з ресепшн' },
+      { label: 'Показати всі готелі мережі', text: 'Покажіть всі готелі вашої мережі' },
+      { label: 'Порівняти варіанти', text: 'Допоможіть порівняти готелі вашої мережі' },
+      { label: 'Підібрати за розташуванням', text: 'Які готелі є в цьому районі?' },
+      { label: 'Найкращі пропозиції мережі', text: 'Які найкращі пропозиції у вашій мережі готелів?' },
     ],
   },
+  // Mode 4: Orchestrator — hotel selected from network
+  orchestraSingle: {
+    en: [
+      { label: 'Available rooms today', text: 'What rooms are available today?' },
+      { label: 'Book a room', text: 'I would like to book a room' },
+      { label: 'About hotel amenities', text: 'Tell me about the hotel amenities' },
+      { label: 'Back to hotel list', text: 'Show me other hotels in your network' },
+    ],
+    ru: [
+      { label: 'Свободные номера на сегодня', text: 'Какие номера доступны на сегодня?' },
+      { label: 'Забронировать номер', text: 'Хочу забронировать номер' },
+      { label: 'Об удобствах отеля', text: 'Расскажите об удобствах отеля' },
+      { label: 'Вернуться к списку отелей', text: 'Покажите другие отели вашей сети' },
+    ],
+    uk: [
+      { label: 'Вільні номери на сьогодні', text: 'Які номери доступні на сьогодні?' },
+      { label: 'Забронювати номер', text: 'Хочу забронювати номер' },
+      { label: 'Про зручності готелю', text: 'Розкажіть про зручності готелю' },
+      { label: 'Повернутися до списку готелів', text: 'Покажіть інші готелі вашої мережі' },
+    ],
+  },
+  // Mode 5: Simple single hotel — informational, pre-booking
   single: {
     en: [
       { label: 'Available rooms today', text: 'What rooms are available today?' },
@@ -2336,14 +2400,27 @@ export function setOrchestraHeader(hotelName, logoUrl) {
   }
 }
 
-// Get current mode for quick replies
+// Get current mode for quick replies (5 modes)
 function getQuickReplyMode() {
   const inApp = loadInAppMode();
-  if (inApp && inApp.enabled) return 'inApp';
-  if (chatContext.mode === 'single') return 'single';
+  const isCheckedIn = getGuestCheckedIn();
+  const isDiscovery = orchestra.getDiscoveryMode();
+  const isOrchestrator = orchestra.getOrchestraMode();
 
-  // If discovery is active or in multi mode
-  return 'discovery';
+  // Mode 1: Checked-in guest (in-app + checked in)
+  if (inApp && inApp.enabled && isCheckedIn) return 'checkedIn';
+
+  // Mode 2: Discovery (hotel never defined)
+  if (isDiscovery) return 'discovery';
+
+  // Mode 3/4: Orchestrator
+  if (isOrchestrator) {
+    if (chatContext.mode === 'single') return 'orchestraSingle';
+    return 'orchestra';
+  }
+
+  // Mode 5: Simple single hotel
+  return 'single';
 }
 
 // Remove Quick Reply Buttons
