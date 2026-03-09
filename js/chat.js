@@ -2289,17 +2289,39 @@ const QUICK_REPLIES = {
   },
 };
 
-// Roomie AI SVG logo (inline, для discovery режима)
-const ROOMIE_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 203.18 203.18" style="width:100%;height:100%;fill-rule:evenodd;clip-rule:evenodd"><circle fill="none" cx="101.59" cy="101.59" r="101.6"/><path fill="white" d="M106.13 53.03c22.55,2.08 40.65,19.52 43.75,41.75l-96.58 0c3.18,-22.75 22.05,-40.47 45.33,-41.87l0 -4.17 -2.36 0c-2.32,0 -4.23,-1.91 -4.23,-4.23l0 0c0,-2.33 1.91,-4.23 4.23,-4.23l12.4 0c2.33,0 4.23,1.9 4.23,4.23l0 0c0,2.32 -1.9,4.23 -4.23,4.23l-2.54 0 0 4.29zm15.16 63.75c1.5,-1.94 4.29,-2.3 6.23,-0.8 1.94,1.5 2.3,4.29 0.8,6.23 -3.14,4.07 -7.19,7.4 -11.86,9.7 -4.51,2.21 -9.56,3.46 -14.87,3.46 -5.31,0 -10.36,-1.25 -14.87,-3.46 -4.67,-2.3 -8.72,-5.63 -11.86,-9.7 -1.5,-1.94 -1.14,-4.73 0.8,-6.23 1.94,-1.5 4.73,-1.14 6.23,0.8 2.33,3.01 5.31,5.47 8.74,7.15 3.28,1.62 7,2.52 10.96,2.52 3.96,0 7.68,-0.9 10.96,-2.52 3.43,-1.68 6.41,-4.14 8.74,-7.15zm-10.04 39.85c-1.68,1.41 -4.25,2.17 -4.31,-1.17 -0.02,-0.99 -0.04,-1.26 -0.06,-2.26 -0.81,-2.45 -3.2,-2.84 -5.68,-2.84l0 -0.01c-25.76,-0.2 -46.76,-20.38 -48.29,-45.8l97.36 0c-0.71,11.75 -5.05,23.66 -13.15,30.44l-25.87 21.64z"/></svg>`;
-
-// Set header to Roomie AI branding (for discovery / multi mode)
+// Set header to Roomie AI branding — ONLY for Discovery mode
 export function setDiscoveryHeader() {
   const logoContainer = document.getElementById('hotel-logo-container');
   if (logoContainer) {
-    logoContainer.innerHTML = ROOMIE_LOGO_SVG;
+    logoContainer.innerHTML = `<img src="assets/roomie-logo-discovery.svg" style="width:100%;height:100%;object-fit:cover;" alt="Roomie AI">`;
+    logoContainer.style.background = 'transparent';
   }
   if (dom.hotelNameText) {
     dom.hotelNameText.textContent = 'Roomie AI';
+  }
+  // Hide app store buttons — not relevant in discovery mode
+  if (dom.guideBadgeBtn) {
+    dom.guideBadgeBtn.style.display = 'none';
+  }
+}
+
+// Set header to Orchestra mode branding (hotel chain, not discovery)
+export function setOrchestraHeader(hotelName, logoUrl) {
+  const logoContainer = document.getElementById('hotel-logo-container');
+  if (logoContainer) {
+    if (logoUrl) {
+      logoContainer.innerHTML = `<img src="${logoUrl}" style="width:100%;height:100%;object-fit:cover;" alt="${hotelName}">`;
+    } else {
+      logoContainer.innerHTML = `<span class="text-xl font-bold accent-text">${(hotelName || 'H')[0].toUpperCase()}</span>`;
+      logoContainer.style.background = '';
+    }
+  }
+  if (dom.hotelNameText) {
+    dom.hotelNameText.textContent = hotelName || '';
+  }
+  // Show app store buttons in orchestra mode
+  if (dom.guideBadgeBtn) {
+    dom.guideBadgeBtn.style.display = '';
   }
 }
 
@@ -2650,17 +2672,8 @@ export function setSingleProperty(propertyId) {
     chatContext.mode = 'single';
     chatContext.currentPropertyId = propertyId;
 
-    // Update header UI — show hotel branding
-    const logoContainer = document.getElementById('hotel-logo-container');
-    if (logoContainer) {
-      if (prop.photo) {
-        logoContainer.innerHTML = `<img src="${prop.photo}" class="w-full h-full object-cover rounded-full" alt="${prop.name}">`;
-      } else {
-        const initial = prop.name ? prop.name.charAt(0).toUpperCase() : 'H';
-        logoContainer.innerHTML = `<span class="text-xl font-bold accent-text">${initial}</span>`;
-      }
-    }
-    if (dom.hotelNameText) dom.hotelNameText.textContent = prop.name;
+    // Update header UI — show hotel branding (orchestra single property)
+    setOrchestraHeader(prop.name, prop.photo || null);
     if (dom.orchestraBackBtn) dom.orchestraBackBtn.classList.remove('hidden');
 
     addMessage(`Ви вибрали готель "${prop.name}". Як я можу допомогти вам з плануванням вашого перебування?`, 'ai');
@@ -2677,8 +2690,8 @@ export function resetToMultiProperty() {
   chatContext.mode = 'multi';
   chatContext.currentPropertyId = null;
 
-  // Update header UI — show Roomie AI branding in discovery mode
-  setDiscoveryHeader();
+  // Update header UI — in orchestra multi we restore orchestra branding (not discovery)
+  setOrchestraHeader();
   if (dom.orchestraBackBtn) dom.orchestraBackBtn.classList.add('hidden');
 
   addMessage('Ви повернулися до загального пошуку. Який готель або місто вас цікавить?', 'ai');

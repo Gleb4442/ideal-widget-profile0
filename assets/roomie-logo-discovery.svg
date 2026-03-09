@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="100" fill="#2563EB"/>
+
+  <!-- Bell knob / button at top -->
+  <rect x="88" y="20" width="24" height="14" rx="7" fill="white"/>
+
+  <!-- Bell dome (upper half) -->
+  <path d="M32 108 C32 62 55 42 100 40 C145 42 168 62 168 108 Z" fill="white"/>
+
+  <!-- Horizontal shelf / plate -->
+  <rect x="28" y="106" width="144" height="11" rx="5.5" fill="white"/>
+
+  <!-- Bottom chat-bubble half with tail at bottom-left -->
+  <path d="M32 122 C32 158 56 178 100 178 C144 178 168 158 168 122 Z" fill="white"/>
+  <path d="M28 182 L52 162 L28 162 Z" fill="white"/>
+
+  <!-- Smile cutout (negative space in blue) -->
+  <path d="M70 144 Q100 166 130 144" stroke="#2563EB" stroke-width="10" fill="none" stroke-linecap="round"/>
+</svg>
