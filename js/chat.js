@@ -2360,6 +2360,11 @@ export function addQuickReplies() {
 
   dom.messagesContainer.insertBefore(container, dom.typingIndicator);
   dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+
+  // Ensure the container is rendered before moving scroll
+  requestAnimationFrame(() => {
+    dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+  });
 }
 
 // Simulate Welcome Message
