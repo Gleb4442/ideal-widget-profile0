@@ -266,7 +266,8 @@
       </div>
     </div>
 
-    <div class="admin-control mt-2" id="checked-in-container" style="display: none; border-left: 3px solid #10b981; padding-left: 10px;">
+    <div class="admin-control mt-2" id="checked-in-container"
+      style="display: none; border-left: 3px solid #10b981; padding-left: 10px;">
       <span class="admin-label flex items-center mb-2">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -754,13 +755,12 @@
     </button>
 
     <!-- History Modal Wrapper -->
-    <div id="history-modal-wrapper"
-      class="hidden absolute inset-0 z-[60] flex flex-col justify-end bg-black/30 opacity-0 pointer-events-none transition-all duration-400 ease-in-out">
+    <div id="history-modal-wrapper" class="hidden">
 
       <!-- History View (Internal) -->
       <div id="history-view"
         class="w-full h-[90%] bg-[#f6f6f8] dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-display flex flex-col overflow-x-hidden rounded-t-[2.5rem] shadow-[0_-4px_20px_rgba(0,0,0,0.1)] transform translate-y-full premium-sheet-transition relative max-w-[420px] mx-auto">
-        <header class="px-6 pt-12 pb-4 flex flex-col gap-6">
+        <header class="px-6 pt-12 pb-4 flex flex-col gap-6 shrink-0 bg-[#f6f6f8] dark:bg-slate-900 z-10">
           <h1 class="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">История диалогов</h1>
           <div class="relative group">
             <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
@@ -773,17 +773,16 @@
           </div>
         </header>
 
-        <main id="history-list" class="flex-1 px-4 space-y-3 pb-40 overflow-y-auto w-full">
+        <main id="history-list" class="flex-1 px-4 space-y-3 pb-4 overflow-y-auto w-full relative z-0">
           <!-- History items will be injected here -->
           <div class="text-center text-slate-400 mt-10">
             <p>Немає збережених діалогів</p>
           </div>
         </main>
 
-        <div
-          class="absolute bottom-0 left-0 right-0 px-6 pb-10 pt-10 bg-gradient-to-t from-[#f6f6f8] dark:from-slate-900 via-[#f6f6f8]/90 dark:via-slate-900/90 to-transparent pointer-events-none z-40">
+        <div class="shrink-0 px-6 pb-10 pt-4 bg-[#f6f6f8] dark:bg-slate-900 z-10 relative">
           <button id="history-close-btn"
-            class="w-full py-4 rounded-full flex items-center justify-center gap-3 active:scale-95 transition-all pointer-events-auto shadow-[0_8px_32px_rgba(19,91,236,0.08),inset_0_0_15px_rgba(255,255,255,0.5)] bg-white/70 dark:bg-slate-800/70 border border-white/50 dark:border-slate-700/50"
+            class="w-full py-4 rounded-full flex items-center justify-center gap-3 active:scale-95 transition-all shadow-[0_8px_32px_rgba(19,91,236,0.08),inset_0_0_15px_rgba(255,255,255,0.5)] bg-white/70 dark:bg-slate-800/70 border border-white/50 dark:border-slate-700/50"
             style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
             <span class="material-symbols-outlined text-slate-700 dark:text-slate-300">arrow_back_ios_new</span>
             <span class="text-lg font-semibold text-slate-800 dark:text-slate-200">Назад</span>

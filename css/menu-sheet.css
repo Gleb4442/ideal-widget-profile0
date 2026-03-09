@@ -1,7 +1,8 @@
 /* Bottom Sheet Modals - Base Container (Overlay) */
 #menu-bottom-sheet,
 #language-sheet-modal,
-#guide-bottom-sheet {
+#guide-bottom-sheet,
+#history-modal-wrapper {
     position: absolute;
     inset: 0;
     z-index: 50;
@@ -16,7 +17,8 @@
 
 #menu-bottom-sheet.hidden,
 #language-sheet-modal.hidden,
-#guide-bottom-sheet.hidden {
+#guide-bottom-sheet.hidden,
+#history-modal-wrapper.hidden {
     display: flex !important;
     /* Override Tailwind's display: none to allow transitions */
     background-color: rgba(0, 0, 0, 0);
@@ -26,13 +28,15 @@
 
 #menu-bottom-sheet:not(.hidden),
 #language-sheet-modal:not(.hidden),
-#guide-bottom-sheet:not(.hidden) {
+#guide-bottom-sheet:not(.hidden),
+#history-modal-wrapper:not(.hidden) {
     background-color: rgba(0, 0, 0, 0.5);
     visibility: visible;
     pointer-events: auto;
 }
 
-#language-sheet-modal {
+#language-sheet-modal,
+#history-modal-wrapper {
     z-index: 60;
 }
 

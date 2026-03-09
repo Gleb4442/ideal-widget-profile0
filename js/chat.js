@@ -4797,19 +4797,17 @@ export function initSpecialBookingListeners() {
     if (!historyView || !historyModalWrapper) return;
 
     // Start closing animations
-    historyView.classList.replace('translate-y-0', 'translate-y-full');
-    historyModalWrapper.classList.replace('opacity-100', 'opacity-0');
-    historyModalWrapper.classList.replace('pointer-events-auto', 'pointer-events-none');
+    historyView.classList.add('translate-y-full');
+    historyModalWrapper.classList.add('hidden');
 
     // Also handle detail view if it's open
     const historyDetailView = document.getElementById('history-detail-view');
     if (historyDetailView) {
-      historyDetailView.classList.replace('translate-y-0', 'translate-y-full');
+      historyDetailView.classList.add('translate-y-full');
     }
 
     // Wait for animation to finish
     setTimeout(() => {
-      historyModalWrapper.classList.add('hidden');
       if (historyDetailView) {
         historyDetailView.classList.add('hidden');
       }
@@ -4836,7 +4834,7 @@ export function initSpecialBookingListeners() {
       const historyView = document.getElementById('history-view');
       const wrapperMod = document.getElementById('history-modal-wrapper'); // Added this line
       if (detailView && historyView && wrapperMod) { // Modified this line
-        detailView.classList.replace('translate-y-0', 'translate-y-full');
+        detailView.classList.add('translate-y-full');
         historyView.classList.remove('-translate-x-full');
         wrapperMod.classList.remove('show-detail'); // Added this line
 
@@ -5229,11 +5227,9 @@ function showHistoryModal() {
   wrapper.classList.remove('hidden');
 
   // Force reflow and add animations
-  requestAnimationFrame(() => {
-    wrapper.classList.replace('opacity-0', 'opacity-100');
-    wrapper.classList.replace('pointer-events-none', 'pointer-events-auto');
-    view.classList.replace('translate-y-full', 'translate-y-0');
-  });
+  setTimeout(() => {
+    view.classList.remove('translate-y-full');
+  }, 10);
 }
 
 // Render history items based on search query
@@ -5352,11 +5348,15 @@ function openHistoryDetail(session) {
 
   detailView.classList.remove('hidden');
   const wrapperMod = document.getElementById('history-modal-wrapper');
+  const historyView = document.getElementById('history-view');
+
   if (wrapperMod) {
     wrapperMod.classList.add('show-detail');
-    requestAnimationFrame(() => {
+    if (historyView) historyView.classList.add('-translate-x-full');
+
+    setTimeout(() => {
       detailView.classList.remove('translate-y-full');
-    });
+    }, 10);
   }
 }
 
@@ -5392,12 +5392,11 @@ function continueHistoryChat() {
   const historyModalWrapper = document.getElementById('history-modal-wrapper');
 
   if (historyView && historyModalWrapper) {
-    historyView.classList.remove('history-view-active');
-    historyModalWrapper.classList.remove('show');
+    historyView.classList.add('translate-y-full');
     historyDetailView?.classList.add('translate-y-full');
+    historyModalWrapper.classList.add('hidden');
 
     setTimeout(() => {
-      historyModalWrapper.classList.add('hidden');
       historyModalWrapper.classList.remove('show-detail');
       historyDetailView?.classList.add('hidden');
     }, 400);
