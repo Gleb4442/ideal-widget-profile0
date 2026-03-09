@@ -5,7 +5,8 @@
 
 import * as dom from './dom.js';
 import { initAdmin } from './admin.js';
-import { initLanguage, initChatListeners, updateSendButtonState } from './chat.js';
+import { initLanguage, initChatListeners, updateSendButtonState, setDiscoveryHeader } from './chat.js';
+import { getOrchestraMode } from './orchestra.js';
 import { initBanners } from './banners.js';
 import { initGallery } from './gallery.js';
 import { initMenuModal } from './menu.js';
@@ -73,6 +74,13 @@ function init() {
   try {
     updateSendButtonState();
   } catch (e) { console.error('Send button init failed:', e); }
+
+  // Set Roomie AI header in discovery (orchestra multi) mode
+  try {
+    if (getOrchestraMode()) {
+      setDiscoveryHeader();
+    }
+  } catch (e) { console.error('Discovery header init failed:', e); }
 
   // Set default positioning
   dom.widgetButton.classList.add('widget-pos-right');
