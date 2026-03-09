@@ -2221,12 +2221,122 @@ export function hideTyping() {
   dom.typingIndicator.classList.add('hidden');
 }
 
+// Quick Reply Button Definitions per Mode
+const QUICK_REPLIES = {
+  discovery: {
+    en: [
+      { label: '🏨 Find hotel by budget', text: 'Help me find a hotel within my budget' },
+      { label: '👨‍👩‍👧 Best options for families', text: 'What are the best family-friendly hotels?' },
+      { label: '☀️ Where is it in season?', text: 'Where is the best season right now for a trip?' },
+      { label: '🏊 Hotels with pool or beach', text: 'Show me hotels with pool or beach' },
+    ],
+    ru: [
+      { label: '🏨 Подобрать по бюджету', text: 'Помогите подобрать отель под мой бюджет' },
+      { label: '👨‍👩‍👧 Лучшие варианты для семьи', text: 'Какие лучшие отели для семьи с детьми?' },
+      { label: '☀️ Где сейчас сезон?', text: 'Где сейчас лучший сезон для поездки?' },
+      { label: '🏊 Отели с бассейном или пляжем', text: 'Покажите отели с бассейном или пляжем' },
+    ],
+    uk: [
+      { label: '🏨 Підібрати за бюджетом', text: 'Допоможіть підібрати готель за бюджетом' },
+      { label: '👨‍👩‍👧 Найкращі варіанти для сім\'ї', text: 'Які найкращі готелі для сім\'ї з дітьми?' },
+      { label: '☀️ Де зараз сезон?', text: 'Де зараз найкращий сезон для поїздки?' },
+      { label: '🏊 Готелі з басейном або пляжем', text: 'Покажіть готелі з басейном або пляжем' },
+    ],
+  },
+  inApp: {
+    en: [
+      { label: '🍽️ Order to room', text: 'I would like to order food to my room' },
+      { label: '🛏️ Housekeeping or towels', text: 'Can I get housekeeping or fresh towels?' },
+      { label: '📶 Wi-Fi password', text: 'What is the Wi-Fi password?' },
+      { label: '🍷 Book a restaurant table', text: 'I would like to book a table at the restaurant' },
+      { label: '📞 Contact reception', text: 'Please connect me to the reception' },
+    ],
+    ru: [
+      { label: '🍽️ Заказать в номер', text: 'Хочу заказать еду в номер' },
+      { label: '🛏️ Уборка или полотенца', text: 'Мне нужна уборка или чистые полотенца' },
+      { label: '📶 Пароль от Wi-Fi', text: 'Какой пароль от Wi-Fi?' },
+      { label: '🍷 Забронировать стол в ресторане', text: 'Хочу забронировать стол в ресторане' },
+      { label: '📞 Связаться с ресепшн', text: 'Соедините меня с ресепшн' },
+    ],
+    uk: [
+      { label: '🍽️ Замовити в номер', text: 'Хочу замовити їжу в номер' },
+      { label: '🛏️ Прибирання або рушники', text: 'Мені потрібне прибирання або чисті рушники' },
+      { label: '📶 Пароль від Wi-Fi', text: 'Який пароль від Wi-Fi?' },
+      { label: '🍷 Забронювати стіл у ресторані', text: 'Хочу забронювати стіл у ресторані' },
+      { label: '📞 Зв\'язатися з ресепшн', text: 'З\'єднайте мене з ресепшн' },
+    ],
+  },
+  single: {
+    en: [
+      { label: '🛏️ Available rooms today', text: 'What rooms are available today?' },
+      { label: '✨ Tell me about amenities', text: 'Tell me about the hotel amenities' },
+      { label: '🗺️ How to get there?', text: 'How do I get to the hotel?' },
+      { label: '📋 Cancellation policy', text: 'What is your cancellation policy?' },
+    ],
+    ru: [
+      { label: '🛏️ Свободные номера на сегодня', text: 'Какие номера доступны на сегодня?' },
+      { label: '✨ Об удобствах отеля', text: 'Расскажите об удобствах отеля' },
+      { label: '🗺️ Как добраться?', text: 'Как добраться до отеля?' },
+      { label: '📋 Условия отмены', text: 'Каковы условия отмены бронирования?' },
+    ],
+    uk: [
+      { label: '🛏️ Вільні номери на сьогодні', text: 'Які номери доступні на сьогодні?' },
+      { label: '✨ Про зручності готелю', text: 'Розкажіть про зручності готелю' },
+      { label: '🗺️ Як дістатися?', text: 'Як дістатися до готелю?' },
+      { label: '📋 Умови скасування', text: 'Які умови скасування бронювання?' },
+    ],
+  },
+};
+
+// Get current mode for quick replies
+function getQuickReplyMode() {
+  const inApp = loadInAppMode();
+  if (inApp && inApp.enabled) return 'inApp';
+  if (chatContext.mode === 'single') return 'single';
+  return 'discovery'; // multi/orchestra = discovery
+}
+
+// Add Quick Reply Buttons after welcome message
+function addQuickReplies() {
+  const mode = getQuickReplyMode();
+  const lang = currentLang in QUICK_REPLIES[mode] ? currentLang : 'en';
+  const buttons = QUICK_REPLIES[mode][lang];
+
+  const container = document.createElement('div');
+  container.className = 'quick-replies-container animate-fade-in';
+  container.id = 'quick-replies';
+
+  buttons.forEach((btn, index) => {
+    const chip = document.createElement('button');
+    chip.className = 'quick-reply-chip';
+    chip.textContent = btn.label;
+    chip.style.animationDelay = `${index * 80}ms`;
+
+    chip.addEventListener('click', () => {
+      // Remove quick replies
+      container.classList.add('quick-replies-exit');
+      setTimeout(() => container.remove(), 300);
+
+      // Send the message
+      dom.messageInput.value = btn.text;
+      handleSendMessage();
+    });
+
+    container.appendChild(chip);
+  });
+
+  dom.messagesContainer.insertBefore(container, dom.typingIndicator);
+  dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+}
+
 // Simulate Welcome Message
 export function simulateWelcome() {
   showTyping();
   setTimeout(() => {
     hideTyping();
     addMessage(translations[currentLang].welcome, 'ai');
+    // Show quick reply chips after a short delay
+    setTimeout(() => addQuickReplies(), 400);
   }, 1000);
 }
 
@@ -3940,6 +4050,13 @@ export function handleSendMessage() {
 
   isGenerating = true;
   addMessage(text, 'user');
+
+  // Dismiss quick reply chips if still visible
+  const quickReplies = document.getElementById('quick-replies');
+  if (quickReplies) {
+    quickReplies.classList.add('quick-replies-exit');
+    setTimeout(() => quickReplies.remove(), 300);
+  }
 
   // Hide policy consent banner after first message
   if (dom.policyConsentBanner && !dom.policyConsentBanner.classList.contains('hidden')) {
