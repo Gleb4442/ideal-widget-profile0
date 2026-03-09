@@ -2293,11 +2293,14 @@ const QUICK_REPLIES = {
 export function setDiscoveryHeader() {
   const logoContainer = document.getElementById('hotel-logo-container');
   if (logoContainer) {
-    logoContainer.innerHTML = `<img src="assets/roomie-logo-discovery.svg" style="width:100%;height:100%;object-fit:cover;" alt="Roomie AI">`;
-    logoContainer.style.background = 'transparent';
+    logoContainer.style.display = 'none';
+  }
+  const onlineIndicator = document.getElementById('online-indicator');
+  if (onlineIndicator) {
+    onlineIndicator.style.display = 'none';
   }
   if (dom.hotelNameText) {
-    dom.hotelNameText.textContent = 'Roomie AI';
+    dom.hotelNameText.textContent = 'Roomie';
   }
   // Hide app store button but keep its space so header width stays fixed
   if (dom.guideBadgeBtn) {
@@ -2310,6 +2313,7 @@ export function setDiscoveryHeader() {
 export function setOrchestraHeader(hotelName, logoUrl) {
   const logoContainer = document.getElementById('hotel-logo-container');
   if (logoContainer) {
+    logoContainer.style.display = '';
     if (logoUrl) {
       logoContainer.innerHTML = `<img src="${logoUrl}" style="width:100%;height:100%;object-fit:cover;" alt="${hotelName}">`;
       logoContainer.style.background = 'transparent';
@@ -2317,6 +2321,10 @@ export function setOrchestraHeader(hotelName, logoUrl) {
       logoContainer.innerHTML = `<span class="text-xl font-bold accent-text">${(hotelName || 'H')[0].toUpperCase()}</span>`;
       logoContainer.style.background = '';
     }
+  }
+  const onlineIndicator = document.getElementById('online-indicator');
+  if (onlineIndicator) {
+    onlineIndicator.style.display = '';
   }
   if (dom.hotelNameText) {
     dom.hotelNameText.textContent = hotelName || '';

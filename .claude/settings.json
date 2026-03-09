@@ -8,7 +8,17 @@
       "Bash(python3 -c \":*)",
       "Bash(node --check js/openai.js)",
       "Bash(grep -E \"\\\\.\\(js|json|html\\)$|^d\")",
-      "Bash(wc -l /Users/pro/Desktop/ideal-chat-widget/js/*.js)"
+      "Bash(wc -l /Users/pro/Desktop/ideal-chat-widget/js/*.js)",
+      "Read(//Users/pro/Desktop/Roomie-app/**)",
+      "Bash(ls -la /Users/pro/Desktop/Roomie-app/apps/dashboard/src/app/dashboard/[hotelId]/)",
+      "Bash(npx prisma migrate dev --name add_hotel_chain)",
+      "Bash(wc -l /Users/pro/Desktop/Roomie-app/apps/dashboard/src/app/admin/hotels/[hotelId]/page.tsx)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(bash -c \"cd /Users/pro/Desktop/Roomie-app/backend && npx tsc --noEmit 2>&1 | head -20\")"
+    ],
+    "additionalDirectories": [
+      "/Users/pro/Desktop/Roomie-app/backend/prisma",
+      "/Users/pro/Desktop/Roomie-app/backend/src/modules/admin"
     ]
   }
 }
