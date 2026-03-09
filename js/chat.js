@@ -14,6 +14,8 @@ import * as roomService from './roomService.js';
 import { openMenuModal, isMenuAvailable } from './menu.js';
 import { getMenuSettings, loadInAppMode } from './admin.js';
 import { showAppDownloadModal, initAppDownloadModalListeners } from './app-download.js';
+import * as orchestra from './orchestra.js';
+import * as discovery from './discovery.js';
 
 // Language storage key
 const LANGUAGE_KEY = 'chat_language';
@@ -42,6 +44,13 @@ let inAppServiceState = {
   active: false,
   category: null,
   step: null // 'clarifying' | 'confirmed'
+};
+
+// Orchestra Mode Context State
+export let chatContext = {
+  mode: 'multi', // 'multi' | 'single'
+  currentPropertyId: null,
+  shortlist: []
 };
 
 // Status messages for Special Booking stages
@@ -2481,6 +2490,109 @@ export function addRoomCarousel() {
   dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
 }
 
+// Set Single Property Context (Orchestra Mode)
+export function setSingleProperty(propertyId) {
+  discovery.resetDiscoveryMode();
+  const prop = orchestra.getProperty(propertyId);
+  if (prop) {
+    chatContext.mode = 'single';
+    chatContext.currentPropertyId = propertyId;
+
+    // Update header UI
+    if (dom.hotelNameText) dom.hotelNameText.textContent = prop.name;
+    if (dom.orchestraBackBtn) dom.orchestraBackBtn.classList.remove('hidden');
+
+    addMessage(`Ви вибрали готель "${prop.name}". Як я можу допомогти вам з плануванням вашого перебування?`, 'ai');
+    addToConversationHistory('assistant', `Ви вибрали готель "${prop.name}". Як я можу допомогти вам з плануванням вашого перебування?`);
+  }
+}
+
+// Reset to Multi Property Context (Orchestra Mode)
+export function resetToMultiProperty() {
+  discovery.resetDiscoveryMode();
+  chatContext.mode = 'multi';
+  chatContext.currentPropertyId = null;
+
+  // Update header UI
+  if (dom.hotelNameText) {
+    const defaultName = localStorage.getItem('hotel_info') || 'Сеть отелей';
+    dom.hotelNameText.textContent = defaultName;
+  }
+  if (dom.orchestraBackBtn) dom.orchestraBackBtn.classList.add('hidden');
+
+  addMessage('Ви повернулися до загального пошуку. Який готель або місто вас цікавить?', 'ai');
+  addToConversationHistory('assistant', 'Ви повернулися до загального пошуку. Який готель або місто вас цікавить?');
+}
+
+// Add Property Shortlist to Chat
+export function addPropertyShortlist(propertyIds) {
+  if (!propertyIds || propertyIds.length === 0) return;
+  chatContext.shortlist = propertyIds;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'message-wrapper ai animate-fade-in';
+
+  const carouselWrapper = document.createElement('div');
+  carouselWrapper.className = 'rooms-carousel-wrapper w-full';
+
+  const carousel = document.createElement('div');
+  carousel.className = 'rooms-carousel';
+
+  propertyIds.forEach(id => {
+    const prop = orchestra.getProperty(id);
+    if (!prop) return;
+
+    const card = document.createElement('div');
+    card.className = 'room-carousel-card overflow-hidden w-64 flex-shrink-0 bg-white border border-gray-100 rounded-2xl shadow-sm mr-3';
+
+    // Simplistic visual fallback for property (in a real app this would be a property image)
+    const imgHTML = `
+      <div class="h-32 bg-gray-100 flex items-center justify-center text-gray-400">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </div>
+    `;
+
+    card.innerHTML = `
+      <div class="relative">
+        ${imgHTML}
+        <!-- Badges -->
+        <div class="absolute top-2 left-2 flex flex-col gap-1">
+          <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+            Пріорітет: ${prop.priority || 1}
+          </span>
+        </div>
+      </div>
+      <div class="p-3">
+        <div class="font-bold text-sm text-gray-800 mb-1 leading-tight truncate">${prop.name}</div>
+        <div class="text-xs text-gray-500 line-clamp-2 h-8 leading-relaxed mb-3">${prop.info || 'Краткое описание отсутствует'}</div>
+        <button class="select-property-btn w-full py-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors rounded-xl text-xs font-bold" data-id="${prop.id}">
+          Вибрати цей готель
+        </button>
+      </div>
+    `;
+
+    // Handle selection click
+    const selectBtn = card.querySelector('.select-property-btn');
+    if (selectBtn) {
+      selectBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setSingleProperty(prop.id);
+      });
+    }
+
+    carousel.appendChild(card);
+  });
+
+  carouselWrapper.appendChild(carousel);
+  wrapper.appendChild(carouselWrapper);
+
+  dom.messagesContainer.insertBefore(wrapper, dom.typingIndicator);
+  dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+}
+
 // ===== ROOMS VIA AGENT =====
 
 // State for room selection mode
@@ -3644,6 +3756,11 @@ export async function getAIResponse(userMessage) {
       addMessage('Зрозуміло, повертаюсь до загальних питань.', 'ai');
       addToConversationHistory('assistant', 'Зрозуміло, повертаюсь до загальних питань.');
 
+      // Handle Discovery Mode Start
+      if (chatContext.mode === 'multi' && !discovery.discoveryState.active && discovery.isDiscoveryQuery(userMessage)) {
+        discovery.activateDiscoveryMode();
+      }
+
       // Process as general response
       response = await openai.getGeneralAIResponse(
         userMessage,
@@ -3651,6 +3768,44 @@ export async function getAIResponse(userMessage) {
         bookingState,
         bookingState.conversationHistory
       );
+
+      // Handle Discovery Mode Response
+      if (response.isDiscovery) {
+        if (response.profile_update) {
+          discovery.updateProfile(response.profile_update);
+        }
+
+        addMessage(response.text, 'ai');
+        addToConversationHistory('assistant', response.text);
+
+        if (response.discovery_stage === 'recommend') {
+          const hotelsToDisplay = (response.recommendations && response.recommendations.length > 0)
+            ? response.recommendations
+            : discovery.discoveryState.shortlist;
+
+          if (hotelsToDisplay && hotelsToDisplay.length > 0) {
+            setTimeout(() => addPropertyShortlist(hotelsToDisplay), 500);
+          }
+        }
+
+        if (response.next_question) {
+          setTimeout(() => {
+            addMessage(response.next_question, 'ai');
+            addToConversationHistory('assistant', response.next_question);
+          }, 1000);
+        }
+        return;
+      }
+
+      // Handle Orchestrator Mode
+      if (response.isOrchestrator) {
+        addMessage(response.text, 'ai');
+        addToConversationHistory('assistant', response.text);
+        if (response.action === 'search' && response.shortlist && response.shortlist.length > 0) {
+          setTimeout(() => addPropertyShortlist(response.shortlist), 500);
+        }
+        return;
+      }
 
       // Update booking state with extracted data
       if (response.extractedData) {
@@ -3692,6 +3847,11 @@ export async function getAIResponse(userMessage) {
       addMessage(response.text, 'ai');
       addToConversationHistory('assistant', response.text);
     } else {
+      // Handle Discovery Mode Start
+      if (chatContext.mode === 'multi' && !discovery.discoveryState.active && discovery.isDiscoveryQuery(userMessage)) {
+        discovery.activateDiscoveryMode();
+      }
+
       // General response
       response = await openai.getGeneralAIResponse(
         userMessage,
@@ -3699,6 +3859,44 @@ export async function getAIResponse(userMessage) {
         bookingState,
         bookingState.conversationHistory
       );
+
+      // Handle Discovery Mode Response
+      if (response.isDiscovery) {
+        if (response.profile_update) {
+          discovery.updateProfile(response.profile_update);
+        }
+
+        addMessage(response.text, 'ai');
+        addToConversationHistory('assistant', response.text);
+
+        if (response.discovery_stage === 'recommend') {
+          const hotelsToDisplay = (response.recommendations && response.recommendations.length > 0)
+            ? response.recommendations
+            : discovery.discoveryState.shortlist;
+
+          if (hotelsToDisplay && hotelsToDisplay.length > 0) {
+            setTimeout(() => addPropertyShortlist(hotelsToDisplay), 500);
+          }
+        }
+
+        if (response.next_question) {
+          setTimeout(() => {
+            addMessage(response.next_question, 'ai');
+            addToConversationHistory('assistant', response.next_question);
+          }, 1000);
+        }
+        return;
+      }
+
+      // Handle Orchestrator Mode
+      if (response.isOrchestrator) {
+        addMessage(response.text, 'ai');
+        addToConversationHistory('assistant', response.text);
+        if (response.action === 'search' && response.shortlist && response.shortlist.length > 0) {
+          setTimeout(() => addPropertyShortlist(response.shortlist), 500);
+        }
+        return;
+      }
 
       // Update booking state with extracted data
       if (response.extractedData) {
@@ -4030,6 +4228,12 @@ export function enterRoomContext(roomId) {
 export function startRoomBookingFlow(room) {
   if (!room) return;
 
+  // Orchestrator Mode Pre-validation
+  if (orchestra.getOrchestraMode() && chatContext.mode === 'multi') {
+    addMessage('Будь ласка, спочатку виберіть конкретний готель з нашої мережі для бронювання.', 'ai');
+    return;
+  }
+
   // 1. Close any open detail / context views
   closeRoomDetailView();
 
@@ -4180,6 +4384,13 @@ export function initChatListeners() {
         event.preventDefault();
         handleSendMessage();
       }
+    });
+  }
+
+  // Orchestra Context Listener
+  if (dom.orchestraBackBtn) {
+    dom.orchestraBackBtn.addEventListener('click', () => {
+      resetToMultiProperty();
     });
   }
 

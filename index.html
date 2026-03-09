@@ -134,6 +134,65 @@
 
     <hr class="border-gray-200 my-4">
 
+    <!-- Orchestra Mode Section -->
+    <div class="admin-control">
+      <span class="admin-label">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline mr-1">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+        Режим "Оркестр"
+      </span>
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-gray-600">Мульти-готельна мережа</span>
+        <label class="switch"><input type="checkbox" id="orchestra-mode-toggle"><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <div class="admin-control mt-2" id="discovery-mode-container"
+      style="display: none; border-left: 3px solid #6366f1; padding-left: 10px;">
+      <span class="admin-label flex items-center mb-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="inline mr-1 text-indigo-500">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+        </svg>
+        Режим "Discovery"
+      </span>
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm text-gray-600">Авто-рекомендації (Лише In App)</span>
+        <label class="switch"><input type="checkbox" id="discovery-mode-toggle"><span class="slider"></span></label>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-gray-600">Автозапуск (при неточному пошуку)</span>
+        <label class="switch"><input type="checkbox" id="discovery-autostart-toggle" checked><span
+            class="slider"></span></label>
+      </div>
+    </div>
+
+    <!-- Properties Management -->
+    <div id="orchestra-settings" class="hidden mt-4">
+      <div class="services-section-header mb-2">
+        <span class="services-section-title text-sm font-bold">Отелі мережі</span>
+        <button id="add-property-btn" class="add-room-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Додати
+        </button>
+      </div>
+      <div id="properties-admin-list" class="flex flex-col gap-2">
+        <!-- Properties will be rendered here -->
+      </div>
+    </div>
+
+    <hr class="border-gray-200 my-4">
+
     <!-- Hotel Settings -->
     <div class="admin-control">
       <span class="admin-label">Назва готелю</span>
@@ -448,8 +507,16 @@
               class="absolute bottom-0 right-0 w-[12px] h-[12px] bg-green-400 border-2 accent-border rounded-full"
               title="Онлайн"></div>
           </div>
-          <div>
+          <div class="flex flex-col justify-center">
             <h3 id="hotel-name-text" class="text-base font-bold leading-tight tracking-wide">Hilton</h3>
+            <button id="orchestra-back-btn"
+              class="hidden text-[11px] text-white/80 hover:text-white flex items-center gap-1 transition-colors mt-0.5 -ml-0.5 w-fit rounded px-1 hover:bg-white/10">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+              Всі готелі
+            </button>
           </div>
         </div>
 
@@ -1421,8 +1488,8 @@
             </button>
           </div>
         </div>
-  </div>
-  </div>
+      </div>
+    </div>
   </div>
 
 
@@ -1828,6 +1895,83 @@
         </button>
         <button id="service-cancel-btn" class="service-btn service-btn-secondary">Скасувати</button>
         <button id="service-save-btn" class="service-btn service-btn-primary">Зберегти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Property Modal -->
+  <div id="property-modal-overlay" class="service-modal-overlay">
+    <div class="service-modal">
+      <div class="service-modal-header">
+        <h3 id="property-modal-title">Редагувати готель</h3>
+        <button id="property-modal-close" class="service-modal-close">&times;</button>
+      </div>
+      <div class="service-modal-body">
+        <div class="service-form-group">
+          <label class="service-form-label">Назва готелю</label>
+          <input type="text" id="property-name-input" class="service-form-input" placeholder="Наприклад: Hilton Center">
+        </div>
+        <div class="service-form-group">
+          <label class="service-form-label">Опис готелю (для LLM)</label>
+          <textarea id="property-info-input" class="service-form-textarea" rows="3"
+            placeholder="Опис, що є в готелі..."></textarea>
+        </div>
+
+        <div class="service-form-row">
+          <div class="service-form-group">
+            <label class="service-form-label">Пріоритет (1-5)</label>
+            <input type="number" id="property-priority-input" class="service-form-input" placeholder="1" min="1"
+              max="5">
+          </div>
+          <div class="service-form-group">
+            <label class="service-form-label">Базова валюта</label>
+            <input type="text" id="property-currency-input" class="service-form-input" placeholder="USD">
+          </div>
+        </div>
+
+        <!-- Discovery Fields -->
+        <div class="service-form-group" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e5e7eb;">
+          <label class="service-form-label text-indigo-500">Discovery Теги (через кому)</label>
+          <input type="text" id="property-tags-input" class="service-form-input"
+            placeholder="beach, spa, city, mountains">
+        </div>
+        <div class="service-form-row">
+          <div class="service-form-group">
+            <label class="service-form-label text-indigo-500">Рейтинг (Зірки)</label>
+            <input type="number" id="property-stars-input" class="service-form-input" placeholder="5" min="1" max="5">
+          </div>
+          <div class="service-form-group">
+            <label class="service-form-label text-indigo-500">Мін. ціна за ніч</label>
+            <input type="number" id="property-min-price-input" class="service-form-input" placeholder="100">
+          </div>
+        </div>
+
+        <div class="service-toggle-group">
+          <span class="service-toggle-label">Участь у multi-property пошуку</span>
+          <label class="switch">
+            <input type="checkbox" id="property-search-toggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="service-toggle-group">
+          <span class="service-toggle-label">Показувати в Shortlist</span>
+          <label class="switch">
+            <input type="checkbox" id="property-shortlist-toggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="service-modal-footer">
+        <button id="property-delete-btn" class="service-btn service-btn-danger" style="display: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 6h18"></path>
+            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+          </svg>
+        </button>
+        <button id="property-cancel-btn" class="service-btn service-btn-secondary">Скасувати</button>
+        <button id="property-save-btn" class="service-btn service-btn-primary">Зберегти</button>
       </div>
     </div>
   </div>

@@ -5,46 +5,12 @@
 
 import { getAllRooms, isRangeAvailable, getAvailableRoomsForRange } from './rooms.js';
 import { getAllServices, formatPrice as formatServicePrice, getCategoryName } from './services.js';
+import { extractBookingData, parseDateFromText } from './utils.js';
+import { getCurrentLanguage, getLanguageName } from './localization.js';
 import { languagesList } from './config.js';
-
-// Language code to full name mapping
-const LANGUAGE_NAMES = {
-  'en': 'English',
-  'zh': 'Chinese (Mandarin)',
-  'hi': 'Hindi',
-  'es': 'Spanish',
-  'ar': 'Arabic',
-  'fr': 'French',
-  'bn': 'Bengali',
-  'pt': 'Portuguese',
-  'ru': 'Russian',
-  'id': 'Indonesian',
-  'uk': 'Ukrainian',
-  'de': 'German',
-  'ja': 'Japanese',
-  'ko': 'Korean',
-  'it': 'Italian',
-  'tr': 'Turkish',
-  'nl': 'Dutch',
-  'pl': 'Polish',
-  'vi': 'Vietnamese',
-  'th': 'Thai',
-  'ua': 'Ukrainian'  // Legacy support
-};
-
-// Get language name from code
-function getLanguageName(langCode) {
-  return LANGUAGE_NAMES[langCode] || 'English';
-}
-
-// Get current language from localStorage
-function getCurrentLanguage() {
-  try {
-    return localStorage.getItem('chat_language') || 'en';
-  } catch (e) {
-    return 'en';
-  }
-}
+import { chatContext } from './chat.js';
+import * as orchestra from './orchestra.js';
+import * as discovery from './discovery.js';
 
 // API Configuration
 let OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY_HERE';
@@ -233,7 +199,7 @@ function buildGeneralSystemPrompt(hotelName = 'Hilton', bookingState = null) {
   const roomsList = rooms.length > 0
     ? rooms.map(r => {
       const bookedCount = (r.bookedDates || []).length;
-      return `- ${r.name}: ${r.area}м², $${r.pricePerNight}/ніч`;
+      return `- ${r.name}: ${r.area} м², $${r.pricePerNight}/ніч`;
     }).join('\n')
     : 'Номери ще не додані.';
 
@@ -583,9 +549,127 @@ async function callOpenAIStreaming(messages, onChunk, onComplete, onError, model
   }
 }
 
+// Build orchestrator system prompt (for multi-property mode)
+function buildOrchestratorSystemPrompt(hotelName) {
+  const currentLang = getCurrentLanguage();
+  const languageName = getLanguageName(currentLang);
+  const properties = orchestra.getNetworkProperties();
+  const propsList = properties.map(p => `- ID: ${p.id} | ${p.name} (Priority: ${p.priority || 1}): ${p.info}`).join('\n');
+
+  return `Ты Roomie — AI-ассистент сети отелей "${hotelName}".
+Текущая дата: ${new Date().toISOString().split('T')[0]}.
+
+### ОСНОВНЫЕ ПРАВИЛА (ОРКЕСТРАТОР)
+1. Твоя ПОЛНАЯ и ЕДИНСТВЕННАЯ задача — помочь гостю выбрать конкретный отель из сети, основываясь на его пожеланиях.
+2. Отвечай ВСЕГДА ТОЛЬКО валидным JSON объектом (без markdown блоков, только сырой JSON).
+3. Язык общения (в поле reply): ${languageName}.
+
+### СПИСОК ОТЕЛЕЙ СЕТИ
+${propsList || 'Отели не добавлены.'}
+
+### ФОРМАТ ОТВЕТА (СТРОГИЙ JSON)
+Если гость описал пожелания, выбери 1-3 подходящих отеля и верни JSON:
+{
+  "action": "search",
+  "shortlist": ["ID_отеля_1", "ID_отеля_2"], 
+  "reply": "Текст ответа на ${languageName}, кратко описывающий почему эти отели подходят."
+}
+Если запрос гостя непонятен или он просто здоровается:
+{
+  "action": "none",
+  "reply": "Текст ответа на ${languageName} (например: Здравствуйте! Какой отель вас интересует или какие у вас пожелания?)."
+}
+`;
+}
+
+// Build discovery system prompt (for Discovery Mode)
+function buildDiscoverySystemPrompt(profile, topScoredHotels) {
+  const currentLang = getCurrentLanguage();
+  const languageName = getLanguageName(currentLang);
+
+  let hotelsListContext = 'Пока нет подходящих отелей.';
+  if (topScoredHotels && topScoredHotels.length > 0) {
+    hotelsListContext = topScoredHotels.map(p => `- ID: ${p.id} | ${p.name} | Теги: ${p.discoveryTags || ''} | От $${p.minPrice || 0} | ${p.starRating || 0} звезд`).join('\n');
+  }
+
+  return `Ты Roomie — AI-ассистент сети отелей. Твоя цель: помочь гостю выбрать идеальный отель для его поездки (Discovery Mode).
+Гость еще не определился. Веди с ним дружелюбный диалог, задавай 1-2 уточняющих вопроса (например: даты, бюджет, едет ли с детьми/парой, какие предпочтения - пляж, спа, горы).
+Язык общения (в поле reply): ${languageName}.
+
+=== ТЕКУЩИЙ ПРОФИЛЬ ГОСТЯ ===
+Локация: ${profile.location || 'неизвестно'}
+Бюджет: ${profile.budget || 'неизвестно'}
+Сезон/Даты: ${profile.season || 'неизвестно'}
+Компания: ${profile.party || 'неизвестно'}
+Предпочтения: ${(profile.preferences || []).join(', ') || 'нет'}
+
+=== ТОП ПОДХОДЯЩИХ ОТЕЛЕЙ СЕЙЧАС ===
+${hotelsListContext}
+
+=== ФОРМАТ ОТВЕТА (СТРОГИЙ JSON) ===
+Обязательно верни только валидный JSON объект:
+{
+  "discovery_stage": "profile" или "recommend" или "deepdive",
+  "profile_update": { 
+     "location": "море" (или null если нет новой инфы),
+     "budget": "high" (или конкретная сумма),
+     "season": "лето" (или даты),
+     "party": "с детьми",
+     "preferences": "пляж, спа" (строка через запятую)
+  },
+  "recommendations": ["ID_отеля_1", "ID_отеля_2"] (заполни, если этап recommend и уверен в выборе),
+  "reply": "Твой ответ гостю на ${languageName}. Если этап profile, задай вопрос. Если recommend, опиши почему эти отели топ.",
+  "next_question": "Уточняющий вопрос (например: Какой у вас бюджет?)"
+}
+ВАЖНО: Никаких блоков markdown типа \`\`\`json. Только фигурные скобки.`;
+}
+
+// Get General AI Response with Discovery Mode support
+export async function getDiscoveryAIResponse(userMessage, conversationHistory = []) {
+  // Update score based on current profile to get top matches
+  const topScoredHotels = discovery.scoreProperties();
+  const systemPrompt = buildDiscoverySystemPrompt(discovery.discoveryState.profile, topScoredHotels);
+
+  const messages = [{ role: 'system', content: systemPrompt }];
+  const recentHistory = conversationHistory.slice(-6); // Shorter history for discovery focus
+  messages.push(...recentHistory);
+  messages.push({ role: 'user', content: userMessage });
+
+  try {
+    const response = await callOpenAI(messages);
+    try {
+      const data = JSON.parse(response);
+      return {
+        isDiscovery: true,
+        discovery_stage: data.discovery_stage || 'profile',
+        profile_update: data.profile_update || {},
+        recommendations: data.recommendations || [],
+        text: data.reply || "Давайте подберем вам лучший отель!",
+        next_question: data.next_question || "",
+        showRoomsCarousel: false,
+        showServicesCarousel: false,
+        showMenu: false,
+        extractedData: null
+      };
+    } catch (e) {
+      console.error('Failed to parse Discovery JSON', e, response);
+      return { text: response, isDiscovery: true };
+    }
+  } catch (error) {
+    return { text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.', error: true };
+  }
+}
+
 // Get general AI response with booking funnel support
 export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bookingState = null, conversationHistory = []) {
-  const systemPrompt = buildGeneralSystemPrompt(hotelName, bookingState);
+  if (discovery.discoveryState && discovery.discoveryState.active) {
+    return getDiscoveryAIResponse(userMessage, conversationHistory);
+  }
+
+  const isOrchestraActive = orchestra.getOrchestraMode() && chatContext.mode === 'multi';
+  const systemPrompt = isOrchestraActive
+    ? buildOrchestratorSystemPrompt(hotelName)
+    : buildGeneralSystemPrompt(hotelName, bookingState);
 
   // Build messages with conversation history
   const messages = [
@@ -613,6 +697,37 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
 
   try {
     const response = await callOpenAI(messages);
+
+    // Process JSON if in Orchestra multi-property mode
+    if (isOrchestraActive) {
+      try {
+        const data = JSON.parse(response);
+        return {
+          isOrchestrator: true,
+          action: data.action || 'none',
+          shortlist: data.shortlist || [],
+          text: data.reply || response,
+          showRoomsCarousel: false,
+          showServicesCarousel: false,
+          showMenu: false,
+          extractedData: null
+        };
+      } catch (e) {
+        console.error('Failed to parse Orchestrator JSON', e);
+        return {
+          isOrchestrator: true,
+          action: 'none',
+          shortlist: [],
+          text: response, // fallback
+          showRoomsCarousel: false,
+          showServicesCarousel: false,
+          showMenu: false,
+          extractedData: null
+        };
+      }
+    }
+
+    // Normal response processing
     return {
       text: response,
       showRoomsCarousel: showRooms && getAllRooms().length > 0,
@@ -861,7 +976,7 @@ export function extractBookingData(message) {
         if (year < 100) year += 2000;
 
         if (day >= 1 && day <= 31 && month >= 1 && month <= 12) {
-          dates.push(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
+          dates.push(`${year} -${String(month).padStart(2, '0')} -${String(day).padStart(2, '0')} `);
         }
       }
     });
@@ -882,7 +997,7 @@ export function extractBookingData(message) {
         const month = monthMap[monthName];
         if (month) {
           const year = new Date().getFullYear();
-          dates.push(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
+          dates.push(`${year} -${String(month).padStart(2, '0')} -${String(day).padStart(2, '0')} `);
         }
       }
     });
@@ -1019,7 +1134,7 @@ export function buildSpecialBookingPrompt(hotelName = 'Hilton', requirements = [
   const hotelInfo = getHotelInfo();
 
   const roomsList = rooms.length > 0
-    ? rooms.map(r => `- ${r.name}: ${r.area}м², $${r.pricePerNight}/ніч, ${r.description || 'без описания'}`).join('\n')
+    ? rooms.map(r => `- ${r.name}: ${r.area} м², $${r.pricePerNight}/ніч, ${r.description || 'без описания'}`).join('\n')
     : 'Номери ще не додані.';
 
   const requirementsList = requirements.length > 0

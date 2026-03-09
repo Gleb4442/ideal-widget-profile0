@@ -8,6 +8,7 @@ import * as dom from './dom.js';
 import * as rooms from './rooms.js';
 import * as bookings from './bookings.js';
 import * as services from './services.js';
+import * as orchestra from './orchestra.js';
 import { startOperatorSimulation, stopOperatorSimulation, setOperatorSettings, updateScrollButtonPosition } from './chat.js';
 
 // Room editing state
@@ -23,6 +24,9 @@ let currentEditServiceId = null;
 let currentServiceMainPhoto = '';
 let currentServiceGallery = [];
 let currentServiceReviews = []; // Reviews state
+
+// Orchestra editing state
+let currentEditPropertyId = null;
 
 // Hotel info storage key
 const HOTEL_INFO_KEY = 'hotel_info';
@@ -1680,6 +1684,10 @@ export function updateInAppVisibility() {
     if (dom.banners.telegram) dom.banners.telegram.classList.add('hidden');
     if (dom.telegramMenuBtn) dom.telegramMenuBtn.style.display = 'none';
 
+    // Enable Discovery Mode toggle if in Orchestrator settings
+    const discoveryToggle = document.getElementById('discovery-mode-toggle');
+    if (discoveryToggle) discoveryToggle.disabled = false;
+
     // Swap Rooms for Shop
     if (dom.roomsMenuBtn) dom.roomsMenuBtn.style.display = 'none';
     if (dom.shopMenuBtn) dom.shopMenuBtn.style.display = 'flex';
@@ -1693,6 +1701,17 @@ export function updateInAppVisibility() {
     if (dom.guideTelegramBtn) dom.guideTelegramBtn.style.display = '';
     // Let banners.js control the banner and modal normally, just reset inline styles
     if (dom.telegramMenuBtn) dom.telegramMenuBtn.style.display = '';
+
+    // Disable Discovery Mode toggle
+    const discoveryToggle = document.getElementById('discovery-mode-toggle');
+    if (discoveryToggle) {
+      discoveryToggle.disabled = true;
+      if (discoveryToggle.checked) {
+        // Auto turn off discovery if In-App mode is off
+        discoveryToggle.checked = false;
+        import('./orchestra.js').then(orch => orch.setDiscoveryMode(false));
+      }
+    }
 
     // Swap Shop for Rooms
     if (dom.roomsMenuBtn) dom.roomsMenuBtn.style.display = '';
@@ -1984,6 +2003,211 @@ function initMenuManagement() {
   }
 }
 
+// ============================================
+// ORCHESTRA MANAGEMENT
+// ============================================
+
+export function renderOrchestraGrid() {
+  const grid = document.getElementById('properties-admin-list');
+  if (!grid) return;
+
+  const allProps = orchestra.getNetworkProperties();
+
+  if (allProps.length === 0) {
+    grid.innerHTML = '<div class="text-sm text-gray-500 text-center py-4">Немає доданих готелів</div>';
+    return;
+  }
+
+  grid.innerHTML = allProps.map(prop => `
+    <div class="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow transition">
+      <div>
+        <div class="font-bold text-sm text-gray-800">${prop.name}</div>
+        <div class="text-xs text-gray-500 mt-1 truncate max-w-[200px]">${prop.info || 'Немає опису'}</div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="text-xs font-mono bg-gray-100 px-2 py-1 rounded">Пріорітет: ${prop.priority || 1}</div>
+        <button class="edit-property-btn text-blue-600 hover:text-blue-800 p-1" data-id="${prop.id}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.edit-property-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      openPropertyModal(btn.dataset.id);
+    });
+  });
+}
+
+export function openPropertyModal(id = null) {
+  const modal = document.getElementById('property-modal-overlay');
+  if (!modal) return;
+
+  const title = document.getElementById('property-modal-title');
+  const deleteBtn = document.getElementById('property-delete-btn');
+
+  currentEditPropertyId = id;
+
+  if (id) {
+    const prop = orchestra.getProperty(id);
+    if (prop) {
+      title.textContent = 'Редагувати готель';
+      document.getElementById('property-name-input').value = prop.name || '';
+      document.getElementById('property-info-input').value = prop.info || '';
+      document.getElementById('property-priority-input').value = prop.priority || '';
+      document.getElementById('property-currency-input').value = prop.currency || '';
+      document.getElementById('property-search-toggle').checked = prop.includeInSearch !== false;
+      document.getElementById('property-shortlist-toggle').checked = prop.showInShortlist !== false;
+
+      // Discovery
+      document.getElementById('property-tags-input').value = prop.discoveryTags || '';
+      document.getElementById('property-stars-input').value = prop.starRating || '';
+      document.getElementById('property-min-price-input').value = prop.minPrice || '';
+
+      deleteBtn.style.display = 'block';
+    }
+  } else {
+    title.textContent = 'Новий готель';
+    document.getElementById('property-name-input').value = '';
+    document.getElementById('property-info-input').value = '';
+    document.getElementById('property-priority-input').value = 1;
+    document.getElementById('property-currency-input').value = 'USD';
+    document.getElementById('property-search-toggle').checked = true;
+    document.getElementById('property-shortlist-toggle').checked = true;
+
+    // Discovery
+    document.getElementById('property-tags-input').value = '';
+    document.getElementById('property-stars-input').value = 5;
+    document.getElementById('property-min-price-input').value = 100;
+
+    deleteBtn.style.display = 'none';
+  }
+
+  modal.classList.add('active');
+}
+
+export function closePropertyModal() {
+  const modal = document.getElementById('property-modal-overlay');
+  if (modal) modal.classList.remove('active');
+  currentEditPropertyId = null;
+}
+
+function saveProperty() {
+  const name = document.getElementById('property-name-input').value.trim();
+  const info = document.getElementById('property-info-input').value.trim();
+  const priority = parseInt(document.getElementById('property-priority-input').value) || 1;
+  const currency = document.getElementById('property-currency-input').value.trim() || 'USD';
+  const includeInSearch = document.getElementById('property-search-toggle').checked;
+  const showInShortlist = document.getElementById('property-shortlist-toggle').checked;
+
+  // Discovery
+  const discoveryTags = document.getElementById('property-tags-input').value.trim();
+  const starRating = parseInt(document.getElementById('property-stars-input').value) || 5;
+  const minPrice = parseInt(document.getElementById('property-min-price-input').value) || 100;
+
+  if (!name) {
+    alert('Введіть назву готелю');
+    return;
+  }
+
+  const propData = {
+    name,
+    info,
+    priority,
+    currency,
+    includeInSearch,
+    showInShortlist,
+    discoveryTags,
+    starRating,
+    minPrice
+  };
+
+  if (currentEditPropertyId) {
+    orchestra.updateProperty(currentEditPropertyId, propData);
+  } else {
+    orchestra.addProperty(propData);
+  }
+
+  closePropertyModal();
+  renderOrchestraGrid();
+}
+
+function deletePropertyAction() {
+  if (!currentEditPropertyId) return;
+
+  if (confirm('Видалити цей готель?')) {
+    orchestra.deleteProperty(currentEditPropertyId);
+    closePropertyModal();
+    renderOrchestraGrid();
+  }
+}
+
+export function initOrchestraManagement() {
+  const toggle = document.getElementById('orchestra-mode-toggle');
+  const settingsDiv = document.getElementById('orchestra-settings');
+
+  if (toggle && settingsDiv) {
+    const isEnabled = orchestra.getOrchestraMode();
+    const discoverySettingsDiv = document.getElementById('discovery-mode-container');
+
+    toggle.checked = isEnabled;
+    if (isEnabled) {
+      settingsDiv.classList.remove('hidden');
+      if (discoverySettingsDiv) discoverySettingsDiv.style.display = '';
+    } else {
+      settingsDiv.classList.add('hidden');
+      if (discoverySettingsDiv) discoverySettingsDiv.style.display = 'none';
+    }
+
+    toggle.addEventListener('change', (e) => {
+      const active = e.target.checked;
+      orchestra.setOrchestraMode(active);
+      if (active) {
+        settingsDiv.classList.remove('hidden');
+        discoverySettingsDiv.style.display = '';
+      } else {
+        settingsDiv.classList.add('hidden');
+        discoverySettingsDiv.style.display = 'none';
+      }
+    });
+
+    // Discovery Settings Init
+    const discoveryToggle = document.getElementById('discovery-mode-toggle');
+    const discoveryAutostartToggle = document.getElementById('discovery-autostart-toggle');
+
+    if (discoveryToggle) {
+      discoveryToggle.checked = orchestra.getDiscoveryMode();
+      discoveryToggle.addEventListener('change', (e) => orchestra.setDiscoveryMode(e.target.checked));
+    }
+
+    if (discoveryAutostartToggle) {
+      discoveryAutostartToggle.checked = orchestra.getDiscoveryAutoStart();
+      discoveryAutostartToggle.addEventListener('change', (e) => orchestra.setDiscoveryAutoStart(e.target.checked));
+    }
+  }
+
+  const addBtn = document.getElementById('add-property-btn');
+  if (addBtn) addBtn.addEventListener('click', () => openPropertyModal());
+
+  const modalClose = document.getElementById('property-modal-close');
+  if (modalClose) modalClose.addEventListener('click', closePropertyModal);
+
+  const cancelBtn = document.getElementById('property-cancel-btn');
+  if (cancelBtn) cancelBtn.addEventListener('click', closePropertyModal);
+
+  const saveBtn = document.getElementById('property-save-btn');
+  if (saveBtn) saveBtn.addEventListener('click', saveProperty);
+
+  const deleteBtn = document.getElementById('property-delete-btn');
+  if (deleteBtn) deleteBtn.addEventListener('click', deletePropertyAction);
+
+  renderOrchestraGrid();
+}
+
 // Export for use in other modules
 export function getMenuSettings() {
   return loadMenuSettings();
@@ -2010,4 +2234,6 @@ export function initAdmin() {
   initCancellationBanner();
   initInAppMode();
   initMenuManagement();
+  initOrchestraManagement();
 }
+

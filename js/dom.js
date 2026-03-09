@@ -30,6 +30,7 @@ export const themeToggle = document.getElementById('theme-toggle');
 export const hotelNameInput = document.getElementById('hotel-name-input');
 export const logoUpload = document.getElementById('logo-upload');
 export const hotelNameText = document.getElementById('hotel-name-text');
+export const orchestraBackBtn = document.getElementById('orchestra-back-btn');
 export const hotelLogoContainer = document.getElementById('hotel-logo-container');
 export const buttonTextSelect = document.getElementById('button-text-select');
 export const animationToggle = document.getElementById('animation-toggle');
