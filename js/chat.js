@@ -2148,7 +2148,8 @@ export function toggleChat() {
 }
 
 // Session state for terms acceptance
-let sessionTermsAccepted = false;
+// If no welcome modal exists in HTML, auto-accept terms so welcome message shows immediately
+let sessionTermsAccepted = !document.getElementById('welcome-modal');
 
 // Check Welcome State
 function checkWelcomeState() {
