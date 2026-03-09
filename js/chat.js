@@ -2308,7 +2308,7 @@ function getQuickReplyMode() {
   const inApp = loadInAppMode();
   if (inApp && inApp.enabled) return 'inApp';
   if (chatContext.mode === 'single') return 'single';
-  
+
   // If discovery is active or in multi mode
   return 'discovery';
 }
@@ -2608,6 +2608,10 @@ export function addRoomCarousel() {
         e.stopPropagation();
         const action = btn.dataset.action;
         const roomId = btn.dataset.roomId;
+
+        // Remove the carousel after selection
+        wrapper.remove();
+
         if (action === 'book') {
           // Directly start booking flow with this room
           const roomData = rooms.getRoom(roomId);
@@ -2656,7 +2660,7 @@ export function setSingleProperty(propertyId) {
 
     addMessage(`Ви вибрали готель "${prop.name}". Як я можу допомогти вам з плануванням вашого перебування?`, 'ai');
     addToConversationHistory('assistant', `Ви вибрали готель "${prop.name}". Як я можу допомогти вам з плануванням вашого перебування?`);
-    
+
     // Update quick replies for single mode
     setTimeout(() => addQuickReplies(), 500);
   }
@@ -2674,7 +2678,7 @@ export function resetToMultiProperty() {
 
   addMessage('Ви повернулися до загального пошуку. Який готель або місто вас цікавить?', 'ai');
   addToConversationHistory('assistant', 'Ви повернулися до загального пошуку. Який готель або місто вас цікавить?');
-  
+
   // Update quick replies for discovery mode
   setTimeout(() => addQuickReplies(), 500);
 }
@@ -3093,6 +3097,9 @@ export function addServicesCarousel() {
         const action = btn.dataset.action;
         const serviceId = btn.dataset.serviceId;
         const serviceData = services.getService(serviceId);
+
+        // Remove the carousel after selection
+        wrapper.remove();
 
         if (action === 'add') {
           addMessage(`Хочу додати до бронювання: ${serviceData?.name}`, 'user');
