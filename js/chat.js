@@ -3581,19 +3581,19 @@ export function startInAppServiceRequest(category, _userMessage) {
 
   inAppServiceState = { active: true, category, step: 'clarifying' };
 
-  // Task preparing animation HTML
-  const taskPreparingHtml = `
-    <div class="task-preparing-bubble-anim">
-      <div class="task-preparing-icon-wrap">
-        ${IN_APP_SERVICE_ICONS[category] || ''}
-      </div>
-      <div class="task-preparing-spinner"></div>
-      <span class="task-preparing-text">Формируем задачу...</span>
-    </div>
-  `;
+  // Show Header Animation
+  if (dom.headerTaskPreparing && dom.headerTaskIcon) {
+    dom.headerTaskIcon.innerHTML = IN_APP_SERVICE_ICONS[category] || '';
+    dom.headerTaskPreparing.classList.remove('hidden');
+    // Hide App store button
+    if (dom.guideBadgeBtn) {
+      dom.guideBadgeBtn.style.visibility = 'hidden';
+      dom.guideBadgeBtn.style.pointerEvents = 'none';
+    }
+  }
 
-  // Ask the clarifying question with prepended animation
-  addMessage(taskPreparingHtml + question, 'ai');
+  // Ask the clarifying question (animation removed from bubble)
+  addMessage(question, 'ai');
   addToConversationHistory('assistant', question);
 }
 
@@ -3604,6 +3604,16 @@ function handleInAppServiceFollowUp(userMessage) {
   isGenerating = false;
 
   const { category } = inAppServiceState;
+
+  // Hide Header Animation
+  if (dom.headerTaskPreparing) {
+    dom.headerTaskPreparing.classList.add('hidden');
+    // Restore App store button
+    if (dom.guideBadgeBtn) {
+      dom.guideBadgeBtn.style.visibility = '';
+      dom.guideBadgeBtn.style.pointerEvents = '';
+    }
+  }
 
   // Reset state first
   inAppServiceState = { active: false, category: null, step: null };
