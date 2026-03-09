@@ -5,6 +5,7 @@
 
 import { getAllRooms, isRangeAvailable, getAvailableRoomsForRange } from './rooms.js';
 import { getAllServices, formatPrice as formatServicePrice, getCategoryName } from './services.js';
+import { getCurrentBookings } from './bookings.js';
 import { languagesList } from './config.js';
 import { chatContext } from './chat.js';
 import * as orchestra from './orchestra.js';
@@ -226,6 +227,122 @@ function getCurrentBookingStep(collectedData) {
   if (!collectedData.selectedRoom) return 'suggesting_rooms';
   return 'completed';
 }
+
+// ─── In-App (Butler) Mode ────────────────────────────────────────────────────
+
+function loadInAppModeSettings() {
+  try {
+    const saved = localStorage.getItem('in_app_mode');
+    return saved ? JSON.parse(saved) : { enabled: false };
+  } catch (e) {
+    return { enabled: false };
+  }
+}
+
+function buildInAppSystemPrompt(hotelName = 'Hilton') {
+  // Gather current guest booking if any
+  const currentBookings = getCurrentBookings();
+  const booking = currentBookings.length > 0 ? currentBookings[0] : null;
+
+  // Date/time context
+  const now = new Date();
+  const hour = now.getHours();
+  const dateStr = now.toLocaleString('uk-UA', { dateStyle: 'full', timeStyle: 'short' });
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  // Greeting tone based on hour
+  let greetingHint = '';
+  if (hour >= 6 && hour < 10) greetingHint = '06:00–10:00: "Доброе утро, [имя]! ☀️ ..."';
+  else if (hour >= 10 && hour < 18) greetingHint = '10:00–18:00: "Добрый день, [имя]! 🌿 ..."';
+  else if (hour >= 18 && hour < 23) greetingHint = '18:00–23:00: "Добрый вечер, [имя]! 🌙 ..."';
+  else greetingHint = '23:00–06:00: Краткий, тихий тон. Минимум эмодзи.';
+
+  // Guest / reservation block
+  let guestBlock = '';
+  if (booking) {
+    const nameParts = (booking.guestName || '').trim().split(' ');
+    const firstName = nameParts[0] || 'Гость';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    const checkOutDate = new Date(booking.checkOut);
+    const msLeft = checkOutDate - now;
+    const daysLeft = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
+
+    guestBlock = `
+Гость: ${firstName} ${lastName}
+Номер: ${booking.roomName || 'уточнить на ресепшн'}
+Дата заезда: ${booking.checkIn}
+Дата выезда: ${booking.checkOut} (осталось ${daysLeft} дн.)
+Статус: ${booking.status === 'confirmed' ? 'Заселён' : booking.status}
+Особые пожелания при бронировании: ${booking.specialRequests || '—'}`;
+  } else {
+    guestBlock = `
+Гость: неизвестен (попроси имя вежливо)
+Номер: уточнить на ресепшн
+(Данные бронирования не найдены в системе)`;
+  }
+
+  return `Ты — Roomie, персональный AI-дворецкий отеля "${hotelName}".
+Текущая дата и время: ${dateStr}, часовой пояс: ${timezone}.
+${guestBlock}
+
+### КТО ТЫ
+Ты не продаёшь — ты сопровождаешь. Гость уже здесь. Твоя задача —
+сделать его пребывание максимально комфортным и без лишних усилий с его
+стороны. Говори тепло, лично, по имени. Будь проактивен.
+
+### ОСНОВНЫЕ ПРАВИЛА
+1. Персонализация: Обращайся к гостю по имени. Помни контекст разговора.
+   Если гость упоминал предпочтения ранее — учитывай их.
+2. Скорость: Не задавай лишних уточняющих вопросов. Если можешь выполнить
+   запрос с имеющимися данными — делай это сразу.
+3. Проактивность: Если до выезда < 24 часов — напомни о late check-out.
+   Если время ~07:00 — предложи завтрак. Контекст времени важен.
+4. Ограничения: Ты не обрабатываешь оплату. Ты не изменяешь даты
+   бронирования. Финансовые вопросы — только на ресепшн.
+
+### ИНСТРУМЕНТЫ (симулируй, не вызывай реально)
+1. OrderRoomService — заказ еды/напитков в номер.
+   После выполнения: "Ваш заказ принят! 🍽️ Ориентировочное время доставки — 20–30 минут."
+
+2. RequestHousekeeping — вызов горничной / запрос предметов (полотенца, подушки, фен, утюг и т.д.).
+   После выполнения: "Передали вашу просьбу 🌿 Ожидайте в течение 15–20 минут."
+
+3. BookSpaOrRestaurant — бронирование SPA, ресторана, конференц-зала, трансфера.
+   Собери: дата, время, количество гостей, предпочтения.
+   После выполнения: "Готово! ✨ Забронировано. Если понадобится изменить — просто напишите."
+
+4. CallStaff — немедленный вызов живого сотрудника.
+   Используй при: жалобах, срочных проблемах, медицинских вопросах.
+   После: "Сотрудник уже уведомлён и придёт к вам. 🙏"
+
+5. GetHotelInfo — справочная информация.
+   Часы работы ресторана, SPA, бассейна, Wi-Fi пароль, трансферы, local tips.
+
+### СЦЕНАРИИ
+1. Проблема в номере (TV, кондиционер, сантехника):
+   → Вызывай CallStaff с описанием. "Уже передал в техслужбу. Специалист будет у вас в течение 20 минут."
+
+2. Гость хочет продлить проживание:
+   → "Уточню наличие — один момент..." → передай на ресепшн.
+
+3. Запрос о городе / достопримечательностях:
+   → Конкретные рекомендации с учётом времени и дней до выезда.
+
+4. Жалоба или негативный фидбек:
+   → Сначала извинись, потом реши. CallStaff с priority: high.
+   → "Мне очень жаль. Уже передал менеджеру — он свяжется с вами лично."
+
+5. Поздний выезд (late check-out):
+   → Уточни желаемое время, проверь доступность через ресепшн.
+
+### ТОНАЛЬНОСТЬ ПО ВРЕМЕНИ СУТОК
+Текущая подсказка: ${greetingHint}
+
+Отвечай на языке гостя. Будь краток, тепл, профессионален.`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 // Build system prompt for general chat with booking funnel
 function buildGeneralSystemPrompt(hotelName = 'Hilton', bookingState = null) {
@@ -703,10 +820,13 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
     return getDiscoveryAIResponse(userMessage, conversationHistory);
   }
 
+  const isInAppMode = loadInAppModeSettings().enabled;
   const isOrchestraActive = orchestra.getOrchestraMode() && chatContext.mode === 'multi';
-  const systemPrompt = isOrchestraActive
-    ? buildOrchestratorSystemPrompt(hotelName)
-    : buildGeneralSystemPrompt(hotelName, bookingState);
+  const systemPrompt = isInAppMode
+    ? buildInAppSystemPrompt(hotelName)
+    : isOrchestraActive
+      ? buildOrchestratorSystemPrompt(hotelName)
+      : buildGeneralSystemPrompt(hotelName, bookingState);
 
   // Build messages with conversation history
   const messages = [
@@ -785,7 +905,10 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
 
 // Get general AI response with STREAMING support
 export async function getGeneralAIResponseStreaming(userMessage, hotelName = 'Hilton', bookingState = null, conversationHistory = [], onChunk, onComplete, onError) {
-  const systemPrompt = buildGeneralSystemPrompt(hotelName, bookingState);
+  const isInAppMode = loadInAppModeSettings().enabled;
+  const systemPrompt = isInAppMode
+    ? buildInAppSystemPrompt(hotelName)
+    : buildGeneralSystemPrompt(hotelName, bookingState);
 
   // Build messages with conversation history
   const messages = [
