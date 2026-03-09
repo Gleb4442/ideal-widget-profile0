@@ -4638,6 +4638,7 @@ export function initSpecialBookingListeners() {
   const roomsMenuBtn = document.getElementById('rooms-menu-btn');
   if (roomsMenuBtn) {
     roomsMenuBtn.addEventListener('click', () => {
+      if (discovery.discoveryState.active) return;
       closeHeaderMenu();
       showRoomsViaAgent();
     });
@@ -4647,6 +4648,7 @@ export function initSpecialBookingListeners() {
   const shopMenuBtn = document.getElementById('shop-menu-btn');
   if (shopMenuBtn) {
     shopMenuBtn.addEventListener('click', () => {
+      if (orchestra.getOrchestraMode() && chatContext.mode === 'multi') return;
       closeHeaderMenu();
       showServicesViaAgent();
     });
@@ -4701,12 +4703,38 @@ export function initSpecialBookingListeners() {
   updateUITexts();
 }
 
+// Update disabled state of rooms/services menu buttons based on active mode
+function updateMenuButtonStates() {
+  const roomsMenuBtn = document.getElementById('rooms-menu-btn');
+  const shopMenuBtn = document.getElementById('shop-menu-btn');
+
+  const isOrchestra = orchestra.getOrchestraMode() && chatContext.mode === 'multi';
+  const isDiscoveryActive = discovery.discoveryState.active;
+
+  if (shopMenuBtn) {
+    const disabled = isOrchestra;
+    shopMenuBtn.disabled = disabled;
+    shopMenuBtn.style.opacity = disabled ? '0.4' : '';
+    shopMenuBtn.style.pointerEvents = disabled ? 'none' : '';
+    shopMenuBtn.title = disabled ? 'Недоступно в режимі Orchestra' : '';
+  }
+
+  if (roomsMenuBtn) {
+    const disabled = isDiscoveryActive;
+    roomsMenuBtn.disabled = disabled;
+    roomsMenuBtn.style.opacity = disabled ? '0.4' : '';
+    roomsMenuBtn.style.pointerEvents = disabled ? 'none' : '';
+    roomsMenuBtn.title = disabled ? 'Недоступно в режимі Discovery' : '';
+  }
+}
+
 // Toggle header menu (Bottom Sheet)
 function toggleHeaderMenu() {
   const menuSheet = document.getElementById('menu-bottom-sheet');
   const content = document.getElementById('menu-sheet-content-inner');
   if (menuSheet && content) {
     if (menuSheet.classList.contains('hidden')) {
+      updateMenuButtonStates();
       menuSheet.classList.remove('hidden');
       setTimeout(() => content.classList.remove('translate-y-full'), 10);
     } else {
