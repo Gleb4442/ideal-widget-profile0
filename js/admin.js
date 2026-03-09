@@ -2025,7 +2025,7 @@ export function renderOrchestraGrid() {
         <div class="text-xs text-gray-500 mt-1 truncate max-w-[200px]">${prop.info || 'Немає опису'}</div>
       </div>
       <div class="flex items-center gap-3">
-        <div class="text-xs font-mono bg-gray-100 px-2 py-1 rounded">Пріорітет: ${prop.priority || 1}</div>
+        ${prop.photoUrl ? `<img src="${prop.photoUrl}" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;">` : ''}
         <button class="edit-property-btn text-blue-600 hover:text-blue-800 p-1" data-id="${prop.id}">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -2052,13 +2052,20 @@ export function openPropertyModal(id = null) {
 
   currentEditPropertyId = id;
 
+  // Reset photo state
+  window._tempPropertyPhotoUrl = null;
+
+  const photoPreviewWrap = document.getElementById('property-photo-preview-wrap');
+  const photoPreview = document.getElementById('property-photo-preview');
+  const photoInput = document.getElementById('property-photo-input');
+  if (photoInput) photoInput.value = '';
+
   if (id) {
     const prop = orchestra.getProperty(id);
     if (prop) {
       title.textContent = 'Редагувати готель';
       document.getElementById('property-name-input').value = prop.name || '';
       document.getElementById('property-info-input').value = prop.info || '';
-      document.getElementById('property-priority-input').value = prop.priority || '';
       document.getElementById('property-currency-input').value = prop.currency || '';
       document.getElementById('property-search-toggle').checked = prop.includeInSearch !== false;
       document.getElementById('property-shortlist-toggle').checked = prop.showInShortlist !== false;
@@ -2068,13 +2075,21 @@ export function openPropertyModal(id = null) {
       document.getElementById('property-stars-input').value = prop.starRating || '';
       document.getElementById('property-min-price-input').value = prop.minPrice || '';
 
+      // Photo
+      if (prop.photoUrl && photoPreview && photoPreviewWrap) {
+        photoPreview.src = prop.photoUrl;
+        photoPreviewWrap.style.display = 'block';
+        window._tempPropertyPhotoUrl = prop.photoUrl;
+      } else if (photoPreviewWrap) {
+        photoPreviewWrap.style.display = 'none';
+      }
+
       deleteBtn.style.display = 'block';
     }
   } else {
     title.textContent = 'Новий готель';
     document.getElementById('property-name-input').value = '';
     document.getElementById('property-info-input').value = '';
-    document.getElementById('property-priority-input').value = 1;
     document.getElementById('property-currency-input').value = 'USD';
     document.getElementById('property-search-toggle').checked = true;
     document.getElementById('property-shortlist-toggle').checked = true;
@@ -2083,6 +2098,8 @@ export function openPropertyModal(id = null) {
     document.getElementById('property-tags-input').value = '';
     document.getElementById('property-stars-input').value = 5;
     document.getElementById('property-min-price-input').value = 100;
+
+    if (photoPreviewWrap) photoPreviewWrap.style.display = 'none';
 
     deleteBtn.style.display = 'none';
   }
@@ -2099,7 +2116,6 @@ export function closePropertyModal() {
 function saveProperty() {
   const name = document.getElementById('property-name-input').value.trim();
   const info = document.getElementById('property-info-input').value.trim();
-  const priority = parseInt(document.getElementById('property-priority-input').value) || 1;
   const currency = document.getElementById('property-currency-input').value.trim() || 'USD';
   const includeInSearch = document.getElementById('property-search-toggle').checked;
   const showInShortlist = document.getElementById('property-shortlist-toggle').checked;
@@ -2108,6 +2124,7 @@ function saveProperty() {
   const discoveryTags = document.getElementById('property-tags-input').value.trim();
   const starRating = parseInt(document.getElementById('property-stars-input').value) || 5;
   const minPrice = parseInt(document.getElementById('property-min-price-input').value) || 100;
+  const photoUrl = window._tempPropertyPhotoUrl || '';
 
   if (!name) {
     alert('Введіть назву готелю');
@@ -2117,13 +2134,13 @@ function saveProperty() {
   const propData = {
     name,
     info,
-    priority,
     currency,
     includeInSearch,
     showInShortlist,
     discoveryTags,
     starRating,
-    minPrice
+    minPrice,
+    photoUrl
   };
 
   if (currentEditPropertyId) {
@@ -2188,6 +2205,37 @@ export function initOrchestraManagement() {
       discoveryAutostartToggle.checked = orchestra.getDiscoveryAutoStart();
       discoveryAutostartToggle.addEventListener('change', (e) => orchestra.setDiscoveryAutoStart(e.target.checked));
     }
+  }
+
+  // Photo upload handlers
+  const photoUploadBtn = document.getElementById('property-photo-upload-btn');
+  const photoInput = document.getElementById('property-photo-input');
+  const photoPreviewWrap = document.getElementById('property-photo-preview-wrap');
+  const photoPreview = document.getElementById('property-photo-preview');
+  const photoRemoveBtn = document.getElementById('property-photo-remove-btn');
+
+  if (photoUploadBtn && photoInput) {
+    photoUploadBtn.addEventListener('click', () => photoInput.click());
+    photoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        window._tempPropertyPhotoUrl = ev.target.result;
+        photoPreview.src = ev.target.result;
+        photoPreviewWrap.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  if (photoRemoveBtn && photoPreviewWrap) {
+    photoRemoveBtn.addEventListener('click', () => {
+      window._tempPropertyPhotoUrl = null;
+      photoPreview.src = '';
+      photoPreviewWrap.style.display = 'none';
+      if (photoInput) photoInput.value = '';
+    });
   }
 
   const addBtn = document.getElementById('add-property-btn');

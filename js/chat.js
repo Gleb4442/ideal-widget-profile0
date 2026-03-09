@@ -2545,29 +2545,28 @@ export function addPropertyShortlist(propertyIds) {
     const card = document.createElement('div');
     card.className = 'room-carousel-card overflow-hidden w-64 flex-shrink-0 bg-white border border-gray-100 rounded-2xl shadow-sm mr-3';
 
-    // Simplistic visual fallback for property (in a real app this would be a property image)
-    const imgHTML = `
-      <div class="h-32 bg-gray-100 flex items-center justify-center text-gray-400">
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-      </div>
-    `;
+    const imgHTML = prop.photoUrl
+      ? `<div class="h-44 bg-gray-100 overflow-hidden"><img src="${prop.photoUrl}" alt="${prop.name}" class="w-full h-full object-cover"></div>`
+      : `<div class="h-44 bg-gray-100 flex items-center justify-center text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>`;
+
+    const tagsHTML = prop.discoveryTags
+      ? prop.discoveryTags.split(',').map(t => t.trim()).filter(Boolean)
+          .map(t => `<span class="inline-block bg-indigo-50 text-indigo-600 text-[10px] font-medium px-2 py-0.5 rounded-full">${t}</span>`)
+          .join('')
+      : '';
 
     card.innerHTML = `
       <div class="relative">
         ${imgHTML}
-        <!-- Badges -->
-        <div class="absolute top-2 left-2 flex flex-col gap-1">
-          <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
-            Пріорітет: ${prop.priority || 1}
-          </span>
-        </div>
       </div>
       <div class="p-3">
         <div class="font-bold text-sm text-gray-800 mb-1 leading-tight truncate">${prop.name}</div>
-        <div class="text-xs text-gray-500 line-clamp-2 h-8 leading-relaxed mb-3">${prop.info || 'Краткое описание отсутствует'}</div>
+        <div class="flex flex-wrap gap-1 mb-3 min-h-[20px]">${tagsHTML}</div>
         <button class="select-property-btn w-full py-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors rounded-xl text-xs font-bold" data-id="${prop.id}">
           Вибрати цей готель
         </button>
@@ -4410,6 +4409,9 @@ export function initChatListeners() {
     dom.sendButton.addEventListener('click', handleSendMessage);
   }
 
+  // Voice input
+  initVoiceInput();
+
   // Scroll button
   if (dom.messagesContainer) {
     dom.messagesContainer.addEventListener('scroll', checkScrollButtonVisibility);
@@ -5277,4 +5279,79 @@ function initGuideSheetListeners() {
       }
     });
   }
+}
+
+// Voice Input
+function initVoiceInput() {
+  const btn = document.getElementById('voice-input-button');
+  if (!btn) return;
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    btn.classList.add('is-unsupported');
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = true;
+
+  let isRecording = false;
+  let baseText = '';
+
+  // Set lang based on current page language or default to Russian
+  recognition.lang = navigator.language || 'ru-RU';
+
+  const micIcon = document.getElementById('btn-icon-mic');
+  const stopIcon = document.getElementById('btn-icon-mic-stop');
+
+  function startRecording() {
+    baseText = dom.messageInput ? dom.messageInput.value : '';
+    recognition.start();
+    isRecording = true;
+    btn.classList.add('is-recording');
+    if (micIcon) micIcon.style.display = 'none';
+    if (stopIcon) stopIcon.style.display = 'block';
+  }
+
+  function stopRecording() {
+    recognition.stop();
+    isRecording = false;
+    btn.classList.remove('is-recording');
+    if (micIcon) micIcon.style.display = 'block';
+    if (stopIcon) stopIcon.style.display = 'none';
+  }
+
+  btn.addEventListener('click', () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  });
+
+  recognition.addEventListener('result', (event) => {
+    let transcript = '';
+    for (const result of event.results) {
+      transcript += result[0].transcript;
+    }
+    if (dom.messageInput) {
+      dom.messageInput.value = baseText + (baseText && transcript ? ' ' : '') + transcript;
+      dom.messageInput.dispatchEvent(new Event('input'));
+    }
+  });
+
+  recognition.addEventListener('end', () => {
+    if (isRecording) {
+      isRecording = false;
+      btn.classList.remove('is-recording');
+      if (micIcon) micIcon.style.display = 'block';
+      if (stopIcon) stopIcon.style.display = 'none';
+    }
+  });
+
+  recognition.addEventListener('error', (event) => {
+    console.warn('Voice recognition error:', event.error);
+    stopRecording();
+  });
 }

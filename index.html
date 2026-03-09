@@ -1122,6 +1122,17 @@
       <div id="input-area-wrapper" class="px-0 pb-0 pt-0">
         <div class="input-container-bg shadow-lg bg-white">
           <textarea id="message-input" rows="1" placeholder="Введите сообщение..." autocomplete="off"></textarea>
+          <button id="voice-input-button" title="Голосовой ввод" aria-label="Голосовой ввод">
+            <svg id="btn-icon-mic" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+            <svg id="btn-icon-mic-stop" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none">
+              <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+            </svg>
+          </button>
           <button id="send-button" title="Надіслати">
             <svg id="btn-icon-send" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
               fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1917,20 +1928,25 @@
             placeholder="Опис, що є в готелі..."></textarea>
         </div>
 
-        <div class="service-form-row">
-          <div class="service-form-group">
-            <label class="service-form-label">Пріоритет (1-5)</label>
-            <input type="number" id="property-priority-input" class="service-form-input" placeholder="1" min="1"
-              max="5">
-          </div>
-          <div class="service-form-group">
-            <label class="service-form-label">Базова валюта</label>
-            <input type="text" id="property-currency-input" class="service-form-input" placeholder="USD">
-          </div>
+        <div class="service-form-group">
+          <label class="service-form-label">Базова валюта</label>
+          <input type="text" id="property-currency-input" class="service-form-input" placeholder="USD">
         </div>
 
         <!-- Discovery Fields -->
         <div class="service-form-group" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e5e7eb;">
+          <label class="service-form-label text-indigo-500">Фото готелю</label>
+          <div id="property-photo-preview-wrap" style="display:none; margin-bottom:8px; position:relative; width:100%; height:120px; border-radius:8px; overflow:hidden; background:#f3f4f6;">
+            <img id="property-photo-preview" src="" alt="" style="width:100%; height:100%; object-fit:cover;">
+            <button type="button" id="property-photo-remove-btn" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.5);color:#fff;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;">&times;</button>
+          </div>
+          <input type="file" id="property-photo-input" accept="image/*" style="display:none;">
+          <button type="button" id="property-photo-upload-btn" class="service-btn service-btn-secondary" style="width:100%;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            Завантажити фото
+          </button>
+        </div>
+        <div class="service-form-group">
           <label class="service-form-label text-indigo-500">Discovery Теги (через кому)</label>
           <input type="text" id="property-tags-input" class="service-form-input"
             placeholder="beach, spa, city, mountains">
