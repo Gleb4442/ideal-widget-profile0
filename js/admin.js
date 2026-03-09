@@ -9,7 +9,7 @@ import * as rooms from './rooms.js';
 import * as bookings from './bookings.js';
 import * as services from './services.js';
 import * as orchestra from './orchestra.js';
-import { startOperatorSimulation, stopOperatorSimulation, setOperatorSettings, updateScrollButtonPosition, addQuickReplies } from './chat.js';
+import { startOperatorSimulation, stopOperatorSimulation, setOperatorSettings, updateScrollButtonPosition, addQuickReplies, setDiscoveryHeader, setOrchestraHeader } from './chat.js';
 
 // Room editing state
 let currentEditRoomId = null;
@@ -2189,9 +2189,15 @@ export function initOrchestraManagement() {
       if (active) {
         settingsDiv.classList.remove('hidden');
         discoverySettingsDiv.style.display = '';
+        // If discovery mode is not active, apply orchestra header
+        if (!orchestra.getDiscoveryMode()) {
+          setOrchestraHeader();
+        }
       } else {
         settingsDiv.classList.add('hidden');
         discoverySettingsDiv.style.display = 'none';
+        // Orchestra off — reset header to default (no special mode)
+        setOrchestraHeader();
       }
     });
 
@@ -2201,7 +2207,15 @@ export function initOrchestraManagement() {
 
     if (discoveryToggle) {
       discoveryToggle.checked = orchestra.getDiscoveryMode();
-      discoveryToggle.addEventListener('change', (e) => orchestra.setDiscoveryMode(e.target.checked));
+      discoveryToggle.addEventListener('change', (e) => {
+        orchestra.setDiscoveryMode(e.target.checked);
+        // Update header immediately when discovery mode toggles
+        if (e.target.checked) {
+          setDiscoveryHeader();
+        } else {
+          setOrchestraHeader();
+        }
+      });
     }
 
     if (discoveryAutostartToggle) {
