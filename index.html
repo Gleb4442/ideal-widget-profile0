@@ -759,7 +759,7 @@
 
       <!-- History View (Internal) -->
       <div id="history-view"
-        class="w-full h-[90%] bg-[#f6f6f8] dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-display flex flex-col overflow-x-hidden rounded-t-[2.5rem] shadow-[0_-4px_20px_rgba(0,0,0,0.1)] transform translate-y-full premium-sheet-transition relative max-w-[420px] mx-auto">
+        class="w-full h-[90%] bg-[#f6f6f8] dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-display flex flex-col overflow-hidden rounded-t-[2.5rem] shadow-[0_-4px_20px_rgba(0,0,0,0.1)] transform translate-y-full premium-sheet-transition relative max-w-[420px] mx-auto">
         <header class="px-6 pt-12 pb-4 flex flex-col gap-6 shrink-0 bg-[#f6f6f8] dark:bg-slate-900 z-10">
           <h1 class="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">История диалогов</h1>
           <div class="relative group">
@@ -773,7 +773,7 @@
           </div>
         </header>
 
-        <main id="history-list" class="flex-1 px-4 space-y-3 pb-4 overflow-y-auto w-full relative z-0">
+        <main id="history-list" class="flex-1 px-4 space-y-3 overflow-y-auto w-full relative z-0">
           <!-- History items will be injected here -->
           <div class="text-center text-slate-400 mt-10">
             <p>Немає збережених діалогів</p>
@@ -809,15 +809,16 @@
           </svg>
         </button>
 
-        <div id="history-detail-messages" class="flex-1 p-6 pt-24 pb-32 overflow-y-auto flex flex-col space-y-4">
+        <div id="history-detail-messages" class="flex-1 p-6 pt-24 pb-28 overflow-y-auto flex flex-col space-y-4">
           <!-- Messages will be injected here -->
         </div>
 
         <!-- Floating Continue Button -->
-        <div class="absolute bottom-10 left-0 right-0 flex justify-center px-6 z-50 pointer-events-none">
+        <div
+          class="shrink-0 px-6 pb-10 pt-4 bg-gradient-to-t from-[#f8f9fa] dark:from-slate-900 via-[#f8f9fa]/80 dark:via-slate-900/80 to-transparent absolute bottom-0 left-0 right-0 flex justify-center z-50 pointer-events-none">
           <button id="continue-chat-btn"
-            class="pointer-events-auto px-8 py-4 rounded-full text-white text-lg font-bold hover:opacity-90 transition-all active:scale-95 whitespace-nowrap shadow-lg"
-            style="background-color: var(--accent-color, #135bec); box-shadow: 0 12px 24px rgba(0,0,0,0.15);">
+            class="pointer-events-auto px-8 py-4 rounded-full text-white text-lg font-bold hover:opacity-90 transition-all active:scale-95 whitespace-nowrap shadow-[0_12px_24px_rgba(19,91,236,0.15)] w-full block max-w-[300px]"
+            style="background-color: var(--accent-color, #135bec);">
             <span>Продолжить чат</span>
           </button>
         </div>

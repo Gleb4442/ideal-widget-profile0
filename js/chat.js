@@ -4811,7 +4811,7 @@ export function initSpecialBookingListeners() {
       if (historyDetailView) {
         historyDetailView.classList.add('hidden');
       }
-    }, 400); // Matches CSS transition duration
+    }, 500); // Matches CSS transition duration
   }
 
   if (historyCloseBtn) {
@@ -4840,7 +4840,7 @@ export function initSpecialBookingListeners() {
 
         setTimeout(() => {
           detailView.classList.add('hidden');
-        }, 400); // match transition
+        }, 500); // match transition
       }
     });
   }
@@ -4991,7 +4991,7 @@ function toggleHeaderMenu() {
       setTimeout(() => content.classList.remove('translate-y-full'), 10);
     } else {
       content.classList.add('translate-y-full');
-      setTimeout(() => menuSheet.classList.add('hidden'), 400);
+      setTimeout(() => menuSheet.classList.add('hidden'), 500);
     }
   }
 }
@@ -5004,7 +5004,7 @@ function closeHeaderMenu() {
     content.classList.add('translate-y-full');
     setTimeout(() => {
       menuSheet.classList.add('hidden');
-    }, 400);
+    }, 500);
   } else if (menuSheet) {
     menuSheet.classList.add('hidden');
   }
@@ -5022,7 +5022,7 @@ function toggleLanguageSubmenu() {
       setTimeout(() => content.classList.remove('translate-y-full'), 10);
     } else {
       content.classList.add('translate-y-full');
-      setTimeout(() => langSheet.classList.add('hidden'), 400);
+      setTimeout(() => langSheet.classList.add('hidden'), 500);
     }
   }
 }
@@ -5035,7 +5035,7 @@ function closeLanguageSubmenu() {
     content.classList.add('translate-y-full');
     setTimeout(() => {
       langSheet.classList.add('hidden');
-    }, 400);
+    }, 500);
   } else if (langSheet) {
   }
 }
@@ -5399,7 +5399,7 @@ function continueHistoryChat() {
     setTimeout(() => {
       historyModalWrapper.classList.remove('show-detail');
       historyDetailView?.classList.add('hidden');
-    }, 400);
+    }, 500);
   }
 
   // Scroll to bottom
@@ -5512,7 +5512,7 @@ function hideGuideSheet() {
   content.classList.add('translate-y-full');
   setTimeout(() => {
     sheet.classList.add('hidden');
-  }, 400);
+  }, 500);
 }
 
 // Initialize Guide Sheet Listeners
@@ -5574,7 +5574,7 @@ function initVoiceInput() {
   }
 
   const recognition = new SpeechRecognition();
-  recognition.continuous = false;
+  recognition.continuous = true;
   recognition.interimResults = true;
 
   let isRecording = false;
@@ -5588,7 +5588,9 @@ function initVoiceInput() {
 
   function startRecording() {
     baseText = dom.messageInput ? dom.messageInput.value : '';
-    recognition.start();
+    try {
+      recognition.start();
+    } catch (e) { }
     isRecording = true;
     btn.classList.add('is-recording');
     if (micIcon) micIcon.style.display = 'none';
@@ -5596,8 +5598,10 @@ function initVoiceInput() {
   }
 
   function stopRecording() {
-    recognition.stop();
     isRecording = false;
+    try {
+      recognition.stop();
+    } catch (e) { }
     btn.classList.remove('is-recording');
     if (micIcon) micIcon.style.display = 'block';
     if (stopIcon) stopIcon.style.display = 'none';
@@ -5624,7 +5628,14 @@ function initVoiceInput() {
 
   recognition.addEventListener('end', () => {
     if (isRecording) {
-      isRecording = false;
+      // User hasn't manually stopped, restart it
+      baseText = dom.messageInput ? dom.messageInput.value : '';
+      try {
+        recognition.start();
+      } catch (e) {
+        stopRecording();
+      }
+    } else {
       btn.classList.remove('is-recording');
       if (micIcon) micIcon.style.display = 'block';
       if (stopIcon) stopIcon.style.display = 'none';
@@ -5633,6 +5644,8 @@ function initVoiceInput() {
 
   recognition.addEventListener('error', (event) => {
     console.warn('Voice recognition error:', event.error);
-    stopRecording();
+    if (event.error !== 'no-speech') {
+      stopRecording();
+    }
   });
 }
