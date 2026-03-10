@@ -16,6 +16,7 @@ import { getMenuSettings, loadInAppMode } from './admin.js';
 import { showAppDownloadModal, initAppDownloadModalListeners } from './app-download.js';
 import * as orchestra from './orchestra.js';
 import * as discovery from './discovery.js';
+import * as geo from './geo.js';
 
 // Language storage key
 const LANGUAGE_KEY = 'chat_language';
@@ -27,17 +28,8 @@ let welcomed = false;
 let currentLang = localStorage.getItem(LANGUAGE_KEY) || 'en'; // Default to English
 let isGenerating = false;
 let selectedRoom = null;
-let chatMode = 'general'; // 'general' | 'room-context' | 'special-booking'
+let chatMode = 'general'; // 'general' | 'room-context'
 let currentHistorySession = null; // Currently viewed history session
-
-// Special Booking Mode State
-let specialBookingState = {
-  isActive: false,
-  activatedBy: null, // 'auto' | 'manual'
-  stage: 'collecting', // 'collecting' | 'analyzing' | 'finalizing' | 'offer_ready'
-  requirements: [],
-  currentOffer: null
-};
 
 // In-App Service Request State (towels / cleaning / minibar)
 let inAppServiceState = {
@@ -70,15 +62,6 @@ export let chatContext = {
   mode: 'multi', // 'multi' | 'single'
   currentPropertyId: null,
   shortlist: []
-};
-
-// Status messages for Special Booking stages
-const SPECIAL_BOOKING_STATUSES = {
-  'checking': 'Проверяем доступность номеров…',
-  'collecting': 'Уточняем ваши пожелания…',
-  'analyzing': 'Учитываем ваши потребности…',
-  'finalizing': 'Уточняем финальные детали…',
-  'generating': 'Формируем персональное предложение…'
 };
 
 // Escalation detection patterns
@@ -594,13 +577,12 @@ function formatBookingDateForMessage(dateValue) {
 
 function buildInstantBookingConfirmationMessage() {
   const data = bookingState.collectedData || {};
-  const offer = specialBookingState.currentOffer || {};
 
   const guestName = normalizeBookingField(data.fullName);
-  const roomName = normalizeBookingField(data.selectedRoom || offer.room_name);
-  const checkIn = formatBookingDateForMessage(data.checkIn || offer.check_in);
-  const checkOut = formatBookingDateForMessage(data.checkOut || offer.check_out);
-  const guests = normalizeBookingField(data.guests || offer.guests);
+  const roomName = normalizeBookingField(data.selectedRoom);
+  const checkIn = formatBookingDateForMessage(data.checkIn);
+  const checkOut = formatBookingDateForMessage(data.checkOut);
+  const guests = normalizeBookingField(data.guests);
   const phone = normalizeBookingField(data.phone);
   const email = normalizeBookingField(data.email);
 
@@ -726,6 +708,33 @@ function resetBookingState() {
     conversationHistory: []
   };
   saveBookingState();
+  geo.resetGeoState();
+  updateGeoLocationBadge();
+}
+
+// Update the GEO location badge in the chat header
+function updateGeoLocationBadge() {
+  const badge = document.getElementById('geo-location-badge');
+  const text = document.getElementById('geo-location-text');
+  const resetBtn = document.getElementById('geo-location-reset');
+  if (!badge || !text) return;
+
+  const geoState = geo.getGeoState();
+  const isDiscoveryOrOrchestra = orchestra.getDiscoveryMode() || orchestra.getOrchestraMode();
+
+  if (geoState.city && isDiscoveryOrOrchestra) {
+    text.textContent = geoState.city;
+    badge.classList.remove('hidden');
+  } else {
+    badge.classList.add('hidden');
+  }
+
+  if (resetBtn) {
+    resetBtn.onclick = () => {
+      geo.setGeoState({ city: null, country: null });
+      badge.classList.add('hidden');
+    };
+  }
 }
 
 // Get booking state for external use
@@ -733,219 +742,6 @@ export function getBookingState() {
   return bookingState;
 }
 
-// ========================================
-// SPECIAL BOOKING MODE FUNCTIONS
-// ========================================
-
-// Activate Special Booking mode
-export function activateSpecialBookingMode(activatedBy = 'manual') {
-  specialBookingState.isActive = true;
-  specialBookingState.activatedBy = activatedBy;
-  specialBookingState.stage = 'collecting';
-  specialBookingState.requirements = [];
-  specialBookingState.currentOffer = null;
-
-  chatMode = 'special-booking';
-
-  // Clear room context if active
-  if (selectedRoom) {
-    clearRoomContext(true);
-  }
-
-  // Show status indicator
-  showSpecialBookingStatus('checking');
-
-  // Add activation message
-  if (activatedBy === 'auto') {
-    setTimeout(() => {
-      updateSpecialBookingStatus('collecting');
-      addMessage('Вижу, что у вас особые пожелания. Позвольте помочь подобрать идеальный вариант. Расскажите подробнее о ваших требованиях — я учту каждую деталь.', 'ai');
-      addToConversationHistory('assistant', 'Вижу, что у вас особые пожелания. Позвольте помочь подобрать идеальный вариант. Расскажите подробнее о ваших требованиях — я учту каждую деталь.');
-    }, 1500);
-  } else {
-    setTimeout(() => {
-      updateSpecialBookingStatus('collecting');
-      addMessage('Режим персонального подбора активирован. Расскажите о ваших пожеланиях: тип поездки, особые требования к номеру, дополнительные услуги — я учту всё, чтобы сделать ваше пребывание идеальным.', 'ai');
-      addToConversationHistory('assistant', 'Режим персонального подбора активирован. Расскажите о ваших пожеланиях: тип поездки, особые требования к номеру, дополнительные услуги — я учту всё, чтобы сделать ваше пребывание идеальным.');
-    }, 1500);
-  }
-}
-
-// Deactivate Special Booking mode
-export function deactivateSpecialBookingMode(silent = false) {
-  specialBookingState.isActive = false;
-  specialBookingState.activatedBy = null;
-  specialBookingState.stage = 'collecting';
-  specialBookingState.requirements = [];
-  specialBookingState.currentOffer = null;
-
-  chatMode = 'general';
-
-  // Hide UI elements
-  hideSpecialBookingStatus();
-  hideSpecialOfferCard();
-
-  if (!silent) {
-    addMessage('Режим персонального подбора завершён. Чем ещё могу помочь?', 'ai');
-  }
-}
-
-// Show Special Booking status indicator
-export function showSpecialBookingStatus(stage) {
-  const statusContainer = dom.specialBookingStatus;
-  if (!statusContainer) return;
-
-  // Get localized status text
-  const t = translations[currentLang] || translations['en'];
-  const statusTexts = {
-    'checking': t.checkingAvailability || 'Checking room availability...',
-    'collecting': t.analyzingNeeds || 'Analyzing your needs...',
-    'analyzing': t.analyzingNeeds || 'Analyzing your needs...',
-    'finalizing': t.finalizingDetails || 'Finalizing details...',
-    'generating': t.generatingOffer || 'Generating personal offer...'
-  };
-
-  const statusTextEl = statusContainer.querySelector('.status-text');
-  if (statusTextEl) {
-    statusTextEl.textContent = statusTexts[stage] || statusTexts['collecting'];
-    statusTextEl.classList.add('status-text-transition');
-    setTimeout(() => statusTextEl.classList.remove('status-text-transition'), 300);
-  }
-
-  statusContainer.classList.remove('hidden');
-  // Анимация только в special-booking-status, не дублируем в header
-}
-
-// Update Special Booking status
-export function updateSpecialBookingStatus(stage) {
-  specialBookingState.stage = stage;
-  showSpecialBookingStatus(stage);
-}
-
-// Hide Special Booking status indicator
-export function hideSpecialBookingStatus() {
-  const statusContainer = dom.specialBookingStatus;
-  if (statusContainer) {
-    statusContainer.classList.add('hidden');
-  }
-  // Also hide header status pill (if not in operator mode)
-  if (!operatorMode.connected) {
-    hideHeaderStatus();
-  }
-}
-
-// Show Special Offer Card
-export function showSpecialOfferCard(offerData) {
-  if (!offerData) return;
-
-  specialBookingState.currentOffer = offerData;
-  specialBookingState.stage = 'offer_ready';
-
-  // Hide status indicator
-  hideSpecialBookingStatus();
-
-  // Populate offer card
-  const card = dom.specialOfferCard;
-  if (!card) return;
-
-  // Find room by name
-  const allRooms = rooms.getAllRooms();
-  const matchedRoom = allRooms.find(r =>
-    r.name.toLowerCase().includes(offerData.room_name?.toLowerCase()) ||
-    offerData.room_name?.toLowerCase().includes(r.name.toLowerCase())
-  );
-
-  // Set room image
-  if (dom.offerRoomImage) {
-    if (matchedRoom?.mainPhoto) {
-      dom.offerRoomImage.src = matchedRoom.mainPhoto;
-      dom.offerRoomImage.style.display = 'block';
-    } else {
-      dom.offerRoomImage.src = '';
-      dom.offerRoomImage.style.display = 'none';
-    }
-  }
-
-  // Set room name and price
-  if (dom.offerRoomName) {
-    dom.offerRoomName.textContent = offerData.room_name || 'Номер';
-  }
-  if (dom.offerRoomPrice) {
-    dom.offerRoomPrice.textContent = offerData.room_price ? `$${offerData.room_price}/ночь` : '';
-  }
-
-  // Set dates
-  if (dom.offerDates) {
-    const checkIn = offerData.check_in || bookingState.collectedData.checkIn || '—';
-    const checkOut = offerData.check_out || bookingState.collectedData.checkOut || '—';
-    dom.offerDates.textContent = `${checkIn} — ${checkOut}`;
-  }
-
-  // Set guests
-  if (dom.offerGuests) {
-    dom.offerGuests.textContent = offerData.guests || bookingState.collectedData.guests || '—';
-  }
-
-  // Set total price
-  if (dom.offerTotal) {
-    dom.offerTotal.textContent = offerData.total_price ? `$${offerData.total_price}` : '—';
-  }
-
-  // Set special notes
-  if (dom.offerNotesList) {
-    dom.offerNotesList.innerHTML = '';
-    const notes = offerData.special_notes || specialBookingState.requirements.map(r => r.label);
-    notes.forEach(note => {
-      const li = document.createElement('li');
-      li.textContent = note;
-      dom.offerNotesList.appendChild(li);
-    });
-  }
-
-  // Show card
-  card.classList.remove('hidden');
-}
-
-// Hide Special Offer Card
-export function hideSpecialOfferCard() {
-  const card = dom.specialOfferCard;
-  if (card) {
-    card.classList.add('hidden');
-  }
-}
-
-// Determine Special Booking stage based on collected data
-function determineSpecialBookingStage() {
-  const data = bookingState.collectedData;
-  const requirements = specialBookingState.requirements;
-
-  // If we have dates, guests, and some requirements - ready for generating
-  if (data.checkIn && data.checkOut && requirements.length >= 1) {
-    return 'generating';
-  }
-
-  // If we have some data - analyzing
-  if (data.checkIn || data.checkOut || requirements.length > 0) {
-    return 'analyzing';
-  }
-
-  return 'collecting';
-}
-
-// Check if Special Booking mode should be activated
-function shouldActivateSpecialBooking(message, conversationHistory) {
-  // Don't activate if already in special mode
-  if (specialBookingState.isActive) return false;
-
-  // Use detector from openai module
-  const detection = openai.detectComplexRequest(message, conversationHistory);
-  return detection.isComplex;
-}
-
-// Get Special Booking state for external use
-export function getSpecialBookingState() {
-  return specialBookingState;
-}
 
 // ========================================
 // CANCELLATION FUNCTIONS
@@ -2031,42 +1827,7 @@ export function updateUITexts() {
     }
   });
 
-  // Update offer card texts
-  const offerBadge = document.querySelector('.offer-badge');
-  if (offerBadge) offerBadge.textContent = t.personalOffer || 'Personal Offer';
-
-  const offerSubtitle = document.querySelector('.offer-subtitle');
-  if (offerSubtitle) offerSubtitle.textContent = t.selectedForYou || 'Selected specially for you';
-
-  const confirmBtn = dom.offerConfirmBtn;
-  if (confirmBtn) {
-    const btnText = confirmBtn.querySelector('svg')?.nextSibling;
-    if (btnText) {
-      confirmBtn.innerHTML = confirmBtn.querySelector('svg').outerHTML + '\n          ' + (t.confirmBooking || 'Confirm Booking');
-    }
-  }
-
-  const editBtn = dom.offerEditBtn;
-  if (editBtn) {
-    const btnSvg = editBtn.querySelector('svg');
-    if (btnSvg) {
-      editBtn.innerHTML = btnSvg.outerHTML + '\n          ' + (t.editDetails || 'Edit Details');
-    }
-  }
-
-  // Update status texts
-  updateSpecialBookingStatusTexts();
-}
-
-// Update Special Booking status texts for current language
-function updateSpecialBookingStatusTexts() {
-  const t = translations[currentLang] || translations['en'];
-
-  // Update the SPECIAL_BOOKING_STATUSES object reference is not possible
-  // So we update directly in showSpecialBookingStatus
-}
-
-// Update language menu active state
+  // Update language menu active state
 // Update language menu active state
 function updateLanguageMenuState() {
   // Re-render the menu to update checkmarks and styles
@@ -2374,7 +2135,16 @@ export function setDiscoveryHeader() {
 }
 
 // Set header to Orchestra mode branding (hotel chain, not discovery)
+// When called without args — shows network/chain branding (e.g. "InterContinental")
+// When called with args — shows specific property branding (e.g. "Kiev")
 export function setOrchestraHeader(hotelName, logoUrl) {
+  // No args → fall back to chain-level branding from network settings
+  if (!hotelName && hotelName !== 0) {
+    const networkSettings = orchestra.getNetworkSettings();
+    hotelName = networkSettings.name || '';
+    logoUrl = networkSettings.logoUrl || '';
+  }
+
   const logoContainer = document.getElementById('hotel-logo-container');
   if (logoContainer) {
     logoContainer.style.display = '';
@@ -2902,7 +2672,9 @@ export function showRoomsViaAgent() {
 
 // Show all services via agent (from Shop menu)
 export function showServicesViaAgent() {
-  const allServices = services.getAllServices();
+  const allServices = chatContext.currentPropertyId
+    ? services.getServicesByProperty(chatContext.currentPropertyId)
+    : services.getAllServices();
 
   if (allServices.length === 0) {
     addMessage('На жаль, наразі немає доступних послуг.', 'ai');
@@ -2948,7 +2720,9 @@ export function showServicesViaAgent() {
 
 // Offer additional services after room selection
 export function offerServicesAfterRoomSelection(selectedRoomName) {
-  const allServices = services.getAllServices();
+  const allServices = chatContext.currentPropertyId
+    ? services.getServicesByProperty(chatContext.currentPropertyId)
+    : services.getAllServices();
 
   if (allServices.length === 0) return;
 
@@ -2985,7 +2759,9 @@ export function checkRoomSelectionInMessage(message) {
 
 // Add Services Carousel to Chat
 export function addServicesCarousel() {
-  const allServices = services.getAllServices();
+  const allServices = chatContext.currentPropertyId
+    ? services.getServicesByProperty(chatContext.currentPropertyId)
+    : services.getAllServices();
   if (allServices.length === 0) return;
 
   const wrapper = document.createElement('div');
@@ -3813,7 +3589,25 @@ export function setButtonLoading(isLoading) {
 
 // Get AI Response (main handler)
 export async function getAIResponse(userMessage) {
-  const hotelName = document.getElementById('hotel-name-input')?.value || 'Hilton';
+  const checkedInHotel = orchestra.getCheckedInHotel?.();
+  const activeNetworkProp = orchestra.getOrchestraMode() ? orchestra.getNetworkProperties()[0] : null;
+  const hotelName = checkedInHotel?.name || activeNetworkProp?.name || 'Hilton';
+
+  // ── GEO: extract city/country and travel stage from message ──
+  const isMultiPropertyMode = orchestra.getDiscoveryMode() || orchestra.getOrchestraMode();
+  if (isMultiPropertyMode) {
+    const detectedStage = geo.detectTravelStage(userMessage);
+    if (detectedStage) geo.setGeoState({ travelStage: detectedStage });
+
+    const currentGeo = geo.getGeoState();
+    if (!currentGeo.city) {
+      const detectedLoc = geo.extractLocationFromMessage(userMessage);
+      if (detectedLoc) {
+        geo.setGeoState({ city: detectedLoc.city, country: detectedLoc.country || currentGeo.country });
+        updateGeoLocationBadge();
+      }
+    }
+  }
 
   // Add user message to conversation history
   addToConversationHistory('user', userMessage);
@@ -3911,94 +3705,6 @@ export async function getAIResponse(userMessage) {
 
     let response;
 
-    // Check if we should auto-activate Special Booking mode
-    if (!specialBookingState.isActive && shouldActivateSpecialBooking(userMessage, bookingState.conversationHistory)) {
-      // Extract requirements from message
-      const requirements = openai.extractRequirements(userMessage);
-      specialBookingState.requirements = requirements;
-
-      activateSpecialBookingMode('auto');
-
-      // Process in special booking mode
-      updateSpecialBookingStatus('analyzing');
-      response = await openai.getSpecialBookingAIResponse(
-        userMessage,
-        specialBookingState.requirements,
-        bookingState,
-        bookingState.conversationHistory,
-        determineSpecialBookingStage()
-      );
-
-      // Update booking state with extracted data
-      if (response.extractedData) {
-        updateBookingStateWithExtracted(response.extractedData);
-      }
-
-      // Update requirements
-      const newRequirements = openai.extractRequirements(userMessage);
-      newRequirements.forEach(req => {
-        if (!specialBookingState.requirements.find(r => r.type === req.type)) {
-          specialBookingState.requirements.push(req);
-        }
-      });
-
-      addMessage(response.text, 'ai');
-      addToConversationHistory('assistant', response.text);
-
-      // Check for offer data
-      if (response.hasOffer && response.offerData) {
-        showSpecialOfferCard(response.offerData);
-      } else {
-        // Update status based on progress
-        const newStage = determineSpecialBookingStage();
-        updateSpecialBookingStatus(newStage);
-      }
-
-      return;
-    }
-
-    // Handle Special Booking mode responses
-    if (chatMode === 'special-booking' && specialBookingState.isActive) {
-      // Update requirements from message
-      const newRequirements = openai.extractRequirements(userMessage);
-      newRequirements.forEach(req => {
-        if (!specialBookingState.requirements.find(r => r.type === req.type)) {
-          specialBookingState.requirements.push(req);
-        }
-      });
-
-      // Determine stage
-      const stage = determineSpecialBookingStage();
-      updateSpecialBookingStatus(stage === 'generating' ? 'generating' : 'analyzing');
-
-      response = await openai.getSpecialBookingAIResponse(
-        userMessage,
-        specialBookingState.requirements,
-        bookingState,
-        bookingState.conversationHistory,
-        stage
-      );
-
-      // Update booking state with extracted data
-      if (response.extractedData) {
-        updateBookingStateWithExtracted(response.extractedData);
-      }
-
-      addMessage(response.text, 'ai');
-      addToConversationHistory('assistant', response.text);
-
-      // Check for offer data
-      if (response.hasOffer && response.offerData) {
-        showSpecialOfferCard(response.offerData);
-      } else {
-        // Update status based on new progress
-        const newStage = determineSpecialBookingStage();
-        updateSpecialBookingStatus(newStage);
-      }
-
-      return;
-    }
-
     // Check if we're in room context but user asks about general topic
     if (chatMode === 'room-context' && selectedRoom && openai.isGeneralTopic(userMessage)) {
       // Auto-break room context for general topics
@@ -4023,6 +3729,15 @@ export async function getAIResponse(userMessage) {
       if (response.isDiscovery) {
         if (response.profile_update) {
           discovery.updateProfile(response.profile_update);
+        }
+
+        // Apply geo update from AI response
+        if (response.geo_update && (response.geo_update.city || response.geo_update.country)) {
+          const upd = {};
+          if (response.geo_update.city) upd.city = response.geo_update.city;
+          if (response.geo_update.country) upd.country = response.geo_update.country;
+          geo.setGeoState(upd);
+          updateGeoLocationBadge();
         }
 
         addMessage(response.text, 'ai');
@@ -4114,6 +3829,15 @@ export async function getAIResponse(userMessage) {
       if (response.isDiscovery) {
         if (response.profile_update) {
           discovery.updateProfile(response.profile_update);
+        }
+
+        // Apply geo update from AI response
+        if (response.geo_update && (response.geo_update.city || response.geo_update.country)) {
+          const upd = {};
+          if (response.geo_update.city) upd.city = response.geo_update.city;
+          if (response.geo_update.country) upd.country = response.geo_update.country;
+          geo.setGeoState(upd);
+          updateGeoLocationBadge();
         }
 
         addMessage(response.text, 'ai');
@@ -4230,19 +3954,8 @@ export function resetChat() {
   selectedRoom = null;
   chatMode = 'general';
 
-  // Reset booking state
+  // Reset booking state (also resets GEO state)
   resetBookingState();
-
-  // Reset Special Booking state
-  specialBookingState = {
-    isActive: false,
-    activatedBy: null,
-    stage: 'collecting',
-    requirements: [],
-    currentOffer: null
-  };
-  hideSpecialBookingStatus();
-  hideSpecialOfferCard();
 
   // Reset cancellation state
   cancellationState = {
@@ -4490,12 +4203,7 @@ export function startRoomBookingFlow(room) {
   // 1. Close any open detail / context views
   closeRoomDetailView();
 
-  // 2. Reset special booking mode if active
-  if (specialBookingState && specialBookingState.isActive) {
-    deactivateSpecialBookingMode(true);
-  }
-
-  // 3. Clear room context badge silently
+  // 2. Clear room context badge silently
   if (selectedRoom) {
     clearRoomContext(true);
   }
@@ -4621,6 +4329,9 @@ export function initChatListeners() {
   initVisibilityTracking();
   updateSoundToggleUI(notificationState.soundEnabled);
 
+  // Initialize GEO location badge
+  updateGeoLocationBadge();
+
   // Input listeners
   if (dom.messageInput) {
     dom.messageInput.addEventListener('input', () => {
@@ -4738,8 +4449,8 @@ export function initChatListeners() {
   // Service detail listeners
   initServiceDetailListeners();
 
-  // Special Booking listeners
-  initSpecialBookingListeners();
+  // Menu listeners
+  initMenuListeners();
 
   // Welcome modal listeners
   initWelcomeListeners();
@@ -4754,8 +4465,8 @@ export function initChatListeners() {
   initGuideSheetListeners();
 }
 
-// Initialize Special Booking Event Listeners
-export function initSpecialBookingListeners() {
+// Initialize Menu Event Listeners
+export function initMenuListeners() {
   // Header menu toggle
   if (dom.headerMenuBtn) {
     dom.headerMenuBtn.addEventListener('click', (e) => {
@@ -4863,20 +4574,6 @@ export function initSpecialBookingListeners() {
   }
 
 
-
-  // Offer Confirm button
-  if (dom.offerConfirmBtn) {
-    dom.offerConfirmBtn.addEventListener('click', () => {
-      confirmSpecialOffer();
-    });
-  }
-
-  // Offer Edit button
-  if (dom.offerEditBtn) {
-    dom.offerEditBtn.addEventListener('click', () => {
-      editSpecialOffer();
-    });
-  }
 
   // Sound toggle button in menu
   const soundToggleBtn = document.getElementById('sound-toggle-btn');
@@ -5038,39 +4735,6 @@ function closeLanguageSubmenu() {
     }, 500);
   } else if (langSheet) {
   }
-}
-
-// Confirm special offer
-function confirmSpecialOffer() {
-  hideSpecialOfferCard();
-
-  // Store the selected room
-  if (specialBookingState.currentOffer?.room_name) {
-    const allRooms = rooms.getAllRooms();
-    const matchedRoom = allRooms.find(r =>
-      r.name.toLowerCase().includes(specialBookingState.currentOffer.room_name.toLowerCase()) ||
-      specialBookingState.currentOffer.room_name.toLowerCase().includes(r.name.toLowerCase())
-    );
-    if (matchedRoom) {
-      bookingState.collectedData.selectedRoom = matchedRoom.name;
-    } else {
-      bookingState.collectedData.selectedRoom = specialBookingState.currentOffer.room_name;
-    }
-  }
-
-  triggerInstantBookingConfirmation({ forceMessage: true });
-
-  // Deactivate special mode
-  deactivateSpecialBookingMode(true);
-}
-
-// Edit special offer - return to chat for adjustments
-function editSpecialOffer() {
-  hideSpecialOfferCard();
-  updateSpecialBookingStatus('collecting');
-
-  addMessage('Конечно! Что именно вы хотели бы изменить? Расскажите о ваших пожеланиях, и я подготовлю обновлённое предложение.', 'ai');
-  addToConversationHistory('assistant', 'Конечно! Что именно вы хотели бы изменить? Расскажите о ваших пожеланиях, и я подготовлю обновлённое предложение.');
 }
 
 // ========================================

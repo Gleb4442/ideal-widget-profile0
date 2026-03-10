@@ -10,6 +10,7 @@ import { languagesList } from './config.js';
 import { chatContext } from './chat.js';
 import * as orchestra from './orchestra.js';
 import * as discovery from './discovery.js';
+import * as geo from './geo.js';
 
 // Language code to full name mapping
 const LANGUAGE_NAMES = {
@@ -177,46 +178,6 @@ const MENU_INTENT_PATTERNS = [
   /їжа.*ресторан|еда.*ресторан|restaurant.*food/i,
   /показ.*меню|покаж.*меню|show.*menu/i,
   /подив.*меню|посмотр.*меню|see.*menu|view.*menu/i
-];
-
-// Complex booking patterns - triggers Special Booking mode
-const COMPLEX_REQUEST_PATTERNS = [
-  // Business trip / Командировка
-  /командировк|business\s*trip|деловая\s*поездка|тихий\s*номер|дальше\s*от\s*лифта|в\s*конце\s*коридора|рабочее\s*место|коворкинг|coworking|рум[\s-]*сервис|room[\s-]*service/i,
-  // With children / С детьми
-  /с\s*детьми|с\s*ребенком|з\s*дітьми|з\s*дитиною|малыш|дитя|комплимент\s*для\s*дет|детская\s*кроватка|дитяче\s*ліжко|kids|children/i,
-  // Romantic / Романтика
-  /романтич|годовщин|річниц|свадьб|весілл|медовый\s*месяц|медовий\s*місяць|honeymoon|свечи|свічки|candle|шампанское|шампанське|champagne|ванн|bathtub|jacuzzi|джакузі/i,
-  // Special needs / Особые требования
-  /аллерг|алерг|allerg|диет|diet|инвалид|інвалід|wheelchair|особые\s*потребности|особливі\s*потреби|special\s*need|accessibility/i,
-  // Multiple conditions
-  /несколько\s*условий|кілька\s*умов|много\s*пожеланий|багато\s*побажань|особые\s*предпочтения|особливі\s*вподобання/i,
-  // VIP / Premium
-  /vip|premium|эксклюзив|ексклюзив|exclusive|люкс\s*номер|suite|пентхаус|penthouse/i,
-  // Extended stay
-  /длительное\s*проживание|тривале\s*проживання|long\s*stay|месяц|місяць|month/i,
-  // Group booking
-  /группов|групов|group|компани|company|корпоратив|corporate|конференц|conference/i
-];
-
-// Requirement extraction patterns for Special Booking
-const REQUIREMENT_PATTERNS = [
-  { type: 'room_location', pattern: /тихий\s*номер|дальше\s*от\s*лифта|в\s*конце\s*коридора|quiet\s*room|away\s*from\s*elevator/i },
-  { type: 'workspace', pattern: /рабочее\s*место|робоче\s*місце|workspace|desk|коворкинг|coworking/i },
-  { type: 'room_service', pattern: /рум[\s-]*сервис|room[\s-]*service/i },
-  { type: 'children', pattern: /с\s*детьми|з\s*дітьми|детская\s*кроватка|дитяче\s*ліжко|kids|children/i },
-  { type: 'romantic', pattern: /романтич|свечи|свічки|шампанское|шампанське|champagne/i },
-  { type: 'bathtub', pattern: /ванн|bathtub|jacuzzi|джакузі/i },
-  { type: 'dietary', pattern: /диет|diet|вегетариан|vegetarian|веган|vegan/i },
-  { type: 'allergy', pattern: /аллерг|алерг|allerg/i },
-  { type: 'accessibility', pattern: /инвалид|інвалід|wheelchair|accessibility/i },
-  { type: 'view', pattern: /вид\s*на|view|панорам|panoram/i },
-  { type: 'floor', pattern: /высокий\s*этаж|високий\s*поверх|high\s*floor|верхний\s*этаж/i },
-  { type: 'early_checkin', pattern: /ранний\s*заезд|ранній\s*заїзд|early\s*check[\s-]*in/i },
-  { type: 'late_checkout', pattern: /поздний\s*выезд|пізній\s*виїзд|late\s*check[\s-]*out/i },
-  { type: 'transfer', pattern: /трансфер|transfer|встреча\s*в\s*аэропорт|airport\s*pickup/i },
-  { type: 'parking', pattern: /парковк|parking/i },
-  { type: 'pet', pattern: /питомец|домашнее\s*животное|pet|собак|dog|кот|кіт|cat/i }
 ];
 
 // General topic patterns - topics that should break room-specific context
@@ -423,6 +384,13 @@ function buildGeneralSystemPrompt(hotelName = 'Hilton', bookingState = null) {
     }
   }
 
+  // GEO context for general mode
+  const geoState = geo.getGeoState();
+  let geoContextBlock = '';
+  if (geoState.city) {
+    geoContextBlock = `\n### GEO-ЛОКАЦИЯ ГОСТЯ\nВыбранный город: 📍 ${geoState.city}${geoState.country ? ', ' + geoState.country : ''}\n`;
+  }
+
   // Map step to next field to request
   const stepToField = {
     'collecting_name': 'fullName (ФИО гостя)',
@@ -439,7 +407,7 @@ function buildGeneralSystemPrompt(hotelName = 'Hilton', bookingState = null) {
 
   return `Ты Roomie — внутренний AI-сотрудник отеля "${hotelName}".
 Текущая дата: ${new Date().toISOString().split('T')[0]}.
-
+${geoContextBlock}
 ### ОСНОВНЫЕ ПРАВИЛА
 1. **Язык общения**: СТРОГО общайся на ${languageName}. Все твои ответы должны быть ТОЛЬКО на ${languageName}. Это критически важно — гость выбрал этот язык в настройках.
 2. **Идентичность**: Говори от лица "мы" (команда отеля). Будь тёплым (🌿, 😊), профессиональным и лаконичным. "Помогай, а не продавай."
@@ -810,22 +778,47 @@ ${propsList || 'Отели не добавлены.'}
 function buildDiscoverySystemPrompt(profile, topScoredHotels) {
   const currentLang = getCurrentLanguage();
   const languageName = getLanguageName(currentLang);
+  const geoState = geo.getGeoState();
 
   let hotelsListContext = 'Пока нет подходящих отелей.';
   if (topScoredHotels && topScoredHotels.length > 0) {
-    hotelsListContext = topScoredHotels.map(p => `- ID: ${p.id} | ${p.name} | Теги: ${p.discoveryTags || ''} | От $${p.minPrice || 0} | ${p.starRating || 0} звезд`).join('\n');
+    hotelsListContext = topScoredHotels.map(p =>
+      `- ID: ${p.id} | ${p.name}${p.geoCity ? ` | 📍 ${p.geoCity}${p.geoCountry ? ', ' + p.geoCountry : ''}` : ''} | Теги: ${p.discoveryTags || ''} | От $${p.minPrice || 0} | ${p.starRating || 0} звезд`
+    ).join('\n');
+  }
+
+  // GEO context block based on travel stage and city selection
+  let geoBlock = '';
+  if (geoState.travelStage === 'during-stay') {
+    geoBlock = `\n=== GEO-РЕЖИМ: ГОСТЬ ЗАСЕЛЁН ===
+Гость уже находится в отеле. Игнорируй гео-фильтрацию. Работай с текущим отелем гостя.`;
+  } else if (geoState.travelStage === 'post-stay') {
+    geoBlock = `\n=== GEO-РЕЖИМ: ПОСЛЕ ПОЕЗДКИ ===
+Гость уже выехал. Ты можешь предлагать другие локации для следующей поездки.
+${geoState.city ? `Предыдущий город: ${geoState.city}` : ''}`;
+  } else if (geoState.city) {
+    geoBlock = `\n=== GEO-ФИЛЬТР АКТИВЕН ===
+Выбранный город: 📍 ${geoState.city}${geoState.country ? ', ' + geoState.country : ''}
+Показывай ТОЛЬКО отели в этом городе. Если гость хочет другой город — сбрось фильтр и уточни новую локацию.`;
+  } else {
+    geoBlock = `\n=== GEO: ГОРОД НЕ ВЫБРАН ===
+ОБЯЗАТЕЛЬНО первым делом уточни у гостя: "В каком городе планируете поездку?"
+НЕ показывай отели и НЕ предлагай бронирование, пока город не указан.`;
   }
 
   return `Ты Roomie — AI-ассистент сети отелей. Твоя цель: помочь гостю выбрать идеальный отель для его поездки (Discovery Mode).
-Гость еще не определился. Веди с ним дружелюбный диалог, задавай 1-2 уточняющих вопроса (например: даты, бюджет, едет ли с детьми/парой, какие предпочтения - пляж, спа, горы).
+Гость еще не определился. Веди с ним дружелюбный диалог, задавай 1-2 уточняющих вопроса.
 Язык общения (в поле reply): ${languageName}.
+${geoBlock}
 
 === ТЕКУЩИЙ ПРОФИЛЬ ГОСТЯ ===
-Локация: ${profile.location || 'неизвестно'}
+Город: ${geoState.city || profile.location || 'неизвестно'}
+Страна: ${geoState.country || 'неизвестно'}
 Бюджет: ${profile.budget || 'неизвестно'}
 Сезон/Даты: ${profile.season || 'неизвестно'}
 Компания: ${profile.party || 'неизвестно'}
 Предпочтения: ${(profile.preferences || []).join(', ') || 'нет'}
+Этап поездки: ${geoState.travelStage || 'pre-checkin'}
 
 === ТОП ПОДХОДЯЩИХ ОТЕЛЕЙ СЕЙЧАС ===
 ${hotelsListContext}
@@ -834,15 +827,19 @@ ${hotelsListContext}
 Обязательно верни только валидный JSON объект:
 {
   "discovery_stage": "profile" или "recommend" или "deepdive",
-  "profile_update": { 
-     "location": "море" (или null если нет новой инфы),
+  "profile_update": {
+     "location": "город или локация" (или null если нет новой инфо),
      "budget": "high" (или конкретная сумма),
      "season": "лето" (или даты),
      "party": "с детьми",
      "preferences": "пляж, спа" (строка через запятую)
   },
+  "geo_update": {
+     "city": "Название города" (или null),
+     "country": "Страна" (или null)
+  },
   "recommendations": ["ID_отеля_1", "ID_отеля_2"] (заполни, если этап recommend и уверен в выборе),
-  "reply": "Твой ответ гостю на ${languageName}. Если этап profile, задай вопрос. Если recommend, опиши почему эти отели топ.",
+  "reply": "Твой ответ гостю на ${languageName}. Если город не указан — ОБЯЗАТЕЛЬНО спроси. Если recommend — опиши почему эти отели топ.",
   "next_question": "Уточняющий вопрос (например: Какой у вас бюджет?)"
 }
 ВАЖНО: Никаких блоков markdown типа \`\`\`json. Только фигурные скобки.`;
@@ -863,10 +860,20 @@ export async function getDiscoveryAIResponse(userMessage, conversationHistory = 
     const response = await callOpenAI(messages);
     try {
       const data = JSON.parse(response);
+
+      // Apply geo update if agent extracted a city from the conversation
+      if (data.geo_update && (data.geo_update.city || data.geo_update.country)) {
+        const geoUpdate = {};
+        if (data.geo_update.city) geoUpdate.city = data.geo_update.city;
+        if (data.geo_update.country) geoUpdate.country = data.geo_update.country;
+        geo.setGeoState(geoUpdate);
+      }
+
       return {
         isDiscovery: true,
         discovery_stage: data.discovery_stage || 'profile',
         profile_update: data.profile_update || {},
+        geo_update: data.geo_update || {},
         recommendations: data.recommendations || [],
         text: data.reply || "Давайте подберем вам лучший отель!",
         next_question: data.next_question || "",
@@ -1283,315 +1290,3 @@ export function getApiStatus() {
   };
 }
 
-// ========================================
-// SPECIAL BOOKING MODE FUNCTIONS
-// ========================================
-
-// Detect if a request is complex and should trigger Special Booking mode
-export function detectComplexRequest(message, conversationHistory = []) {
-  // Check for complex patterns in current message
-  const hasComplexPattern = COMPLEX_REQUEST_PATTERNS.some(pattern => pattern.test(message));
-
-  if (hasComplexPattern) {
-    return { isComplex: true, reason: 'pattern_match' };
-  }
-
-  // Count unique requirements in conversation history
-  const allMessages = [...conversationHistory.map(m => m.content), message].join(' ');
-  const requirements = extractRequirements(allMessages);
-
-  if (requirements.length >= 3) {
-    return { isComplex: true, reason: 'multiple_requirements', count: requirements.length };
-  }
-
-  // Check for multiple questions from guest (indicating uncertainty/special needs)
-  const userMessages = conversationHistory.filter(m => m.role === 'user');
-  const questionCount = userMessages.filter(m =>
-    m.content.includes('?') || /можно|можна|есть\s*ли|чи\s*є|а\s*как|а\s*як/i.test(m.content)
-  ).length;
-
-  if (questionCount >= 3) {
-    return { isComplex: true, reason: 'many_questions', count: questionCount };
-  }
-
-  return { isComplex: false };
-}
-
-// Extract specific requirements from text
-export function extractRequirements(text) {
-  const requirements = [];
-
-  REQUIREMENT_PATTERNS.forEach(({ type, pattern }) => {
-    const match = text.match(pattern);
-    if (match) {
-      requirements.push({
-        type,
-        value: match[0],
-        label: getRequirementLabel(type)
-      });
-    }
-  });
-
-  return requirements;
-}
-
-// Get human-readable label for requirement type
-function getRequirementLabel(type) {
-  const labels = {
-    'room_location': 'Расположение номера',
-    'workspace': 'Рабочее место',
-    'room_service': 'Рум-сервис',
-    'children': 'Размещение с детьми',
-    'romantic': 'Романтическое оформление',
-    'bathtub': 'Ванна в номере',
-    'dietary': 'Диетическое питание',
-    'allergy': 'Учет аллергии',
-    'accessibility': 'Доступная среда',
-    'view': 'Вид из номера',
-    'floor': 'Высокий этаж',
-    'early_checkin': 'Ранний заезд',
-    'late_checkout': 'Поздний выезд',
-    'transfer': 'Трансфер',
-    'parking': 'Парковка',
-    'pet': 'Размещение с питомцем'
-  };
-  return labels[type] || type;
-}
-
-// Build system prompt for Special Booking mode
-export function buildSpecialBookingPrompt(hotelName = 'Hilton', requirements = [], bookingState = null, stage = 'collecting') {
-  const rooms = getAllRooms();
-  const hotelInfo = getHotelInfo();
-
-  const roomsList = rooms.length > 0
-    ? rooms.map(r => `- ${r.name}: ${r.area} м², $${r.pricePerNight}/ніч, ${r.description || 'без описания'}`).join('\n')
-    : 'Номери ще не додані.';
-
-  const requirementsList = requirements.length > 0
-    ? requirements.map(r => `- ${r.label}: ${r.value}`).join('\n')
-    : 'Требования ещё не определены';
-
-  let stateDescription = '';
-  if (bookingState && bookingState.collectedData) {
-    const data = bookingState.collectedData;
-    const parts = [];
-    if (data.fullName) parts.push(`ФИО: ${data.fullName}`);
-    if (data.phone) parts.push(`Телефон: ${data.phone}`);
-    if (data.checkIn) parts.push(`Дата заезда: ${data.checkIn}`);
-    if (data.checkOut) parts.push(`Дата выезда: ${data.checkOut}`);
-    if (data.email) parts.push(`Email: ${data.email}`);
-    if (data.guests) parts.push(`Гостей: ${data.guests}`);
-    stateDescription = parts.length > 0 ? parts.join(', ') : 'Начало диалога';
-  }
-
-  // Build availability info if dates are provided
-  let availabilityInfo = '';
-  if (bookingState?.collectedData?.checkIn && bookingState?.collectedData?.checkOut) {
-    const availableRooms = getAvailableRoomsForRange(
-      bookingState.collectedData.checkIn,
-      bookingState.collectedData.checkOut
-    );
-    if (availableRooms.length > 0) {
-      availabilityInfo = `\n\nДОСТУПНЫЕ НОМЕРА на указанные даты:\n${availableRooms.map(r => `- ${r.name}: $${r.pricePerNight}/ночь`).join('\n')}`;
-    } else {
-      availabilityInfo = '\n\nНа указанные даты нет свободных номеров.';
-    }
-  }
-
-  const stageInstructions = {
-    'collecting': `
-ТЕКУЩИЙ ЭТАП: Сбор информации
-- Уточни недостающие детали (не более 2 вопросов за раз)
-- Будь внимателен к особым пожеланиям
-- Подтверждай понимание требований`,
-    'analyzing': `
-ТЕКУЩИЙ ЭТАП: Анализ требований
-- Все основные данные собраны
-- Проанализируй требования и подбери лучший вариант
-- Объясни, почему этот номер подходит`,
-    'generating': `
-ТЕКУЩИЙ ЭТАП: Формирование предложения
-- Сформируй финальное персональное предложение
-- Включи все учтённые пожелания
-
-ОБЯЗАТЕЛЬНО в конце ответа добавь блок в формате:
-[OFFER_DATA]
-room_name: название рекомендуемого номера
-room_price: цена за ночь
-check_in: дата заезда
-check_out: дата выезда
-guests: количество гостей
-total_nights: количество ночей
-total_price: общая стоимость
-special_notes: пожелание1|пожелание2|пожелание3
-[/OFFER_DATA]`
-  };
-
-  // Get current language setting
-  const currentLang = getCurrentLanguage();
-  const languageName = getLanguageName(currentLang);
-
-  return `Ты Roomie — персональный консьерж отеля "${hotelName}".
-Текущая дата: ${new Date().toISOString().split('T')[0]}.
-
-### РЕЖИМ: SPECIAL BOOKING (Персонализированное бронирование)
-
-Гость имеет особые требования. Твоя задача — создать идеальное персональное предложение.
-
-### ОСНОВНЫЕ ПРАВИЛА
-1. **Язык общения**: СТРОГО общайся на ${languageName}. Все твои ответы должны быть ТОЛЬКО на ${languageName}.
-2. **Стиль**: Будь тёплым, внимательным и профессиональным. Ты персональный консьерж, не продавец.
-3. **Внимание к деталям**: Каждое пожелание важно. Подтверждай, что услышал и учёл.
-
-### ИНФОРМАЦИЯ ОБ ОТЕЛЕ
-${hotelInfo || 'Информация не указана.'}
-
-### ДОСТУПНЫЕ НОМЕРА
-${roomsList}
-${availabilityInfo}
-
-### ВЫЯВЛЕННЫЕ ОСОБЫЕ ТРЕБОВАНИЯ
-${requirementsList}
-
-### СОБРАННЫЕ ДАННЫЕ БРОНИРОВАНИЯ
-${stateDescription || 'Данные ещё не собраны'}
-
-${stageInstructions[stage] || stageInstructions['collecting']}
-
-### ЭСКАЛАЦИЯ НА ЧЕЛОВЕКА
-- Если гость просит переключить его на живого человека (оператор/менеджер/сотрудник/человек) ИЛИ ситуация требует участия человека (жалоба, конфликт, юридические вопросы, безопасность, проблемы оплаты, нестандартный запрос) — сначала задай подтверждающий вопрос: "Хотите, чтобы я соединил вас с менеджером?"
-- Не запускай эскалацию без явного согласия гостя.
-
-### ВАЖНО
-- Будь эмпатичным и внимательным
-- Не спрашивай больше 2 вопросов за раз
-- Если чего-то не можешь обеспечить — честно скажи и предложи альтернативу
-- Подбирай номер с учётом ВСЕХ пожеланий`;
-}
-
-// Get Special Booking AI response
-export async function getSpecialBookingAIResponse(userMessage, requirements = [], bookingState = null, conversationHistory = [], stage = 'collecting') {
-  const hotelName = document.getElementById('hotel-name-input')?.value || 'Hilton';
-  const systemPrompt = buildSpecialBookingPrompt(hotelName, requirements, bookingState, stage);
-
-  const messages = [
-    { role: 'system', content: systemPrompt }
-  ];
-
-  // Add conversation history (Extended Memory for Special Mode)
-  const recentHistory = conversationHistory.slice(-50);
-  messages.push(...recentHistory);
-
-  // Add current message
-  messages.push({ role: 'user', content: userMessage });
-
-  // Extract booking data
-  const extractedData = extractBookingData(userMessage);
-
-  try {
-    // Use GPT-4o for Special Booking
-    const response = await callOpenAI(messages, 'gpt-4o');
-
-    // Parse offer data if present
-    const offerData = parseOfferData(response);
-
-    return {
-      text: response.replace(/\[OFFER_DATA\][\s\S]*?\[\/OFFER_DATA\]/g, '').trim(),
-      extractedData,
-      offerData,
-      hasOffer: !!offerData
-    };
-  } catch (error) {
-    return {
-      text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
-      error: true
-    };
-  }
-}
-
-// Get Special Booking AI response with STREAMING
-export async function getSpecialBookingAIResponseStreaming(userMessage, requirements = [], bookingState = null, conversationHistory = [], stage = 'collecting', onChunk, onComplete, onError) {
-  const hotelName = document.getElementById('hotel-name-input')?.value || 'Hilton';
-  const systemPrompt = buildSpecialBookingPrompt(hotelName, requirements, bookingState, stage);
-
-  const messages = [
-    { role: 'system', content: systemPrompt }
-  ];
-
-  // Add conversation history (Extended Memory for Special Mode)
-  const recentHistory = conversationHistory.slice(-50);
-  messages.push(...recentHistory);
-
-  // Add current message
-  messages.push({ role: 'user', content: userMessage });
-
-  // Extract booking data
-  const extractedData = extractBookingData(userMessage);
-
-  try {
-    // Use GPT-4o for Special Booking
-    await callOpenAIStreaming(
-      messages,
-      (delta, fullText) => {
-        if (onChunk) onChunk(delta, fullText);
-      },
-      (fullText) => {
-        // Parse offer data if present
-        const offerData = parseOfferData(fullText);
-        const cleanText = fullText.replace(/\[OFFER_DATA\][\s\S]*?\[\/OFFER_DATA\]/g, '').trim();
-
-        if (onComplete) {
-          onComplete({
-            text: cleanText,
-            extractedData,
-            offerData,
-            hasOffer: !!offerData
-          });
-        }
-      },
-      (error) => {
-        if (onError) {
-          onError({
-            text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
-            error: true
-          });
-        }
-      },
-      'gpt-4o'
-    );
-
-  } catch (error) {
-    if (onError) {
-      onError({
-        text: 'Вибачте, сталася помилка. Спробуйте ще раз пізніше.',
-        error: true
-      });
-    }
-  }
-}
-
-// Parse offer data from AI response
-function parseOfferData(response) {
-  const offerMatch = response.match(/\[OFFER_DATA\]([\s\S]*?)\[\/OFFER_DATA\]/);
-  if (!offerMatch) return null;
-
-  const offerText = offerMatch[1];
-  const data = {};
-
-  const lines = offerText.trim().split('\n');
-  lines.forEach(line => {
-    const colonIndex = line.indexOf(':');
-    if (colonIndex > -1) {
-      const key = line.substring(0, colonIndex).trim();
-      const value = line.substring(colonIndex + 1).trim();
-      data[key] = value;
-    }
-  });
-
-  // Parse special notes
-  if (data.special_notes) {
-    data.special_notes = data.special_notes.split('|').map(s => s.trim()).filter(Boolean);
-  }
-
-  return data;
-}

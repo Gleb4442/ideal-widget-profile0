@@ -153,6 +153,31 @@
 
     <!-- Properties Management -->
     <div id="orchestra-settings" class="hidden mt-4">
+
+      <!-- Chain Branding (shown in header before hotel is selected) -->
+      <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <div class="text-xs font-bold text-blue-700 mb-2 uppercase tracking-wide">Брендинг мережі (шапка чату)</div>
+        <div class="mb-2">
+          <label class="text-xs text-gray-600 mb-1 block">Назва мережі / бренду</label>
+          <input type="text" id="network-chain-name-input" class="admin-input text-sm" placeholder="Напр.: InterContinental, Hilton, Marriott...">
+        </div>
+        <div>
+          <label class="text-xs text-gray-600 mb-1 block">Логотип мережі</label>
+          <div class="flex items-center gap-2">
+            <button type="button" id="network-chain-logo-upload-btn" class="add-room-btn text-xs">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Завантажити
+            </button>
+            <input type="file" id="network-chain-logo-input" accept="image/*" class="hidden">
+            <div id="network-chain-logo-preview-wrap" class="hidden flex items-center gap-1">
+              <img id="network-chain-logo-preview" src="" alt="" style="width:32px;height:32px;object-fit:cover;border-radius:4px;border:1px solid #e2e8f0;">
+              <button type="button" id="network-chain-logo-remove-btn" class="text-red-500 hover:text-red-700 text-xs p-1">✕</button>
+            </div>
+          </div>
+        </div>
+        <div class="text-xs text-gray-400 mt-2">Показується у шапці поки гість не вибрав конкретний готель</div>
+      </div>
+
       <div class="services-section-header mb-2">
         <span class="services-section-title text-sm font-bold">Отелі мережі</span>
         <button id="add-property-btn" class="add-room-btn">
@@ -189,26 +214,33 @@
         <label class="switch"><input type="checkbox" id="discovery-autostart-toggle" checked><span
             class="slider"></span></label>
       </div>
+
+      <!-- Independent Discovery Hotels -->
+      <div id="discovery-hotels-settings" class="hidden mt-3">
+        <div class="services-section-header mb-2">
+          <span class="services-section-title text-sm font-bold">Незалежні готелі</span>
+          <button id="add-discovery-hotel-btn" class="add-room-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Додати
+          </button>
+        </div>
+        <div id="discovery-hotels-admin-list" class="flex flex-col gap-2">
+          <!-- Discovery hotels rendered here -->
+        </div>
+      </div>
     </div>
 
     <hr class="border-gray-200 my-4">
 
     <!-- Hotel Settings -->
     <div class="admin-control">
-      <span class="admin-label">Назва готелю</span>
-      <input type="text" id="hotel-name-input" class="admin-input" placeholder="Введіть назву" value="Hilton">
-    </div>
-    <div class="admin-control">
       <span class="admin-label">Информация об отеле</span>
       <textarea id="hotel-info-input" class="admin-input admin-textarea" rows="4"
         placeholder="Правила проживания, ресторан, SPA, услуги..."></textarea>
-    </div>
-    <div class="admin-control">
-      <span class="admin-label">Логотип</span>
-      <label class="file-upload-btn">
-        Обрати файл
-        <input type="file" id="logo-upload" accept="image/*" style="display: none;">
-      </label>
     </div>
     <div class="admin-control">
       <span class="admin-label">Колір</span>
@@ -280,6 +312,10 @@
       <div class="flex items-center justify-between">
         <span class="text-sm text-gray-600">Режим заселеного гостя</span>
         <label class="switch"><input type="checkbox" id="checked-in-toggle"><span class="slider"></span></label>
+      </div>
+      <div id="checkin-hotel-selector" class="mt-2" style="display:none;">
+        <span class="text-xs text-gray-500 mb-1 block">Вибрати готель:</span>
+        <select id="checkin-hotel-select" class="admin-input" style="font-size:13px;padding:6px 8px;"></select>
       </div>
     </div>
 
@@ -416,32 +452,6 @@
       </div>
     </div>
 
-    <!-- Services Section -->
-    <div class="services-section">
-      <div class="services-section-header">
-        <span class="services-section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path
-              d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-            </path>
-          </svg>
-          Додаткові послуги
-        </span>
-        <button id="add-service-btn" class="add-service-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          Додати
-        </button>
-      </div>
-      <div id="services-admin-grid" class="services-admin-grid">
-        <!-- Services will be rendered here -->
-      </div>
-    </div>
-
     <!-- Bookings Section -->
     <div class="bookings-section">
       <div class="bookings-section-header">
@@ -534,6 +544,14 @@
               </svg>
               Всі готелі
             </button>
+            <!-- GEO Location Badge -->
+            <div id="geo-location-badge" class="hidden text-[11px] text-white/90 flex items-center gap-1 mt-0.5 -ml-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+              </svg>
+              <span id="geo-location-text">Київ</span>
+              <button id="geo-location-reset" title="Змінити місто" style="opacity:0.7;background:none;border:none;cursor:pointer;color:inherit;padding:0;margin-left:1px;font-size:10px;line-height:1;">✕</button>
+            </div>
           </div>
         </div>
 
@@ -564,7 +582,7 @@
           </svg>
         </button>
 
-        <!-- Status Pill (Special Booking / Operator Mode) -->
+        <!-- Status Pill (Operator Mode) -->
         <div id="header-status-pill" class="header-status-pill hidden">
           <div class="header-status-spinner"></div>
           <span class="header-status-text">Загрузка...</span>
@@ -977,108 +995,6 @@
       </div>
     </div>
 
-    <!-- Special Offer Card -->
-    <div id="special-offer-card" class="special-offer-card hidden">
-      <div class="offer-header">
-        <div class="offer-header-content">
-          <span class="offer-badge">Персональное предложение</span>
-          <span class="offer-subtitle">Подобрано специально для вас</span>
-        </div>
-        <span class="offer-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon
-              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-            </polygon>
-          </svg>
-        </span>
-      </div>
-      <div class="offer-content">
-        <div class="offer-room">
-          <div class="offer-room-image-container">
-            <img id="offer-room-image" class="offer-room-image" src="" alt="">
-            <div class="offer-room-image-placeholder">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-              </svg>
-            </div>
-          </div>
-          <div class="offer-room-info">
-            <h3 id="offer-room-name" class="offer-room-name"></h3>
-            <p id="offer-room-price" class="offer-room-price"></p>
-          </div>
-        </div>
-        <div class="offer-details">
-          <div class="offer-detail-item">
-            <span class="detail-label">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-              Даты
-            </span>
-            <span id="offer-dates" class="detail-value"></span>
-          </div>
-          <div class="offer-detail-item">
-            <span class="detail-label">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-              Гости
-            </span>
-            <span id="offer-guests" class="detail-value"></span>
-          </div>
-          <div class="offer-detail-item offer-total">
-            <span class="detail-label">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="1" x2="12" y2="23"></line>
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-              </svg>
-              Итого
-            </span>
-            <span id="offer-total" class="detail-value total-value"></span>
-          </div>
-          <div class="offer-special-notes">
-            <span class="notes-label">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 11 12 14 22 4"></polyline>
-                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-              </svg>
-              Учтённые пожелания
-            </span>
-            <ul id="offer-notes-list" class="notes-list"></ul>
-          </div>
-        </div>
-      </div>
-      <div class="offer-actions">
-        <button id="offer-confirm-btn" class="offer-btn primary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-          Подтвердить бронирование
-        </button>
-        <button id="offer-edit-btn" class="offer-btn secondary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-          </svg>
-          Изменить детали
-        </button>
-      </div>
-    </div>
 
     <!-- Footer with full blur coverage -->
     <footer id="chat-footer"
@@ -1350,8 +1266,15 @@
 
       <!-- Language Submenu Modal (Nested) -->
       <div id="language-sheet-modal" class="hidden">
+        <style>
+          @media (min-width: 769px) {
+            .language-sheet-desktop {
+              height: calc(80dvh + 15px) !important;
+            }
+          }
+        </style>
         <div id="language-sheet-content-inner"
-          class="w-full max-w-md bg-white/85 backdrop-blur-[40px] border-t border-black/5 rounded-t-[2.5rem] shadow-[0_-8px_32px_0_rgba(0,0,0,0.08)] relative flex flex-col premium-sheet-transition transform translate-y-full"
+          class="language-sheet-desktop w-full max-w-md bg-white/85 backdrop-blur-[40px] border-t border-black/5 rounded-t-[2.5rem] shadow-[0_-8px_32px_0_rgba(0,0,0,0.08)] relative flex flex-col premium-sheet-transition transform translate-y-full"
           style="height: 80dvh; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);">
           <div class="px-8 pt-10 pb-4 text-center">
             <h1 class="text-[24px] font-bold tracking-tight text-gray-900" data-i18n="selectLanguageTitle">Выберите
@@ -1945,6 +1868,29 @@
           <label class="service-form-label">Назва готелю</label>
           <input type="text" id="property-name-input" class="service-form-input" placeholder="Наприклад: Hilton Center">
         </div>
+
+        <!-- Logo -->
+        <div class="service-form-group">
+          <label class="service-form-label">Логотип (показується в шапці чату)</label>
+          <div id="property-logo-preview-wrap"
+            style="display:none; margin-bottom:8px; position:relative; width:64px; height:64px; border-radius:50%; overflow:hidden; background:#f3f4f6; border:2px solid #e5e7eb;">
+            <img id="property-logo-preview" src="" alt="" style="width:100%; height:100%; object-fit:cover;">
+            <button type="button" id="property-logo-remove-btn"
+              style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.5);color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center;">&times;</button>
+          </div>
+          <input type="file" id="property-logo-input" accept="image/*" style="display:none;">
+          <button type="button" id="property-logo-upload-btn" class="service-btn service-btn-secondary"
+            style="width:100%;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Завантажити логотип
+          </button>
+        </div>
+
         <div class="service-form-group">
           <label class="service-form-label">Опис готелю (для LLM)</label>
           <textarea id="property-info-input" class="service-form-textarea" rows="3"
@@ -1977,6 +1923,21 @@
             Завантажити фото
           </button>
         </div>
+        <!-- GEO Fields -->
+        <div class="service-form-row" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e5e7eb;">
+          <div class="service-form-group">
+            <label class="service-form-label" style="color:#059669;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              Місто (GEO)
+            </label>
+            <input type="text" id="property-geo-city-input" class="service-form-input" placeholder="Київ, Dubai, Paris…">
+          </div>
+          <div class="service-form-group">
+            <label class="service-form-label" style="color:#059669;">Країна (GEO)</label>
+            <input type="text" id="property-geo-country-input" class="service-form-input" placeholder="Україна, UAE…">
+          </div>
+        </div>
+
         <div class="service-form-group">
           <label class="service-form-label text-indigo-500">Discovery Теги (через кому)</label>
           <input type="text" id="property-tags-input" class="service-form-input"
@@ -2007,6 +1968,30 @@
             <input type="checkbox" id="property-shortlist-toggle" checked>
             <span class="slider"></span>
           </label>
+        </div>
+
+        <!-- Per-property Services Section -->
+        <div id="property-services-section" style="display:none; margin-top:16px; padding-top:16px; border-top:1px dashed #e5e7eb;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span class="services-section-title" style="font-size:14px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+              Додаткові послуги
+            </span>
+            <button id="property-add-service-btn" class="add-service-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Додати
+            </button>
+          </div>
+          <div id="property-services-grid" class="services-admin-grid">
+            <!-- Per-property services rendered here -->
+          </div>
         </div>
       </div>
       <div class="service-modal-footer">

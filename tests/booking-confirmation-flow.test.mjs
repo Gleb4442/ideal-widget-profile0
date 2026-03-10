@@ -20,10 +20,3 @@ test('completion in extracted-data flow triggers instant confirmation rule', () 
   );
 });
 
-test('special-offer confirmation uses instant rule without delayed modal timer', () => {
-  assert.match(chatSource, /function confirmSpecialOffer\(\) \{[\s\S]*triggerInstantBookingConfirmation\(\{ forceMessage: true \}\);/);
-  assert.doesNotMatch(
-    chatSource,
-    /function confirmSpecialOffer\(\) \{[\s\S]*setTimeout\(\(\) => \{\s*showAppDownloadModal\(\);[\s\S]*\}\s*,\s*800\);/s
-  );
-});

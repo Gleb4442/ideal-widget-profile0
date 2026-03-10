@@ -1,4 +1,5 @@
-import { getNetworkProperties, getDiscoveryMode, getDiscoveryAutoStart } from './orchestra.js';
+import { getNetworkProperties, getDiscoveryHotels, getDiscoveryMode, getDiscoveryAutoStart } from './orchestra.js';
+import { getGeoState, isGeoEnabled } from './geo.js';
 
 export const discoveryState = {
     active: false,
@@ -22,6 +23,20 @@ const DISCOVERY_INTENTS = [
     /не знаю (какой|який) (выбрать|вибрати|отель|готель)/i,
     /помоги(те)? выбрать/i, /допоможіть обрати/i
 ];
+
+// Return geo-filtered list of hotels for a given city (or all if no city)
+export function getGeoFilteredProperties(city = null) {
+    const networkProps = getNetworkProperties().filter(p => p.includeInSearch !== false).map(p => ({ ...p, _source: 'network' }));
+    const discHotels = getDiscoveryHotels().filter(h => h.includeInSearch !== false).map(h => ({ ...h, _source: 'discovery' }));
+    const all = [...networkProps, ...discHotels];
+    if (!city) return all;
+    const cityLower = city.toLowerCase();
+    return all.filter(h => {
+        if (!h.geoCity) return false;
+        const hc = h.geoCity.toLowerCase();
+        return hc === cityLower || hc.includes(cityLower) || cityLower.includes(hc);
+    });
+}
 
 export function isDiscoveryQuery(message) {
     if (!getDiscoveryMode() || !getDiscoveryAutoStart()) return false;
@@ -53,7 +68,13 @@ export function updateProfile(newProfileData) {
 }
 
 export function scoreProperties() {
-    const properties = getNetworkProperties().filter(p => p.includeInSearch !== false);
+    const networkProps = getNetworkProperties()
+        .filter(p => p.includeInSearch !== false)
+        .map(p => ({ ...p, _source: 'network' }));
+    const discHotels = getDiscoveryHotels()
+        .filter(h => h.includeInSearch !== false)
+        .map(h => ({ ...h, _source: 'discovery' }));
+    const properties = [...networkProps, ...discHotels];
     const profile = discoveryState.profile;
 
     const scoredProps = properties.map(prop => {
@@ -65,9 +86,28 @@ export function scoreProperties() {
         // Base priority (1-5) * 2 = max 10 points
         score += (prop.priority || 1) * 2;
 
-        // Location match (25 points)
-        if (profile.location && combinedText.includes(profile.location.toLowerCase())) {
-            score += 25;
+        // GEO City match (50 points — highest priority)
+        const geoState = getGeoState();
+        const allHotels = [...networkProps, ...discHotels];
+        const geoModeActive = isGeoEnabled(allHotels);
+
+        if (geoState.city) {
+            if (prop.geoCity) {
+                const hotelCity = prop.geoCity.toLowerCase();
+                const sessionCity = geoState.city.toLowerCase();
+                if (hotelCity === sessionCity || hotelCity.includes(sessionCity) || sessionCity.includes(hotelCity)) {
+                    score += 50; // City match — top priority
+                } else {
+                    score -= 80; // Wrong city — heavy penalty
+                }
+            } else if (geoModeActive) {
+                score -= 40; // Geo mode on but hotel has no city tag
+            }
+        } else if (profile.location) {
+            // Fallback: text-based location match (25 points, no geo set yet)
+            if (combinedText.includes(profile.location.toLowerCase())) {
+                score += 25;
+            }
         }
 
         // Budget match (20 points)

@@ -27,8 +27,6 @@ export const closeAdminBtn = document.getElementById('close-admin-btn');
 export const accentColorPicker = document.getElementById('accent-color-picker');
 export const colorValueText = document.getElementById('color-value-text');
 export const themeToggle = document.getElementById('theme-toggle');
-export const hotelNameInput = document.getElementById('hotel-name-input');
-export const logoUpload = document.getElementById('logo-upload');
 export const hotelNameText = document.getElementById('hotel-name-text');
 export const orchestraBackBtn = document.getElementById('orchestra-back-btn');
 export const hotelLogoContainer = document.getElementById('hotel-logo-container');
@@ -76,20 +74,9 @@ export const legalLinks = document.querySelectorAll('.legal-link');
 export const policyConsentBanner = document.getElementById('policy-consent-banner');
 export const policyLinks = document.querySelectorAll('.policy-link');
 
-// Special Booking Elements
+// Menu Elements
 export const headerMenuBtn = document.getElementById('header-menu-btn');
 export const headerMenuDropdown = document.getElementById('header-menu-dropdown');
-export const specialBookingStatus = document.getElementById('special-booking-status');
-export const specialOfferCard = document.getElementById('special-offer-card');
-export const offerRoomImage = document.getElementById('offer-room-image');
-export const offerRoomName = document.getElementById('offer-room-name');
-export const offerRoomPrice = document.getElementById('offer-room-price');
-export const offerDates = document.getElementById('offer-dates');
-export const offerGuests = document.getElementById('offer-guests');
-export const offerTotal = document.getElementById('offer-total');
-export const offerNotesList = document.getElementById('offer-notes-list');
-export const offerConfirmBtn = document.getElementById('offer-confirm-btn');
-export const offerEditBtn = document.getElementById('offer-edit-btn');
 
 // Language Selector Elements
 export const languageMenuBtn = document.getElementById('language-menu-btn');

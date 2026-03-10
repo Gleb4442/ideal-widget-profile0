@@ -191,26 +191,6 @@
   color: #e5e7eb;
 }
 
-/* ===== Special Booking Status Dark Mode ===== */
-#chat-window.dark-mode .special-booking-status {
-  background: linear-gradient(135deg, rgba(55, 65, 81, 0.95) 0%, rgba(31, 41, 55, 0.9) 100%);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-#chat-window.dark-mode .special-booking-status .status-text {
-  color: #d1d5db;
-}
-
-#chat-window.dark-mode .special-booking-status .mini-loader {
-  border-color: rgba(156, 163, 175, 0.2);
-  border-top-color: #9ca3af;
-}
-
-#chat-window.dark-mode .special-booking-status .cancel-special-btn {
-  background: rgba(156, 163, 175, 0.15);
-  color: #e5e7eb;
-}
 
 /* ===== Operator Status Bar Dark Mode ===== */
 #chat-window.dark-mode .operator-status-bar {

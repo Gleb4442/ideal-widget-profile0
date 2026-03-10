@@ -25,8 +25,12 @@ let currentServiceMainPhoto = '';
 let currentServiceGallery = [];
 let currentServiceReviews = []; // Reviews state
 
-// Orchestra editing state
+// Orchestra / Discovery editing state
 let currentEditPropertyId = null;
+let currentEditPropertyType = 'orchestra'; // 'orchestra' | 'discovery'
+
+// Property context for service editing
+let currentServicePropertyId = null;
 
 // Hotel info storage key
 const HOTEL_INFO_KEY = 'hotel_info';
@@ -160,24 +164,6 @@ export function initAdminPanelControls() {
     dom.openAdminBtn.addEventListener('click', () => {
       if (dom.adminPanel) dom.adminPanel.classList.remove('hidden-panel');
       if (dom.openAdminBtn) dom.openAdminBtn.classList.add('hidden-btn');
-    });
-  }
-
-  if (dom.hotelNameInput && dom.hotelNameText) {
-    dom.hotelNameInput.addEventListener('input', (e) => {
-      dom.hotelNameText.textContent = e.target.value || "Hilton";
-    });
-  }
-
-  if (dom.logoUpload && dom.hotelLogoContainer) {
-    dom.logoUpload.addEventListener('change', function (e) {
-      if (this.files && this.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          dom.hotelLogoContainer.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full" alt="Logo">`;
-        };
-        reader.readAsDataURL(this.files[0]);
-      }
     });
   }
 
@@ -1101,13 +1087,19 @@ export function initBookingsManagement() {
 // ============================================
 
 // Render Services Grid in Admin Panel
-export function renderServicesGrid() {
-  const grid = document.getElementById('services-admin-grid');
+// Render services grid inside property modal (per-hotel)
+export function renderPropertyServicesGrid(propertyId) {
+  const grid = document.getElementById('property-services-grid');
   if (!grid) return;
 
-  const allServices = services.getAllServices();
+  const propServices = services.getServicesByProperty(propertyId);
 
-  grid.innerHTML = allServices.map(service => `
+  if (propServices.length === 0) {
+    grid.innerHTML = '<div style="color:#9ca3af;font-size:13px;text-align:center;padding:12px 0;">Немає послуг. Натисніть «Додати».</div>';
+    return;
+  }
+
+  grid.innerHTML = propServices.map(service => `
   <div class="service-admin-card" data-service-id="${service.id}">
     ${service.mainPhoto
       ? `<img src="${service.mainPhoto}" alt="${service.name}">`
@@ -1120,12 +1112,15 @@ export function renderServicesGrid() {
   </div>
 `).join('');
 
-  // Add click listeners
   grid.querySelectorAll('.service-admin-card').forEach(card => {
     card.addEventListener('click', () => {
       openItemPreview('service', card.dataset.serviceId);
     });
   });
+}
+
+export function renderServicesGrid() {
+  // No-op: global services grid removed; use renderPropertyServicesGrid(propertyId) instead
 }
 
 // Open Service Modal
@@ -1279,6 +1274,7 @@ function saveService() {
   }
 
   const serviceData = {
+    propertyId: currentServicePropertyId,
     name,
     description,
     price,
@@ -1303,7 +1299,9 @@ function saveService() {
   }
 
   closeServiceModal();
-  renderServicesGrid();
+  if (currentServicePropertyId) {
+    renderPropertyServicesGrid(currentServicePropertyId);
+  }
 }
 
 // Delete Service
@@ -1313,13 +1311,14 @@ function deleteService() {
   if (confirm('Видалити цю послугу?')) {
     services.deleteService(currentEditServiceId);
     closeServiceModal();
-    renderServicesGrid();
+    if (currentServicePropertyId) {
+      renderPropertyServicesGrid(currentServicePropertyId);
+    }
   }
 }
 
 // Initialize Service Management
 export function initServiceManagement() {
-  const addBtn = document.getElementById('add-service-btn');
   const modalClose = document.getElementById('service-modal-close');
   const cancelBtn = document.getElementById('service-cancel-btn');
   const saveBtn = document.getElementById('service-save-btn');
@@ -1329,8 +1328,13 @@ export function initServiceManagement() {
   const galleryAddBtn = document.getElementById('service-gallery-add-btn');
   const galleryInput = document.getElementById('service-gallery-photo-input');
 
-  if (addBtn) {
-    addBtn.addEventListener('click', () => openServiceModal());
+  // "Add service" button inside property modal
+  const propertyAddServiceBtn = document.getElementById('property-add-service-btn');
+  if (propertyAddServiceBtn) {
+    propertyAddServiceBtn.addEventListener('click', () => {
+      currentServicePropertyId = currentEditPropertyId;
+      openServiceModal();
+    });
   }
 
   if (modalClose) {
@@ -1420,8 +1424,6 @@ export function initServiceManagement() {
     });
   }
 
-  // Initial render
-  renderServicesGrid();
 }
 
 // Render Service Reviews List
@@ -1591,6 +1593,8 @@ function initItemPreview() {
     if (type === 'room') {
       openRoomModal(id);
     } else if (type === 'service') {
+      const svc = services.getService(id);
+      currentServicePropertyId = svc ? svc.propertyId : currentEditPropertyId;
       openServiceModal(id);
     }
   });
@@ -2013,6 +2017,7 @@ export function renderOrchestraGrid() {
       <div>
         <div class="font-bold text-sm text-gray-800">${prop.name}</div>
         <div class="text-xs text-gray-500 mt-1 truncate max-w-[200px]">${prop.info || 'Немає опису'}</div>
+        ${prop.geoCity ? `<div class="text-xs mt-1" style="color:#059669;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline;vertical-align:middle;margin-right:2px;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>${prop.geoCity}${prop.geoCountry ? ', ' + prop.geoCountry : ''}</div>` : '<div class="text-xs mt-1" style="color:#d97706;">⚠ Без гео-тегу</div>'}
       </div>
       <div class="flex items-center gap-3">
         ${prop.photoUrl ? `<img src="${prop.photoUrl}" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;">` : ''}
@@ -2033,7 +2038,7 @@ export function renderOrchestraGrid() {
   });
 }
 
-export function openPropertyModal(id = null) {
+export function openPropertyModal(id = null, type = 'orchestra') {
   const modal = document.getElementById('property-modal-overlay');
   if (!modal) return;
 
@@ -2041,57 +2046,88 @@ export function openPropertyModal(id = null) {
   const deleteBtn = document.getElementById('property-delete-btn');
 
   currentEditPropertyId = id;
+  currentEditPropertyType = type;
 
-  // Reset photo state
+  // Reset photo/logo state
   window._tempPropertyPhotoUrl = null;
+  window._tempPropertyLogoUrl = null;
 
   const photoPreviewWrap = document.getElementById('property-photo-preview-wrap');
   const photoPreview = document.getElementById('property-photo-preview');
   const photoInput = document.getElementById('property-photo-input');
+  const logoPreviewWrap = document.getElementById('property-logo-preview-wrap');
+  const logoPreview = document.getElementById('property-logo-preview');
+  const logoInput = document.getElementById('property-logo-input');
   if (photoInput) photoInput.value = '';
+  if (logoInput) logoInput.value = '';
 
-  if (id) {
-    const prop = orchestra.getProperty(id);
-    if (prop) {
-      title.textContent = 'Редагувати готель';
-      document.getElementById('property-name-input').value = prop.name || '';
-      document.getElementById('property-info-input').value = prop.info || '';
-      document.getElementById('property-currency-input').value = prop.currency || '';
-      document.getElementById('property-search-toggle').checked = prop.includeInSearch !== false;
-      document.getElementById('property-shortlist-toggle').checked = prop.showInShortlist !== false;
+  const getHotel = id
+    ? (type === 'discovery' ? orchestra.getDiscoveryHotel(id) : orchestra.getProperty(id))
+    : null;
 
-      // Discovery
-      document.getElementById('property-tags-input').value = prop.discoveryTags || '';
-      document.getElementById('property-stars-input').value = prop.starRating || '';
-      document.getElementById('property-min-price-input').value = prop.minPrice || '';
+  if (id && getHotel) {
+    const prop = getHotel;
+    title.textContent = 'Редагувати готель';
+    document.getElementById('property-name-input').value = prop.name || '';
+    document.getElementById('property-info-input').value = prop.info || '';
+    document.getElementById('property-currency-input').value = prop.currency || '';
+    document.getElementById('property-search-toggle').checked = prop.includeInSearch !== false;
+    document.getElementById('property-shortlist-toggle').checked = prop.showInShortlist !== false;
 
-      // Photo
-      if (prop.photoUrl && photoPreview && photoPreviewWrap) {
-        photoPreview.src = prop.photoUrl;
-        photoPreviewWrap.style.display = 'block';
-        window._tempPropertyPhotoUrl = prop.photoUrl;
-      } else if (photoPreviewWrap) {
-        photoPreviewWrap.style.display = 'none';
-      }
+    document.getElementById('property-geo-city-input').value = prop.geoCity || '';
+    document.getElementById('property-geo-country-input').value = prop.geoCountry || '';
+    document.getElementById('property-tags-input').value = prop.discoveryTags || '';
+    document.getElementById('property-stars-input').value = prop.starRating || '';
+    document.getElementById('property-min-price-input').value = prop.minPrice || '';
 
-      deleteBtn.style.display = 'block';
+    // Logo
+    if (prop.logoUrl && logoPreview && logoPreviewWrap) {
+      logoPreview.src = prop.logoUrl;
+      logoPreviewWrap.style.display = 'block';
+      window._tempPropertyLogoUrl = prop.logoUrl;
+    } else if (logoPreviewWrap) {
+      logoPreviewWrap.style.display = 'none';
     }
+
+    // Cover photo
+    if (prop.photoUrl && photoPreview && photoPreviewWrap) {
+      photoPreview.src = prop.photoUrl;
+      photoPreviewWrap.style.display = 'block';
+      window._tempPropertyPhotoUrl = prop.photoUrl;
+    } else if (photoPreviewWrap) {
+      photoPreviewWrap.style.display = 'none';
+    }
+
+    deleteBtn.style.display = 'block';
   } else {
-    title.textContent = 'Новий готель';
+    title.textContent = type === 'discovery' ? 'Новий незалежний готель' : 'Новий готель';
     document.getElementById('property-name-input').value = '';
     document.getElementById('property-info-input').value = '';
     document.getElementById('property-currency-input').value = 'USD';
     document.getElementById('property-search-toggle').checked = true;
     document.getElementById('property-shortlist-toggle').checked = true;
 
-    // Discovery
+    document.getElementById('property-geo-city-input').value = '';
+    document.getElementById('property-geo-country-input').value = '';
     document.getElementById('property-tags-input').value = '';
     document.getElementById('property-stars-input').value = 5;
     document.getElementById('property-min-price-input').value = 100;
 
     if (photoPreviewWrap) photoPreviewWrap.style.display = 'none';
+    if (logoPreviewWrap) logoPreviewWrap.style.display = 'none';
 
     deleteBtn.style.display = 'none';
+  }
+
+  // Show/render per-property services section
+  const propServicesSection = document.getElementById('property-services-section');
+  if (propServicesSection) {
+    if (id) {
+      propServicesSection.style.display = 'block';
+      renderPropertyServicesGrid(id);
+    } else {
+      propServicesSection.style.display = 'none';
+    }
   }
 
   modal.classList.add('active');
@@ -2101,6 +2137,7 @@ export function closePropertyModal() {
   const modal = document.getElementById('property-modal-overlay');
   if (modal) modal.classList.remove('active');
   currentEditPropertyId = null;
+  currentEditPropertyType = 'orchestra';
 }
 
 function saveProperty() {
@@ -2110,11 +2147,13 @@ function saveProperty() {
   const includeInSearch = document.getElementById('property-search-toggle').checked;
   const showInShortlist = document.getElementById('property-shortlist-toggle').checked;
 
-  // Discovery
+  const geoCity = document.getElementById('property-geo-city-input').value.trim();
+  const geoCountry = document.getElementById('property-geo-country-input').value.trim();
   const discoveryTags = document.getElementById('property-tags-input').value.trim();
   const starRating = parseInt(document.getElementById('property-stars-input').value) || 5;
   const minPrice = parseInt(document.getElementById('property-min-price-input').value) || 100;
   const photoUrl = window._tempPropertyPhotoUrl || '';
+  const logoUrl = window._tempPropertyLogoUrl || '';
 
   if (!name) {
     alert('Введіть назву готелю');
@@ -2127,29 +2166,51 @@ function saveProperty() {
     currency,
     includeInSearch,
     showInShortlist,
+    geoCity,
+    geoCountry,
     discoveryTags,
     starRating,
     minPrice,
-    photoUrl
+    photoUrl,
+    logoUrl
   };
 
-  if (currentEditPropertyId) {
-    orchestra.updateProperty(currentEditPropertyId, propData);
+  if (currentEditPropertyType === 'discovery') {
+    if (currentEditPropertyId) {
+      orchestra.updateDiscoveryHotel(currentEditPropertyId, propData);
+    } else {
+      orchestra.addDiscoveryHotel(propData);
+    }
+    closePropertyModal();
+    renderDiscoveryHotelsGrid();
   } else {
-    orchestra.addProperty(propData);
+    if (currentEditPropertyId) {
+      orchestra.updateProperty(currentEditPropertyId, propData);
+    } else {
+      orchestra.addProperty(propData);
+    }
+    closePropertyModal();
+    renderOrchestraGrid();
   }
 
-  closePropertyModal();
-  renderOrchestraGrid();
+  // Refresh checkin hotel selector if visible
+  populateCheckinHotelSelect();
 }
 
 function deletePropertyAction() {
   if (!currentEditPropertyId) return;
 
   if (confirm('Видалити цей готель?')) {
-    orchestra.deleteProperty(currentEditPropertyId);
-    closePropertyModal();
-    renderOrchestraGrid();
+    if (currentEditPropertyType === 'discovery') {
+      orchestra.deleteDiscoveryHotel(currentEditPropertyId);
+      closePropertyModal();
+      renderDiscoveryHotelsGrid();
+    } else {
+      orchestra.deleteProperty(currentEditPropertyId);
+      closePropertyModal();
+      renderOrchestraGrid();
+    }
+    populateCheckinHotelSelect();
   }
 }
 
@@ -2188,7 +2249,7 @@ export function initOrchestraManagement() {
     });
   }
 
-  // Photo upload handlers
+  // Cover photo upload handlers
   const photoUploadBtn = document.getElementById('property-photo-upload-btn');
   const photoInput = document.getElementById('property-photo-input');
   const photoPreviewWrap = document.getElementById('property-photo-preview-wrap');
@@ -2219,8 +2280,104 @@ export function initOrchestraManagement() {
     });
   }
 
+  // Logo upload handlers
+  const logoUploadBtn = document.getElementById('property-logo-upload-btn');
+  const logoInput = document.getElementById('property-logo-input');
+  const logoPreviewWrap = document.getElementById('property-logo-preview-wrap');
+  const logoPreview = document.getElementById('property-logo-preview');
+  const logoRemoveBtn = document.getElementById('property-logo-remove-btn');
+
+  if (logoUploadBtn && logoInput) {
+    logoUploadBtn.addEventListener('click', () => logoInput.click());
+    logoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        window._tempPropertyLogoUrl = ev.target.result;
+        logoPreview.src = ev.target.result;
+        logoPreviewWrap.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  if (logoRemoveBtn && logoPreviewWrap) {
+    logoRemoveBtn.addEventListener('click', () => {
+      window._tempPropertyLogoUrl = null;
+      logoPreview.src = '';
+      logoPreviewWrap.style.display = 'none';
+      if (logoInput) logoInput.value = '';
+    });
+  }
+
+  // ---- Chain Branding (network name + logo) ----
+  const chainNameInput = document.getElementById('network-chain-name-input');
+  const chainLogoUploadBtn = document.getElementById('network-chain-logo-upload-btn');
+  const chainLogoInput = document.getElementById('network-chain-logo-input');
+  const chainLogoPreviewWrap = document.getElementById('network-chain-logo-preview-wrap');
+  const chainLogoPreview = document.getElementById('network-chain-logo-preview');
+  const chainLogoRemoveBtn = document.getElementById('network-chain-logo-remove-btn');
+
+  // Load saved network settings
+  const savedNetworkSettings = orchestra.getNetworkSettings();
+  if (chainNameInput) chainNameInput.value = savedNetworkSettings.name || '';
+  if (savedNetworkSettings.logoUrl && chainLogoPreview && chainLogoPreviewWrap) {
+    chainLogoPreview.src = savedNetworkSettings.logoUrl;
+    chainLogoPreviewWrap.classList.remove('hidden');
+    window._tempNetworkLogoUrl = savedNetworkSettings.logoUrl;
+  }
+
+  // Auto-save chain name on input
+  if (chainNameInput) {
+    chainNameInput.addEventListener('input', () => {
+      const current = orchestra.getNetworkSettings();
+      orchestra.saveNetworkSettings({ ...current, name: chainNameInput.value.trim() });
+      // Update header immediately if orchestra mode is on and no specific hotel selected
+      if (orchestra.getOrchestraMode() && !orchestra.getCheckedInHotelId()) {
+        setOrchestraHeader();
+      }
+    });
+  }
+
+  // Logo upload
+  if (chainLogoUploadBtn && chainLogoInput) {
+    chainLogoUploadBtn.addEventListener('click', () => chainLogoInput.click());
+    chainLogoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        window._tempNetworkLogoUrl = ev.target.result;
+        chainLogoPreview.src = ev.target.result;
+        chainLogoPreviewWrap.classList.remove('hidden');
+        const current = orchestra.getNetworkSettings();
+        orchestra.saveNetworkSettings({ ...current, logoUrl: ev.target.result });
+        if (orchestra.getOrchestraMode() && !orchestra.getCheckedInHotelId()) {
+          setOrchestraHeader();
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Logo remove
+  if (chainLogoRemoveBtn && chainLogoPreviewWrap) {
+    chainLogoRemoveBtn.addEventListener('click', () => {
+      window._tempNetworkLogoUrl = null;
+      chainLogoPreview.src = '';
+      chainLogoPreviewWrap.classList.add('hidden');
+      if (chainLogoInput) chainLogoInput.value = '';
+      const current = orchestra.getNetworkSettings();
+      orchestra.saveNetworkSettings({ ...current, logoUrl: '' });
+      if (orchestra.getOrchestraMode() && !orchestra.getCheckedInHotelId()) {
+        setOrchestraHeader();
+      }
+    });
+  }
+
   const addBtn = document.getElementById('add-property-btn');
-  if (addBtn) addBtn.addEventListener('click', () => openPropertyModal());
+  if (addBtn) addBtn.addEventListener('click', () => openPropertyModal(null, 'orchestra'));
 
   const modalClose = document.getElementById('property-modal-close');
   if (modalClose) modalClose.addEventListener('click', closePropertyModal);
@@ -2237,16 +2394,69 @@ export function initOrchestraManagement() {
   renderOrchestraGrid();
 }
 
+// ============================================
+// DISCOVERY HOTELS (Independent)
+// ============================================
+
+export function renderDiscoveryHotelsGrid() {
+  const grid = document.getElementById('discovery-hotels-admin-list');
+  if (!grid) return;
+
+  const allHotels = orchestra.getDiscoveryHotels();
+
+  if (allHotels.length === 0) {
+    grid.innerHTML = '<div class="text-sm text-gray-500 text-center py-4">Немає незалежних готелів</div>';
+    return;
+  }
+
+  grid.innerHTML = allHotels.map(hotel => `
+    <div class="flex items-center justify-between p-3 bg-white border border-indigo-100 rounded-lg shadow-sm hover:shadow transition">
+      <div class="flex items-center gap-2">
+        ${hotel.logoUrl
+    ? `<img src="${hotel.logoUrl}" alt="" style="width:32px;height:32px;object-fit:cover;border-radius:50%;flex-shrink:0;border:1px solid #e5e7eb;">`
+    : `<div style="width:32px;height:32px;border-radius:50%;background:#e0e7ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;color:#6366f1;font-size:14px;">${(hotel.name || '?')[0].toUpperCase()}</div>`}
+        <div>
+          <div class="font-bold text-sm text-gray-800">${hotel.name}</div>
+          <div class="text-xs text-gray-500 truncate max-w-[170px]">${hotel.info || 'Немає опису'}</div>
+          ${hotel.geoCity ? `<div class="text-xs" style="color:#059669;"><svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline;vertical-align:middle;margin-right:2px;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>${hotel.geoCity}</div>` : '<div class="text-xs" style="color:#d97706;">⚠ Без гео</div>'}
+        </div>
+      </div>
+      <button class="edit-discovery-hotel-btn text-indigo-500 hover:text-indigo-700 p-1" data-id="${hotel.id}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+      </button>
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.edit-discovery-hotel-btn').forEach(btn => {
+    btn.addEventListener('click', () => openPropertyModal(btn.dataset.id, 'discovery'));
+  });
+}
+
 // Discovery Mode Init (independent from Orchestra)
 function initDiscoveryMode() {
   const discoveryToggle = document.getElementById('discovery-mode-toggle');
   const discoveryAutostartToggle = document.getElementById('discovery-autostart-toggle');
+  const discoveryHotelsSettings = document.getElementById('discovery-hotels-settings');
+
+  const syncDiscoveryHotelsVisibility = (active) => {
+    if (discoveryHotelsSettings) {
+      if (active) discoveryHotelsSettings.classList.remove('hidden');
+      else discoveryHotelsSettings.classList.add('hidden');
+    }
+  };
 
   if (discoveryToggle) {
-    discoveryToggle.checked = orchestra.getDiscoveryMode();
+    const isActive = orchestra.getDiscoveryMode();
+    discoveryToggle.checked = isActive;
+    syncDiscoveryHotelsVisibility(isActive);
+
     discoveryToggle.addEventListener('change', (e) => {
       const active = e.target.checked;
       orchestra.setDiscoveryMode(active);
+      syncDiscoveryHotelsVisibility(active);
 
       if (active) {
         // Auto-disable Orchestrator (mutually exclusive)
@@ -2262,6 +2472,7 @@ function initDiscoveryMode() {
         setOrchestraHeader();
       }
       addQuickReplies();
+      populateCheckinHotelSelect();
     });
   }
 
@@ -2269,17 +2480,59 @@ function initDiscoveryMode() {
     discoveryAutostartToggle.checked = orchestra.getDiscoveryAutoStart();
     discoveryAutostartToggle.addEventListener('change', (e) => orchestra.setDiscoveryAutoStart(e.target.checked));
   }
+
+  // Discovery hotels "Add" button
+  const addDiscBtn = document.getElementById('add-discovery-hotel-btn');
+  if (addDiscBtn) addDiscBtn.addEventListener('click', () => openPropertyModal(null, 'discovery'));
+
+  renderDiscoveryHotelsGrid();
+}
+
+// Populate the checkin hotel selector with all available hotels
+function populateCheckinHotelSelect() {
+  const select = document.getElementById('checkin-hotel-select');
+  const selectorWrap = document.getElementById('checkin-hotel-selector');
+  if (!select) return;
+
+  const networkHotels = orchestra.getNetworkProperties().map(h => ({ ...h, _source: 'network' }));
+  const discHotels = orchestra.getDiscoveryHotels().map(h => ({ ...h, _source: 'discovery' }));
+  const allHotels = [...networkHotels, ...discHotels];
+
+  if (allHotels.length === 0) {
+    if (selectorWrap) selectorWrap.style.display = 'none';
+    return;
+  }
+
+  if (selectorWrap) selectorWrap.style.display = '';
+
+  const savedId = orchestra.getCheckedInHotelId();
+  select.innerHTML = allHotels.map(h =>
+    `<option value="${h.id}"${h.id === savedId ? ' selected' : ''}>${h.name}${h._source === 'discovery' ? ' (незалежний)' : ''}</option>`
+  ).join('');
+
+  select.addEventListener('change', (e) => {
+    orchestra.setCheckedInHotelId(e.target.value);
+    // Update chat header with selected hotel
+    const hotel = networkHotels.find(h => h.id === e.target.value) || discHotels.find(h => h.id === e.target.value);
+    if (hotel) setOrchestraHeader(hotel.name, hotel.logoUrl || hotel.photoUrl);
+  });
+
+  // If nothing saved, auto-select first
+  if (!savedId && allHotels.length > 0) {
+    select.value = allHotels[0].id;
+    orchestra.setCheckedInHotelId(allHotels[0].id);
+  }
 }
 
 // Guest Checked-In Toggle Init
 function initCheckedInToggle() {
   const checkedInToggle = document.getElementById('checked-in-toggle');
-  const checkedInContainer = document.getElementById('checked-in-container');
 
   if (checkedInToggle) {
     checkedInToggle.checked = getGuestCheckedIn();
     checkedInToggle.addEventListener('change', (e) => {
       setGuestCheckedIn(e.target.checked);
+      if (e.target.checked) populateCheckinHotelSelect();
       addQuickReplies();
     });
   }

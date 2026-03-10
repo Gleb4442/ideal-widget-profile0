@@ -87,11 +87,17 @@ export function getService(id) {
   return services.find(service => service.id === id) || null;
 }
 
+// Get services for a specific property
+export function getServicesByProperty(propertyId) {
+  return loadServices().filter(s => s.propertyId === propertyId);
+}
+
 // Add new service
 export function addService(serviceData) {
   const services = loadServices();
   const newService = {
     id: generateId(),
+    propertyId: serviceData.propertyId || null,
     name: serviceData.name || '',
     description: serviceData.description || '',
     price: serviceData.price || 0,
