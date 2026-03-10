@@ -42,20 +42,29 @@ export function renderLanguageMenu() {
             <div class="w-[52px] h-[52px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-50 text-3xl shadow-sm border border-gray-100/50">
                 ${lang.flag}
             </div>
-            <span class="font-bold text-[17px] text-gray-900">${lang.name}</span>
+            <div class="flex flex-col items-start translate-y-[1px]">
+              <span class="font-bold text-[17px] text-gray-900 leading-none">${lang.name}</span>
+              <span class="text-[12px] text-gray-400 mt-1 font-medium leading-none">${lang.nativeName}</span>
+            </div>
         </div>
-        <div class="w-6 h-6 rounded-full bg-[#3B82F6] flex items-center justify-center shadow-sm">
+        <div class="w-7 h-7 rounded-full bg-[#3B82F6] flex items-center justify-center shadow-md border-2 border-white">
             <span class="material-symbols-rounded text-white text-[18px]">check</span>
         </div>
       `;
     } else {
-      btn.className = 'language-option';
+      btn.className = 'language-option group';
       btn.innerHTML = `
         <div class="flex items-center space-x-4">
-            <div class="w-[52px] h-[52px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-50/50 text-3xl opacity-90 group-hover:opacity-100 transition-opacity">
+            <div class="w-[52px] h-[52px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-50/50 text-3xl opacity-90 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105 group-hover:shadow-sm">
                 ${lang.flag}
             </div>
-            <span class="font-medium text-[17px] text-gray-700 group-hover:text-gray-900 transition-colors">${lang.name}</span>
+            <div class="flex flex-col items-start translate-y-[1px]">
+              <span class="font-medium text-[17px] text-gray-700 group-hover:text-gray-900 transition-colors leading-none">${lang.name}</span>
+              <span class="text-[12px] text-gray-400 mt-1 font-medium leading-none">${lang.nativeName}</span>
+            </div>
+        </div>
+        <div class="w-7 h-7 rounded-full bg-gray-100/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-300 transform scale-75 group-hover:scale-100">
+            <span class="material-symbols-rounded text-gray-400 text-[18px]">arrow_forward</span>
         </div>
       `;
     }

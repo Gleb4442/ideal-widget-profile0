@@ -195,7 +195,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 14px;
+    width: 100%;
+    padding: 14px 18px;
     background: transparent;
     border: 1px solid transparent;
     border-radius: 20px;
