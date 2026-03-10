@@ -2153,13 +2153,24 @@ export function addPropertyShortlist(propertyIds) {
         .join('')
       : '';
 
+    const starsCount = parseInt(prop.starRating) || 0;
+    const starsHTML = starsCount > 0
+      ? `<div class="text-yellow-400 text-xs mb-1 leading-none">${'★'.repeat(Math.min(starsCount, 5))}${'☆'.repeat(Math.max(0, 5 - starsCount))}</div>`
+      : '';
+
+    const priceHTML = prop.minPrice
+      ? `<div class="text-xs text-gray-400 mb-2">від <span class="font-semibold text-gray-700">${prop.minPrice} ${prop.currency || 'USD'}</span>/ніч</div>`
+      : '';
+
     card.innerHTML = `
       <div class="relative">
         ${imgHTML}
       </div>
       <div class="p-3">
-        <div class="font-bold text-sm text-gray-800 mb-1 leading-tight truncate">${prop.name}</div>
-        <div class="flex flex-wrap gap-1 mb-3 min-h-[20px]">${tagsHTML}</div>
+        <div class="font-bold text-sm text-gray-800 mb-0.5 leading-tight truncate">${prop.name}</div>
+        ${starsHTML}
+        <div class="flex flex-wrap gap-1 mb-2 min-h-[20px]">${tagsHTML}</div>
+        ${priceHTML}
         <button class="select-property-btn w-full py-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors rounded-xl text-xs font-bold" data-id="${prop.id}">
           Вибрати цей готель
         </button>
@@ -4367,7 +4378,7 @@ export function initTelegramBookingModalListeners() {
 }
 */
 
-export { setCurrentLang, getCurrentLang } from './language.js';
+export { setCurrentLang } from './language.js';
 
 export function getSelectedRoom() {
   return selectedRoom;
