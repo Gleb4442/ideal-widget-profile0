@@ -1828,6 +1828,9 @@ export function updateUITexts() {
   });
 
   // Update language menu active state
+  updateLanguageMenuState();
+}
+
 // Update language menu active state
 function updateLanguageMenuState() {
   // Re-render the menu to update checkmarks and styles
@@ -2749,7 +2752,7 @@ export function checkRoomSelectionInMessage(message) {
   );
 
   if (selectedRoom) {
-    setRoomContext(selectedRoom);
+    enterRoomContext(selectedRoom.id);
     offerServicesAfterRoomSelection(selectedRoom.name);
     return true;
   }
