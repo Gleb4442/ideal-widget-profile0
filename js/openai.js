@@ -445,30 +445,48 @@ ${servicesList}
 ### МЕНЮ РЕСТОРАНУ
 Когда гость интересуется едой, меню, блюдами или рестораном — ОБЯЗАТЕЛЬНО предложи посмотреть меню ресторана. Скажи что сейчас покажешь меню с подробной информацией о блюдах.
 
-### ПОЭТАПНЫЙ СБОР ДАННЫХ ДЛЯ БРОНИРОВАНИЯ
-⚠️ КРИТИЧЕСКИ ВАЖНО: Запрашивай данные ПОЭТАПНО, по ОДНОМУ полю за раз!
-НЕ запрашивай несколько полей одновременно.
+### КОНВЕРСИОННАЯ ВОРОНКА (ВЫСШИЙ ПРИОРИТЕТ)
+⚠️ КРИТИЧЕСКИ ВАЖНО: НЕ собирай персональные данные (имя, телефон, даты, email) пока гость НЕ ВЫБРАЛ конкретный номер!
+Сначала помоги гостю ПОСМОТРЕТЬ и ВЫБРАТЬ номер, и только ПОТОМ начинай сбор данных.
 
-**Последовательность сбора данных (JSON-ключи):**
+**Текущий этап воронки:** ${funnelStage}
+**Выбранный номер:** ${bookingState?.collectedData?.selectedRoom || 'НЕ ВЫБРАН'}
+**Активное бронирование:** ${hasActiveBooking ? 'ДА' : 'НЕТ'}
+
+**Правила поведения по этапам:**
+${!bookingState?.collectedData?.selectedRoom ? `
+🔴 НОМЕР ЕЩЁ НЕ ВЫБРАН — НЕ СОБИРАЙ ДАННЫЕ!
+Твоя задача сейчас: помочь гостю выбрать номер.
+
+- Если гость пишет о бронировании, номерах, ценах, проживании — скажи что сейчас покажешь доступные варианты:
+  "Покажу доступные номера! 😊" или "Вот наши лучшие варианты! 🏨"
+  Карточки номеров появятся автоматически — не нужно их описывать текстом.
+- Если гость спрашивает об услугах, SPA, трансфере — скажи что покажешь каталог услуг.
+  Карточки услуг появятся автоматически.
+- Если гость спрашивает о еде, меню, ресторане — скажи что покажешь меню.
+- Если гость задаёт конкретный вопрос (WiFi, завтрак, парковка) — ответь на него, затем мягко предложи посмотреть номера.
+- НЕ СПРАШИВАЙ имя, телефон, даты, email, количество гостей на этом этапе!
+- Отвечай кратко (1-3 предложения). Карточки сделают работу за тебя.
+` : `
+🟢 НОМЕР ВЫБРАН: ${bookingState.collectedData.selectedRoom}
+Теперь собирай данные для бронирования ПОЭТАПНО, по ОДНОМУ полю за раз.
+
+**Последовательность сбора:**
 1. \`fullName\` — ФИО гостя
 2. \`phone\` — Номер телефона
 3. \`checkIn\` / \`checkOut\` — Даты заезда и выезда
 4. \`email\` — Email адрес
 5. \`guests\` — Количество гостей (по необходимости)
-6. \`selectedRoom\` — Выбор номера
 
 **Текущий шаг:** ${currentStep}
 **Следующее поле для запроса:** ${stepToField[currentStep]}
 
-**Собранные данные:**
-${stateDescription || 'Начало диалога'}
+**Собранные данные:** ${stateDescription || 'Начало сбора'}
 
-**Активное бронирование:** ${hasActiveBooking ? 'ДА - у гостя есть подтверждённое бронирование' : 'НЕТ'}
-
-### ФОРМАТ ВЫВОДА ПОСЛЕ СБОРА ДАННЫХ
-Когда все обязательные данные собраны (fullName, phone, checkIn, checkOut, email):
+Когда все данные собраны (fullName, phone, checkIn, checkOut, email):
 "✅ Отлично! Бронирование успешно сохранено.
 📞 **Наш менеджер свяжется с вами в ближайшее время для подтверждения деталей.**"
+`}
 
 ### СЦЕНАРИИ
 1. **Изменения/Отмены**:
@@ -482,27 +500,10 @@ ${stateDescription || 'Начало диалога'}
 - Не запускай эскалацию без явного согласия гостя.
 
 ### ВАЖНЫЕ ПРАВИЛА
-- Если гость задаёт конкретный вопрос (о WiFi, завтраке, трансфере) — СНАЧАЛА ответь на него, затем плавно возвращайся к воронке бронирования
 - Будь дружелюбным и ненавязчивым
-- Отвечай кратко (2-4 предложения)
-- Если гость спрашивает о номерах или хочет посмотреть варианты — скажи что сейчас покажешь доступные номера
-
-### КОНВЕРСИОННАЯ ВОРОНКА (ВЫСШИЙ ПРИОРИТЕТ)
-Твоя ГЛАВНАЯ цель — конверсия в бронирование. Каждый ответ должен продвигать гостя к действию.
-
-**Текущий этап воронки:** ${funnelStage}
-
-**Правила поведения по этапам:**
-- Этап "initial": Если гость пишет о бронировании, отеле, номерах, ценах — СРАЗУ задай проактивный вопрос:
-  "Хотите посмотреть доступные номера? Покажу лучшие варианты прямо сейчас! 😊"
-  НЕ давай просто информацию без конкретного призыва к действию.
-- Этап "rooms_shown": Предложи дополнительные услуги:
-  "Хотите добавить дополнительные услуги к бронированию? У нас есть SPA, трансфер, экскурсии 🌿"
-- Этап "services_shown": Направляй к завершению бронирования.
-
-**ВСЕГДА:** Если гость говорит "да", "покажи", "хочу", "давай" — НЕМЕДЛЕННО двигай к следующему шагу воронки.
-**НЕ:** "Чем ещё могу помочь?" (слабый призыв)
-**ДА:** "Хотите посмотреть номера прямо сейчас?" (конкретное действие)`;
+- Отвечай кратко (1-3 предложения)
+- ВСЕГДА: Если гость говорит "да", "покажи", "хочу", "давай" — это согласие посмотреть варианты. Скажи что показываешь (карточки появятся автоматически).
+- НЕ описывай номера текстом если они будут показаны карточками — просто скажи "Вот наши варианты!" или подобное
 }
 
 // Build system prompt for room-specific chat
@@ -554,28 +555,16 @@ function buildRoomSystemPrompt(room, hotelName = 'Hilton', bookingState = null) 
 ### ИНФОРМАЦИЯ ОБ ОТЕЛЕ
 ${hotelInfo || 'Информация не указана.'}
 
-### ПОЭТАПНЫЙ СБОР ДАННЫХ ДЛЯ БРОНИРОВАНИЯ
-⚠️ КРИТИЧЕСКИ ВАЖНО: Запрашивай данные ПОЭТАПНО, по ОДНОМУ полю за раз!
-
-**Последовательность:**
-1. \`fullName\` — ФИО гостя
-2. \`phone\` — Номер телефона
-3. \`checkIn\` / \`checkOut\` — Даты заезда и выезда
-4. \`email\` — Email адрес
-
-**Текущий шаг:** ${currentStep}
-**Следующее поле:** ${stepToField[currentStep]}
-**Собранные данные:** ${stateDescription}
+### ТВОЯ ЗАДАЧА
+- Отвечай на вопросы об этом конкретном номере (площадь, цена, удобства, фото)
+- Если гость хочет забронировать — предложи нажать кнопку "Забронювати" на карточке номера
+- НЕ собирай персональные данные (имя, телефон, даты) на этом этапе — это произойдёт автоматически после нажатия кнопки бронирования
+- Отвечай кратко (1-3 предложения)
+- Если вопрос выходит за рамки информации — предложи обратиться к персоналу
 
 ### ЭСКАЛАЦИЯ НА ЧЕЛОВЕКА
-- Если гость просит переключить его на живого человека (оператор/менеджер/сотрудник/человек) ИЛИ ситуация требует участия человека (жалоба, конфликт, юридические вопросы, безопасность, проблемы оплаты, нестандартный запрос) — сначала задай подтверждающий вопрос: "Хотите, чтобы я соединил вас с менеджером?"
+- Если гость просит переключить его на живого человека — задай подтверждающий вопрос: "Хотите, чтобы я соединил вас с менеджером?"
 - Не запускай эскалацию без явного согласия гостя.
-
-### ПРАВИЛА
-- Отвечай на вопросы об этом номере
-- Если гость готов бронировать — начни поэтапный сбор данных
-- Отвечай кратко (2-4 предложения)
-- Если вопрос выходит за рамки информации — предложи обратиться к персоналу`;
 }
 
 // Check if message indicates room intent
@@ -960,8 +949,11 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
   // Add current user message
   messages.push({ role: 'user', content: userMessage });
 
+  // If a room is already selected, we're in data collection mode — no carousels needed
+  const roomAlreadySelected = bookingState?.collectedData?.selectedRoom;
+
   // Check for room intent (pass history for context-aware detection)
-  let showRooms = hasRoomIntent(userMessage, conversationHistory);
+  let showRooms = !roomAlreadySelected && hasRoomIntent(userMessage, conversationHistory);
 
   // Check for services intent (pass history for context-aware detection)
   let showServices = hasServiceIntent(userMessage, conversationHistory);
@@ -970,7 +962,7 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
   const showMenu = hasMenuIntent(userMessage);
 
   // Funnel-based carousel triggers: YES response advances the funnel
-  if (hasYesIntent(userMessage)) {
+  if (!roomAlreadySelected && hasYesIntent(userMessage)) {
     if (funnelStage === 'initial' || funnelStage === 'rooms_offered') {
       showRooms = true;
     } else if (funnelStage === 'rooms_shown' || funnelStage === 'services_offered') {
@@ -1033,11 +1025,11 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
 }
 
 // Get general AI response with STREAMING support
-export async function getGeneralAIResponseStreaming(userMessage, hotelName = 'Hilton', bookingState = null, conversationHistory = [], onChunk, onComplete, onError) {
+export async function getGeneralAIResponseStreaming(userMessage, hotelName = 'Hilton', bookingState = null, conversationHistory = [], onChunk, onComplete, onError, funnelStage = 'initial') {
   const isInAppMode = loadInAppModeSettings().enabled;
   const systemPrompt = isInAppMode
     ? buildInAppSystemPrompt(hotelName)
-    : buildGeneralSystemPrompt(hotelName, bookingState);
+    : buildGeneralSystemPrompt(hotelName, bookingState, funnelStage);
 
   // Build messages with conversation history
   const messages = [
@@ -1051,14 +1043,26 @@ export async function getGeneralAIResponseStreaming(userMessage, hotelName = 'Hi
   // Add current user message
   messages.push({ role: 'user', content: userMessage });
 
+  // If a room is already selected, we're in data collection mode — no carousels needed
+  const roomAlreadySelected = bookingState?.collectedData?.selectedRoom;
+
   // Check for room intent (pass history for context-aware detection)
-  const showRooms = hasRoomIntent(userMessage, conversationHistory);
+  let showRooms = !roomAlreadySelected && hasRoomIntent(userMessage, conversationHistory);
 
   // Check for services intent (pass history for context-aware detection)
-  const showServices = hasServiceIntent(userMessage, conversationHistory);
+  let showServices = hasServiceIntent(userMessage, conversationHistory);
 
   // Check for menu intent
   const showMenu = hasMenuIntent(userMessage);
+
+  // Funnel-based carousel triggers: YES response advances the funnel
+  if (!roomAlreadySelected && hasYesIntent(userMessage)) {
+    if (funnelStage === 'initial' || funnelStage === 'rooms_offered') {
+      showRooms = true;
+    } else if (funnelStage === 'rooms_shown' || funnelStage === 'services_offered') {
+      showServices = true;
+    }
+  }
 
   // Extract booking data from user message
   const extractedData = extractBookingData(userMessage);
