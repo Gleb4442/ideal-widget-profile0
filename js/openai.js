@@ -777,8 +777,38 @@ async function callOpenAIStreaming(messages, onChunk, onComplete, onError, model
 function buildOrchestratorSystemPrompt(hotelName) {
   const currentLang = getCurrentLanguage();
   const languageName = getLanguageName(currentLang);
-  const properties = orchestra.getNetworkProperties();
-  const propsList = properties.map(p => `- ID: ${p.id} | ${p.name} (Priority: ${p.priority || 1}): ${p.info}`).join('\n');
+  const geoState = geo.getGeoState();
+  const properties = orchestra.getNetworkProperties().filter(p => p.includeInSearch !== false);
+
+  // Filter hotels by selected city if geo is active
+  let filteredProperties = properties;
+  if (geoState.city) {
+    const cityLower = geoState.city.toLowerCase();
+    filteredProperties = properties.filter(p => {
+      if (!p.geoCity) return false;
+      const hc = p.geoCity.toLowerCase();
+      return hc === cityLower || hc.includes(cityLower) || cityLower.includes(hc);
+    });
+    // If no matches in city, show all as fallback
+    if (filteredProperties.length === 0) filteredProperties = properties;
+  }
+
+  const propsList = filteredProperties.map(p =>
+    `- ID: ${p.id} | ${p.name}${p.geoCity ? ` | 📍 ${p.geoCity}${p.geoCountry ? ', ' + p.geoCountry : ''}` : ''} (Priority: ${p.priority || 1}): ${p.info}`
+  ).join('\n');
+
+  // GEO context block
+  let geoBlock = '';
+  if (geoState.city) {
+    geoBlock = `\n### GEO-ФИЛЬТР АКТИВЕН
+Выбранный город: 📍 ${geoState.city}${geoState.country ? ', ' + geoState.country : ''}
+Показывай ТОЛЬКО отели в этом городе. Если гость хочет другой город — укажи новый город в geo_update и предложи отели оттуда.`;
+  } else {
+    geoBlock = `\n### GEO: ГОРОД НЕ ВЫБРАН
+ОБЯЗАТЕЛЬНО первым делом уточни у гостя: "В каком городе вы планируете остановиться?" или "Куда планируете поездку?"
+НЕ показывай отели (action: "none") и НЕ предлагай shortlist, пока город/направление не указаны.
+Когда гость назовёт город — верни его в geo_update.`;
+  }
 
   return `Ты Roomie — AI-ассистент сети отелей "${hotelName}".
 Текущая дата: ${new Date().toISOString().split('T')[0]}.
@@ -787,23 +817,26 @@ function buildOrchestratorSystemPrompt(hotelName) {
 1. Твоя ПОЛНАЯ и ЕДИНСТВЕННАЯ задача — помочь гостю выбрать конкретный отель из сети, основываясь на его пожеланиях.
 2. Отвечай ВСЕГДА ТОЛЬКО валидным JSON объектом (без markdown блоков, только сырой JSON).
 3. Язык общения (в поле reply): ${languageName}.
+${geoBlock}
 
-### СПИСОК ОТЕЛЕЙ СЕТИ
+### СПИСОК ОТЕЛЕЙ СЕТИ${geoState.city ? ` (📍 ${geoState.city})` : ''}
 ${propsList || 'Отели не добавлены.'}
 
 ### ФОРМАТ ОТВЕТА (СТРОГИЙ JSON)
-Если гость описал пожелания, выбери 1-3 подходящих отеля и верни JSON:
+Если гость назвал город/направление или описал пожелания И город уже известен, выбери 1-3 подходящих отеля:
 {
   "action": "search",
-  "shortlist": ["ID_отеля_1", "ID_отеля_2"], 
+  "shortlist": ["ID_отеля_1", "ID_отеля_2"],
+  "geo_update": { "city": "Название города", "country": "Страна" },
   "reply": "Текст ответа на ${languageName}, кратко описывающий почему эти отели подходят."
 }
-Если запрос гостя непонятен или он просто здоровается:
+Если город ещё НЕ известен или запрос непонятен:
 {
   "action": "none",
-  "reply": "Текст ответа на ${languageName} (например: Здравствуйте! Какой отель вас интересует или какие у вас пожелания?)."
+  "geo_update": { "city": null, "country": null },
+  "reply": "Текст ответа на ${languageName} — спроси куда гость планирует поездку."
 }
-`;
+ВАЖНО: Никаких блоков markdown типа \`\`\`json. Только фигурные скобки.`;
 }
 
 // Build discovery system prompt (for Discovery Mode)
@@ -980,10 +1013,20 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
     if (isOrchestraActive) {
       try {
         const data = JSON.parse(response);
+
+        // Apply geo update if agent extracted a city
+        if (data.geo_update && (data.geo_update.city || data.geo_update.country)) {
+          const geoUpdate = {};
+          if (data.geo_update.city) geoUpdate.city = data.geo_update.city;
+          if (data.geo_update.country) geoUpdate.country = data.geo_update.country;
+          geo.setGeoState(geoUpdate);
+        }
+
         return {
           isOrchestrator: true,
           action: data.action || 'none',
           shortlist: data.shortlist || [],
+          geo_update: data.geo_update || {},
           text: data.reply || response,
           showRoomsCarousel: false,
           showServicesCarousel: false,

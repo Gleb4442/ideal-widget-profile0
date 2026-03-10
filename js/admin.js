@@ -32,6 +32,9 @@ let currentEditPropertyType = 'orchestra'; // 'orchestra' | 'discovery'
 // Property context for service editing
 let currentServicePropertyId = null;
 
+// Property context for room editing
+let currentRoomPropertyId = null;
+
 // Hotel info storage key
 const HOTEL_INFO_KEY = 'hotel_info';
 const IN_APP_MODE_KEY = 'in_app_mode';
@@ -502,8 +505,19 @@ export function renderRoomsGrid() {
 
   const allRooms = rooms.getAllRooms();
 
-  grid.innerHTML = allRooms.map(room => `
-    <div class="room-admin-card" data-room-id="${room.id}">
+  // Build hotel name lookup
+  const hotelMap = {};
+  orchestra.getNetworkProperties().forEach(h => { hotelMap[h.id] = h.name; });
+  orchestra.getDiscoveryHotels().forEach(h => { hotelMap[h.id] = h.name; });
+
+  grid.innerHTML = allRooms.map(room => {
+    const hotelName = room.propertyId ? hotelMap[room.propertyId] : null;
+    const hotelBadge = hotelName
+      ? `<div class="room-admin-card-hotel" style="position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.65);color:#fff;font-size:10px;padding:2px 7px;border-radius:8px;z-index:2;max-width:70%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${hotelName}</div>`
+      : `<div class="room-admin-card-hotel" style="position:absolute;top:6px;left:6px;background:rgba(255,140,0,0.85);color:#fff;font-size:10px;padding:2px 7px;border-radius:8px;z-index:2;">⚠ Без готелю</div>`;
+    return `
+    <div class="room-admin-card" data-room-id="${room.id}" style="position:relative;">
+      ${hotelBadge}
       ${room.mainPhoto
       ? `<img src="${room.mainPhoto}" alt="${room.name}">`
       : `<div class="room-admin-placeholder"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div>`
@@ -513,7 +527,8 @@ export function renderRoomsGrid() {
         <div class="room-admin-card-price">${rooms.formatPrice(room.pricePerNight)}</div>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 
   // Add click listeners
   grid.querySelectorAll('.room-admin-card').forEach(card => {
@@ -537,10 +552,26 @@ export function openRoomModal(roomId = null) {
   currentRoomReviews = []; // Reset reviews
   calendarCurrentMonth = new Date(); // Reset to current month
 
+  // Populate hotel selector
+  const hotelSelect = document.getElementById('room-hotel-select');
+  if (hotelSelect) {
+    const networkHotels = orchestra.getNetworkProperties().map(h => ({ ...h, _source: 'network' }));
+    const discHotels = orchestra.getDiscoveryHotels().map(h => ({ ...h, _source: 'discovery' }));
+    const allHotels = [...networkHotels, ...discHotels];
+
+    hotelSelect.innerHTML = '<option value="">— Оберіть готель —</option>' +
+      allHotels.map(h =>
+        `<option value="${h.id}">${h.name}${h._source === 'discovery' ? ' (незалежний)' : ''}</option>`
+      ).join('');
+  }
+
   if (roomId) {
     const room = rooms.getRoom(roomId);
     if (room) {
       title.textContent = 'Редагувати номер';
+      // Set hotel selector
+      currentRoomPropertyId = room.propertyId || null;
+      if (hotelSelect) hotelSelect.value = room.propertyId || '';
       document.getElementById('room-name-input').value = room.name || '';
       document.getElementById('room-description-input').value = room.description || '';
       document.getElementById('room-area-input').value = room.area || '';
@@ -561,6 +592,8 @@ export function openRoomModal(roomId = null) {
     }
   } else {
     title.textContent = 'Новий номер';
+    currentRoomPropertyId = null;
+    if (hotelSelect) hotelSelect.value = '';
     document.getElementById('room-name-input').value = '';
     document.getElementById('room-description-input').value = '';
     document.getElementById('room-area-input').value = '';
@@ -586,6 +619,7 @@ export function closeRoomModal() {
   const modal = document.getElementById('room-modal-overlay');
   modal.classList.remove('active');
   currentEditRoomId = null;
+  currentRoomPropertyId = null;
   currentMainPhoto = '';
   currentGallery = [];
 }
@@ -663,6 +697,9 @@ function saveRoom() {
   const area = parseInt(document.getElementById('room-area-input').value) || 0;
   const pricePerNight = parseInt(document.getElementById('room-price-input').value) || 0;
   const askQuestionEnabled = document.getElementById('room-ask-toggle').checked;
+  // Hotel association
+  const hotelSelect = document.getElementById('room-hotel-select');
+  const propertyId = hotelSelect ? (hotelSelect.value || null) : null;
   // Marketing fields
   const badge = document.getElementById('room-badge-input').value;
   const leftCount = parseInt(document.getElementById('room-left-count-input').value) || 0;
@@ -675,6 +712,7 @@ function saveRoom() {
   }
 
   const roomData = {
+    propertyId,
     name,
     description,
     area,

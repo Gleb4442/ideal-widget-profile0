@@ -3306,6 +3306,15 @@ export async function getAIResponse(userMessage) {
 
       // Handle Orchestrator Mode
       if (response.isOrchestrator) {
+        // Apply geo update from orchestrator response
+        if (response.geo_update && (response.geo_update.city || response.geo_update.country)) {
+          const upd = {};
+          if (response.geo_update.city) upd.city = response.geo_update.city;
+          if (response.geo_update.country) upd.country = response.geo_update.country;
+          geo.setGeoState(upd);
+          updateGeoLocationBadge();
+        }
+
         addMessage(response.text, 'ai');
         addToConversationHistory('assistant', response.text);
         if (response.action === 'search' && response.shortlist && response.shortlist.length > 0) {
@@ -3411,6 +3420,15 @@ export async function getAIResponse(userMessage) {
 
       // Handle Orchestrator Mode
       if (response.isOrchestrator) {
+        // Apply geo update from orchestrator response
+        if (response.geo_update && (response.geo_update.city || response.geo_update.country)) {
+          const upd = {};
+          if (response.geo_update.city) upd.city = response.geo_update.city;
+          if (response.geo_update.country) upd.country = response.geo_update.country;
+          geo.setGeoState(upd);
+          updateGeoLocationBadge();
+        }
+
         addMessage(response.text, 'ai');
         addToConversationHistory('assistant', response.text);
         if (response.action === 'search' && response.shortlist && response.shortlist.length > 0) {

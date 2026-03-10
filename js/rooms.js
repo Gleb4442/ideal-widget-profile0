@@ -83,6 +83,12 @@ export function getAllRooms() {
   return loadRooms();
 }
 
+// Get rooms by property ID
+export function getRoomsByProperty(propertyId) {
+  const rooms = loadRooms();
+  return rooms.filter(room => room.propertyId === propertyId);
+}
+
 // Get room by ID
 export function getRoom(id) {
   const rooms = loadRooms();
@@ -94,6 +100,7 @@ export function addRoom(roomData) {
   const rooms = loadRooms();
   const newRoom = {
     id: generateId(),
+    propertyId: roomData.propertyId || null,
     name: roomData.name || '',
     description: roomData.description || '',
     area: roomData.area || 0,
@@ -127,6 +134,7 @@ export function updateRoom(id, roomData) {
 
   rooms[index] = {
     ...rooms[index],
+    propertyId: roomData.propertyId ?? rooms[index].propertyId ?? null,
     name: roomData.name ?? rooms[index].name,
     description: roomData.description ?? rooms[index].description,
     area: roomData.area ?? rooms[index].area,
