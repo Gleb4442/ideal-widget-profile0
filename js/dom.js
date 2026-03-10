@@ -89,10 +89,6 @@ export const headerStatusPill = document.getElementById('header-status-pill');
 export const headerStatusSpinner = document.querySelector('.header-status-spinner');
 export const headerStatusText = document.querySelector('.header-status-text');
 export const onlineIndicator = document.getElementById('online-indicator');
-// Header Task Animation (In-App)
-export const headerTaskPreparing = document.getElementById('header-task-preparing');
-export const headerTaskIcon = document.getElementById('header-task-icon');
-export const headerTaskSpinner = document.getElementById('header-task-spinner');
 
 // Operator Mode Elements (Admin)
 export const operatorModeToggle = document.getElementById('operator-mode-toggle');

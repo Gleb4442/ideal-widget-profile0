@@ -1685,11 +1685,6 @@ export function setDiscoveryHeader() {
   if (dom.hotelNameText) {
     dom.hotelNameText.textContent = 'Roomie';
   }
-  // Hide app store button but keep its space so header width stays fixed
-  if (dom.guideBadgeBtn) {
-    dom.guideBadgeBtn.style.visibility = 'hidden';
-    dom.guideBadgeBtn.style.pointerEvents = 'none';
-  }
 }
 
 // Set header to Orchestra mode branding (hotel chain, not discovery)
@@ -3003,16 +2998,6 @@ export function startInAppServiceRequest(category, _userMessage) {
 
   inAppServiceState = { active: true, category, step: 'clarifying' };
 
-  // Show Header Animation
-  if (dom.headerTaskPreparing && dom.headerTaskIcon) {
-    dom.headerTaskIcon.innerHTML = IN_APP_SERVICE_ICONS[category] || '';
-    dom.headerTaskPreparing.classList.remove('hidden');
-    // Hide App store button
-    if (dom.guideBadgeBtn) {
-      dom.guideBadgeBtn.style.visibility = 'hidden';
-      dom.guideBadgeBtn.style.pointerEvents = 'none';
-    }
-  }
 
   // Ask the clarifying question (animation removed from bubble)
   addMessage(question, 'ai');
@@ -3027,15 +3012,6 @@ function handleInAppServiceFollowUp(userMessage) {
 
   const { category } = inAppServiceState;
 
-  // Hide Header Animation
-  if (dom.headerTaskPreparing) {
-    dom.headerTaskPreparing.classList.add('hidden');
-    // Restore App store button
-    if (dom.guideBadgeBtn) {
-      dom.guideBadgeBtn.style.visibility = '';
-      dom.guideBadgeBtn.style.pointerEvents = '';
-    }
-  }
 
   // Reset state first
   inAppServiceState = { active: false, category: null, step: null };
@@ -3158,6 +3134,7 @@ export function setButtonLoading(isLoading) {
 
 // Get AI Response (main handler)
 export async function getAIResponse(userMessage) {
+  console.log('[AI-RESP] getAIResponse called. orchestraMode:', orchestra.getOrchestraMode(), '| discoveryMode:', orchestra.getDiscoveryMode(), '| chatContext.mode:', chatContext.mode);
   const checkedInHotel = orchestra.getCheckedInHotel?.();
   const activeNetworkProp = orchestra.getOrchestraMode() ? orchestra.getNetworkProperties()[0] : null;
   const hotelName = checkedInHotel?.name || activeNetworkProp?.name || 'Hilton';
@@ -3306,6 +3283,7 @@ export async function getAIResponse(userMessage) {
 
       // Handle Orchestrator Mode
       if (response.isOrchestrator) {
+        console.log('[ORCH-CHAT] Response:', { action: response.action, shortlist: response.shortlist, geo_update: response.geo_update });
         // Apply geo update from orchestrator response
         if (response.geo_update && (response.geo_update.city || response.geo_update.country)) {
           const upd = {};
@@ -3318,7 +3296,29 @@ export async function getAIResponse(userMessage) {
         addMessage(response.text, 'ai');
         addToConversationHistory('assistant', response.text);
         if (response.action === 'search' && response.shortlist && response.shortlist.length > 0) {
+          console.log('[ORCH-CHAT] Showing shortlist:', response.shortlist);
+          response.shortlist.forEach(id => {
+            const prop = orchestra.getProperty(id);
+            console.log(`[ORCH-CHAT] ID "${id}" =>`, prop ? prop.name : 'NOT FOUND');
+          });
           setTimeout(() => addPropertyShortlist(response.shortlist), 500);
+        } else if (response.geo_update && response.geo_update.city) {
+          console.log('[ORCH-CHAT] Fallback: geo city =', response.geo_update.city, ', action =', response.action);
+          const cityLower = response.geo_update.city.toLowerCase();
+          const allProps = orchestra.getNetworkProperties().filter(p => p.includeInSearch !== false);
+          console.log('[ORCH-CHAT] Network props:', allProps.map(p => ({ id: p.id, name: p.name, geoCity: p.geoCity })));
+          const cityProps = allProps.filter(p => {
+            if (!p.geoCity) return false;
+            const hc = p.geoCity.toLowerCase();
+            return hc === cityLower || hc.includes(cityLower) || cityLower.includes(hc);
+          });
+          const fallbackIds = (cityProps.length > 0 ? cityProps : allProps).slice(0, 3).map(p => p.id);
+          console.log('[ORCH-CHAT] Fallback IDs:', fallbackIds);
+          if (fallbackIds.length > 0) {
+            setTimeout(() => addPropertyShortlist(fallbackIds), 500);
+          }
+        } else {
+          console.log('[ORCH-CHAT] No cards. action:', response.action, '| geo_update:', response.geo_update);
         }
         return;
       }
@@ -3420,6 +3420,7 @@ export async function getAIResponse(userMessage) {
 
       // Handle Orchestrator Mode
       if (response.isOrchestrator) {
+        console.log('[ORCH-CHAT] Response:', { action: response.action, shortlist: response.shortlist, geo_update: response.geo_update });
         // Apply geo update from orchestrator response
         if (response.geo_update && (response.geo_update.city || response.geo_update.country)) {
           const upd = {};
@@ -3432,7 +3433,29 @@ export async function getAIResponse(userMessage) {
         addMessage(response.text, 'ai');
         addToConversationHistory('assistant', response.text);
         if (response.action === 'search' && response.shortlist && response.shortlist.length > 0) {
+          console.log('[ORCH-CHAT] Showing shortlist:', response.shortlist);
+          response.shortlist.forEach(id => {
+            const prop = orchestra.getProperty(id);
+            console.log(`[ORCH-CHAT] ID "${id}" =>`, prop ? prop.name : 'NOT FOUND');
+          });
           setTimeout(() => addPropertyShortlist(response.shortlist), 500);
+        } else if (response.geo_update && response.geo_update.city) {
+          console.log('[ORCH-CHAT] Fallback: geo city =', response.geo_update.city, ', action =', response.action);
+          const cityLower = response.geo_update.city.toLowerCase();
+          const allProps = orchestra.getNetworkProperties().filter(p => p.includeInSearch !== false);
+          console.log('[ORCH-CHAT] Network props:', allProps.map(p => ({ id: p.id, name: p.name, geoCity: p.geoCity })));
+          const cityProps = allProps.filter(p => {
+            if (!p.geoCity) return false;
+            const hc = p.geoCity.toLowerCase();
+            return hc === cityLower || hc.includes(cityLower) || cityLower.includes(hc);
+          });
+          const fallbackIds = (cityProps.length > 0 ? cityProps : allProps).slice(0, 3).map(p => p.id);
+          console.log('[ORCH-CHAT] Fallback IDs:', fallbackIds);
+          if (fallbackIds.length > 0) {
+            setTimeout(() => addPropertyShortlist(fallbackIds), 500);
+          }
+        } else {
+          console.log('[ORCH-CHAT] No cards. action:', response.action, '| geo_update:', response.geo_update);
         }
         return;
       }

@@ -1716,8 +1716,8 @@ export function updateInAppVisibility() {
   const settings = loadInAppMode();
 
   if (settings.enabled) {
-    // Hide Telegram features
-    if (dom.guideBadgeBtn) {
+    // Hide Telegram features (but keep app-download button clickable)
+    if (dom.guideBadgeBtn && dom.guideBadgeBtn.dataset.role !== 'app-download') {
       dom.guideBadgeBtn.style.setProperty('visibility', 'hidden', 'important');
       dom.guideBadgeBtn.style.setProperty('pointer-events', 'none', 'important');
     }

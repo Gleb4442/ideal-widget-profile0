@@ -196,6 +196,66 @@ const MENU_INTENT_PATTERNS = [
   /подив.*меню|посмотр.*меню|see.*menu|view.*menu/i
 ];
 
+// Bot response patterns — detect when the AI itself signals it wants to show cards
+const BOT_ROOM_TRIGGER_PATTERNS = [
+  /покажу.*(номер|варіант|варіанти|вариант|варианты|кімнат|комнат|room)/i,
+  /показываю.*(номер|варіант|вариант|кімнат|комнат)/i,
+  /ось наші.*(номер|варіант|кімнат)/i,
+  /вот наши.*(номер|вариант|варианты|комнат)/i,
+  /доступні.*(номер|варіант|кімнат)/i,
+  /доступные.*(номер|вариант|комнат)/i,
+  /наші.*(найкращі |кращі |лучшие |лучші )?(номер|варіант|кімнат)/i,
+  /наши.*(лучшие |лучші )?(номер|вариант|комнат)/i,
+  /давай(те)? подивимось.*(номер|кімнат)/i,
+  /давай(те)? посмотрим.*(номер|комнат)/i,
+  /зараз покажу/i,
+  /сейчас покажу.*(номер|вариант|варіант)/i,
+  /here are.*(room|option)/i,
+  /let me show.*(room|option)/i,
+  /показую.*(номер|варіант|кімнат)/i,
+];
+
+const BOT_SERVICE_TRIGGER_PATTERNS = [
+  /покажу.*(послуг|услуг|сервіс|сервис|каталог|service)/i,
+  /показываю.*(услуг|сервис|каталог)/i,
+  /ось наші.*(послуг|сервіс)/i,
+  /вот наши.*(услуг|сервис)/i,
+  /доступні.*(послуг|сервіс)/i,
+  /доступные.*(услуг|сервис)/i,
+  /наші.*(послуг|сервіс)/i,
+  /наши.*(услуг|сервис)/i,
+  /сейчас покажу.*(послуг|услуг|каталог)/i,
+  /зараз покажу.*(послуг|каталог)/i,
+  /here are.*(service)/i,
+  /let me show.*(service)/i,
+];
+
+const BOT_MENU_TRIGGER_PATTERNS = [
+  /покажу.*(меню|menu)/i,
+  /показываю.*(меню|menu)/i,
+  /ось наше меню/i,
+  /вот наше меню/i,
+  /сейчас покажу.*(меню)/i,
+  /зараз покажу.*(меню)/i,
+  /here.*(menu)/i,
+  /let me show.*(menu)/i,
+];
+
+// Check if AI response signals it wants to show room cards
+function botWantsToShowRooms(responseText) {
+  return BOT_ROOM_TRIGGER_PATTERNS.some(p => p.test(responseText));
+}
+
+// Check if AI response signals it wants to show service cards
+function botWantsToShowServices(responseText) {
+  return BOT_SERVICE_TRIGGER_PATTERNS.some(p => p.test(responseText));
+}
+
+// Check if AI response signals it wants to show menu
+function botWantsToShowMenu(responseText) {
+  return BOT_MENU_TRIGGER_PATTERNS.some(p => p.test(responseText));
+}
+
 // General topic patterns - topics that should break room-specific context
 const GENERAL_TOPIC_PATTERNS = [
   /дат[аиы]/i,              // даты, дата
@@ -805,9 +865,8 @@ function buildOrchestratorSystemPrompt(hotelName) {
 Показывай ТОЛЬКО отели в этом городе. Если гость хочет другой город — укажи новый город в geo_update и предложи отели оттуда.`;
   } else {
     geoBlock = `\n### GEO: ГОРОД НЕ ВЫБРАН
-ОБЯЗАТЕЛЬНО первым делом уточни у гостя: "В каком городе вы планируете остановиться?" или "Куда планируете поездку?"
-НЕ показывай отели (action: "none") и НЕ предлагай shortlist, пока город/направление не указаны.
-Когда гость назовёт город — верни его в geo_update.`;
+Если гость ещё НЕ назвал город/направление — спроси: "В каком городе вы планируете остановиться?" (action: "none", без shortlist).
+Если гость В ЭТОМ СООБЩЕНИИ назвал город — СРАЗУ верни geo_update с городом И action: "search" со shortlist подходящих отелей из этого города. НЕ жди следующего сообщения!`;
   }
 
   return `Ты Roomie — AI-ассистент сети отелей "${hotelName}".
@@ -823,20 +882,20 @@ ${geoBlock}
 ${propsList || 'Отели не добавлены.'}
 
 ### ФОРМАТ ОТВЕТА (СТРОГИЙ JSON)
-Если гость назвал город/направление или описал пожелания И город уже известен, выбери 1-3 подходящих отеля:
+Если город известен (уже выбран ранее ИЛИ гость назвал город в этом сообщении), выбери 1-3 подходящих отеля:
 {
   "action": "search",
   "shortlist": ["ID_отеля_1", "ID_отеля_2"],
   "geo_update": { "city": "Название города", "country": "Страна" },
   "reply": "Текст ответа на ${languageName}, кратко описывающий почему эти отели подходят."
 }
-Если город ещё НЕ известен или запрос непонятен:
+Если гость НЕ назвал город и город неизвестен:
 {
   "action": "none",
   "geo_update": { "city": null, "country": null },
   "reply": "Текст ответа на ${languageName} — спроси куда гость планирует поездку."
 }
-ВАЖНО: Никаких блоков markdown типа \`\`\`json. Только фигурные скобки.`;
+ВАЖНО: В shortlist указывай ТОЧНЫЕ ID отелей из списка выше (формат prop_...). Никаких блоков markdown типа \`\`\`json. Только фигурные скобки.`;
 }
 
 // Build discovery system prompt (for Discovery Mode)
@@ -964,6 +1023,7 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
 
   const isInAppMode = loadInAppModeSettings().enabled;
   const isOrchestraActive = orchestra.getOrchestraMode() && chatContext.mode === 'multi';
+  console.log('[OPENAI] getGeneralAIResponse: isOrchestraActive =', isOrchestraActive, '| isInAppMode =', isInAppMode, '| discoveryActive =', discovery.discoveryState?.active, '| chatContext.mode =', chatContext.mode);
   const systemPrompt = isInAppMode
     ? buildInAppSystemPrompt(hotelName)
     : isOrchestraActive
@@ -1013,6 +1073,9 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
     if (isOrchestraActive) {
       try {
         const data = JSON.parse(response);
+        console.log('[ORCH] AI raw response:', response);
+        console.log('[ORCH] Parsed data:', JSON.stringify(data, null, 2));
+        console.log('[ORCH] action:', data.action, '| shortlist:', data.shortlist, '| geo_update:', data.geo_update);
 
         // Apply geo update if agent extracted a city
         if (data.geo_update && (data.geo_update.city || data.geo_update.country)) {
@@ -1049,11 +1112,16 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
     }
 
     // Normal response processing
+    // Also check the AI response text for bot-initiated card triggers
+    if (!showRooms && !roomAlreadySelected && botWantsToShowRooms(response)) showRooms = true;
+    if (!showServices && botWantsToShowServices(response)) showServices = true;
+    const finalShowMenu = showMenu || botWantsToShowMenu(response);
+
     return {
       text: response,
       showRoomsCarousel: showRooms && getAllRooms().length > 0,
       showServicesCarousel: showServices && getAllServices().length > 0,
-      showMenu: showMenu,
+      showMenu: finalShowMenu,
       extractedData: extractedData
     };
   } catch (error) {
@@ -1118,11 +1186,16 @@ export async function getGeneralAIResponseStreaming(userMessage, hotelName = 'Hi
       },
       (fullText) => {
         if (onComplete) {
+          // Also check the AI response text for bot-initiated card triggers
+          const finalShowRooms = showRooms || botWantsToShowRooms(fullText);
+          const finalShowServices = showServices || botWantsToShowServices(fullText);
+          const finalShowMenu = showMenu || botWantsToShowMenu(fullText);
+
           onComplete({
             text: fullText,
-            showRoomsCarousel: showRooms && getAllRooms().length > 0,
-            showServicesCarousel: showServices && getAllServices().length > 0,
-            showMenu: showMenu,
+            showRoomsCarousel: finalShowRooms && getAllRooms().length > 0,
+            showServicesCarousel: finalShowServices && getAllServices().length > 0,
+            showMenu: finalShowMenu,
             extractedData: extractedData,
             error: false
           });
