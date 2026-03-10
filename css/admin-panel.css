@@ -87,6 +87,7 @@
 
 input[type="color"] {
   -webkit-appearance: none;
+  appearance: none;
   border: none;
   width: 40px;
   height: 40px;
@@ -189,6 +190,7 @@ input:checked+.slider:before {
 /* Range Slider */
 input[type=range] {
   -webkit-appearance: none;
+  appearance: none;
   width: 100%;
   background: transparent;
 }
@@ -420,4 +422,92 @@ input[type=range]::-webkit-slider-runnable-track {
 
 .guide-item-delete:hover {
   background: #fecaca;
+}
+
+/* Mobile Responsiveness for Admin Panel */
+@media (max-width: 480px) {
+  #admin-panel {
+    width: calc(100vw - 24px);
+    left: 12px;
+    right: 12px;
+    top: 12px;
+    padding: 16px 14px;
+    max-height: calc(100vh - 24px);
+  }
+
+  .admin-control {
+    margin-bottom: 12px;
+  }
+
+  .admin-control.mt-3,
+  .admin-control.mt-2 {
+    margin-top: 8px !important;
+  }
+
+  .admin-label {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+
+  .admin-input {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  .file-upload-btn,
+  .shape-option {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .color-picker-wrapper input[type="color"] {
+    width: 32px;
+    height: 32px;
+  }
+
+  .icon-grid {
+    gap: 6px;
+  }
+
+  .shape-grid {
+    gap: 6px;
+  }
+
+  #admin-panel hr.my-4,
+  #admin-panel hr.my-3 {
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+
+  #admin-panel h3.font-bold.text-lg {
+    font-size: 16px;
+    margin-bottom: 0px !important;
+  }
+
+  .flex.justify-between.items-center.mb-4 {
+    margin-bottom: 12px !important;
+  }
+
+  .switch {
+    width: 46px;
+    height: 24px;
+    transform: scale(0.9);
+    transform-origin: right center;
+  }
+
+  #admin-panel .text-sm {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .operator-photo-preview {
+    width: 48px;
+    height: 48px;
+  }
+
+  .add-room-btn,
+  .add-service-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
 }
