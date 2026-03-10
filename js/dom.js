@@ -61,7 +61,8 @@ export const banners = {
 // Modals
 export const modals = {
   reset: document.getElementById('reset-confirmation-modal'),
-  telegram: document.getElementById('tg-confirmation-modal')
+  telegram: document.getElementById('tg-confirmation-modal'),
+  escalation: document.getElementById('escalation-modal')
 };
 
 // Welcome & Legal Modals

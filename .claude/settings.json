@@ -14,11 +14,31 @@
       "Bash(npx prisma migrate dev --name add_hotel_chain)",
       "Bash(wc -l /Users/pro/Desktop/Roomie-app/apps/dashboard/src/app/admin/hotels/[hotelId]/page.tsx)",
       "Bash(npx tsc --noEmit)",
-      "Bash(bash -c \"cd /Users/pro/Desktop/Roomie-app/backend && npx tsc --noEmit 2>&1 | head -20\")"
+      "Bash(bash -c \"cd /Users/pro/Desktop/Roomie-app/backend && npx tsc --noEmit 2>&1 | head -20\")",
+      "Bash(python3 -:*)",
+      "Bash(node --input-type=module --eval \"import\\(''''/Users/pro/Desktop/ideal-chat-widget/js/geo.js''''\\)\")",
+      "Bash(node --input-type=module --eval \"import\\(''''/Users/pro/Desktop/ideal-chat-widget/js/orchestra.js''''\\)\")",
+      "Bash(for f:*)",
+      "Bash(do)",
+      "Bash(echo \"=== $f.js ===\")",
+      "Bash(__NEW_LINE_d67d1c5638904daa__ node:*)",
+      "Bash(__NEW_LINE_d67d1c5638904daa__ done:*)",
+      "Bash(node --input-type=module -e \"console.log\\(''ES modules supported''\\)\")",
+      "Bash(node --input-type=module -e \":*)",
+      "Bash(grep -n \"z-index.*1000\\\\|z-index.*999\\\\|z-index.*10000\\\\|z-index.*9999\" /Users/pro/Desktop/ideal-chat-widget/css/*.css)",
+      "Bash(grep -n \"position.*fixed\\\\|position.*absolute\" /Users/pro/Desktop/ideal-chat-widget/css/*.css)",
+      "Bash(grep \"open-admin-btn\\\\|chat-widget-button\" /Users/pro/Desktop/ideal-chat-widget/css/*.css)",
+      "Bash(node -e \"require\\(''puppeteer''\\)\")",
+      "Bash(node -e \"require\\(''playwright''\\)\")",
+      "Bash(node -e \":*)",
+      "Bash(grep -n \"getTranslation\\\\b\" /Users/pro/Desktop/ideal-chat-widget/js/*.js)",
+      "Bash(grep -n \"loadGuideItems\\\\|saveGuideItems\" /Users/pro/Desktop/ideal-chat-widget/js/*.js)",
+      "Bash(grep -rn \"from ''./chat\\\\|from \"\"./chat\" /Users/pro/Desktop/ideal-chat-widget/ --include=\"*.js\" --include=\"*.html\")"
     ],
     "additionalDirectories": [
       "/Users/pro/Desktop/Roomie-app/backend/prisma",
-      "/Users/pro/Desktop/Roomie-app/backend/src/modules/admin"
+      "/Users/pro/Desktop/Roomie-app/backend/src/modules/admin",
+      "/Users/pro/.claude/projects/-Users-pro-Desktop-ideal-chat-widget"
     ]
   }
 }

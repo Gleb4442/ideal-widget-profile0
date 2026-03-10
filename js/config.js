@@ -68,7 +68,7 @@ export const translations = {
   en: {
     buttonText: "Chat with Hotel",
     placeholder: "Type a message...",
-    welcome: "Hello! Welcome to our hotel. How can I help you with your reservation?",
+    welcome: "Want to book a room? I'll help you find the perfect option! 😊",
     defaultAI: "Sorry, I am still learning. Can I help you book a room?",
     language: "Language",
     confirmBooking: "Confirm Booking",
@@ -89,7 +89,7 @@ export const translations = {
   zh: {
     buttonText: "与酒店聊天",
     placeholder: "输入消息...",
-    welcome: "您好！欢迎来到我们的酒店。我能帮您预订吗？",
+    welcome: "想预订房间吗？我来帮您找到最佳选择！😊",
     defaultAI: "抱歉，我还在学习中。我可以帮您预订房间吗？",
     language: "语言",
     confirmBooking: "确认预订",
@@ -110,7 +110,7 @@ export const translations = {
   hi: {
     buttonText: "होटल से चैट करें",
     placeholder: "संदेश लिखें...",
-    welcome: "नमस्ते! हमारे होटल में आपका स्वागत है। मैं आपकी बुकिंग में कैसे मदद कर सकता हूं?",
+    welcome: "क्या आप कमरा बुक करना चाहते हैं? मैं आपके लिए सबसे अच्छा विकल्प ढूंढूंगा! 😊",
     defaultAI: "क्षमा करें, मैं अभी सीख रहा हूं। क्या मैं आपको कमरा बुक करने में मदद कर सकता हूं?",
     language: "भाषा",
     confirmBooking: "बुकिंग की पुष्टि करें",
@@ -131,7 +131,7 @@ export const translations = {
   es: {
     buttonText: "Chat con el Hotel",
     placeholder: "Escribe un mensaje...",
-    welcome: "¡Hola! Bienvenido a nuestro hotel. ¿Cómo puedo ayudarte con tu reserva?",
+    welcome: "¿Quieres reservar una habitación? ¡Te ayudo a encontrar la mejor opción! 😊",
     defaultAI: "Lo siento, todavía estoy aprendiendo. ¿Puedo ayudarte a reservar una habitación?",
     language: "Idioma",
     confirmBooking: "Confirmar Reserva",
@@ -152,7 +152,7 @@ export const translations = {
   ar: {
     buttonText: "الدردشة مع الفندق",
     placeholder: "اكتب رسالة...",
-    welcome: "مرحباً! أهلاً بك في فندقنا. كيف يمكنني مساعدتك في حجزك؟",
+    welcome: "هل تريد حجز غرفة؟ سأساعدك في إيجاد أفضل خيار! 😊",
     defaultAI: "عذراً، ما زلت أتعلم. هل يمكنني مساعدتك في حجز غرفة؟",
     language: "اللغة",
     confirmBooking: "تأكيد الحجز",
@@ -173,7 +173,7 @@ export const translations = {
   fr: {
     buttonText: "Chat avec l'Hôtel",
     placeholder: "Écrivez un message...",
-    welcome: "Bonjour! Bienvenue dans notre hôtel. Comment puis-je vous aider avec votre réservation?",
+    welcome: "Vous souhaitez réserver une chambre ? Je vous aide à trouver la meilleure option ! 😊",
     defaultAI: "Désolé, je suis encore en apprentissage. Puis-je vous aider à réserver une chambre?",
     language: "Langue",
     confirmBooking: "Confirmer la Réservation",
@@ -194,7 +194,7 @@ export const translations = {
   bn: {
     buttonText: "হোটেলের সাথে চ্যাট করুন",
     placeholder: "একটি বার্তা লিখুন...",
-    welcome: "হ্যালো! আমাদের হোটেলে স্বাগতম। আমি কিভাবে আপনার বুকিংয়ে সাহায্য করতে পারি?",
+    welcome: "একটি রুম বুক করতে চান? আমি আপনার জন্য সেরা বিকল্পটি খুঁজে পেতে সাহায্য করব! 😊",
     defaultAI: "দুঃখিত, আমি এখনও শিখছি। আমি কি আপনাকে একটি রুম বুক করতে সাহায্য করতে পারি?",
     language: "ভাষা",
     confirmBooking: "বুকিং নিশ্চিত করুন",
@@ -215,7 +215,7 @@ export const translations = {
   pt: {
     buttonText: "Chat com o Hotel",
     placeholder: "Digite uma mensagem...",
-    welcome: "Olá! Bem-vindo ao nosso hotel. Como posso ajudá-lo com sua reserva?",
+    welcome: "Quer reservar um quarto? Vou ajudá-lo a encontrar a melhor opção! 😊",
     defaultAI: "Desculpe, ainda estou aprendendo. Posso ajudá-lo a reservar um quarto?",
     language: "Idioma",
     confirmBooking: "Confirmar Reserva",
@@ -236,7 +236,7 @@ export const translations = {
   ru: {
     buttonText: "Чат с отелем",
     placeholder: "Напишите сообщение...",
-    welcome: "Здравствуйте! Добро пожаловать в наш отель. Чем могу помочь с вашим бронированием?",
+    welcome: "Хотите забронировать номер? Помогу подобрать лучший вариант! 😊",
     defaultAI: "Извините, я пока учусь. Могу ли я помочь вам забронировать номер?",
     language: "Язык",
     confirmBooking: "Подтвердить бронирование",
@@ -257,7 +257,7 @@ export const translations = {
   id: {
     buttonText: "Chat dengan Hotel",
     placeholder: "Ketik pesan...",
-    welcome: "Halo! Selamat datang di hotel kami. Bagaimana saya bisa membantu dengan reservasi Anda?",
+    welcome: "Ingin memesan kamar? Saya akan membantu Anda menemukan pilihan terbaik! 😊",
     defaultAI: "Maaf, saya masih belajar. Bisakah saya membantu Anda memesan kamar?",
     language: "Bahasa",
     confirmBooking: "Konfirmasi Pemesanan",
@@ -278,7 +278,7 @@ export const translations = {
   uk: {
     buttonText: "Чат з готелем",
     placeholder: "Напишіть повідомлення...",
-    welcome: "Вітаємо! Ласкаво просимо до нашого готелю. Чим можу допомогти з вашим бронюванням?",
+    welcome: "Хочете забронювати номер? Допоможу підібрати найкращий варіант! 😊",
     defaultAI: "Вибачте, я поки що вчуся. Чи можу я допомогти вам забронювати номер?",
     language: "Мова",
     confirmBooking: "Підтвердити бронювання",
@@ -299,7 +299,7 @@ export const translations = {
   de: {
     buttonText: "Chat mit Hotel",
     placeholder: "Nachricht eingeben...",
-    welcome: "Hallo! Willkommen in unserem Hotel. Wie kann ich Ihnen bei Ihrer Reservierung helfen?",
+    welcome: "Möchten Sie ein Zimmer buchen? Ich helfe Ihnen, die beste Option zu finden! 😊",
     defaultAI: "Entschuldigung, ich lerne noch. Kann ich Ihnen helfen, ein Zimmer zu buchen?",
     language: "Sprache",
     confirmBooking: "Buchung bestätigen",
@@ -319,7 +319,7 @@ export const translations = {
   ja: {
     buttonText: "ホテルとチャット",
     placeholder: "メッセージを入力...",
-    welcome: "こんにちは！当ホテルへようこそ。ご予約についてどのようにお手伝いできますか？",
+    welcome: "お部屋のご予約をご希望ですか？最適なプランをご提案します！ 😊",
     defaultAI: "申し訳ございませんが、まだ学習中です。お部屋の予約をお手伝いできますか？",
     language: "言語",
     confirmBooking: "予約を確認",
@@ -340,7 +340,7 @@ export const translations = {
   ko: {
     buttonText: "호텔과 채팅",
     placeholder: "메시지 입력...",
-    welcome: "안녕하세요! 저희 호텔에 오신 것을 환영합니다. 예약에 대해 어떻게 도와드릴까요?",
+    welcome: "객실을 예약하시겠어요? 최고의 옵션을 찾아드리겠습니다! 😊",
     defaultAI: "죄송합니다. 아직 배우는 중입니다. 객실 예약을 도와드릴까요?",
     language: "언어",
     confirmBooking: "예약 확인",
@@ -361,7 +361,7 @@ export const translations = {
   it: {
     buttonText: "Chat con Hotel",
     placeholder: "Scrivi un messaggio...",
-    welcome: "Ciao! Benvenuto nel nostro hotel. Come posso aiutarti con la tua prenotazione?",
+    welcome: "Vuoi prenotare una camera? Ti aiuto a trovare la migliore opzione! 😊",
     defaultAI: "Mi dispiace, sto ancora imparando. Posso aiutarti a prenotare una camera?",
     language: "Lingua",
     confirmBooking: "Conferma Prenotazione",
@@ -382,7 +382,7 @@ export const translations = {
   tr: {
     buttonText: "Otel ile Sohbet",
     placeholder: "Mesaj yazın...",
-    welcome: "Merhaba! Otelimize hoş geldiniz. Rezervasyonunuzda nasıl yardımcı olabilirim?",
+    welcome: "Bir oda rezervasyonu yapmak ister misiniz? En iyi seçeneği bulmanıza yardımcı olayım! 😊",
     defaultAI: "Üzgünüm, hala öğreniyorum. Oda rezervasyonu yapmanızda yardımcı olabilir miyim?",
     language: "Dil",
     confirmBooking: "Rezervasyonu Onayla",
@@ -403,7 +403,7 @@ export const translations = {
   nl: {
     buttonText: "Chat met Hotel",
     placeholder: "Typ een bericht...",
-    welcome: "Hallo! Welkom in ons hotel. Hoe kan ik u helpen met uw reservering?",
+    welcome: "Wilt u een kamer boeken? Ik help u de beste optie te vinden! 😊",
     defaultAI: "Sorry, ik ben nog aan het leren. Kan ik u helpen een kamer te boeken?",
     language: "Taal",
     confirmBooking: "Boeking Bevestigen",
@@ -424,7 +424,7 @@ export const translations = {
   pl: {
     buttonText: "Czat z Hotelem",
     placeholder: "Napisz wiadomość...",
-    welcome: "Witaj! Witamy w naszym hotelu. Jak mogę pomóc w rezerwacji?",
+    welcome: "Chcesz zarezerwować pokój? Pomogę znaleźć najlepszą opcję! 😊",
     defaultAI: "Przepraszam, wciąż się uczę. Czy mogę pomóc w rezerwacji pokoju?",
     language: "Język",
     confirmBooking: "Potwierdź Rezerwację",
@@ -445,7 +445,7 @@ export const translations = {
   vi: {
     buttonText: "Trò chuyện với Khách sạn",
     placeholder: "Nhập tin nhắn...",
-    welcome: "Xin chào! Chào mừng đến với khách sạn của chúng tôi. Tôi có thể giúp gì cho đặt phòng của bạn?",
+    welcome: "Bạn muốn đặt phòng không? Tôi sẽ giúp bạn tìm lựa chọn tốt nhất! 😊",
     defaultAI: "Xin lỗi, tôi vẫn đang học. Tôi có thể giúp bạn đặt phòng không?",
     language: "Ngôn ngữ",
     confirmBooking: "Xác nhận Đặt phòng",
@@ -466,7 +466,7 @@ export const translations = {
   th: {
     buttonText: "แชทกับโรงแรม",
     placeholder: "พิมพ์ข้อความ...",
-    welcome: "สวัสดี! ยินดีต้อนรับสู่โรงแรมของเรา ฉันช่วยอะไรเกี่ยวกับการจองของคุณได้บ้าง?",
+    welcome: "ต้องการจองห้องพักไหม? ฉันจะช่วยหาตัวเลือกที่ดีที่สุดให้คุณ! 😊",
     defaultAI: "ขออภัย ฉันยังเรียนรู้อยู่ ฉันช่วยคุณจองห้องได้ไหม?",
     language: "ภาษา",
     confirmBooking: "ยืนยันการจอง",
@@ -488,7 +488,7 @@ export const translations = {
   ua: {
     buttonText: "Чат з готелем",
     placeholder: "Напишіть повідомлення...",
-    welcome: "Вітаємо! Ласкаво просимо до нашого готелю. Чим можу допомогти з вашим бронюванням?",
+    welcome: "Хочете забронювати номер? Допоможу підібрати найкращий варіант! 😊",
     defaultAI: "Вибачте, я поки що вчуся. Чи можу я допомогти вам забронювати номер?",
     language: "Мова",
     confirmBooking: "Підтвердити бронювання",

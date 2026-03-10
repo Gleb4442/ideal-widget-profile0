@@ -3,7 +3,6 @@
  * Hilton Chat Widget
  */
 
-import { translations, languagesList } from './config.js';
 import * as dom from './dom.js';
 import * as rooms from './rooms.js';
 import * as services from './services.js';
@@ -17,19 +16,18 @@ import { showAppDownloadModal, initAppDownloadModalListeners } from './app-downl
 import * as orchestra from './orchestra.js';
 import * as discovery from './discovery.js';
 import * as geo from './geo.js';
-
-// Language storage key
-const LANGUAGE_KEY = 'chat_language';
-// History storage key
-const HISTORY_KEY = 'chat_history_archive';
+import { getTranslation, switchLanguage, updateUITexts, currentLang } from './language.js';
+import { escalationState, operatorMode, resetEscalationState, startOperatorSimulation } from './operator.js';
+import { initNotificationSystem, resetUnreadCount, toggleNotificationSound, hideNewMessagesMarker, handleNewMessageNotification, setWidgetOpen } from './notifications.js';
+import { archiveCurrentSession, showHistoryModal, continueHistoryChat } from './history.js';
+import { initGuideSheetListeners } from './guide.js';
+import { initVoiceInput } from './voice.js';
 
 // State
 let welcomed = false;
-let currentLang = localStorage.getItem(LANGUAGE_KEY) || 'en'; // Default to English
 let isGenerating = false;
 let selectedRoom = null;
 let chatMode = 'general'; // 'general' | 'room-context'
-let currentHistorySession = null; // Currently viewed history session
 
 // In-App Service Request State (towels / cleaning / minibar)
 let inAppServiceState = {
@@ -92,12 +90,48 @@ const ESCALATION_CONFIRM_NO_PATTERNS = [
   /^(нет|не\s+надо|не\s+нужно|не\s+хочу|no|nope|not\s+now|later|ні)\b/i
 ];
 
+// Auto-escalation patterns (trigger modal without user explicitly asking)
+const ESCALATION_AUTO_PATTERNS = [
+  { pattern: /организ.+\s+(мероприяти|встреч|конференц|семинар|банкет|корпоратив|event)|провести\s+(мероприяти|встреч|event)/i, reason: 'event' },
+  { pattern: /конференц-зал|conference[\s-]room|зал\s+для\s+(переговоров|конференц|совещани)|аренд.+\s+(зал|помещени)|банкетный\s+зал/i, reason: 'conference' },
+  { pattern: /\bVIP\b|вип[\s-]обслуживани|особые?\s+пожелани|нестандартн.+запрос|индивидуальн.+услуг|сюрприз\s+для|комплимент\s+для|special\s+request|vip\s+service/i, reason: 'vip' },
+  { pattern: /коммерческ.+(предложени|услови|сотрудничеств)|условия\s+сотрудничеств|корпоратив.+(тариф|цен|услов|обслужив)|партнерство\s+с/i, reason: 'commercial' },
+];
+
+const ESCALATION_REASON_TEXTS = {
+  event: {
+    title: 'Организация мероприятия',
+    desc: 'Ваш запрос об организации мероприятия выходит за рамки стандартных сценариев. Переключить вас на специалиста?'
+  },
+  conference: {
+    title: 'Бронирование конференц-зала',
+    desc: 'Подбор и бронирование конференц-залов требует участия нашего менеджера. Соединить вас с ним?'
+  },
+  vip: {
+    title: 'VIP‑запрос',
+    desc: 'Ваш индивидуальный запрос требует участия специалиста по VIP-обслуживанию. Переключить вас?'
+  },
+  commercial: {
+    title: 'Коммерческое предложение',
+    desc: 'Вопросы о коммерческих условиях и сотрудничестве решает наш специалист. Соединить вас?'
+  },
+  requested: {
+    title: 'Подключить менеджера?',
+    desc: 'Хотите, чтобы я соединил вас с живым специалистом отеля?'
+  },
+  required: {
+    title: 'Нужна помощь специалиста',
+    desc: 'Похоже, этот вопрос лучше решить со специалистом. Переключить вас на менеджера?'
+  }
+};
+
 // Booking state storage key
 const BOOKING_STATE_KEY = 'booking_state';
 
 // Booking funnel state (persisted to localStorage)
 let bookingState = {
   step: 'initial', // 'initial' | 'collecting_name' | 'collecting_phone' | 'collecting_dates' | 'collecting_email' | 'suggesting_rooms' | 'completed'
+  funnelStage: 'initial', // 'initial' | 'rooms_offered' | 'rooms_shown' | 'services_offered' | 'services_shown'
   collectedData: {
     fullName: null,      // ФИО гостя
     phone: null,         // Номер телефона
@@ -121,400 +155,10 @@ let cancellationState = {
   lastSearchType: null
 };
 
-// Escalation state (handoff to human)
-let escalationState = {
-  awaitingConfirmation: false,
-  isEscalated: false,
-  reason: null // 'requested' | 'required'
-};
+// Re-exports for external consumers
+export { startOperatorSimulation, stopOperatorSimulation, setOperatorSettings, updateHeaderStatus, hideHeaderStatus } from './operator.js';
+export { updateNotificationBadge, incrementUnreadCount, resetUnreadCount, toggleNotificationSound, showNewMessagesMarker, hideNewMessagesMarker } from './notifications.js';
 
-// Operator Mode State
-let operatorMode = {
-  enabled: false,
-  name: 'Денис',
-  photo: null,
-  connected: false,
-  originalLogo: null,
-  timeouts: []
-};
-
-// ===== NOTIFICATION SYSTEM =====
-const NOTIFICATION_SETTINGS_KEY = 'chat_notification_settings';
-
-// Notification state
-let notificationState = {
-  unreadCount: 0,
-  soundEnabled: true,
-  isTabVisible: true,
-  isWidgetOpen: false
-};
-
-// Notification sound sources
-const NOTIFICATION_SOUND_SRC = './assets/sounds/received-message.caf';
-const NOTIFICATION_SOUND_WAV_FALLBACK_SRC = './assets/sounds/received-message.wav';
-const NOTIFICATION_SOUND_VOLUME = 0.5;
-
-// Legacy beep fallback as base64
-const NOTIFICATION_SOUND_BASE64 = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1gZGtyd3V0d3R0dnd3d3Z1c3BtaWViXVpYV1hZW11fYWNlZ2lrbG1tbm5tbGtqaGZjYV5bWFVSUE5NTE1OT1FSVFZYWlxeYGJkZWdoaWpqa2tqamlnZWNhXltYVVJPTEpIR0ZGRkdISUpMTlBSVFZYWVtcXV5fYGBhYWFgX15dW1lXVVJQTUtJR0VDQUA/Pj4+P0BCREdJTE5RU1VXWVpbXF1dXl5eXV1cW1lXVVNQTktIRkRBPzw6ODc2NjY3ODo8P0JFSEtOUVNVV1laW1xcXFxcW1pZV1VTUE1KRkNAPTo3NTIwLy4uLi8wMjU4O0BESExQU1ZYWltcXFxcW1pZV1VRUE1JRkI+Ojc0MC4rKSgnJygpKy4xNTo+Q0hMUFRXWltcXV1cW1pYVlNQTEhEQDw4NC8rKCUjISAgISIkJyovNDpAR0xSVllcXl9fXl1bWFVRTUlEPzo1MC0pJSIgHh0cHB0eICMnLDI5P0dOVVteYWNjY2FfXFhTTklDPTcxKyYiHx0bGRkZGhsdICQpLzY9RU5WWF1hZGVlY2BeWlVPS0Q9Ni8pIx8cGRcWFRUWFxkbHiImLDM7RE5WWF1iZWdnZmRhXFdRSkM8NC0mIR0aGBYVFBQUFRcZHCAkKjE4QEpTW2BiZmlqamdjXldQSUA4MCkjHhsYFhQTEhISExUXGh0iJyw0PEZQWWBkaWxub21pZF5XTkU8MysjHhoXFRMSEREREhQWGRwgJSsyOkRNV19lamtvcnJwbGVdVEpBOC8oIh4aFxUSERAPEBAREhUYHCAkKjE5Q0xWX2VrbnJzdnVybl9oXFJHPTQsJR8bFxQREA8ODg8QEhQXGyAmLTU+R1FaZGlwdHd5enl2c2xlW1BFOzIqIx0ZFhQREA4ODQ0OEBIUGBsgJi03QUpVXmhudnp9f4CBgIB9eXRqX1VLPzUtJh8aFhMQDg0MDAwODxMXGx8mLTVARE9YYWpxd3yAgYKCgYB9eXZwaGBWTEM6MikhHBgVEQ4NCwsMDQ8RFRkaHyUqLjY8Q0pRWF5iZ21wcnNzcnFua2ZgWlVQSUI6NC0oIh0aFhQRDw0MCwsNDg8RFhkdIS0xOz1ESFFYX2RnaWlqaWhoZmRgXFdTTkhCPTcxLCckIB0ZFhMRDw4NDAwNDxESFRkdIC0zPD9ERktRVVheYGFhYWBfXVtZVlNPTEhEPzs1MCwpJCAeGxgWExIQDg0MDQ4QExQYHCEqNDg/P0RHTEtOUFFSUlJRUU9NTElGQ0A8OTYyLCooIx4cGhcVExIQDw0NDQ4PERQWGRweIyowNzg8PERERU1PUFBQTk5MS0lGQ0A9Ojc0MC0pJiMfHBoYFhQTEhEQEBARERMVFxobHiElKi8zNjk8PkFDRUdISEdGRUNBPz06NzQxLiomIh8cGhcWFBMSEREQEBESExQWGBocHyIlKSwtMDI0NTY3ODk5OTg3NjQyMC4rKCYjIB4cGhgWFBMSEREREREREhMUFRcZGhwfISMlJyorLC0uLi4uLS0sKyooJyUjIR8eHBoZFxYVFBMSEhISEhITFBUWGBkaHB0fISIjJCUmJiYmJiUlJCMiIR8eHRsaGRgXFhUUFBMTExMTFBQVFhcYGRobHB0eHyAgISEhISEgIB8fHh0cGxoZGBcWFhUVFRQUFBQVFRYWFxgZGhobHB0dHh4eHx8fHx8eHh0dHBsaGRkYFxcWFhYVFRUVFhYWFxcYGRkKGhscHBwdHR0dHR0dHBwcGxsaGhkZGBgXFxcWFhYWFhYWFxcXGBgZGRoKGxsbGxwcHBwcHBwbGxsaGhoZGRkYGBgXFxcXFxcXFxcXFxgYGBkZGRoaGhsbGxsbGxsaGhoaGRkZGRkYGBgYGBcXFxcXFxcYGBgYGRkZGRoaGhoaGhoaGhoZGRkZGRkZGBgYGBgYGBgXFxcYGBgYGBkZGRkZGRkaGhoaGhoZGRkZGRkZGRkYGBgYGBgYGBgYGBgYGBkZGRkZGRkZGRoaGhoaGhkZGRkZGRkZGRkYGBgYGBgYGBgYGBgYGRkZGRkZGRkZGRkZGRoaGhkZGRkZGRkZGRkZGBgYGBgYGBgYGBgZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGBgYGBgYGBgZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZ';
-
-let notificationAudio = null;
-let notificationWavFallbackAudio = null;
-let notificationBase64FallbackAudio = null;
-let notificationSoundSource = 'base64';
-
-function createNotificationAudio(src) {
-  const audio = new Audio(src);
-  audio.volume = NOTIFICATION_SOUND_VOLUME;
-  audio.preload = 'auto';
-  return audio;
-}
-
-function switchToBase64Fallback(reason) {
-  if (!notificationBase64FallbackAudio) return false;
-
-  notificationAudio = notificationBase64FallbackAudio;
-  notificationSoundSource = 'base64';
-  console.warn(`Notification sound fallback to base64: ${reason}`);
-  return true;
-}
-
-function switchToWavFallback(reason) {
-  if (!notificationWavFallbackAudio || notificationSoundSource !== 'primary') return false;
-
-  notificationAudio = notificationWavFallbackAudio;
-  notificationSoundSource = 'wav';
-  console.warn(`Notification sound fallback to wav: ${reason}`);
-  return true;
-}
-
-function tryReplayCurrentNotificationAudio(contextLabel) {
-  if (!notificationAudio) return;
-
-  try {
-    notificationAudio.currentTime = 0;
-    notificationAudio.play().catch(e => {
-      console.log(`Sound playback blocked (${contextLabel}):`, e);
-    });
-  } catch (e) {
-    console.log(`Error replaying sound (${contextLabel}):`, e);
-  }
-}
-
-// Initialize notification sound
-function initNotificationSound() {
-  try {
-    notificationBase64FallbackAudio = createNotificationAudio(NOTIFICATION_SOUND_BASE64);
-    notificationWavFallbackAudio = createNotificationAudio(NOTIFICATION_SOUND_WAV_FALLBACK_SRC);
-    notificationAudio = createNotificationAudio(NOTIFICATION_SOUND_SRC);
-    notificationSoundSource = 'primary';
-
-    notificationAudio.addEventListener('error', () => {
-      if (switchToWavFallback('primary sound failed to load')) {
-        tryReplayCurrentNotificationAudio('wav fallback after primary load error');
-      } else {
-        switchToBase64Fallback('primary sound failed to load');
-      }
-    }, { once: true });
-
-    notificationWavFallbackAudio.addEventListener('error', () => {
-      switchToBase64Fallback('wav fallback failed to load');
-    }, { once: true });
-
-    notificationAudio.load();
-    notificationWavFallbackAudio.load();
-    notificationBase64FallbackAudio.load();
-  } catch (e) {
-    console.log('Could not initialize notification sound:', e);
-    if (!switchToBase64Fallback('notification sound initialization failed')) {
-      notificationAudio = null;
-    }
-  }
-}
-
-// Load notification settings from localStorage
-function loadNotificationSettings() {
-  try {
-    const saved = localStorage.getItem(NOTIFICATION_SETTINGS_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      notificationState.soundEnabled = parsed.soundEnabled ?? true;
-    }
-  } catch (e) {
-    console.error('Error loading notification settings:', e);
-  }
-}
-
-// Save notification settings to localStorage
-function saveNotificationSettings() {
-  try {
-    localStorage.setItem(NOTIFICATION_SETTINGS_KEY, JSON.stringify({
-      soundEnabled: notificationState.soundEnabled
-    }));
-  } catch (e) {
-    console.error('Error saving notification settings:', e);
-  }
-}
-
-// Play notification sound
-function playNotificationSound() {
-  if (!notificationState.soundEnabled || !notificationAudio) return;
-
-  try {
-    notificationAudio.currentTime = 0;
-    notificationAudio.play().catch(e => {
-      if (notificationSoundSource === 'primary' && switchToWavFallback('primary playback error')) {
-        tryReplayCurrentNotificationAudio('wav fallback after primary playback error');
-        return;
-      }
-
-      if (notificationSoundSource !== 'base64' && switchToBase64Fallback('fallback playback error')) {
-        tryReplayCurrentNotificationAudio('base64 fallback after playback error');
-        return;
-      }
-
-      // Playback may still be blocked by browser autoplay policy
-      console.log('Sound playback blocked:', e);
-    });
-  } catch (e) {
-    console.log('Error playing sound:', e);
-  }
-}
-
-// Update notification badge with count
-export function updateNotificationBadge(count) {
-  if (!dom.notificationBadge) return;
-
-  notificationState.unreadCount = count;
-
-  if (count > 0) {
-    dom.notificationBadge.textContent = count > 99 ? '99+' : count;
-    dom.notificationBadge.style.display = 'flex';
-    dom.notificationBadge.classList.add('has-notifications');
-  } else {
-    dom.notificationBadge.style.display = 'none';
-    dom.notificationBadge.classList.remove('has-notifications');
-  }
-}
-
-// Increment unread count
-export function incrementUnreadCount() {
-  notificationState.unreadCount++;
-  updateNotificationBadge(notificationState.unreadCount);
-}
-
-// Reset unread count
-export function resetUnreadCount() {
-  notificationState.unreadCount = 0;
-  updateNotificationBadge(0);
-}
-
-// Toggle notification sound on/off
-export function toggleNotificationSound() {
-  notificationState.soundEnabled = !notificationState.soundEnabled;
-  saveNotificationSettings();
-  updateSoundToggleUI(notificationState.soundEnabled);
-  return notificationState.soundEnabled;
-}
-
-// Update sound toggle button UI
-function updateSoundToggleUI(isEnabled) {
-  const soundIconOn = document.getElementById('sound-icon-on');
-  const soundIconOff = document.getElementById('sound-icon-off');
-  const soundStatusText = document.getElementById('sound-status-text');
-
-  if (soundIconOn) soundIconOn.classList.toggle('hidden', !isEnabled);
-  if (soundIconOff) soundIconOff.classList.toggle('hidden', isEnabled);
-  if (soundStatusText) soundStatusText.textContent = isEnabled ? 'Вкл' : 'Выкл';
-}
-
-// Initialize visibility tracking for tab focus
-function initVisibilityTracking() {
-  document.addEventListener('visibilitychange', () => {
-    notificationState.isTabVisible = !document.hidden;
-
-    // If tab becomes visible and widget is open - reset unread count
-    if (notificationState.isTabVisible && notificationState.isWidgetOpen) {
-      resetUnreadCount();
-      hideNewMessagesMarker();
-    }
-  });
-}
-
-// Show "New messages" marker in chat
-export function showNewMessagesMarker() {
-  const existingMarker = document.getElementById('new-messages-marker');
-  if (existingMarker) return;
-
-  // Не показываем маркер если textarea многострочный
-  const textarea = document.getElementById('message-input');
-  if (textarea) {
-    const minHeight = parseInt(getComputedStyle(textarea).minHeight) || 31;
-    if (textarea.scrollHeight > minHeight + 5) {
-      return;
-    }
-  }
-
-  const marker = document.createElement('div');
-  marker.id = 'new-messages-marker';
-  marker.className = 'new-messages-marker animate-fade-in';
-  marker.innerHTML = `
-    <div class="marker-content">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="6 9 12 15 18 9"></polyline>
-      </svg>
-      <span>Нові повідомлення</span>
-    </div>
-  `;
-
-  marker.addEventListener('click', () => {
-    dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
-    hideNewMessagesMarker();
-  });
-
-  dom.messagesContainer.appendChild(marker);
-}
-
-// Hide "New messages" marker
-export function hideNewMessagesMarker() {
-  const marker = document.getElementById('new-messages-marker');
-  if (marker) marker.remove();
-}
-
-// Handle new message notification (called from addMessage)
-function handleNewMessageNotification(sender) {
-  if (sender !== 'ai') return;
-
-  const isWidgetOpen = dom.chatWindow?.classList.contains('open');
-  const isTabVisible = !document.hidden;
-
-  notificationState.isWidgetOpen = isWidgetOpen;
-
-  // If widget is closed OR tab is not visible
-  if (!isWidgetOpen || !isTabVisible) {
-    // Increment unread count
-    incrementUnreadCount();
-
-    // Play sound
-    playNotificationSound();
-
-    // Show marker if widget is open but tab is not visible
-    if (isWidgetOpen && !isTabVisible) {
-      showNewMessagesMarker();
-    }
-  }
-}
-
-// Update header status pill
-export function updateHeaderStatus(text, showSpinner = true) {
-  const pill = document.getElementById('header-status-pill');
-  const spinner = pill?.querySelector('.header-status-spinner');
-  const statusText = pill?.querySelector('.header-status-text');
-
-  if (!pill) return;
-
-  if (text) {
-    if (statusText) statusText.textContent = text;
-    if (spinner) spinner.style.display = showSpinner ? 'block' : 'none';
-    pill.classList.remove('hidden');
-  } else {
-    pill.classList.add('hidden');
-  }
-}
-
-// Hide header status pill
-export function hideHeaderStatus() {
-  const pill = document.getElementById('header-status-pill');
-  if (pill) pill.classList.add('hidden');
-}
-
-// Update operator status bar
-function updateOperatorStatusBar(text, showSpinner = true) {
-  const bar = document.getElementById('operator-status-bar');
-  const spinner = bar?.querySelector('.operator-status-spinner');
-  const statusText = bar?.querySelector('.operator-status-text');
-
-  if (!bar) return;
-
-  if (text) {
-    if (statusText) statusText.textContent = text;
-    if (spinner) spinner.style.display = showSpinner ? 'block' : 'none';
-    bar.classList.remove('hidden');
-  } else {
-    bar.classList.add('hidden');
-  }
-}
-
-// Hide operator status bar
-function hideOperatorStatusBar() {
-  const bar = document.getElementById('operator-status-bar');
-  if (bar) bar.classList.add('hidden');
-}
-
-// Start operator simulation
-export function startOperatorSimulation() {
-  // Clear any existing timeouts
-  operatorMode.timeouts.forEach(t => clearTimeout(t));
-  operatorMode.timeouts = [];
-
-  // Save original logo
-  const logoContainer = document.getElementById('hotel-logo-container');
-  if (logoContainer && !operatorMode.originalLogo) {
-    operatorMode.originalLogo = logoContainer.innerHTML;
-  }
-
-  // Stage 1: Searching for specialist (0-4 sec)
-  updateOperatorStatusBar('Ищем специалиста...', true);
-
-  // Stage 2: Connecting operator (4-7 sec)
-  const t1 = setTimeout(() => {
-    updateOperatorStatusBar('Подключаем оператора...', true);
-  }, 4000);
-  operatorMode.timeouts.push(t1);
-
-  // Stage 3: Operator connected (10 sec)
-  const t2 = setTimeout(() => {
-    const name = operatorMode.name || 'Денис';
-    updateOperatorStatusBar(`Оператор ${name} присоединился`, false);
-    operatorMode.connected = true;
-
-    // Change logo to operator photo
-    if (operatorMode.photo && logoContainer) {
-      logoContainer.innerHTML = `<img src="${operatorMode.photo}" class="w-full h-full object-cover rounded-full" alt="Operator">`;
-    }
-
-    // Hide status after 3 seconds
-    const t3 = setTimeout(() => {
-      hideOperatorStatusBar();
-    }, 3000);
-    operatorMode.timeouts.push(t3);
-  }, 10000);
-  operatorMode.timeouts.push(t2);
-}
-
-// Stop operator simulation
-export function stopOperatorSimulation() {
-  // Clear all timeouts
-  operatorMode.timeouts.forEach(t => clearTimeout(t));
-  operatorMode.timeouts = [];
-
-  operatorMode.connected = false;
-  hideOperatorStatusBar();
-  escalationState.isEscalated = false;
-  escalationState.awaitingConfirmation = false;
-  escalationState.reason = null;
-
-  // Restore original logo
-  const logoContainer = document.getElementById('hotel-logo-container');
-  if (logoContainer && operatorMode.originalLogo) {
-    logoContainer.innerHTML = operatorMode.originalLogo;
-  }
-}
-
-// Set operator mode settings
-export function setOperatorSettings(name, photo) {
-  if (name) operatorMode.name = name;
-  if (photo) operatorMode.photo = photo;
-}
 
 // Load booking state from localStorage
 function loadBookingState() {
@@ -680,7 +324,7 @@ function updateBookingStateWithExtracted(extractedData) {
 }
 
 // Add message to conversation history
-function addToConversationHistory(role, content) {
+export function addToConversationHistory(role, content) {
   bookingState.conversationHistory.push({ role, content });
 
   // Keep only last 10 messages
@@ -695,6 +339,7 @@ function addToConversationHistory(role, content) {
 function resetBookingState() {
   bookingState = {
     step: 'initial',
+    funnelStage: 'initial',
     collectedData: {
       fullName: null,
       phone: null,
@@ -837,6 +482,45 @@ function parseEscalationConfirmation(message) {
   }
 
   return 'unknown';
+}
+
+// Detect auto-escalation trigger (event / conference / VIP / commercial)
+function detectAutoEscalation(message) {
+  for (const { pattern, reason } of ESCALATION_AUTO_PATTERNS) {
+    if (pattern.test(message)) return reason;
+  }
+  return null;
+}
+
+// Show escalation confirmation modal
+function showEscalationModal(reason) {
+  const modal = document.getElementById('escalation-modal');
+  const sheet = document.getElementById('escalation-modal-sheet');
+  const titleEl = document.getElementById('escalation-modal-title');
+  const descEl = document.getElementById('escalation-modal-desc');
+
+  if (!modal || !sheet) return;
+
+  const texts = ESCALATION_REASON_TEXTS[reason] || ESCALATION_REASON_TEXTS.required;
+  if (titleEl) titleEl.textContent = texts.title;
+  if (descEl) descEl.textContent = texts.desc;
+
+  modal.classList.remove('hidden');
+  setTimeout(() => {
+    modal.classList.add('show');
+    sheet.classList.remove('translate-y-full');
+  }, 10);
+}
+
+// Hide escalation confirmation modal
+function hideEscalationModal() {
+  const modal = document.getElementById('escalation-modal');
+  const sheet = document.getElementById('escalation-modal-sheet');
+  if (!modal || !sheet) return;
+
+  sheet.classList.add('translate-y-full');
+  modal.classList.remove('show');
+  setTimeout(() => modal.classList.add('hidden'), 500);
 }
 
 // Show cancellation options
@@ -1720,124 +1404,9 @@ function handleBookingEdit(bookingId, optionsContainer) {
 }
 
 // ========================================
-// LANGUAGE FUNCTIONS
+// LANGUAGE FUNCTIONS — see language.js
 // ========================================
-
-// Get current translation
-export function getTranslation(key) {
-  const t = translations[currentLang] || translations['en'];
-  return t[key] || translations['en'][key] || key;
-}
-
-// Switch language
-// Render Language Menu
-// Render Language Menu (Sheet List)
-function renderLanguageMenu() {
-  const list = document.getElementById('language-sheet-list');
-  const display = document.getElementById('current-lang-display');
-
-  // Update current lang display on main menu
-  if (display) {
-    display.textContent = currentLang.toUpperCase();
-  }
-
-  if (!list) return;
-
-  list.innerHTML = '';
-  languagesList.forEach(lang => {
-    const btn = document.createElement('button');
-    btn.dataset.lang = lang.code;
-
-    const isSelected = lang.code === currentLang;
-
-    if (isSelected) {
-      btn.className = 'language-option active';
-      btn.innerHTML = `
-        <div class="flex items-center space-x-4">
-            <div class="w-[52px] h-[52px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-50 text-3xl shadow-sm border border-gray-100/50">
-                ${lang.flag}
-            </div>
-            <span class="font-bold text-[17px] text-gray-900">${lang.name}</span>
-        </div>
-        <div class="w-6 h-6 rounded-full bg-[#3B82F6] flex items-center justify-center shadow-sm">
-            <span class="material-symbols-rounded text-white text-[18px]">check</span>
-        </div>
-      `;
-    } else {
-      btn.className = 'language-option';
-      btn.innerHTML = `
-        <div class="flex items-center space-x-4">
-            <div class="w-[52px] h-[52px] rounded-2xl overflow-hidden flex items-center justify-center bg-gray-50/50 text-3xl opacity-90 group-hover:opacity-100 transition-opacity">
-                ${lang.flag}
-            </div>
-            <span class="font-medium text-[17px] text-gray-700 group-hover:text-gray-900 transition-colors">${lang.name}</span>
-        </div>
-      `;
-    }
-    list.appendChild(btn);
-  });
-}
-
-// Switch Language
-export function switchLanguage(langCode) {
-  if (!translations[langCode]) {
-    console.warn(`Language ${langCode} not found, falling back to English`);
-    langCode = 'en';
-  }
-
-  currentLang = langCode;
-  localStorage.setItem(LANGUAGE_KEY, langCode);
-
-  // Update UI texts
-  updateUITexts();
-
-  // Update active state in menu
-  updateLanguageMenuState();
-
-  // Set RTL for Arabic
-  if (langCode === 'ar') {
-    document.documentElement.setAttribute('dir', 'rtl');
-  } else {
-    document.documentElement.removeAttribute('dir');
-  }
-
-  // Close menu
-  closeHeaderMenu();
-  closeLanguageSubmenu();
-
-  // Send welcome message in new language
-  addMessage(getTranslation('welcome'), 'ai');
-  addToConversationHistory('assistant', getTranslation('welcome'));
-}
-
-// Update all UI texts based on current language
-export function updateUITexts() {
-  const t = translations[currentLang] || translations['en'];
-
-  // Update placeholder
-  if (dom.messageInput) {
-    dom.messageInput.placeholder = t.placeholder || 'Type a message...';
-  }
-
-  // Update data-i18n elements
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (t[key]) {
-      el.textContent = t[key];
-    }
-  });
-
-  // Update language menu active state
-  updateLanguageMenuState();
-}
-
-// Update language menu active state
-function updateLanguageMenuState() {
-  // Re-render the menu to update checkmarks and styles
-  renderLanguageMenu();
-}
-
-
+export { getTranslation, switchLanguage, updateUITexts, initLanguage, renderLanguageMenu } from './language.js';
 
 // Get conversation history for external use
 export function getConversationHistory() {
@@ -1870,20 +1439,6 @@ export function updateSendButtonState() {
   }
 }
 
-// Initialize Language
-export function initLanguage() {
-  const t = translations[currentLang] || translations['en'];
-  if (dom.messageInput) {
-    dom.messageInput.placeholder = t.placeholder || 'Type a message...';
-  }
-  if (dom.chatButtonText && dom.buttonTextSelect) {
-    dom.chatButtonText.textContent = dom.buttonTextSelect.value;
-  }
-  // Update language menu state
-  renderLanguageMenu();
-  updateLanguageMenuState();
-}
-
 // Toggle Chat Window
 export function toggleChat() {
   const isOpen = dom.chatWindow.classList.contains('open');
@@ -1891,7 +1446,7 @@ export function toggleChat() {
 
   if (isOpen) {
     // Closing widget
-    notificationState.isWidgetOpen = false;
+    setWidgetOpen(false);
     dom.chatWindow.classList.remove('open');
     dom.widgetButton.style.display = 'flex';
     if (isMobile) {
@@ -1903,7 +1458,7 @@ export function toggleChat() {
     closeRoomDetailView();
   } else {
     // Opening widget
-    notificationState.isWidgetOpen = true;
+    setWidgetOpen(true);
 
     // Reset unread notifications
     resetUnreadCount();
@@ -2255,7 +1810,7 @@ export function simulateWelcome() {
   showTyping();
   setTimeout(() => {
     hideTyping();
-    addMessage(translations[currentLang].welcome, 'ai');
+    addMessage(getTranslation('welcome'), 'ai');
     // Show quick reply chips after a short delay
     setTimeout(() => addQuickReplies(), 400);
   }, 1000);
@@ -3622,49 +3177,21 @@ export async function getAIResponse(userMessage) {
       return;
     }
 
-    // Handle escalation confirmation flow
+    // Block message processing while escalation modal is open
     if (escalationState.awaitingConfirmation) {
-      const decision = parseEscalationConfirmation(userMessage);
-
-      if (decision === 'yes') {
-        escalationState.awaitingConfirmation = false;
-        escalationState.isEscalated = true;
-
-        const confirmText = 'Хорошо, соединяю вас с менеджером. Пожалуйста, подождите...';
-        addMessage(confirmText, 'ai');
-        addToConversationHistory('assistant', confirmText);
-        startOperatorSimulation();
-        return;
-      }
-
-      if (decision === 'no') {
-        escalationState.awaitingConfirmation = false;
-        const declineText = 'Хорошо, остаёмся в чате. Чем могу помочь дальше?';
-        addMessage(declineText, 'ai');
-        addToConversationHistory('assistant', declineText);
-        return;
-      }
-
-      const clarifyText = 'Подтвердите, пожалуйста: хотите, чтобы я соединил вас с менеджером?';
-      addMessage(clarifyText, 'ai');
-      addToConversationHistory('assistant', clarifyText);
       return;
     }
 
-    // Detect escalation request or required case
+    // Detect escalation need (auto-triggers + explicit requests)
+    const autoReason = detectAutoEscalation(userMessage);
     const wantsHuman = detectEscalationRequest(userMessage);
     const needsHuman = detectEscalationRequired(userMessage);
 
-    if (!operatorMode.connected && !escalationState.isEscalated && (wantsHuman || needsHuman)) {
+    if (!operatorMode.connected && !escalationState.isEscalated && (autoReason || wantsHuman || needsHuman)) {
+      const reason = autoReason || (wantsHuman ? 'requested' : 'required');
       escalationState.awaitingConfirmation = true;
-      escalationState.reason = wantsHuman ? 'requested' : 'required';
-
-      const confirmText = wantsHuman
-        ? 'Хотите, чтобы я соединил вас с менеджером?'
-        : 'Похоже, этот вопрос лучше решить с менеджером. Хотите, чтобы я соединил вас с менеджером?';
-
-      addMessage(confirmText, 'ai');
-      addToConversationHistory('assistant', confirmText);
+      escalationState.reason = reason;
+      showEscalationModal(reason);
       return;
     }
 
@@ -3725,7 +3252,8 @@ export async function getAIResponse(userMessage) {
         userMessage,
         hotelName,
         bookingState,
-        bookingState.conversationHistory
+        bookingState.conversationHistory,
+        bookingState.funnelStage || 'initial'
       );
 
       // Handle Discovery Mode Response
@@ -3785,11 +3313,15 @@ export async function getAIResponse(userMessage) {
 
       // Show rooms carousel if intent detected
       if (response.showRoomsCarousel) {
+        bookingState.funnelStage = 'rooms_shown';
+        saveBookingState();
         setTimeout(() => addRoomCarousel(), 500);
       }
 
       // Show services carousel if intent detected
       if (response.showServicesCarousel) {
+        bookingState.funnelStage = 'services_shown';
+        saveBookingState();
         setTimeout(() => addServicesCarousel(), response.showRoomsCarousel ? 800 : 500);
       }
 
@@ -3825,7 +3357,8 @@ export async function getAIResponse(userMessage) {
         userMessage,
         hotelName,
         bookingState,
-        bookingState.conversationHistory
+        bookingState.conversationHistory,
+        bookingState.funnelStage || 'initial'
       );
 
       // Handle Discovery Mode Response
@@ -3885,11 +3418,15 @@ export async function getAIResponse(userMessage) {
 
       // Show rooms carousel if intent detected
       if (response.showRoomsCarousel) {
+        bookingState.funnelStage = 'rooms_shown';
+        saveBookingState();
         setTimeout(() => addRoomCarousel(), 500);
       }
 
       // Show services carousel if intent detected
       if (response.showServicesCarousel) {
+        bookingState.funnelStage = 'services_shown';
+        saveBookingState();
         setTimeout(() => addServicesCarousel(), response.showRoomsCarousel ? 800 : 500);
       }
 
@@ -3970,11 +3507,7 @@ export function resetChat() {
   };
 
   // Reset escalation state
-  escalationState = {
-    awaitingConfirmation: false,
-    isEscalated: false,
-    reason: null
-  };
+  resetEscalationState();
 
   // Clear room context container
   const container = document.getElementById('room-context-container');
@@ -4327,10 +3860,7 @@ export function initServiceDetailListeners() {
 // Initialize Chat Event Listeners
 export function initChatListeners() {
   // Initialize notification system
-  initNotificationSound();
-  loadNotificationSettings();
-  initVisibilityTracking();
-  updateSoundToggleUI(notificationState.soundEnabled);
+  initNotificationSystem();
 
   // Initialize GEO location badge
   updateGeoLocationBadge();
@@ -4499,6 +4029,35 @@ export function initMenuListeners() {
       addMessage('Ми вже шукаємо вільного менеджера для вас. Будь ласка, зачекайте...', 'ai');
 
       startOperatorSimulation();
+    });
+  }
+
+  // Escalation modal — confirm
+  const escalationConfirmBtn = document.getElementById('escalation-confirm-btn');
+  if (escalationConfirmBtn) {
+    escalationConfirmBtn.addEventListener('click', () => {
+      escalationState.awaitingConfirmation = false;
+      escalationState.isEscalated = true;
+      hideEscalationModal();
+
+      const confirmText = 'Хорошо, соединяю вас с менеджером. Пожалуйста, подождите...';
+      addMessage(confirmText, 'ai');
+      addToConversationHistory('assistant', confirmText);
+      startOperatorSimulation();
+    });
+  }
+
+  // Escalation modal — cancel
+  const escalationCancelBtn = document.getElementById('escalation-cancel-btn');
+  if (escalationCancelBtn) {
+    escalationCancelBtn.addEventListener('click', () => {
+      escalationState.awaitingConfirmation = false;
+      escalationState.reason = null;
+      hideEscalationModal();
+
+      const declineText = 'Хорошо, остаёмся в чате. Чем могу помочь дальше?';
+      addMessage(declineText, 'ai');
+      addToConversationHistory('assistant', declineText);
     });
   }
 
@@ -4697,7 +4256,7 @@ function toggleHeaderMenu() {
 }
 
 // Close header menu
-function closeHeaderMenu() {
+export function closeHeaderMenu() {
   const menuSheet = document.getElementById('menu-bottom-sheet');
   const content = document.getElementById('menu-sheet-content-inner');
   if (menuSheet && content) {
@@ -4728,7 +4287,7 @@ function toggleLanguageSubmenu() {
 }
 
 // Close language submenu
-function closeLanguageSubmenu() {
+export function closeLanguageSubmenu() {
   const langSheet = document.getElementById('language-sheet-modal');
   const content = document.getElementById('language-sheet-content-inner');
   if (langSheet && content) {
@@ -4808,14 +4367,7 @@ export function initTelegramBookingModalListeners() {
 }
 */
 
-// Export state getters/setters
-export function setCurrentLang(lang) {
-  currentLang = lang;
-}
-
-export function getCurrentLang() {
-  return currentLang;
-}
+export { setCurrentLang, getCurrentLang } from './language.js';
 
 export function getSelectedRoom() {
   return selectedRoom;
@@ -4825,494 +4377,9 @@ export function getChatMode() {
   return chatMode;
 }
 
-// ========================================
-// HISTORY ARCHIVE FUNCTIONS
-// ========================================
-
-// Archive current session
-function archiveCurrentSession() {
-  // Only archive if there are user messages
-  const userMessages = dom.messagesContainer.querySelectorAll('.message-wrapper.user');
-  if (userMessages.length === 0) return;
-
-  const timestamp = new Date().toISOString();
-  const summary = bookingState.collectedData.fullName || `Guest (${new Date(timestamp).toLocaleDateString()})`;
-
-  // Capture current messages HTML for display
-  const messagesHTML = dom.messagesContainer.innerHTML;
-
-  const sessionData = {
-    id: `session_${Date.now()}`,
-    timestamp: timestamp,
-    summary: summary,
-    messages: [
-      ...Array.from(dom.messagesContainer.children).map(el => {
-        // Very basic serialization for now - we'll re-render differently or use this
-        // Improved: Serialize structure
-        if (el.classList.contains('message-wrapper')) {
-          const isUser = el.classList.contains('user');
-          const text = el.querySelector('[class^="chat-message"]')?.innerHTML || '';
-          const time = el.querySelector('.message-time')?.innerText || '';
-          return { type: 'message', sender: isUser ? 'user' : 'ai', text, time };
-        }
-        return null;
-      }).filter(Boolean)
-    ]
-  };
-
-  try {
-    const existingArchive = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-    existingArchive.unshift(sessionData); // Add to top
-    // Limit to 50 sessions
-    if (existingArchive.length > 50) existingArchive.pop();
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(existingArchive));
-  } catch (e) {
-    console.error('Error archiving session:', e);
-  }
-}
-
-// Show History Modal (now internal view as modal)
-function showHistoryModal() {
-  const wrapper = document.getElementById('history-modal-wrapper');
-  const view = document.getElementById('history-view');
-  if (!wrapper || !view) return;
-
-  // Initialize search listener if not already done
-  if (dom.historySearchInput && !dom.historySearchInput.dataset.searchInited) {
-    dom.historySearchInput.addEventListener('input', (e) => {
-      renderHistoryItems(e.target.value);
-    });
-    dom.historySearchInput.dataset.searchInited = 'true';
-  }
-
-  // Clear search on open
-  if (dom.historySearchInput) dom.historySearchInput.value = '';
-
-  renderHistoryItems();
-
-  // Show wrapper (overlay)
-  wrapper.classList.remove('hidden');
-
-  // Force reflow and add animations
-  setTimeout(() => {
-    view.classList.remove('translate-y-full');
-  }, 10);
-}
-
-// Render history items based on search query
-function renderHistoryItems(searchQuery = '') {
-  const list = document.getElementById('history-list');
-  if (!list) return;
-
-  const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-  list.innerHTML = '';
-
-  // Filter history if search query is present
-  const query = searchQuery.toLowerCase().trim();
-  const filteredHistory = query === ''
-    ? history
-    : history.filter(session => {
-      const inSummary = session.summary && session.summary.toLowerCase().includes(query);
-      const inMessages = session.messages && session.messages.some(msg =>
-        msg.text && msg.text.toLowerCase().includes(query)
-      );
-      return inSummary || inMessages;
-    });
-
-  if (filteredHistory.length === 0) {
-    list.innerHTML = `
-        <div class="text-center text-slate-400 mt-10">
-          <p>${query === '' ? 'Немає збережених діалогів' : 'За вашим запитом нічого не знайдено'}</p>
-        </div>
-    `;
-  } else {
-    const today = new Date().toDateString();
-    const groupedHistory = filteredHistory.reduce((acc, session) => {
-      const date = new Date(session.timestamp).toDateString();
-      if (!acc[date]) acc[date] = [];
-      acc[date].push(session);
-      return acc;
-    }, {});
-
-    Object.keys(groupedHistory).forEach(dateStr => {
-      const header = document.createElement('div');
-      header.className = 'px-2 pt-4 pb-2';
-      const isToday = dateStr === today;
-      const labelText = isToday ? 'Сегодня' : new Date(dateStr).toLocaleDateString();
-      header.innerHTML = `<p class="text-xs font-bold uppercase tracking-widest text-slate-400">${labelText}</p>`;
-      list.appendChild(header);
-
-      groupedHistory[dateStr].forEach(session => {
-        const timeStr = new Date(session.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        let snippet = "Диалог сохранен";
-        if (session.messages && session.messages.length > 0) {
-          const lastMsg = session.messages[session.messages.length - 1];
-          snippet = (lastMsg.sender === 'ai' ? 'AI: ' : 'Вы: ') + (lastMsg.text.replace(/<[^>]*>?/gm, '') || snippet);
-        }
-
-        const item = document.createElement('div');
-        item.className = 'liquid-glass rounded-[2.5rem] p-4 flex items-center gap-4 active:scale-[0.98] transition-transform cursor-pointer mb-3';
-        item.innerHTML = `
-          <div class="w-14 h-14 rounded-full bg-[#135bec]/10 flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined text-[#135bec] fill-1">chat_bubble</span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex justify-between items-start mb-0.5">
-              <h3 class="font-bold text-slate-900 truncate">${session.summary}</h3>
-              <span class="text-[10px] font-medium text-slate-400 uppercase tracking-tighter shrink-0 mt-1">${timeStr}</span>
-            </div>
-            <p class="text-sm text-slate-500 line-clamp-1 leading-relaxed">
-              ${snippet}
-            </p>
-          </div>
-        `;
-        item.addEventListener('click', () => openHistoryDetail(session));
-        list.appendChild(item);
-      });
-    });
-  }
-}
-
-// Open History Detail View
-function openHistoryDetail(session) {
-  const detailView = document.getElementById('history-detail-view');
-  const container = document.getElementById('history-detail-messages');
-  const dateTitle = document.getElementById('history-detail-date');
-  const timeTitle = document.getElementById('history-detail-time');
-
-  if (!detailView || !container) return;
-
-  // Store current session for continue chat functionality
-  currentHistorySession = session;
-
-  container.innerHTML = '';
-
-  // Set headers
-  if (dateTitle) dateTitle.textContent = session.summary;
-  if (timeTitle) timeTitle.textContent = new Date(session.timestamp).toLocaleString();
-
-  // Render messages
-  session.messages.forEach(msg => {
-    const wrapper = document.createElement('div');
-    wrapper.className = `message-wrapper ${msg.sender} animate-fade-in`;
-
-    const messageElement = document.createElement('div');
-    messageElement.className = `chat-message-${msg.sender} text-base leading-relaxed`;
-    messageElement.innerHTML = msg.text;
-
-    if (msg.sender === 'user') {
-      const timeElement = document.createElement('span');
-      timeElement.className = 'message-time';
-      timeElement.innerText = msg.time;
-      wrapper.appendChild(timeElement);
-      wrapper.appendChild(messageElement);
-    } else {
-      wrapper.appendChild(messageElement);
-    }
-
-    container.appendChild(wrapper);
-  });
-
-  detailView.classList.remove('hidden');
-  const wrapperMod = document.getElementById('history-modal-wrapper');
-  const historyView = document.getElementById('history-view');
-
-  if (wrapperMod) {
-    wrapperMod.classList.add('show-detail');
-    if (historyView) historyView.classList.add('-translate-x-full');
-
-    setTimeout(() => {
-      detailView.classList.remove('translate-y-full');
-    }, 10);
-  }
-}
-
-// Continue chat from history
-function continueHistoryChat() {
-  if (!currentHistorySession) return;
-
-  // Clear current messages but keep typing indicator
-  const indicatorHTML = dom.typingIndicator.outerHTML;
-  dom.messagesContainer.innerHTML = '';
-  dom.messagesContainer.innerHTML = indicatorHTML;
-  dom.updateTypingIndicator();
-
-  // Load messages from history
-  currentHistorySession.messages.forEach(msg => {
-    addMessage(msg.text, msg.sender);
-  });
-
-  // Update conversation history for AI context
-  bookingState.conversationHistory = currentHistorySession.messages.map(msg => ({
-    role: msg.sender === 'user' ? 'user' : 'assistant',
-    content: msg.text
-  }));
-
-  // Keep only last 10 messages
-  if (bookingState.conversationHistory.length > 10) {
-    bookingState.conversationHistory = bookingState.conversationHistory.slice(-10);
-  }
-
-  // Close history views with animation
-  const historyView = document.getElementById('history-view');
-  const historyDetailView = document.getElementById('history-detail-view');
-  const historyModalWrapper = document.getElementById('history-modal-wrapper');
-
-  if (historyView && historyModalWrapper) {
-    historyView.classList.add('translate-y-full');
-    historyDetailView?.classList.add('translate-y-full');
-    historyModalWrapper.classList.add('hidden');
-
-    setTimeout(() => {
-      historyModalWrapper.classList.remove('show-detail');
-      historyDetailView?.classList.add('hidden');
-    }, 500);
-  }
-
-  // Scroll to bottom
-  if (dom.messagesContainer) {
-    dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
-  }
-
-  // Focus on input
-  const messageInput = document.getElementById('message-input');
-  if (messageInput) {
-    messageInput.focus();
-  }
-}
 
 // ========================================
-// GUIDE SHEET FUNCTIONS
+// HISTORY / GUIDE / VOICE
 // ========================================
-
-// Guide items storage key
-const GUIDE_ITEMS_KEY = 'guide_items';
-
-// Default guide items
-const DEFAULT_GUIDE_ITEMS = [
-  { id: '1', icon: 'user', text: 'Рекомендации нашего шефа' },
-  { id: '2', icon: 'spa', text: 'Wellness эксклюзивы' }
-];
-
-// Load guide items from storage
-export function loadGuideItems() {
-  try {
-    const saved = localStorage.getItem(GUIDE_ITEMS_KEY);
-    return saved ? JSON.parse(saved) : DEFAULT_GUIDE_ITEMS;
-  } catch (e) {
-    return DEFAULT_GUIDE_ITEMS;
-  }
-}
-
-// Save guide items to storage
-export function saveGuideItems(items) {
-  try {
-    localStorage.setItem(GUIDE_ITEMS_KEY, JSON.stringify(items));
-    return true;
-  } catch (e) {
-    console.error('Error saving guide items:', e);
-    return false;
-  }
-}
-
-// Get icon SVG for guide item
-function getGuideItemIcon(iconType) {
-  const icons = {
-    user: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-      <circle cx="12" cy="7" r="4"></circle>
-    </svg>`,
-    chef: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6z"></path>
-      <line x1="6" y1="17" x2="18" y2="17"></line>
-    </svg>`,
-    spa: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-    </svg>`,
-    star: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-    </svg>`
-  };
-  return icons[iconType] || icons.star;
-}
-
-// Render guide items in the sheet
-function renderGuideItems() {
-  const container = dom.guideItemsList;
-  if (!container) return;
-
-  const items = loadGuideItems();
-
-  container.innerHTML = items.map(item => `
-    <div class="guide-item" data-id="${item.id}">
-      <div class="guide-item-icon">
-        ${getGuideItemIcon(item.icon)}
-      </div>
-      <span class="guide-item-text">${item.text}</span>
-      <svg class="guide-item-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    </div>
-  `).join('');
-}
-
-// Show guide sheet
-function showGuideSheet() {
-  const sheet = dom.guideBottomSheet;
-  const content = document.getElementById('guide-sheet-content-inner');
-  if (!sheet || !content) return;
-
-  renderGuideItems();
-  sheet.classList.remove('hidden');
-  setTimeout(() => content.classList.remove('translate-y-full'), 10);
-}
-
-// Hide guide sheet
-function hideGuideSheet() {
-  const sheet = dom.guideBottomSheet;
-  const content = document.getElementById('guide-sheet-content-inner');
-  if (!sheet || !content) {
-    if (sheet) sheet.classList.add('hidden');
-    return;
-  }
-
-  content.classList.add('translate-y-full');
-  setTimeout(() => {
-    sheet.classList.add('hidden');
-  }, 500);
-}
-
-// Initialize Guide Sheet Listeners
-function initGuideSheetListeners() {
-  // Badge click - open sheet
-  if (dom.guideBadgeBtn) {
-    console.log('Setting up listener for guideBadgeBtn');
-    dom.guideBadgeBtn.addEventListener('click', (e) => {
-      console.log('guideBadgeBtn clicked');
-      e.preventDefault();
-      e.stopPropagation();
-      const role = dom.guideBadgeBtn.dataset.role;
-      console.log('Role:', role);
-      if (role === 'app-download') {
-        showAppDownloadModal();
-      } else if (role === 'guide') {
-        showGuideSheet();
-      }
-    });
-  } else {
-    console.warn('dom.guideBadgeBtn not found during listener init');
-  }
-
-  // Close button
-  if (dom.guideSheetClose) {
-    dom.guideSheetClose.addEventListener('click', () => {
-      hideGuideSheet();
-    });
-  }
-
-  // Telegram button
-  if (dom.guideTelegramBtn) {
-    dom.guideTelegramBtn.addEventListener('click', () => {
-      const telegramLink = 'https://t.me/your_hotel_bot';
-      window.open(telegramLink, '_blank');
-      hideGuideSheet();
-    });
-  }
-
-  // Close on backdrop click
-  if (dom.guideBottomSheet) {
-    dom.guideBottomSheet.addEventListener('click', (e) => {
-      if (e.target === dom.guideBottomSheet) {
-        hideGuideSheet();
-      }
-    });
-  }
-}
-
-// Voice Input
-function initVoiceInput() {
-  const btn = document.getElementById('voice-input-button');
-  if (!btn) return;
-
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    btn.classList.add('is-unsupported');
-    return;
-  }
-
-  const recognition = new SpeechRecognition();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-
-  let isRecording = false;
-  let baseText = '';
-
-  // Set lang based on current page language or default to Russian
-  recognition.lang = navigator.language || 'ru-RU';
-
-  const micIcon = document.getElementById('btn-icon-mic');
-  const stopIcon = document.getElementById('btn-icon-mic-stop');
-
-  function startRecording() {
-    baseText = dom.messageInput ? dom.messageInput.value : '';
-    try {
-      recognition.start();
-    } catch (e) { }
-    isRecording = true;
-    btn.classList.add('is-recording');
-    if (micIcon) micIcon.style.display = 'none';
-    if (stopIcon) stopIcon.style.display = 'block';
-  }
-
-  function stopRecording() {
-    isRecording = false;
-    try {
-      recognition.stop();
-    } catch (e) { }
-    btn.classList.remove('is-recording');
-    if (micIcon) micIcon.style.display = 'block';
-    if (stopIcon) stopIcon.style.display = 'none';
-  }
-
-  btn.addEventListener('click', () => {
-    if (isRecording) {
-      stopRecording();
-    } else {
-      startRecording();
-    }
-  });
-
-  recognition.addEventListener('result', (event) => {
-    let transcript = '';
-    for (const result of event.results) {
-      transcript += result[0].transcript;
-    }
-    if (dom.messageInput) {
-      dom.messageInput.value = baseText + (baseText && transcript ? ' ' : '') + transcript;
-      dom.messageInput.dispatchEvent(new Event('input'));
-    }
-  });
-
-  recognition.addEventListener('end', () => {
-    if (isRecording) {
-      // User hasn't manually stopped, restart it
-      baseText = dom.messageInput ? dom.messageInput.value : '';
-      try {
-        recognition.start();
-      } catch (e) {
-        stopRecording();
-      }
-    } else {
-      btn.classList.remove('is-recording');
-      if (micIcon) micIcon.style.display = 'block';
-      if (stopIcon) stopIcon.style.display = 'none';
-    }
-  });
-
-  recognition.addEventListener('error', (event) => {
-    console.warn('Voice recognition error:', event.error);
-    if (event.error !== 'no-speech') {
-      stopRecording();
-    }
-  });
-}
+export { archiveCurrentSession, showHistoryModal, continueHistoryChat } from './history.js';
+export { loadGuideItems, saveGuideItems } from './guide.js';

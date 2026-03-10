@@ -160,6 +160,22 @@ const SERVICE_INTENT_PATTERNS = [
   /замовити|заказать|order/i
 ];
 
+// YES/affirmative intent patterns — response to proactive funnel questions
+const YES_INTENT_PATTERNS = [
+  /^(да|ага|угу|ок|окей|okay|ok|yes|sure|конечно|давайте|хочу|пожалуйста|так|звісно|звичайно|yep|yup|хорошо|добре|авжеж|ладно)\b/i,
+  /^(покажи|покажіть|показати|показывай|show|давай|давайте|виведи|виведіть)\b/i,
+  /хочу (подивитись|посмотреть|побачити|подивитися|see|view|look)\b/i,
+];
+
+// Hotel intent keywords for detecting when user wants to see hotel options (orchestra/discovery)
+const HOTEL_INTENT_PATTERNS = [
+  /готель|отель|hotel/i,
+  /покажи.*(готел|отел)|show.*(hotel|property)/i,
+  /вибрати готель|выбрать отель|choose hotel|select hotel/i,
+  /який готель|какой отель|which hotel/i,
+  /варіанти готел|варианты отел|hotel options/i,
+];
+
 // Menu intent keywords for detecting when user wants to see restaurant menu
 const MENU_INTENT_PATTERNS = [
   /меню/i,
@@ -335,7 +351,7 @@ ${guestBlock}
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Build system prompt for general chat with booking funnel
-function buildGeneralSystemPrompt(hotelName = 'Hilton', bookingState = null) {
+function buildGeneralSystemPrompt(hotelName = 'Hilton', bookingState = null, funnelStage = 'initial') {
   const rooms = getAllRooms();
   const services = getAllServices();
   const hotelInfo = getHotelInfo();
@@ -469,7 +485,24 @@ ${stateDescription || 'Начало диалога'}
 - Если гость задаёт конкретный вопрос (о WiFi, завтраке, трансфере) — СНАЧАЛА ответь на него, затем плавно возвращайся к воронке бронирования
 - Будь дружелюбным и ненавязчивым
 - Отвечай кратко (2-4 предложения)
-- Если гость спрашивает о номерах или хочет посмотреть варианты — скажи что сейчас покажешь доступные номера`;
+- Если гость спрашивает о номерах или хочет посмотреть варианты — скажи что сейчас покажешь доступные номера
+
+### КОНВЕРСИОННАЯ ВОРОНКА (ВЫСШИЙ ПРИОРИТЕТ)
+Твоя ГЛАВНАЯ цель — конверсия в бронирование. Каждый ответ должен продвигать гостя к действию.
+
+**Текущий этап воронки:** ${funnelStage}
+
+**Правила поведения по этапам:**
+- Этап "initial": Если гость пишет о бронировании, отеле, номерах, ценах — СРАЗУ задай проактивный вопрос:
+  "Хотите посмотреть доступные номера? Покажу лучшие варианты прямо сейчас! 😊"
+  НЕ давай просто информацию без конкретного призыва к действию.
+- Этап "rooms_shown": Предложи дополнительные услуги:
+  "Хотите добавить дополнительные услуги к бронированию? У нас есть SPA, трансфер, экскурсии 🌿"
+- Этап "services_shown": Направляй к завершению бронирования.
+
+**ВСЕГДА:** Если гость говорит "да", "покажи", "хочу", "давай" — НЕМЕДЛЕННО двигай к следующему шагу воронки.
+**НЕ:** "Чем ещё могу помочь?" (слабый призыв)
+**ДА:** "Хотите посмотреть номера прямо сейчас?" (конкретное действие)`;
 }
 
 // Build system prompt for room-specific chat
@@ -604,6 +637,16 @@ export function hasMenuIntent(message) {
 // Check if message is about a general topic (should break room context)
 export function isGeneralTopic(message) {
   return GENERAL_TOPIC_PATTERNS.some(pattern => pattern.test(message));
+}
+
+// Check if message is a YES/affirmative response (for funnel progression)
+export function hasYesIntent(message) {
+  return YES_INTENT_PATTERNS.some(pattern => pattern.test(message.trim()));
+}
+
+// Check if message indicates hotel selection intent (orchestra/discovery)
+export function hasHotelIntent(message) {
+  return HOTEL_INTENT_PATTERNS.some(pattern => pattern.test(message));
 }
 
 // Call OpenAI API (non-streaming)
@@ -892,7 +935,7 @@ export async function getDiscoveryAIResponse(userMessage, conversationHistory = 
 }
 
 // Get general AI response with booking funnel support
-export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bookingState = null, conversationHistory = []) {
+export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bookingState = null, conversationHistory = [], funnelStage = 'initial') {
   if (discovery.discoveryState && discovery.discoveryState.active) {
     return getDiscoveryAIResponse(userMessage, conversationHistory);
   }
@@ -903,7 +946,7 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
     ? buildInAppSystemPrompt(hotelName)
     : isOrchestraActive
       ? buildOrchestratorSystemPrompt(hotelName)
-      : buildGeneralSystemPrompt(hotelName, bookingState);
+      : buildGeneralSystemPrompt(hotelName, bookingState, funnelStage);
 
   // Build messages with conversation history
   const messages = [
@@ -918,13 +961,22 @@ export async function getGeneralAIResponse(userMessage, hotelName = 'Hilton', bo
   messages.push({ role: 'user', content: userMessage });
 
   // Check for room intent (pass history for context-aware detection)
-  const showRooms = hasRoomIntent(userMessage, conversationHistory);
+  let showRooms = hasRoomIntent(userMessage, conversationHistory);
 
   // Check for services intent (pass history for context-aware detection)
-  const showServices = hasServiceIntent(userMessage, conversationHistory);
+  let showServices = hasServiceIntent(userMessage, conversationHistory);
 
   // Check for menu intent
   const showMenu = hasMenuIntent(userMessage);
+
+  // Funnel-based carousel triggers: YES response advances the funnel
+  if (hasYesIntent(userMessage)) {
+    if (funnelStage === 'initial' || funnelStage === 'rooms_offered') {
+      showRooms = true;
+    } else if (funnelStage === 'rooms_shown' || funnelStage === 'services_offered') {
+      showServices = true;
+    }
+  }
 
   // Extract booking data from user message
   const extractedData = extractBookingData(userMessage);
