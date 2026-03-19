@@ -2191,6 +2191,104 @@ export function addPropertyShortlist(propertyIds) {
   dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
 }
 
+// ===== DISCOVERY HOTELS DEMO =====
+
+// Show ALL hotels (Network + Discovery) in a carousel — for Discovery mode menu button
+export function showAllDiscoveryHotels() {
+  const networkProps = orchestra.getNetworkProperties().map(p => ({ ...p, _source: 'network' }));
+  const discHotels = orchestra.getDiscoveryHotels().map(h => ({ ...h, _source: 'discovery' }));
+  const allHotels = [...networkProps, ...discHotels];
+
+  if (allHotels.length === 0) {
+    addMessage('В адміністративній панелі ще немає жодного готелю.', 'ai');
+    return;
+  }
+
+  // Intro message
+  const introText = `🏨 <strong>Всі готелі (${allHotels.length}):</strong>\n\nОберіть готель, щоб дізнатися більше або розпочати бронювання.`;
+  addMessage(introText, 'ai');
+  addToConversationHistory('assistant', introText);
+
+  // Build carousel
+  setTimeout(() => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'message-wrapper ai animate-fade-in';
+
+    const carouselWrapper = document.createElement('div');
+    carouselWrapper.className = 'rooms-carousel-wrapper w-full';
+
+    const carousel = document.createElement('div');
+    carousel.className = 'rooms-carousel';
+
+    allHotels.forEach(prop => {
+      const card = document.createElement('div');
+      card.className = 'room-carousel-card overflow-hidden w-64 flex-shrink-0 bg-white border border-gray-100 rounded-2xl shadow-sm mr-3';
+
+      const imgHTML = (prop.photoUrl || prop.photo)
+        ? `<div class="h-44 bg-gray-100 overflow-hidden"><img src="${prop.photoUrl || prop.photo}" alt="${prop.name}" class="w-full h-full object-cover"></div>`
+        : `<div class="h-44 bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center text-gray-300">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+          </div>`;
+
+      const tagsHTML = prop.discoveryTags
+        ? prop.discoveryTags.split(',').map(t => t.trim()).filter(Boolean)
+          .map(t => `<span class="inline-block bg-indigo-50 text-indigo-600 text-[10px] font-medium px-2 py-0.5 rounded-full">${t}</span>`)
+          .join('')
+        : '';
+
+      const starsCount = parseInt(prop.starRating) || 0;
+      const starsHTML = starsCount > 0
+        ? `<div class="text-yellow-400 text-xs mb-1 leading-none">${'★'.repeat(Math.min(starsCount, 5))}${'☆'.repeat(Math.max(0, 5 - starsCount))}</div>`
+        : '';
+
+      const priceHTML = prop.minPrice
+        ? `<div class="text-xs text-gray-400 mb-2">від <span class="font-semibold text-gray-700">${prop.minPrice} ${prop.currency || 'USD'}</span>/ніч</div>`
+        : '';
+
+      const cityBadge = prop.geoCity
+        ? `<div class="flex items-center gap-1 text-[11px] text-gray-400 mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            ${prop.geoCity}
+          </div>`
+        : '';
+
+      card.innerHTML = `
+        <div class="relative">${imgHTML}</div>
+        <div class="p-3">
+          <div class="font-bold text-sm text-gray-800 mb-0.5 leading-tight truncate">${prop.name}</div>
+          ${starsHTML}
+          ${cityBadge}
+          <div class="flex flex-wrap gap-1 mb-2 min-h-[20px]">${tagsHTML}</div>
+          ${priceHTML}
+          <button class="select-discovery-hotel-btn w-full py-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors rounded-xl text-xs font-bold" data-id="${prop.id}">
+            Обрати цей готель
+          </button>
+        </div>
+      `;
+
+      // Handle selection
+      const selectBtn = card.querySelector('.select-discovery-hotel-btn');
+      if (selectBtn) {
+        selectBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setSingleProperty(prop.id);
+        });
+      }
+
+      carousel.appendChild(card);
+    });
+
+    carouselWrapper.appendChild(carousel);
+    wrapper.appendChild(carouselWrapper);
+
+    dom.messagesContainer.insertBefore(wrapper, dom.typingIndicator);
+    dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+  }, 300);
+}
+
 // ===== ROOMS VIA AGENT =====
 
 // State for room selection mode
@@ -4207,6 +4305,15 @@ export function initMenuListeners() {
     });
   }
 
+  // Discovery Hotels menu button (Discovery Mode)
+  const discoveryHotelsMenuBtn = document.getElementById('discovery-hotels-menu-btn');
+  if (discoveryHotelsMenuBtn) {
+    discoveryHotelsMenuBtn.addEventListener('click', () => {
+      closeHeaderMenu();
+      showAllDiscoveryHotels();
+    });
+  }
+
   // Shop menu button (In-App Mode)
   const shopMenuBtn = document.getElementById('shop-menu-btn');
   if (shopMenuBtn) {
@@ -4288,6 +4395,13 @@ function updateMenuButtonStates() {
     roomsMenuBtn.style.opacity = disabled ? '0.4' : '';
     roomsMenuBtn.style.pointerEvents = disabled ? 'none' : '';
     roomsMenuBtn.title = disabled ? 'Недоступно в режимі Discovery' : '';
+  }
+
+  // Show "All Hotels" button only in Discovery mode
+  const discoveryHotelsMenuBtn = document.getElementById('discovery-hotels-menu-btn');
+  if (discoveryHotelsMenuBtn) {
+    const isDiscoveryMode = orchestra.getDiscoveryMode();
+    discoveryHotelsMenuBtn.style.display = isDiscoveryMode ? '' : 'none';
   }
 }
 
