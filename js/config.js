@@ -265,7 +265,11 @@ export const translations = {
     finalizingDetails: "正在最终确定细节...",
     generatingOffer: "正在生成个人优惠...",
     newChat: "新聊天",
-    contactManager: "经理"
+    contactManager: "经理",
+    policyConsentPrefix: "开始聊天即表示您同意",
+    userAgreement: "使用条款",
+    and: "和",
+    privacyPolicy: "隐私政策"
   },
   hi: {
     buttonText: "होटल से चैट करें",
@@ -286,7 +290,11 @@ export const translations = {
     finalizingDetails: "अंतिम विवरण तैयार कर रहे हैं...",
     generatingOffer: "व्यक्तिगत प्रस्ताव तैयार कर रहे हैं...",
     newChat: "नई बातचीत",
-    contactManager: "प्रबंधक"
+    contactManager: "प्रबंधक",
+    policyConsentPrefix: "चैट शुरू करके आप सहमत हैं",
+    userAgreement: "उपयोग की शर्तें",
+    and: "और",
+    privacyPolicy: "गोपनीयता नीति"
   },
   es: {
     buttonText: "Chat con el Hotel",
@@ -307,7 +315,11 @@ export const translations = {
     finalizingDetails: "Finalizando detalles...",
     generatingOffer: "Generando oferta personal...",
     newChat: "Nueva conversación",
-    contactManager: "Gerente"
+    contactManager: "Gerente",
+    policyConsentPrefix: "Al iniciar un chat, aceptas los",
+    userAgreement: "Términos de uso",
+    and: "y la",
+    privacyPolicy: "Política de privacidad"
   },
   ar: {
     buttonText: "الدردشة مع الفندق",
@@ -328,7 +340,11 @@ export const translations = {
     finalizingDetails: "جاري إنهاء التفاصيل...",
     generatingOffer: "جاري إنشاء العرض الشخصي...",
     newChat: "محادثة جديدة",
-    contactManager: "مدير"
+    contactManager: "مدير",
+    policyConsentPrefix: "ببدء الدردشة فإنك توافق على",
+    userAgreement: "شروط الاستخدام",
+    and: "و",
+    privacyPolicy: "سياسة الخصوصية"
   },
   fr: {
     buttonText: "Chat avec l'Hôtel",
@@ -349,7 +365,11 @@ export const translations = {
     finalizingDetails: "Finalisation des détails...",
     generatingOffer: "Génération de l'offre personnelle...",
     newChat: "Nouvelle discussion",
-    contactManager: "Directeur"
+    contactManager: "Directeur",
+    policyConsentPrefix: "En commençant une discussion, vous acceptez les",
+    userAgreement: "Conditions d'utilisation",
+    and: "et la",
+    privacyPolicy: "Politique de confidentialité"
   },
   bn: {
     buttonText: "হোটেলের সাথে চ্যাট করুন",
@@ -370,7 +390,11 @@ export const translations = {
     finalizingDetails: "চূড়ান্ত বিবরণ তৈরি করা হচ্ছে...",
     generatingOffer: "ব্যক্তিগত অফার তৈরি করা হচ্ছে...",
     newChat: "নতুন চ্যাট",
-    contactManager: "ম্যানেজার"
+    contactManager: "ম্যানেজার",
+    policyConsentPrefix: "চ্যাট শুরু করার মাধ্যমে আপনি সম্মত হচ্ছেন",
+    userAgreement: "ব্যবহারের শর্তাবলী",
+    and: "এবং",
+    privacyPolicy: "গোপনীয়তা নীতি"
   },
   pt: {
     buttonText: "Chat com o Hotel",
@@ -391,7 +415,11 @@ export const translations = {
     finalizingDetails: "Finalizando detalhes...",
     generatingOffer: "Gerando oferta pessoal...",
     newChat: "Novo chat",
-    contactManager: "Gerente"
+    contactManager: "Gerente",
+    policyConsentPrefix: "Ao iniciar um chat, você concorda com os",
+    userAgreement: "Termos de Uso",
+    and: "e a",
+    privacyPolicy: "Política de Privacidade"
   },
   ru: {
     buttonText: "Чат с отелем",
@@ -593,7 +621,11 @@ export const translations = {
     finalizingDetails: "Menyelesaikan detail...",
     generatingOffer: "Membuat penawaran pribadi...",
     newChat: "Obrolan Baru",
-    contactManager: "Manajer"
+    contactManager: "Manajer",
+    policyConsentPrefix: "Dengan memulai obrolan, Anda menyetujui",
+    userAgreement: "Syarat Penggunaan",
+    and: "dan",
+    privacyPolicy: "Kebijakan Privasi"
   },
   uk: {
     buttonText: "Чат з готелем",
@@ -793,7 +825,11 @@ export const translations = {
     analyzingNeeds: "Ihre Bedürfnisse analysieren...",
     finalizingDetails: "Details finalisieren...",
     generatingOffer: "Persönliches Angebot erstellen...",
-    newChat: "Neuer Chat"
+    newChat: "Neuer Chat",
+    policyConsentPrefix: "Mit dem Start eines Chats erklären Sie sich mit den",
+    userAgreement: "Nutzungsbedingungen",
+    and: "und der",
+    privacyPolicy: "Datenschutzerklärung einverstanden"
   },
   ja: {
     buttonText: "ホテルとチャット",
@@ -919,7 +955,11 @@ export const translations = {
     finalizingDetails: "Finalizacja szczegółów...",
     generatingOffer: "Tworzenie osobistej oferty...",
     newChat: "Nowy czat",
-    contactManager: "Menedżer"
+    contactManager: "Menedżer",
+    policyConsentPrefix: "Rozpoczynając czat, zgadzasz się na",
+    userAgreement: "Warunki użytkowania",
+    and: "i",
+    privacyPolicy: "Politykę prywatności"
   },
   vi: {
     buttonText: "Trò chuyện với Khách sạn",
@@ -940,7 +980,11 @@ export const translations = {
     finalizingDetails: "Đang hoàn thiện chi tiết...",
     generatingOffer: "Đang tạo ưu đãi cá nhân...",
     newChat: "Trò chuyện mới",
-    contactManager: "Quản lý"
+    contactManager: "Quản lý",
+    policyConsentPrefix: "Bằng cách bắt đầu trò chuyện, bạn đồng ý với",
+    userAgreement: "Điều khoản sử dụng",
+    and: "và",
+    privacyPolicy: "Chính sách bảo mật"
   },
   th: {
     buttonText: "แชทกับโรงแรม",
@@ -961,7 +1005,11 @@ export const translations = {
     finalizingDetails: "กำลังสรุปรายละเอียด...",
     generatingOffer: "กำลังสร้างข้อเสนอส่วนตัว...",
     newChat: "แชทใหม่",
-    contactManager: "ผู้จัดการ"
+    contactManager: "ผู้จัดการ",
+    policyConsentPrefix: "การเริ่มแชทแสดงว่าคุณยอมรับ",
+    userAgreement: "ข้อกำหนดการใช้งาน",
+    and: "และ",
+    privacyPolicy: "นโยบายความเป็นส่วนตัว"
   },
   // Legacy support for Ukrainian
   ua: {
@@ -982,6 +1030,10 @@ export const translations = {
     analyzingNeeds: "Враховуємо ваші потреби...",
     finalizingDetails: "Уточнюємо фінальні деталі...",
     generatingOffer: "Формуємо персональну пропозицію...",
-    newChat: "Новий чат"
+    newChat: "Новий чат",
+    policyConsentPrefix: "Починаючи чат ви погоджуєтесь з",
+    userAgreement: "Умовами використання",
+    and: "та",
+    privacyPolicy: "Політикою конфіденційності"
   }
 };
