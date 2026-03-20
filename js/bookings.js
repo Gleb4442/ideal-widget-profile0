@@ -3,6 +3,8 @@
  * Handles multiple guest bookings with CRUD operations
  */
 
+import { getTranslation, currentLang } from './language.js';
+
 const BOOKINGS_STORAGE_KEY = 'hotel_bookings';
 
 // Generate unique booking ID
@@ -216,18 +218,25 @@ export function formatBooking(booking) {
     ...booking,
     checkInFormatted: formatDateDisplay(booking.checkIn),
     checkOutFormatted: formatDateDisplay(booking.checkOut),
-    nightsText: booking.nights === 1 ? '1 ночь' : `${booking.nights} ночей`,
+    nightsText: formatNightsText(booking.nights),
     statusText: getStatusText(booking.status),
     totalPriceFormatted: formatPrice(booking.totalPrice)
   };
 }
 
+// Format nights text with pluralization
+function formatNightsText(nights) {
+  if (nights === 1) return `1 ${getTranslation('night1')}`;
+  if (nights > 1 && nights < 5) return `${nights} ${getTranslation('nights2')}`;
+  return `${nights} ${getTranslation('nights5')}`;
+}
+
 // Get status text in Russian
 function getStatusText(status) {
   const statusMap = {
-    'confirmed': 'Подтверждено',
-    'cancelled': 'Отменено',
-    'completed': 'Завершено'
+    'confirmed': getTranslation('statusConfirmed'),
+    'cancelled': getTranslation('statusCancelled'),
+    'completed': getTranslation('statusCompleted')
   };
   return statusMap[status] || status;
 }
@@ -235,7 +244,8 @@ function getStatusText(status) {
 // Format price
 function formatPrice(price) {
   if (!price) return '0 $';
-  return new Intl.NumberFormat('ru-RU', {
+  const locale = currentLang === 'uk' ? 'uk-UA' : currentLang === 'ru' ? 'ru-RU' : 'en-US';
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,

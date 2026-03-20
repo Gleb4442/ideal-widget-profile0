@@ -512,7 +512,7 @@
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
       </svg>
     </div>
-    <span class="chat-button-text">Чат с отелем</span>
+    <span class="chat-button-text" data-i18n="buttonText">Чат с отелем</span>
     <span id="chat-notification-badge">1</span>
   </button>
 
@@ -532,7 +532,7 @@
             </div>
             <div id="online-indicator"
               class="absolute bottom-0 right-0 w-[12px] h-[12px] bg-green-400 border-2 accent-border rounded-full"
-              title="Онлайн"></div>
+              data-i18n-title="online" title="Онлайн"></div>
           </div>
           <div class="flex flex-col justify-center">
             <h3 id="hotel-name-text" class="text-base font-bold leading-tight tracking-wide">Hilton</h3>
@@ -542,21 +542,21 @@
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>
-              Всі готелі
+              <span data-i18n="allHotels">Всі готелі</span>
             </button>
             <!-- GEO Location Badge -->
             <div id="geo-location-badge" class="hidden text-[11px] text-white/90 flex items-center gap-1 mt-0.5 -ml-0.5">
               <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
               </svg>
-              <span id="geo-location-text">Київ</span>
-              <button id="geo-location-reset" title="Змінити місто" style="opacity:0.7;background:none;border:none;cursor:pointer;color:inherit;padding:0;margin-left:1px;font-size:10px;line-height:1;">✕</button>
+              <span id="geo-location-text" data-i18n="cityName">Київ</span>
+              <button id="geo-location-reset" data-i18n-title="changeCity" title="Змінити місто" style="opacity:0.7;background:none;border:none;cursor:pointer;color:inherit;padding:0;margin-left:1px;font-size:10px;line-height:1;">✕</button>
             </div>
           </div>
         </div>
 
         <!-- App Store & Google Play Buttons (integrated) -->
-        <button id="guide-badge-btn" class="header-guide-btn" title="Download App" data-role="app-download">
+        <button id="guide-badge-btn" class="header-guide-btn" data-i18n-title="downloadApp" title="Download App" data-role="app-download">
           <!-- App Store Icon -->
           <svg width="22" height="22" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
             <linearGradient id="appstore_grad" gradientUnits="userSpaceOnUse" x1="400" y1="800" x2="400" y2="0"
@@ -585,7 +585,7 @@
         <!-- Status Pill (Operator Mode) -->
         <div id="header-status-pill" class="header-status-pill hidden">
           <div class="header-status-spinner"></div>
-          <span class="header-status-text">Загрузка...</span>
+          <span class="header-status-text" data-i18n="searchingSpecialist">Загрузка...</span>
         </div>
 
 
@@ -593,7 +593,7 @@
         <div class="header-controls flex items-center gap-1">
           <!-- Header Menu (Hamburger) -->
           <button id="header-menu-btn"
-            class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white" title="Меню">
+            class="p-2 rounded-full hover:bg-white/20 transition text-white/90 hover:text-white" data-i18n-title="menu" title="Меню">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -628,7 +628,7 @@
           </svg>
         </div>
         <div class="operator-status-spinner"></div>
-        <span class="operator-status-text">Ищем специалиста...</span>
+        <span class="operator-status-text" data-i18n="searchingSpecialist">Ищем специалиста...</span>
       </div>
     </div>
 
@@ -650,7 +650,7 @@
             <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
         </button>
-        <span class="room-detail-title">Деталі номера</span>
+        <span class="room-detail-title" data-i18n="roomDetails">Деталі номера</span>
       </div>
       <div class="room-detail-content">
         <img id="room-detail-image" class="room-detail-image" src="" alt="Room photo">
@@ -667,7 +667,7 @@
           </div>
           <div class="room-detail-price">
             <span id="room-detail-price-value"></span>
-            <span>/ ніч</span>
+            <span data-i18n="night">/ ніч</span>
           </div>
           <!-- Room Description -->
           <div id="room-detail-description" class="room-detail-description"></div>
@@ -680,7 +680,7 @@
             <polygon
               points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
           </svg>
-          <span>Відгуки</span>
+          <span data-i18n="reviews">Відгуки</span>
         </h4>
         <div id="room-reviews-list" class="reviews-list"></div>
       </div>
@@ -693,14 +693,14 @@
             <line x1="8" y1="2" x2="8" y2="6"></line>
             <line x1="3" y1="10" x2="21" y2="10"></line>
           </svg>
-          Забронювати
+          <span data-i18n="book">Забронювати</span>
         </button>
         <button id="room-ask-question-btn" class="room-action-btn room-action-btn-primary">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
           </svg>
-          Задати питання
+          <span data-i18n="askQuestion">Задати питання</span>
         </button>
         <button id="room-view-photos-btn" class="room-action-btn room-action-btn-secondary">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -709,7 +709,7 @@
             <circle cx="8.5" cy="8.5" r="1.5"></circle>
             <polyline points="21 15 16 10 5 21"></polyline>
           </svg>
-          Переглянути фото
+          <span data-i18n="viewPhotos">Переглянути фото</span>
         </button>
       </div>
     </div>
@@ -723,7 +723,7 @@
             <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
         </button>
-        <span class="service-detail-title">Деталі послуги</span>
+        <span class="service-detail-title" data-i18n="serviceDetails">Деталі послуги</span>
       </div>
       <div class="service-detail-content">
         <img id="service-detail-image" class="service-detail-image" src="" alt="Service photo">
@@ -744,7 +744,7 @@
             <polygon
               points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
           </svg>
-          <span>Відгуки</span>
+          <span data-i18n="reviews">Відгуки</span>
         </h4>
         <div id="service-reviews-list" class="reviews-list"></div>
       </div>
@@ -754,13 +754,13 @@
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
           </svg>
-          Задати питання
+          <span data-i18n="askQuestion">Задати питання</span>
         </button>
       </div>
     </div>
 
     <!-- Scroll to Bottom Button -->
-    <button id="scroll-to-bottom-btn" aria-label="Прокрутити вниз" title="До нових повідомлень">
+    <button id="scroll-to-bottom-btn" data-i18n-aria-label="scrollDown" aria-label="Прокрутити вниз" data-i18n-title="newMessages" title="До нових повідомлень">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="6 9 12 15 18 9"></polyline>
@@ -774,7 +774,7 @@
       <div id="history-view"
         class="w-full h-[90%] bg-[#f6f6f8] dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-display flex flex-col overflow-hidden rounded-t-[2.5rem] shadow-[0_-4px_20px_rgba(0,0,0,0.1)] transform translate-y-full premium-sheet-transition relative max-w-[420px] mx-auto">
         <header class="px-6 pt-12 pb-4 flex flex-col gap-6 shrink-0 bg-[#f6f6f8] dark:bg-slate-900 z-10">
-          <h1 class="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">История диалогов</h1>
+          <h1 class="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100" data-i18n="historyTitle">История диалогов</h1>
           <div class="relative group">
             <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
               <span
@@ -782,14 +782,14 @@
             </div>
             <input id="history-search-input"
               class="w-full h-14 pl-12 pr-4 bg-white/60 dark:bg-slate-800/60 border border-white/50 dark:border-slate-700/50 rounded-full focus:ring-2 focus:ring-[#135bec]/20 focus:border-[#135bec]/40 focus:outline-none placeholder:text-slate-400 transition-all text-base text-slate-900 dark:text-slate-100"
-              placeholder="Поиск по диалогам..." type="text">
+              data-i18n-placeholder="searchDialogs" placeholder="Поиск по диалогам..." type="text">
           </div>
         </header>
 
         <main id="history-list" class="flex-1 px-4 space-y-3 overflow-y-auto w-full relative z-0">
           <!-- History items will be injected here -->
           <div class="text-center text-slate-400 mt-10">
-            <p>Немає збережених діалогів</p>
+            <p data-i18n="noDialogs">Немає збережених діалогів</p>
           </div>
         </main>
 
@@ -797,8 +797,8 @@
           <button id="history-close-btn"
             class="w-full py-4 rounded-full flex items-center justify-center gap-3 active:scale-95 transition-all shadow-[0_8px_32px_rgba(19,91,236,0.08),inset_0_0_15px_rgba(255,255,255,0.5)] bg-white/70 dark:bg-slate-800/70 border border-white/50 dark:border-slate-700/50"
             style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
-            <span class="material-symbols-outlined text-slate-700 dark:text-slate-300">arrow_back_ios_new</span>
-            <span class="text-lg font-semibold text-slate-800 dark:text-slate-200">Назад</span>
+            <span class="material-symbols-outlined text-slate-700 dark:text-slate-300" data-i18n="back">arrow_back_ios_new</span>
+            <span class="text-lg font-semibold text-slate-800 dark:text-slate-200" data-i18n="back">Назад</span>
           </button>
         </div>
 
@@ -832,7 +832,7 @@
           <button id="continue-chat-btn"
             class="pointer-events-auto px-8 py-4 rounded-full text-white text-lg font-bold hover:opacity-90 transition-all active:scale-95 whitespace-nowrap shadow-[0_12px_24px_rgba(19,91,236,0.15)] w-full block max-w-[300px]"
             style="background-color: var(--accent-color, #135bec);">
-            <span>Продолжить чат</span>
+            <span data-i18n="continueChat">Продолжить чат</span>
           </button>
         </div>
       </div>
@@ -917,10 +917,10 @@
               </div>
             </div>
 
-            <h2 id="escalation-modal-title" class="text-[22px] font-bold text-gray-900 mb-2 tracking-tight leading-snug">
+            <h2 id="escalation-modal-title" class="text-[22px] font-bold text-gray-900 mb-2 tracking-tight leading-snug" data-i18n="escalateTitle">
               Переключить на менеджера?
             </h2>
-            <p id="escalation-modal-desc" class="text-[15px] text-[#8E8E93] mb-6 leading-snug font-normal px-2">
+            <p id="escalation-modal-desc" class="text-[15px] text-[#8E8E93] mb-6 leading-snug font-normal px-2" data-i18n="escalateDesc">
               Ваш запрос требует участия специалиста
             </p>
 
@@ -933,7 +933,7 @@
                   <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                 </svg>
               </div>
-              <p class="text-[13px] text-blue-700 font-medium leading-snug">Менеджер получит уведомление и свяжется с вами в ближайшее время</p>
+              <p class="text-[13px] text-blue-700 font-medium leading-snug" data-i18n="escalateNote">Менеджер получит уведомление и свяжется с вами в ближайшее время</p>
             </div>
 
             <div class="w-full space-y-3">
@@ -942,10 +942,11 @@
                 style="background: linear-gradient(180deg, #5B9CFF 0%, #3B82F6 100%); box-shadow: 0 10px 20px rgba(59,130,246,0.3);">
                 <span class="absolute inset-0 pointer-events-none"
                   style="background: linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 60%);"></span>
-                <span class="relative z-10">Да, соединить</span>
+                <span class="relative z-10" data-i18n="escalateConfirm">Да, соединить</span>
               </button>
               <button id="escalation-cancel-btn"
-                class="w-full h-14 rounded-2xl bg-black/5 hover:bg-black/10 text-slate-600 font-semibold text-[17px] tracking-wide active:opacity-70 transition-all border border-white/40">
+                class="w-full h-14 rounded-2xl bg-black/5 hover:bg-black/10 text-slate-600 font-semibold text-[17px] tracking-wide active:opacity-70 transition-all border border-white/40"
+                data-i18n="cancel">
                 Отмена
               </button>
             </div>
@@ -1017,16 +1018,16 @@
       class="hidden absolute inset-0 z-50 flex items-end justify-center standard-modal-overlay transition-all p-4 pb-6">
       <div
         class="modal-content bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-100 transition-all text-center animate-slide-up">
-        <h4 class="text-lg font-bold mb-4">Подтверждение по SMS</h4>
-        <input type="text" id="sms-code-input" inputmode="numeric" pattern="[0-9]*" placeholder="Код из SMS"
+        <h4 class="text-lg font-bold mb-4" data-i18n="smsConfirmationTitle">Подтверждение по SMS</h4>
+        <input type="text" id="sms-code-input" inputmode="numeric" pattern="[0-9]*" data-i18n-placeholder="smsCodePlaceholder" placeholder="Код из SMS"
           class="w-full px-4 py-3 border border-gray-300 rounded-xl text-center text-base mb-6 focus:outline-none focus:border-blue-500 transition-colors">
         <div class="flex flex-col gap-2">
           <button id="confirm-login-btn"
             class="w-full py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors shadow-sm">
-            <span>Подтвердить</span>
+            <span data-i18n="confirm">Подтвердить</span>
           </button>
           <button id="cancel-login-btn"
-            class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Отменить</button>
+            class="modal-btn-cancel w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors" data-i18n="cancel">Отменить</button>
         </div>
       </div>
     </div>
@@ -1042,11 +1043,11 @@
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
         </div>
-        <h4 id="success-message-title" class="text-lg font-bold mb-2">Вы успешно вошли в свой аккаунт</h4>
-        <p class="modal-text-secondary text-sm text-gray-500 mb-6">Теперь вы можете продолжить использование чата</p>
+        <h4 id="success-message-title" class="text-lg font-bold mb-2" data-i18n="loginSuccessTitle">Вы успешно вошли в свой аккаунт</h4>
+        <p class="modal-text-secondary text-sm text-gray-500 mb-6" data-i18n="loginSuccessDesc">Теперь вы можете продолжить использование чата</p>
         <button id="close-success-btn"
           class="w-full py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors shadow-sm">
-          <span>Отлично</span>
+          <span data-i18n="excellent">Отлично</span>
         </button>
       </div>
     </div>
@@ -1058,10 +1059,10 @@
       <!-- Policy Consent Banner -->
       <div id="policy-consent-banner" class="policy-consent-banner">
         <div class="policy-consent-text">
-          Начиная чат вы соглашаетесь с
+          <span data-i18n="policyConsentPrefix">Начиная чат вы соглашаетесь с</span>
           <a href="#" class="policy-link" data-url="https://roomie.user-agreement.hotelmol.com/">Условиями
             использования</a>
-          и
+          <span data-i18n="and">и</span>
           <a href="#" class="policy-link" data-url="https://roomie.privacy-policy.hotelmol.com/">Политикой
             конфиденциальности</a>
         </div>
@@ -1084,8 +1085,8 @@
             </svg>
           </div>
           <div class="telegram-text">
-            <div class="telegram-title">Перейти в Telegram</div>
-            <div class="telegram-subtitle">Быстрее и удобнее</div>
+            <div class="telegram-title" data-i18n="goToTelegram">Перейти в Telegram</div>
+            <div class="telegram-subtitle" data-i18n="fasterConvenient">Быстрее и удобнее</div>
           </div>
         </div>
         <button class="telegram-close-btn" id="telegram-close-btn" type="button">
@@ -1115,8 +1116,8 @@
       <!-- Input Area -->
       <div id="input-area-wrapper" class="px-0 pb-0 pt-0">
         <div class="input-container-bg shadow-lg bg-white">
-          <textarea id="message-input" rows="1" placeholder="Введите сообщение..." autocomplete="off"></textarea>
-          <button id="voice-input-button" title="Голосовой ввод" aria-label="Голосовой ввод">
+          <textarea id="message-input" rows="1" data-i18n-placeholder="placeholder" placeholder="Введите сообщение..." autocomplete="off"></textarea>
+          <button id="voice-input-button" data-i18n-title="voiceInput" title="Голосовой ввод" data-i18n-aria-label="voiceInput" aria-label="Голосовой ввод">
             <svg id="btn-icon-mic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
@@ -1128,7 +1129,7 @@
               <rect x="6" y="6" width="12" height="12" />
             </svg>
           </button>
-          <button id="send-button" title="Надіслати">
+          <button id="send-button" data-i18n-title="send" title="Надіслати">
             <svg id="btn-icon-send" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
               fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="19" x2="12" y2="5"></line>
@@ -1156,9 +1157,9 @@
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
-          Назад
+          <span data-i18n="back">Назад</span>
         </button>
-        <span class="legal-title">Документ</span>
+        <span class="legal-title" data-i18n="document">Документ</span>
       </div>
       <div class="legal-content">
         <iframe id="legal-iframe" src="" frameborder="0"></iframe>
@@ -1174,9 +1175,9 @@
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
-          Назад
+          <span data-i18n="back">Назад</span>
         </button>
-        <span class="legal-title">Меню ресторану</span>
+        <span class="legal-title" data-i18n="restaurantMenu">Меню ресторану</span>
       </div>
       <div class="legal-content">
         <iframe id="menu-iframe" src="" frameborder="0"></iframe>
@@ -1199,10 +1200,10 @@
               d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z" />
           </svg>
         </div>
-        <div class="telegram-modal-title">Хотите перейти?</div>
+        <div class="telegram-modal-title" data-i18n="tgConfirmTitle">Хотите перейти?</div>
         <div class="telegram-modal-buttons">
-          <button id="telegram-proceed-btn" class="telegram-proceed-button">Перейти</button>
-          <button id="telegram-cancel-btn" class="telegram-cancel-button">Отменить</button>
+          <button id="telegram-proceed-btn" class="telegram-proceed-button" data-i18n="goToTelegram">Перейти</button>
+          <button id="telegram-cancel-btn" class="telegram-cancel-button" data-i18n="cancel">Отменить</button>
         </div>
       </div>
     </div>
@@ -1236,7 +1237,7 @@
                 <div class="glass-icon-bg bg-tint-purple"></div>
                 <span class="material-symbols-rounded text-purple-600 text-xl relative z-10">home</span>
               </div>
-              <span class="text-gray-800 font-semibold text-[17px]">Номери</span>
+               <span class="text-gray-800 font-semibold text-[17px]" data-i18n="rooms">Номери</span>
             </div>
             <span class="material-symbols-rounded text-gray-400 text-[18px]">arrow_forward_ios</span>
           </button>
@@ -1249,7 +1250,7 @@
                 <div class="glass-icon-bg" style="background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(139,92,246,0.15) 100%);"></div>
                 <span class="material-symbols-rounded text-xl relative z-10" style="color: #6366f1;">hotel</span>
               </div>
-              <span class="text-gray-800 font-semibold text-[17px]">Все отели</span>
+               <span class="text-gray-800 font-semibold text-[17px]" data-i18n="allHotels">Все отели</span>
             </div>
             <span class="material-symbols-rounded text-gray-400 text-[18px]">arrow_forward_ios</span>
           </button>
@@ -1263,7 +1264,7 @@
                 <!-- a sleek shopping bag icon for services -->
                 <span class="material-symbols-rounded text-orange-500 text-xl relative z-10">shopping_bag</span>
               </div>
-              <span class="text-gray-800 font-semibold text-[17px]">Услуги</span>
+               <span class="text-gray-800 font-semibold text-[17px]" data-i18n="services">Услуги</span>
             </div>
             <span class="material-symbols-rounded text-gray-400 text-[18px]">arrow_forward_ios</span>
           </button>
@@ -1289,7 +1290,7 @@
                 <div class="glass-icon-bg bg-tint-orange"></div>
                 <span class="material-symbols-rounded text-orange-600 text-xl relative z-10">inventory_2</span>
               </div>
-              <span class="text-gray-800 font-semibold text-[17px]">Previous Dialogs</span>
+               <span class="text-gray-800 font-semibold text-[17px]" data-i18n="previousDialogs">Previous Dialogs</span>
             </div>
             <span class="material-symbols-rounded text-gray-400 text-[18px]">arrow_forward_ios</span>
           </button>
@@ -1305,7 +1306,7 @@
                 <span id="sound-icon-off"
                   class="hidden material-symbols-rounded text-gray-400 text-xl relative z-10">volume_off</span>
               </div>
-              <span class="text-gray-800 font-semibold text-[17px]">Звук сповіщень</span>
+               <span class="text-gray-800 font-semibold text-[17px]" data-i18n="notificationSound">Звук сповіщень</span>
             </div>
             <span id="sound-status-text" class="text-gray-500 text-[15px] font-medium pr-1">Вкл</span>
           </button>
@@ -1328,7 +1329,7 @@
 
           <button id="menu-sheet-close"
             class="w-full py-4 glass-button rounded-2xl text-gray-800 font-bold text-[17px] active:scale-[0.98] hover:bg-white/70 transition-all duration-200 shadow-sm">
-            Закрыть
+            <span data-i18n="close">Закрыть</span>
           </button>
         </div>
       </div>
@@ -1346,9 +1347,7 @@
           class="language-sheet-desktop w-full max-w-md bg-white/85 backdrop-blur-[40px] border-t border-black/5 rounded-t-[2.5rem] shadow-[0_-8px_32px_0_rgba(0,0,0,0.08)] relative flex flex-col premium-sheet-transition transform translate-y-full"
           style="height: 80dvh; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);">
           <div class="px-8 pt-10 pb-4 text-center">
-            <h1 class="text-[24px] font-bold tracking-tight text-gray-900" data-i18n="selectLanguageTitle">Выберите
-              язык
-            </h1>
+            <h1 class="text-[24px] font-bold tracking-tight text-gray-900" data-i18n="selectLanguageTitle">Выберите язык</h1>
             <p class="text-gray-500 text-[15px] mt-1.5" data-i18n="selectLanguageDesc">Выберите язык для интерфейса
             </p>
           </div>
@@ -1360,7 +1359,7 @@
           <div class="px-6 pb-6 pt-6">
             <button id="language-sheet-close"
               class="w-full py-4 h-[56px] flex items-center justify-center bg-gray-100 hover:bg-gray-200 active:scale-[0.98] transition-all rounded-2xl text-gray-900 font-semibold text-[17px] border border-gray-200">
-              Закрыть
+              <span data-i18n="close">Закрыть</span>
             </button>
           </div>
         </div>
@@ -1375,7 +1374,7 @@
           <div class="w-12 h-1.5 bg-gray-200 rounded-full"></div>
         </div>
 
-        <h3 class="text-center text-lg font-bold text-gray-800 mb-2">персональная карточка гостя</h3>
+        <h3 class="text-center text-lg font-bold text-gray-800 mb-2" data-i18n="personalGuestCard">персональная карточка гостя</h3>
 
         <div id="guide-items-list" class="guide-items-list mb-4">
           <!-- Guide items will be populated here -->
@@ -1388,12 +1387,12 @@
             <path
               d="M72.9,145.1l70.8,52.2c8.1,4.5,13.9,2.1,15.9-7.5l28.8-135.8c2.9-11.8-4.5-17.1-12.2-13.6L38.6,108.2c-11.5,4.6-11.5,11-2.1,13.9l43.4,13.6l100.5-63.4c4.7-2.9,9.1-1.3,5.5,1.8" />
           </svg>
-          <span>Получить в Telegram</span>
+          <span data-i18n="getInTelegram">Получить в Telegram</span>
         </button>
 
         <button id="guide-sheet-close"
           class="mt-3 w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">
-          Закрыть
+          <span data-i18n="close">Закрыть</span>
         </button>
       </div>
     </div>
@@ -1459,7 +1458,7 @@
           <!-- Title -->
           <h2
             class="text-3xl font-bold text-center text-slate-800 dark:text-slate-100 mb-10 tracking-tight leading-tight drop-shadow-sm">
-            Перейти в<br />приложение
+            <span data-i18n="goToApp">Перейти в<br />приложение</span>
           </h2>
           <!-- Buttons Stack -->
           <div class="w-full flex flex-col gap-6 flex-1 justify-center">
@@ -1510,7 +1509,7 @@
           <div class="mt-8 mb-4">
             <button id="app-download-later"
               class="px-6 py-3 rounded-full text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 transition-all text-sm font-bold tracking-wide uppercase">
-              Закрыть
+              <span data-i18n="close">Закрыть</span>
             </button>
           </div>
         </div>
@@ -1523,7 +1522,7 @@
   <div id="room-modal-overlay" class="room-modal-overlay">
     <div class="room-modal">
       <div class="room-modal-header">
-        <h3 id="room-modal-title" class="room-modal-title">Новий номер</h3>
+        <h3 id="room-modal-title" class="room-modal-title" data-i18n="roomModalTitleNew">Новий номер</h3>
         <button id="room-modal-close" class="room-modal-close">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1536,36 +1535,36 @@
         <input type="hidden" id="room-edit-id">
 
         <div class="room-form-group">
-          <label class="room-form-label">Готель</label>
+          <label class="room-form-label" data-i18n="hotel">Готель</label>
           <select id="room-hotel-select" class="room-form-input">
             <option value="">— Оберіть готель —</option>
           </select>
         </div>
 
         <div class="room-form-group">
-          <label class="room-form-label">Назва номера</label>
-          <input type="text" id="room-name-input" class="room-form-input" placeholder="Наприклад: Люкс Панорама">
+          <label class="room-form-label" data-i18n="roomName">Назва номера</label>
+          <input type="text" id="room-name-input" class="room-form-input" data-i18n-placeholder="roomNamePlaceholder" placeholder="Наприклад: Люкс Панорама">
         </div>
 
         <div class="room-form-group">
-          <label class="room-form-label">Опис</label>
-          <textarea id="room-description-input" class="room-form-textarea"
+          <label class="room-form-label" data-i18n="roomDescription">Опис</label>
+          <textarea id="room-description-input" class="room-form-textarea" data-i18n-placeholder="roomDescriptionPlaceholder"
             placeholder="Детальний опис номера..."></textarea>
         </div>
 
         <div class="room-form-row">
           <div class="room-form-group">
-            <label class="room-form-label">Площа (м²)</label>
+             <label class="room-form-label" data-i18n="areaSqM">Площа (м²)</label>
             <input type="number" id="room-area-input" class="room-form-input" placeholder="45" min="1">
           </div>
           <div class="room-form-group">
-            <label class="room-form-label">Ціна за ніч ($)</label>
+             <label class="room-form-label" data-i18n="pricePerNightLabel">Ціна за ніч ($)</label>
             <input type="number" id="room-price-input" class="room-form-input" placeholder="150" min="1">
           </div>
         </div>
 
         <div class="room-form-group">
-          <label class="room-form-label">Заглавне фото</label>
+           <label class="room-form-label" data-i18n="mainPhoto">Заглавне фото</label>
           <div id="main-photo-upload" class="photo-upload-area">
             <div class="photo-upload-placeholder">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1581,7 +1580,7 @@
         </div>
 
         <div class="room-form-group">
-          <label class="room-form-label">Галерея фото</label>
+           <label class="room-form-label" data-i18n="galleryPhotos">Галерея фото</label>
           <div id="gallery-upload-grid" class="gallery-upload-grid">
             <div id="gallery-add-btn" class="gallery-add-btn">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -1596,7 +1595,7 @@
         </div>
 
         <div class="room-toggle-group">
-          <span class="room-toggle-label">Кнопка "Задати питання"</span>
+           <span class="room-toggle-label" data-i18n="askQuestionToggle">Кнопка "Задати питання"</span>
           <label class="switch">
             <input type="checkbox" id="room-ask-toggle" checked>
             <span class="slider"></span>
@@ -1615,7 +1614,7 @@
         </div>
 
         <div class="room-form-group">
-          <label class="room-form-label">Бейдж</label>
+           <label class="room-form-label" data-i18n="badge">Бейдж</label>
           <select id="room-badge-input" class="room-form-select">
             <option value="">Без бейджа</option>
             <option value="popular">Most Popular</option>
@@ -1627,17 +1626,17 @@
         </div>
 
         <div class="room-form-group">
-          <label class="room-form-label">Залишилось номерів (0 = не показувати)</label>
+           <label class="room-form-label" data-i18n="roomsLeft">Залишилось номерів (0 = не показувати)</label>
           <input type="number" id="room-left-count-input" class="room-form-input" placeholder="0" min="0" max="99">
         </div>
 
         <div class="room-form-row">
           <div class="room-form-group">
-            <label class="room-form-label">Знижка (%)</label>
+             <label class="room-form-label" data-i18n="discountPercentage">Знижка (%)</label>
             <input type="number" id="room-discount-input" class="room-form-input" placeholder="0" min="0" max="99">
           </div>
           <div class="room-form-group">
-            <label class="room-form-label">Стара ціна ($)</label>
+             <label class="room-form-label" data-i18n="oldPrice">Стара ціна ($)</label>
             <input type="number" id="room-original-price-input" class="room-form-input" placeholder="0" min="0">
           </div>
         </div>
@@ -1659,9 +1658,9 @@
           </div>
 
           <div class="add-review-form">
-            <div class="room-form-label">Додати відгук</div>
+             <div class="room-form-label" data-i18n="addReview">Додати відгук</div>
             <div class="review-inputs-row">
-              <input type="text" id="room-review-author" class="room-form-input" placeholder="Ім'я гостя">
+               <input type="text" id="room-review-author" class="room-form-input" data-i18n-placeholder="guestName" placeholder="Ім'я гостя">
               <select id="room-review-rating" class="room-form-select" style="width: 80px;">
                 <option value="5">5 ★</option>
                 <option value="4">4 ★</option>
@@ -1671,7 +1670,7 @@
               </select>
               <input type="date" id="room-review-date" class="room-form-input" style="width: 130px;">
             </div>
-            <textarea id="room-review-text" class="room-form-textarea" placeholder="Текст відгуку..." rows="2"
+             <textarea id="room-review-text" class="room-form-textarea" data-i18n-placeholder="reviewTextPlaceholder" placeholder="Текст відгуку..." rows="2"
               style="margin-top: 8px;"></textarea>
             <button type="button" id="room-add-review-btn" class="room-btn room-btn-secondary"
               style="margin-top: 8px; width: 100%;">
@@ -1687,7 +1686,7 @@
 
         <!-- Calendar Section -->
         <div class="room-form-group">
-          <label class="room-form-label">Календарь доступности</label>
+           <label class="room-form-label" data-i18n="availabilityCalendar">Календарь доступности</label>
           <div class="calendar-controls">
             <button type="button" id="calendar-prev-month" class="calendar-nav-btn">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -1704,7 +1703,7 @@
             </button>
             <button type="button" id="calendar-generate-random"
               class="room-btn room-btn-secondary calendar-generate-btn">
-              Сгенерировать
+               <span data-i18n="generate">Сгенерировать</span>
             </button>
           </div>
           <div class="calendar-weekdays">
@@ -1712,8 +1711,8 @@
           </div>
           <div id="room-calendar" class="room-calendar-grid"></div>
           <div class="calendar-legend">
-            <span class="legend-item legend-available"><span class="legend-dot"></span>Свободно</span>
-            <span class="legend-item legend-booked"><span class="legend-dot"></span>Занято</span>
+             <span class="legend-item legend-available"><span class="legend-dot"></span><span data-i18n="available">Свободно</span></span>
+             <span class="legend-item legend-booked"><span class="legend-dot"></span><span data-i18n="booked">Занято</span></span>
           </div>
         </div>
       </div>
@@ -1725,8 +1724,8 @@
             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
           </svg>
         </button>
-        <button id="room-cancel-btn" class="room-btn room-btn-secondary">Скасувати</button>
-        <button id="room-save-btn" class="room-btn room-btn-primary">Зберегти</button>
+         <button id="room-cancel-btn" class="room-btn room-btn-secondary" data-i18n="cancel">Скасувати</button>
+         <button id="room-save-btn" class="room-btn room-btn-primary" data-i18n="save">Зберегти</button>
       </div>
     </div>
   </div>
@@ -1735,7 +1734,7 @@
   <div id="service-modal-overlay" class="service-modal-overlay">
     <div class="service-modal">
       <div class="service-modal-header">
-        <h3 id="service-modal-title" class="service-modal-title">Нова послуга</h3>
+        <h3 id="service-modal-title" class="service-modal-title" data-i18n="serviceModalTitleNew">Нова послуга</h3>
         <button id="service-modal-close" class="service-modal-close">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1748,47 +1747,47 @@
         <input type="hidden" id="service-edit-id">
 
         <div class="service-form-group">
-          <label class="service-form-label">Назва послуги</label>
-          <input type="text" id="service-name-input" class="service-form-input" placeholder="Наприклад: SPA масаж">
+          <label class="service-form-label" data-i18n="serviceName">Назва послуги</label>
+          <input type="text" id="service-name-input" class="service-form-input" data-i18n-placeholder="serviceNamePlaceholder" placeholder="Наприклад: SPA масаж">
         </div>
 
         <div class="service-form-group">
-          <label class="service-form-label">Опис</label>
-          <textarea id="service-description-input" class="service-form-textarea"
+          <label class="service-form-label" data-i18n="serviceDescription">Опис</label>
+          <textarea id="service-description-input" class="service-form-textarea" data-i18n-placeholder="serviceDescriptionPlaceholder"
             placeholder="Детальний опис послуги..."></textarea>
         </div>
 
         <div class="service-form-row">
           <div class="service-form-group">
-            <label class="service-form-label">Ціна ($)</label>
+            <label class="service-form-label" data-i18n="priceUsd">Ціна ($)</label>
             <input type="number" id="service-price-input" class="service-form-input" placeholder="100" min="0">
           </div>
           <div class="service-form-group">
-            <label class="service-form-label">Тип ціни</label>
+            <label class="service-form-label" data-i18n="priceType">Тип ціни</label>
             <select id="service-price-type-input" class="service-form-select">
-              <option value="fixed">Фіксована</option>
-              <option value="per_hour">За годину</option>
-              <option value="per_day">За день</option>
-              <option value="on_request">За запитом</option>
+              <option value="fixed" data-i18n="fixed">Фіксована</option>
+              <option value="per_hour" data-i18n="perHour">За годину</option>
+              <option value="per_day" data-i18n="perDay">За день</option>
+              <option value="on_request" data-i18n="onRequest">За запитом</option>
             </select>
           </div>
         </div>
 
         <div class="service-form-group">
-          <label class="service-form-label">Категорія</label>
+          <label class="service-form-label" data-i18n="category">Категорія</label>
           <select id="service-category-input" class="service-form-select">
-            <option value="spa">SPA & Wellness</option>
-            <option value="restaurant">Ресторан</option>
-            <option value="transport">Трансфер</option>
-            <option value="entertainment">Розваги</option>
-            <option value="business">Бізнес</option>
-            <option value="kids">Для дітей</option>
-            <option value="general" selected>Інше</option>
+            <option value="spa" data-i18n="categorySpa">SPA & Wellness</option>
+            <option value="restaurant" data-i18n="categoryRestaurant">Ресторан</option>
+            <option value="transport" data-i18n="categoryTransport">Трансфер</option>
+            <option value="entertainment" data-i18n="categoryEntertainment">Розваги</option>
+            <option value="business" data-i18n="categoryBusiness">Бізнес</option>
+            <option value="kids" data-i18n="categoryKids">Для дітей</option>
+            <option value="general" data-i18n="categoryOther" selected>Інше</option>
           </select>
         </div>
 
         <div class="service-form-group">
-          <label class="service-form-label">Заглавне фото</label>
+          <label class="service-form-label" data-i18n="mainPhoto">Заглавне фото</label>
           <div id="service-main-photo-upload" class="photo-upload-area">
             <div class="photo-upload-placeholder">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1804,7 +1803,7 @@
         </div>
 
         <div class="service-form-group">
-          <label class="service-form-label">Галерея фото</label>
+          <label class="service-form-label" data-i18n="galleryPhotos">Галерея фото</label>
           <div id="service-gallery-upload-grid" class="service-gallery-upload-grid">
             <div id="service-gallery-add-btn" class="service-gallery-add-btn">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -1819,7 +1818,7 @@
         </div>
 
         <div class="service-toggle-group">
-          <span class="service-toggle-label">Кнопка "Задати питання"</span>
+          <span class="service-toggle-label" data-i18n="askQuestionToggle">Кнопка "Задати питання"</span>
           <label class="switch">
             <input type="checkbox" id="service-ask-toggle" checked>
             <span class="slider"></span>
@@ -1827,7 +1826,7 @@
         </div>
 
         <div class="service-toggle-group">
-          <span class="service-toggle-label">Кнопка "Додати до бронювання"</span>
+          <span class="service-toggle-label" data-i18n="addBookingToggle">Кнопка "Додати до бронювання"</span>
           <label class="switch">
             <input type="checkbox" id="service-add-booking-toggle" checked>
             <span class="slider"></span>
@@ -1842,13 +1841,13 @@
               points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
             </polygon>
           </svg>
-          Маркетинг
+          <span data-i18n="marketing">Маркетинг</span>
         </div>
 
         <div class="service-form-group">
-          <label class="service-form-label">Бейдж</label>
+          <label class="service-form-label" data-i18n="badge">Бейдж</label>
           <select id="service-badge-input" class="service-form-select">
-            <option value="">Без бейджа</option>
+            <option value="" data-i18n="noBadge">Без бейджа</option>
             <option value="popular">Most Popular</option>
             <option value="new">New</option>
             <option value="limited">Limited</option>
@@ -1858,19 +1857,19 @@
         </div>
 
         <div class="service-form-group">
-          <label class="service-form-label">Залишилось місць (0 = не показувати)</label>
+          <label class="service-form-label" data-i18n="roomsLeft">Залишилось місць (0 = не показувати)</label>
           <input type="number" id="service-left-count-input" class="service-form-input" placeholder="0" min="0"
             max="99">
         </div>
 
         <div class="service-form-row">
           <div class="service-form-group">
-            <label class="service-form-label">Знижка (%)</label>
+            <label class="service-form-label" data-i18n="discountPercentage">Знижка (%)</label>
             <input type="number" id="service-discount-input" class="service-form-input" placeholder="0" min="0"
               max="99">
           </div>
           <div class="service-form-group">
-            <label class="service-form-label">Стара ціна ($)</label>
+            <label class="service-form-label" data-i18n="oldPrice">Стара ціна ($)</label>
             <input type="number" id="service-original-price-input" class="service-form-input" placeholder="0" min="0">
           </div>
         </div>
@@ -1883,7 +1882,7 @@
               d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
             </path>
           </svg>
-          Відгуки
+          <span data-i18n="reviewsLabel">Відгуки</span>
         </div>
 
         <div class="service-form-group">
@@ -1892,9 +1891,9 @@
           </div>
 
           <div class="add-review-form">
-            <div class="service-form-label">Додати відгук</div>
+            <div class="service-form-label" data-i18n="addReview">Додати відгук</div>
             <div class="review-inputs-row">
-              <input type="text" id="service-review-author" class="service-form-input" placeholder="Ім'я гостя">
+              <input type="text" id="service-review-author" class="service-form-input" data-i18n-placeholder="guestName" placeholder="Ім'я гостя">
               <select id="service-review-rating" class="service-form-select" style="width: 80px;">
                 <option value="5">5 ★</option>
                 <option value="4">4 ★</option>
@@ -1904,7 +1903,7 @@
               </select>
               <input type="date" id="service-review-date" class="service-form-input" style="width: 130px;">
             </div>
-            <textarea id="service-review-text" class="service-form-textarea" placeholder="Текст відгуку..." rows="2"
+            <textarea id="service-review-text" class="service-form-textarea" data-i18n-placeholder="reviewTextPlaceholder" placeholder="Текст відгуку..." rows="2"
               style="margin-top: 8px;"></textarea>
             <button type="button" id="service-add-review-btn" class="service-btn service-btn-secondary"
               style="margin-top: 8px; width: 100%;">
@@ -1913,7 +1912,7 @@
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
               </svg>
-              Додати відгук
+              <span data-i18n="addReview">Додати відгук</span>
             </button>
           </div>
         </div>
@@ -1926,8 +1925,8 @@
             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
           </svg>
         </button>
-        <button id="service-cancel-btn" class="service-btn service-btn-secondary">Скасувати</button>
-        <button id="service-save-btn" class="service-btn service-btn-primary">Зберегти</button>
+        <button id="service-cancel-btn" class="service-btn service-btn-secondary" data-i18n="cancel">Скасувати</button>
+        <button id="service-save-btn" class="service-btn service-btn-primary" data-i18n="save">Зберегти</button>
       </div>
     </div>
   </div>
@@ -1936,18 +1935,18 @@
   <div id="property-modal-overlay" class="service-modal-overlay">
     <div class="service-modal">
       <div class="service-modal-header">
-        <h3 id="property-modal-title">Редагувати готель</h3>
+        <h3 id="property-modal-title" data-i18n="propertyModalTitle">Редагувати готель</h3>
         <button id="property-modal-close" class="service-modal-close">&times;</button>
       </div>
       <div class="service-modal-body">
         <div class="service-form-group">
-          <label class="service-form-label">Назва готелю</label>
-          <input type="text" id="property-name-input" class="service-form-input" placeholder="Наприклад: Hilton Center">
+          <label class="service-form-label" data-i18n="propertyName">Назва готелю</label>
+          <input type="text" id="property-name-input" class="service-form-input" data-i18n-placeholder="propertyNamePlaceholder" placeholder="Наприклад: Hilton Center">
         </div>
 
         <!-- Logo -->
         <div class="service-form-group">
-          <label class="service-form-label">Логотип (показується в шапці чату)</label>
+          <label class="service-form-label" data-i18n="logoLabel">Логотип (показується в шапці чату)</label>
           <div id="property-logo-preview-wrap"
             style="display:none; margin-bottom:8px; position:relative; width:64px; height:64px; border-radius:50%; overflow:hidden; background:#f3f4f6; border:2px solid #e5e7eb;">
             <img id="property-logo-preview" src="" alt="" style="width:100%; height:100%; object-fit:cover;">
@@ -1963,24 +1962,24 @@
               <polyline points="17 8 12 3 7 8"></polyline>
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
-            Завантажити логотип
+            <span data-i18n="uploadLogo">Завантажити логотип</span>
           </button>
         </div>
 
         <div class="service-form-group">
-          <label class="service-form-label">Опис готелю (для LLM)</label>
+          <label class="service-form-label" data-i18n="propertyDescription">Опис готелю (для LLM)</label>
           <textarea id="property-info-input" class="service-form-textarea" rows="3"
-            placeholder="Опис, що є в готелі..."></textarea>
+            data-i18n-placeholder="propertyDescriptionPlaceholder" placeholder="Опис, що є в готелі..."></textarea>
         </div>
 
         <div class="service-form-group">
-          <label class="service-form-label">Базова валюта</label>
+          <label class="service-form-label" data-i18n="baseCurrency">Базова валюта</label>
           <input type="text" id="property-currency-input" class="service-form-input" placeholder="USD">
         </div>
 
         <!-- Discovery Fields -->
         <div class="service-form-group" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e5e7eb;">
-          <label class="service-form-label text-indigo-500">Фото готелю</label>
+          <label class="service-form-label text-indigo-500" data-i18n="hotelPhoto">Фото готелю</label>
           <div id="property-photo-preview-wrap"
             style="display:none; margin-bottom:8px; position:relative; width:100%; height:120px; border-radius:8px; overflow:hidden; background:#f3f4f6;">
             <img id="property-photo-preview" src="" alt="" style="width:100%; height:100%; object-fit:cover;">
@@ -1996,42 +1995,42 @@
               <polyline points="17 8 12 3 7 8"></polyline>
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
-            Завантажити фото
+            <span data-i18n="uploadPhoto">Завантажити фото</span>
           </button>
         </div>
         <!-- GEO Fields -->
         <div class="service-form-row" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e5e7eb;">
           <div class="service-form-group">
-            <label class="service-form-label" style="color:#059669;">
+            <label class="service-form-label" style="color:#059669;" data-i18n="cityGeo">
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
               Місто (GEO)
             </label>
-            <input type="text" id="property-geo-city-input" class="service-form-input" placeholder="Київ, Dubai, Paris…">
+            <input type="text" id="property-geo-city-input" class="service-form-input" data-i18n-placeholder="cityGeoPlaceholder" placeholder="Київ, Dubai, Paris…">
           </div>
           <div class="service-form-group">
-            <label class="service-form-label" style="color:#059669;">Країна (GEO)</label>
-            <input type="text" id="property-geo-country-input" class="service-form-input" placeholder="Україна, UAE…">
+            <label class="service-form-label" style="color:#059669;" data-i18n="countryGeo">Країна (GEO)</label>
+            <input type="text" id="property-geo-country-input" class="service-form-input" data-i18n-placeholder="countryGeoPlaceholder" placeholder="Україна, UAE…">
           </div>
         </div>
 
         <div class="service-form-group">
-          <label class="service-form-label text-indigo-500">Discovery Теги (через кому)</label>
+          <label class="service-form-label text-indigo-500" data-i18n="tagsLabel">Discovery Теги (через кому)</label>
           <input type="text" id="property-tags-input" class="service-form-input"
             placeholder="beach, spa, city, mountains">
         </div>
         <div class="service-form-row">
           <div class="service-form-group">
-            <label class="service-form-label text-indigo-500">Рейтинг (Зірки)</label>
+            <label class="service-form-label text-indigo-500" data-i18n="ratingStars">Рейтинг (Зірки)</label>
             <input type="number" id="property-stars-input" class="service-form-input" placeholder="5" min="1" max="5">
           </div>
           <div class="service-form-group">
-            <label class="service-form-label text-indigo-500">Мін. ціна за ніч</label>
+            <label class="service-form-label text-indigo-500" data-i18n="minPricePerNight">Мін. ціна за ніч</label>
             <input type="number" id="property-min-price-input" class="service-form-input" placeholder="100">
           </div>
         </div>
 
         <div class="service-toggle-group">
-          <span class="service-toggle-label">Участь у multi-property пошуку</span>
+          <span class="service-toggle-label" data-i18n="multiPropertySearch">Участь у multi-property пошуку</span>
           <label class="switch">
             <input type="checkbox" id="property-search-toggle" checked>
             <span class="slider"></span>
@@ -2039,7 +2038,7 @@
         </div>
 
         <div class="service-toggle-group">
-          <span class="service-toggle-label">Показувати в Shortlist</span>
+          <span class="service-toggle-label" data-i18n="showInShortlist">Показувати в Shortlist</span>
           <label class="switch">
             <input type="checkbox" id="property-shortlist-toggle" checked>
             <span class="slider"></span>
@@ -2054,7 +2053,7 @@
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
               </svg>
-              Додаткові послуги
+              <span data-i18n="additionalServices">Додаткові послуги</span>
             </span>
             <button id="property-add-service-btn" class="add-service-btn">
               <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
@@ -2062,7 +2061,7 @@
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
               </svg>
-              Додати
+              <span data-i18n="add">Додати</span>
             </button>
           </div>
           <div id="property-services-grid" class="services-admin-grid">
@@ -2078,8 +2077,8 @@
             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
           </svg>
         </button>
-        <button id="property-cancel-btn" class="service-btn service-btn-secondary">Скасувати</button>
-        <button id="property-save-btn" class="service-btn service-btn-primary">Зберегти</button>
+        <button id="property-cancel-btn" class="service-btn service-btn-secondary" data-i18n="cancel">Скасувати</button>
+        <button id="property-save-btn" class="service-btn service-btn-primary" data-i18n="save">Зберегти</button>
       </div>
     </div>
   </div>
@@ -2097,7 +2096,7 @@
             <circle cx="8.5" cy="8.5" r="1.5"></circle>
             <polyline points="21 15 16 10 5 21"></polyline>
           </svg>
-          <span>Немає фото</span>
+          <span data-i18n="noPhoto">Немає фото</span>
         </div>
       </div>
       <div class="item-preview-content">
@@ -2112,7 +2111,7 @@
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
           </svg>
-          Редагувати
+          <span data-i18n="edit">Редагувати</span>
         </button>
       </div>
     </div>

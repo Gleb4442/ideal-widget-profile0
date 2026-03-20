@@ -3,6 +3,7 @@
  * Hilton Chat Widget
  */
 
+import { getTranslation } from './language.js';
 import * as dom from './dom.js';
 
 const NOTIFICATION_SETTINGS_KEY = 'chat_notification_settings';
@@ -140,7 +141,7 @@ function updateSoundToggleUI(isEnabled) {
 
   if (soundIconOn) soundIconOn.classList.toggle('hidden', !isEnabled);
   if (soundIconOff) soundIconOff.classList.toggle('hidden', isEnabled);
-  if (soundStatusText) soundStatusText.textContent = isEnabled ? 'Вкл' : 'Выкл';
+  if (soundStatusText) soundStatusText.textContent = isEnabled ? getTranslation('soundOn') : getTranslation('soundOff');
 }
 
 function initVisibilityTracking() {
@@ -212,7 +213,7 @@ export function showNewMessagesMarker() {
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polyline points="6 9 12 15 18 9"></polyline>
       </svg>
-      <span>Нові повідомлення</span>
+      <span data-i18n="newMessages">${getTranslation('newMessages')}</span>
     </div>
   `;
 

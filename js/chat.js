@@ -4377,31 +4377,48 @@ export function initMenuListeners() {
 function updateMenuButtonStates() {
   const roomsMenuBtn = document.getElementById('rooms-menu-btn');
   const shopMenuBtn = document.getElementById('shop-menu-btn');
-
-  const isOrchestra = orchestra.getOrchestraMode() && chatContext.mode === 'multi';
-  const isDiscoveryActive = discovery.discoveryState.active;
-
-  if (shopMenuBtn) {
-    const disabled = isOrchestra;
-    shopMenuBtn.disabled = disabled;
-    shopMenuBtn.style.opacity = disabled ? '0.4' : '';
-    shopMenuBtn.style.pointerEvents = disabled ? 'none' : '';
-    shopMenuBtn.title = disabled ? 'Недоступно в режимі Orchestra' : '';
-  }
-
-  if (roomsMenuBtn) {
-    const disabled = isDiscoveryActive;
-    roomsMenuBtn.disabled = disabled;
-    roomsMenuBtn.style.opacity = disabled ? '0.4' : '';
-    roomsMenuBtn.style.pointerEvents = disabled ? 'none' : '';
-    roomsMenuBtn.title = disabled ? 'Недоступно в режимі Discovery' : '';
-  }
-
-  // Show "All Hotels" button only in Discovery mode
   const discoveryHotelsMenuBtn = document.getElementById('discovery-hotels-menu-btn');
-  if (discoveryHotelsMenuBtn) {
-    const isDiscoveryMode = orchestra.getDiscoveryMode();
-    discoveryHotelsMenuBtn.style.display = isDiscoveryMode ? '' : 'none';
+
+  const isOrchestra = orchestra.getOrchestraMode();
+  const isDiscoveryMode = orchestra.getDiscoveryMode();
+  const isHotelSelected = chatContext.mode === 'single';
+  const isRoomSelected = !!selectedRoom || (bookingState && bookingState.collectedData && bookingState.collectedData.selectedRoom);
+
+  // Initial state: hide all
+  if (roomsMenuBtn) roomsMenuBtn.style.display = 'none';
+  if (shopMenuBtn) shopMenuBtn.style.display = 'none';
+  if (discoveryHotelsMenuBtn) discoveryHotelsMenuBtn.style.display = 'none';
+
+  // Logic: Only one button should be visible at each stage
+  if (isRoomSelected) {
+    // Stage 3: Room selected -> Show Services
+    if (shopMenuBtn) {
+      shopMenuBtn.style.display = '';
+      shopMenuBtn.disabled = false;
+      shopMenuBtn.style.opacity = '';
+      shopMenuBtn.style.pointerEvents = '';
+    }
+  } else if (isHotelSelected) {
+    // Stage 2: Hotel selected -> Show Rooms
+    if (roomsMenuBtn) {
+      roomsMenuBtn.style.display = '';
+      roomsMenuBtn.disabled = false;
+      roomsMenuBtn.style.opacity = '';
+      roomsMenuBtn.style.pointerEvents = '';
+    }
+  } else if (isDiscoveryMode || (isOrchestra && chatContext.mode === 'multi')) {
+    // Stage 1: Discovery or Orchestra Multi -> Show Hotels
+    if (discoveryHotelsMenuBtn) {
+      discoveryHotelsMenuBtn.style.display = '';
+    }
+  } else {
+    // Fallback for single-hotel widget (not orchestra, not discovery)
+    if (roomsMenuBtn) {
+      roomsMenuBtn.style.display = '';
+      roomsMenuBtn.disabled = false;
+      roomsMenuBtn.style.opacity = '';
+      roomsMenuBtn.style.pointerEvents = '';
+    }
   }
 }
 

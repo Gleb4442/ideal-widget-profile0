@@ -3,6 +3,8 @@
  * Hilton Chat Widget
  */
 
+import { getTranslation, currentLang } from './language.js';
+
 const STORAGE_KEY = 'hotel_services';
 const MAX_IMAGE_SIZE = 800;
 
@@ -180,10 +182,11 @@ export function hasServices() {
 // Format price for display
 export function formatPrice(price, priceType = 'fixed') {
   if (priceType === 'on_request') {
-    return 'По запросу';
+    return getTranslation('onRequest');
   }
 
-  const formattedPrice = new Intl.NumberFormat('ru-RU', {
+  const locale = currentLang === 'uk' ? 'uk-UA' : currentLang === 'ru' ? 'ru-RU' : 'en-US';
+  const formattedPrice = new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
@@ -192,34 +195,38 @@ export function formatPrice(price, priceType = 'fixed') {
 
   switch (priceType) {
     case 'per_hour':
-      return `${formattedPrice}/час`;
+      return `${formattedPrice}/${getTranslation('perHour')}`;
     case 'per_day':
-      return `${formattedPrice}/день`;
+      return `${formattedPrice}/${getTranslation('perDay')}`;
     default:
       return formattedPrice;
   }
 }
 
 // Service categories
-export const SERVICE_CATEGORIES = [
-  { id: 'spa', name: 'SPA & Wellness', icon: 'spa' },
-  { id: 'restaurant', name: 'Ресторан', icon: 'restaurant' },
-  { id: 'transport', name: 'Трансфер', icon: 'car' },
-  { id: 'entertainment', name: 'Развлечения', icon: 'entertainment' },
-  { id: 'business', name: 'Бизнес', icon: 'business' },
-  { id: 'kids', name: 'Для детей', icon: 'kids' },
-  { id: 'general', name: 'Другое', icon: 'general' }
-];
+export function getServiceCategories() {
+  return [
+    { id: 'spa', name: getTranslation('categorySpa'), icon: 'spa' },
+    { id: 'restaurant', name: getTranslation('categoryRestaurant'), icon: 'restaurant' },
+    { id: 'transport', name: getTranslation('categoryTransport'), icon: 'car' },
+    { id: 'entertainment', name: getTranslation('categoryEntertainment'), icon: 'entertainment' },
+    { id: 'business', name: getTranslation('categoryBusiness'), icon: 'business' },
+    { id: 'kids', name: getTranslation('categoryKids'), icon: 'kids' },
+    { id: 'general', name: getTranslation('categoryOther'), icon: 'general' }
+  ];
+}
 
 // Get category name
 export function getCategoryName(categoryId) {
-  const category = SERVICE_CATEGORIES.find(c => c.id === categoryId);
-  return category ? category.name : 'Другое';
+  const categories = getServiceCategories();
+  const category = categories.find(c => c.id === categoryId);
+  return category ? category.name : getTranslation('categoryOther');
 }
 
 // Get full category info
 export function getCategoryInfo(categoryId) {
-  return SERVICE_CATEGORIES.find(c => c.id === categoryId) || { id: 'general', name: 'Другое', icon: 'general' };
+  const categories = getServiceCategories();
+  return categories.find(c => c.id === categoryId) || { id: 'general', name: getTranslation('categoryOther'), icon: 'general' };
 }
 
 // Format service price with priceType

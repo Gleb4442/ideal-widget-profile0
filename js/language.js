@@ -79,9 +79,28 @@ export function updateUITexts() {
     dom.messageInput.placeholder = t.placeholder || 'Type a message...';
   }
 
+  // Handle text content
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     if (t[key]) el.textContent = t[key];
+  });
+
+  // Handle placeholders
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (t[key]) el.placeholder = t[key];
+  });
+
+  // Handle titles
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const key = el.getAttribute('data-i18n-title');
+    if (t[key]) el.title = t[key];
+  });
+
+  // Handle aria-labels
+  document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+    const key = el.getAttribute('data-i18n-aria-label');
+    if (t[key]) el.setAttribute('aria-label', t[key]);
   });
 
   renderLanguageMenu();

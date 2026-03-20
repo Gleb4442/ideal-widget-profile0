@@ -4,6 +4,7 @@
  */
 
 import { fontsList, iconsList } from './config.js';
+import { getTranslation, currentLang } from './language.js';
 import * as dom from './dom.js';
 import * as rooms from './rooms.js';
 import * as bookings from './bookings.js';
@@ -40,11 +41,7 @@ const HOTEL_INFO_KEY = 'hotel_info';
 const IN_APP_MODE_KEY = 'in_app_mode';
 const THEME_MODE_KEY = 'theme_mode';
 
-// Russian month names
-const MONTH_NAMES_RU = [
-  'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-  'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
-];
+// Month names are now retrieved from getTranslation('months')
 
 // Initialize Font Selector
 export function initFontSelector() {
@@ -363,7 +360,15 @@ function renderCalendar() {
   const month = calendarCurrentMonth.getMonth();
 
   // Update month label
-  monthLabel.textContent = `${MONTH_NAMES_RU[month]} ${year}`;
+  const months = getTranslation('months');
+  monthLabel.textContent = `${months[month]} ${year}`;
+
+  // Update weekdays if row exists
+  const weekdaysRow = document.getElementById('calendar-weekdays-row');
+  if (weekdaysRow) {
+    const weekdays = getTranslation('weekdays');
+    weekdaysRow.innerHTML = weekdays.map(day => `<span>${day}</span>`).join('');
+  }
 
   // Get first day of month (0 = Sunday, we need Monday = 0)
   const firstDay = new Date(year, month, 1);
@@ -514,7 +519,7 @@ export function renderRoomsGrid() {
     const hotelName = room.propertyId ? hotelMap[room.propertyId] : null;
     const hotelBadge = hotelName
       ? `<div class="room-admin-card-hotel" style="position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.65);color:#fff;font-size:10px;padding:2px 7px;border-radius:8px;z-index:2;max-width:70%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${hotelName}</div>`
-      : `<div class="room-admin-card-hotel" style="position:absolute;top:6px;left:6px;background:rgba(255,140,0,0.85);color:#fff;font-size:10px;padding:2px 7px;border-radius:8px;z-index:2;">⚠ Без готелю</div>`;
+      : `<div class="room-admin-card-hotel" style="position:absolute;top:6px;left:6px;background:rgba(255,140,0,0.85);color:#fff;font-size:10px;padding:2px 7px;border-radius:8px;z-index:2;">⚠ ${getTranslation('noHotel')}</div>`;
     return `
     <div class="room-admin-card" data-room-id="${room.id}" style="position:relative;">
       ${hotelBadge}
@@ -523,7 +528,7 @@ export function renderRoomsGrid() {
       : `<div class="room-admin-placeholder"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div>`
     }
       <div class="room-admin-card-overlay">
-        <div class="room-admin-card-name">${room.name || 'Без назви'}</div>
+        <div class="room-admin-card-name">${room.name || (currentLang === 'uk' ? 'Без назви' : currentLang === 'ru' ? 'Без названия' : 'No name')}</div>
         <div class="room-admin-card-price">${rooms.formatPrice(room.pricePerNight)}</div>
       </div>
     </div>
@@ -559,16 +564,16 @@ export function openRoomModal(roomId = null) {
     const discHotels = orchestra.getDiscoveryHotels().map(h => ({ ...h, _source: 'discovery' }));
     const allHotels = [...networkHotels, ...discHotels];
 
-    hotelSelect.innerHTML = '<option value="">— Оберіть готель —</option>' +
+    hotelSelect.innerHTML = `<option value="">— ${getTranslation('selectHotel')} —</option>` +
       allHotels.map(h =>
-        `<option value="${h.id}">${h.name}${h._source === 'discovery' ? ' (незалежний)' : ''}</option>`
+        `<option value="${h.id}">${h.name}${h._source === 'discovery' ? (currentLang === 'uk' ? ' (незалежний)' : ' (независимый)') : ''}</option>`
       ).join('');
   }
 
   if (roomId) {
     const room = rooms.getRoom(roomId);
     if (room) {
-      title.textContent = 'Редагувати номер';
+      title.textContent = getTranslation('roomModalTitleEdit');
       // Set hotel selector
       currentRoomPropertyId = room.propertyId || null;
       if (hotelSelect) hotelSelect.value = room.propertyId || '';
@@ -591,7 +596,7 @@ export function openRoomModal(roomId = null) {
       deleteBtn.style.display = 'flex';
     }
   } else {
-    title.textContent = 'Новий номер';
+    title.textContent = getTranslation('roomModalTitleNew');
     currentRoomPropertyId = null;
     if (hotelSelect) hotelSelect.value = '';
     document.getElementById('room-name-input').value = '';
@@ -638,7 +643,7 @@ function updateMainPhotoPreview() {
           <circle cx="8.5" cy="8.5" r="1.5"></circle>
           <polyline points="21 15 16 10 5 21"></polyline>
         </svg>
-        <span>Натисніть для завантаження</span>
+        <span data-i18n="clickToUpload">${getTranslation('clickToUpload')}</span>
       </div>
     `;
     area.classList.remove('has-photo');
@@ -672,7 +677,7 @@ function updateGalleryPreview() {
       <line x1="12" y1="5" x2="12" y2="19"></line>
       <line x1="5" y1="12" x2="19" y2="12"></line>
     </svg>
-    <span>Додати</span>
+    <span data-i18n="add">${getTranslation('add')}</span>
   `;
   newAddBtn.addEventListener('click', () => {
     document.getElementById('gallery-photo-input').click();
@@ -707,7 +712,7 @@ function saveRoom() {
   const originalPrice = parseInt(document.getElementById('room-original-price-input').value) || 0;
 
   if (!name) {
-    alert('Введіть назву номера');
+    alert(getTranslation('roomNameRequired'));
     return;
   }
 
@@ -744,7 +749,7 @@ function saveRoom() {
 function deleteRoom() {
   if (!currentEditRoomId) return;
 
-  if (confirm('Видалити цей номер?')) {
+  if (confirm(getTranslation('roomDeleteConfirm'))) {
     rooms.deleteRoom(currentEditRoomId);
     closeRoomModal();
     renderRoomsGrid();
@@ -839,7 +844,7 @@ export function initRoomManagement() {
       const text = document.getElementById('room-review-text').value.trim();
 
       if (!author || !date || !text) {
-        alert('Будь ласка, заповніть всі поля відгуку');
+        alert(getTranslation('reviewFieldsRequired'));
         return;
       }
 
@@ -866,7 +871,7 @@ function renderRoomReviewsList() {
   list.innerHTML = '';
 
   if (currentRoomReviews.length === 0) {
-    list.innerHTML = '<div class="text-sm text-gray-500 italic p-2 text-center">Немає відгуків</div>';
+    list.innerHTML = `<div class="text-sm text-gray-500 italic p-2 text-center">${getTranslation('noReviews')}</div>`;
     return;
   }
 
@@ -929,8 +934,8 @@ export function renderBookingsList() {
         <line x1="8" y1="2" x2="8" y2="6"></line>
         <line x1="3" y1="10" x2="21" y2="10"></line>
       </svg>
-      <div class="bookings-empty-title">Немає бронювань</div>
-      <div class="bookings-empty-text">${bookingsSearchTerm ? 'Нічого не знайдено за вашим запитом' : 'Натисніть "Тестові" для генерації демо-даних'}</div>
+      <div class="bookings-empty-title">${getTranslation('bookingsEmpty')}</div>
+      <div class="bookings-empty-text">${bookingsSearchTerm ? getTranslation('bookingSearchNoResults') : getTranslation('bookingGenerateTestDesc')}</div>
     </div>
   `;
     return;
@@ -958,27 +963,27 @@ export function renderBookingsList() {
 
       <div class="booking-info">
         <div class="booking-info-item">
-          <div class="booking-info-label">Заїзд</div>
+          <div class="booking-info-label" data-i18n="checkIn">Заїзд</div>
           <div class="booking-info-value">${formatted.checkInFormatted}</div>
         </div>
         <div class="booking-info-item">
-          <div class="booking-info-label">Виїзд</div>
+          <div class="booking-info-label" data-i18n="checkOut">Виїзд</div>
           <div class="booking-info-value">${formatted.checkOutFormatted}</div>
         </div>
         <div class="booking-info-item">
-          <div class="booking-info-label">Ночей</div>
+          <div class="booking-info-label" data-i18n="nights">Ночей</div>
           <div class="booking-info-value">${booking.nights}</div>
         </div>
         <div class="booking-info-item">
-          <div class="booking-info-label">Гостей</div>
+          <div class="booking-info-label" data-i18n="guests">Гостей</div>
           <div class="booking-info-value">${booking.guests}</div>
         </div>
         <div class="booking-info-item">
-          <div class="booking-info-label">Телефон</div>
+          <div class="booking-info-label" data-i18n="phone">Телефон</div>
           <div class="booking-info-value">${booking.phone}</div>
         </div>
         <div class="booking-info-item">
-          <div class="booking-info-label">Ціна</div>
+          <div class="booking-info-label" data-i18n="price">Ціна</div>
           <div class="booking-info-value">${formatted.totalPriceFormatted}</div>
         </div>
       </div>
@@ -1005,8 +1010,8 @@ export function renderBookingsList() {
             <polyline points="3 6 5 6 21 6"></polyline>
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
           </svg>
-          Видалити
-        </button>
+            <span data-i18n="delete">Видалити</span>
+          </button>
       </div>
     </div>
   `;
@@ -1031,7 +1036,7 @@ window.cancelBookingConfirm = function (bookingId) {
   const booking = bookings.getBookingById(bookingId);
   if (!booking) return;
 
-  if (confirm(`Скасувати бронювання для ${booking.guestName}?`)) {
+  if (confirm(getTranslation('bookingCancelConfirm').replace('{name}', booking.guestName))) {
     bookings.cancelBooking(bookingId);
     renderBookingsList();
   }
@@ -1042,7 +1047,7 @@ window.deleteBookingConfirm = function (bookingId) {
   const booking = bookings.getBookingById(bookingId);
   if (!booking) return;
 
-  if (confirm(`Видалити бронювання для ${booking.guestName} назавжди?\nЦю дію неможливо скасувати.`)) {
+  if (confirm(getTranslation('bookingDeleteConfirm').replace('{name}', booking.guestName))) {
     bookings.deleteBooking(bookingId);
     renderBookingsList();
   }
@@ -1053,30 +1058,26 @@ window.editBooking = function (bookingId) {
   const booking = bookings.getBookingById(bookingId);
   if (!booking) return;
 
-  const message = `Редагування бронювання для ${booking.guestName}\n\n` +
-    `Поточні дані:\n` +
-    `• Заїзд: ${bookings.formatBooking(booking).checkInFormatted}\n` +
-    `• Виїзд: ${bookings.formatBooking(booking).checkOutFormatted}\n` +
-    `• Номер: ${booking.roomName}\n` +
-    `• Гостей: ${booking.guests}\n\n` +
-    `Для редагування бронювання:\n` +
-    `1. Поточне бронювання буде скасовано\n` +
-    `2. Гість зможе створити нове бронювання через чат\n\n` +
-    `Продовжити?`;
+  const message = getTranslation('bookingEditConfirm')
+    .replace('{name}', booking.guestName)
+    .replace('{checkIn}', bookings.formatBooking(booking).checkInFormatted)
+    .replace('{checkOut}', bookings.formatBooking(booking).checkOutFormatted)
+    .replace('{room}', booking.roomName)
+    .replace('{guests}', booking.guests);
 
   if (confirm(message)) {
     // Cancel current booking
     bookings.cancelBooking(bookingId);
     renderBookingsList();
 
-    alert(`Бронювання скасовано.\n\nТепер гість ${booking.guestName} може створити нове бронювання через чат з оновленими даними.`);
+    alert(getTranslation('bookingCancelledAlert').replace('{name}', booking.guestName));
   }
 };
 
 // Generate test bookings
 function generateTestBookingsHandler() {
   if (bookings.getAllBookings().length > 0) {
-    if (!confirm('Вже є бронювання в базі. Додати ще тестові дані?')) {
+    if (!confirm(getTranslation('addTestBookingsConfirm'))) {
       return;
     }
   }
@@ -1091,7 +1092,9 @@ function generateTestBookingsHandler() {
     .map(b => b.guestName)
     .join('\n• ');
 
-  alert(`Згенеровано ${generated.length} тестових бронювань!\n\nПриклади гостей для тестування скасування:\n• ${guestNames}\n\nВи можете знайти бронювання через пошук за ПІБ.`);
+  alert(getTranslation('testBookingsGeneratedAlert')
+    .replace('{count}', generated.length)
+    .replace('{names}', guestNames));
 }
 
 // Initialize bookings search
@@ -1133,7 +1136,7 @@ export function renderPropertyServicesGrid(propertyId) {
   const propServices = services.getServicesByProperty(propertyId);
 
   if (propServices.length === 0) {
-    grid.innerHTML = '<div style="color:#9ca3af;font-size:13px;text-align:center;padding:12px 0;">Немає послуг. Натисніть «Додати».</div>';
+    grid.innerHTML = `<div style="color:#9ca3af;font-size:13px;text-align:center;padding:12px 0;">${getTranslation('noServices')}</div>`;
     return;
   }
 
@@ -1144,7 +1147,7 @@ export function renderPropertyServicesGrid(propertyId) {
       : `<div class="service-admin-placeholder"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div>`
     }
     <div class="service-admin-card-overlay">
-      <div class="service-admin-card-name">${service.name || 'Без назви'}</div>
+      <div class="service-admin-card-name">${service.name || (currentLang === 'uk' ? 'Без назви' : currentLang === 'ru' ? 'Без названия' : 'No name')}</div>
       <div class="service-admin-card-price">${services.formatPrice(service.price, service.priceType)}</div>
     </div>
   </div>
@@ -1174,7 +1177,7 @@ export function openServiceModal(serviceId = null) {
   if (serviceId) {
     const service = services.getService(serviceId);
     if (service) {
-      title.textContent = 'Редагувати послугу';
+      title.textContent = getTranslation('roomModalTitleEdit');
       document.getElementById('service-name-input').value = service.name || '';
       document.getElementById('service-description-input').value = service.description || '';
       document.getElementById('service-price-input').value = service.price || '';
@@ -1193,7 +1196,7 @@ export function openServiceModal(serviceId = null) {
       deleteBtn.style.display = 'flex';
     }
   } else {
-    title.textContent = 'Нова послуга';
+    title.textContent = getTranslation('roomModalTitleNew');
     document.getElementById('service-name-input').value = '';
     document.getElementById('service-description-input').value = '';
     document.getElementById('service-price-input').value = '';
@@ -1307,7 +1310,7 @@ function saveService() {
   const originalPrice = parseInt(document.getElementById('service-original-price-input').value) || 0;
 
   if (!name) {
-    alert('Введіть назву послуги');
+    alert(getTranslation('serviceNameRequired'));
     return;
   }
 
@@ -1346,7 +1349,7 @@ function saveService() {
 function deleteService() {
   if (!currentEditServiceId) return;
 
-  if (confirm('Видалити цю послугу?')) {
+  if (confirm(getTranslation('serviceDeleteConfirm'))) {
     services.deleteService(currentEditServiceId);
     closeServiceModal();
     if (currentServicePropertyId) {
@@ -1447,7 +1450,7 @@ export function initServiceManagement() {
       const text = document.getElementById('service-review-text').value.trim();
 
       if (!author || !date || !text) {
-        alert('Будь ласка, заповніть всі поля відгуку');
+        alert(getTranslation('reviewFieldsRequired'));
         return;
       }
 
@@ -1472,7 +1475,7 @@ function renderServiceReviewsList() {
   list.innerHTML = '';
 
   if (currentServiceReviews.length === 0) {
-    list.innerHTML = '<div class="text-sm text-gray-500 italic p-2 text-center">Немає відгуків</div>';
+    list.innerHTML = `<div class="text-sm text-gray-500 italic p-2 text-center">${getTranslation('noReviews')}</div>`;
     return;
   }
 
@@ -1586,7 +1589,7 @@ function openItemPreview(type, id) {
   }
 
   // Set content
-  titleEl.textContent = item.name || 'Без назви';
+  titleEl.textContent = item.name || (currentLang === 'uk' ? 'Без назви' : currentLang === 'ru' ? 'Без названия' : 'No name');
   priceEl.textContent = priceText;
   descEl.textContent = item.description || '';
 
