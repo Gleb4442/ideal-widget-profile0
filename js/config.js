@@ -269,7 +269,12 @@ export const translations = {
     policyConsentPrefix: "开始聊天即表示您同意",
     userAgreement: "使用条款",
     and: "和",
-    privacyPolicy: "隐私政策"
+    privacyPolicy: "隐私政策",
+    goToApp: "前往应用程序",
+    downloadOnThe: "下载于",
+    appStore: "App Store",
+    getItOn: "获取于",
+    googlePlay: "Google Play"
   },
   hi: {
     buttonText: "होटल से चैट करें",
@@ -294,7 +299,12 @@ export const translations = {
     policyConsentPrefix: "चैट शुरू करके आप सहमत हैं",
     userAgreement: "उपयोग की शर्तें",
     and: "और",
-    privacyPolicy: "गोपनीयता नीति"
+    privacyPolicy: "गोपनीयता नीति",
+    goToApp: "ऐप पर जाएं",
+    downloadOnThe: "डाउनलोड करें",
+    appStore: "App Store",
+    getItOn: "पायें",
+    googlePlay: "Google Play"
   },
   es: {
     buttonText: "Chat con el Hotel",
@@ -319,7 +329,12 @@ export const translations = {
     policyConsentPrefix: "Al iniciar un chat, aceptas los",
     userAgreement: "Términos de uso",
     and: "y la",
-    privacyPolicy: "Política de privacidad"
+    privacyPolicy: "Política de privacidad",
+    goToApp: "Ir a la app",
+    downloadOnThe: "Consíguelo en el",
+    appStore: "App Store",
+    getItOn: "DISPONIBLE EN",
+    googlePlay: "Google Play"
   },
   ar: {
     buttonText: "الدردشة مع الفندق",
@@ -344,7 +359,12 @@ export const translations = {
     policyConsentPrefix: "ببدء الدردشة فإنك توافق على",
     userAgreement: "شروط الاستخدام",
     and: "و",
-    privacyPolicy: "سياسة الخصوصية"
+    privacyPolicy: "سياسة الخصوصية",
+    goToApp: "الذهاب إلى التطبيق",
+    downloadOnThe: "تنزيل من",
+    appStore: "App Store",
+    getItOn: "احصل عليه من",
+    googlePlay: "Google Play"
   },
   fr: {
     buttonText: "Chat avec l'Hôtel",
@@ -369,7 +389,12 @@ export const translations = {
     policyConsentPrefix: "En commençant une discussion, vous acceptez les",
     userAgreement: "Conditions d'utilisation",
     and: "et la",
-    privacyPolicy: "Politique de confidentialité"
+    privacyPolicy: "Politique de confidentialité",
+    goToApp: "Aller à l'app",
+    downloadOnThe: "Télécharger dans l'",
+    appStore: "App Store",
+    getItOn: "DISPONIBLE SUR",
+    googlePlay: "Google Play"
   },
   bn: {
     buttonText: "হোটেলের সাথে চ্যাট করুন",
@@ -394,7 +419,12 @@ export const translations = {
     policyConsentPrefix: "চ্যাট শুরু করার মাধ্যমে আপনি সম্মত হচ্ছেন",
     userAgreement: "ব্যবহারের শর্তাবলী",
     and: "এবং",
-    privacyPolicy: "গোপনীয়তা নীতি"
+    privacyPolicy: "গোপনীয়তা নীতি",
+    goToApp: "অ্যাপে যান",
+    downloadOnThe: "ডাউনলোড করুন",
+    appStore: "App Store",
+    getItOn: "এখান থেকে পান",
+    googlePlay: "Google Play"
   },
   pt: {
     buttonText: "Chat com o Hotel",
@@ -419,7 +449,12 @@ export const translations = {
     policyConsentPrefix: "Ao iniciar um chat, você concorda com os",
     userAgreement: "Termos de Uso",
     and: "e a",
-    privacyPolicy: "Política de Privacidade"
+    privacyPolicy: "Política de Privacidade",
+    goToApp: "Ir para o app",
+    downloadOnThe: "Baixar na",
+    appStore: "App Store",
+    getItOn: "DISPONÍVEL NO",
+    googlePlay: "Google Play"
   },
   ru: {
     buttonText: "Чат с отелем",
@@ -600,7 +635,11 @@ export const translations = {
     multiPropertySearch: "Участие в multi-property поиске",
     showInShortlist: "Показывать в Shortlist",
     additionalServices: "Дополнительные услуги",
-    noPhoto: "Нет фото"
+    noPhoto: "Нет фото",
+    downloadOnThe: "Скачать в",
+    appStore: "App Store",
+    getItOn: "Скачать в",
+    googlePlay: "Google Play"
   },
   id: {
     buttonText: "Chat dengan Hotel",
@@ -625,7 +664,12 @@ export const translations = {
     policyConsentPrefix: "Dengan memulai obrolan, Anda menyetujui",
     userAgreement: "Syarat Penggunaan",
     and: "dan",
-    privacyPolicy: "Kebijakan Privasi"
+    privacyPolicy: "Kebijakan Privasi",
+    goToApp: "Buka Ke Aplikasi",
+    downloadOnThe: "Unduh di",
+    appStore: "App Store",
+    getItOn: "DAPATKAN DI",
+    googlePlay: "Google Play"
   },
   uk: {
     buttonText: "Чат з готелем",
@@ -789,6 +833,10 @@ export const translations = {
     propertyName: "Назва готелю",
     propertyNamePlaceholder: "Наприклад: Hilton Center",
     logoLabel: "Логотип (показується в шапці чату)",
+    downloadOnThe: "Завантажити в",
+    appStore: "App Store",
+    getItOn: "Завантажити з",
+    googlePlay: "Google Play",
     uploadLogo: "Завантажити логотип",
     propertyDescription: "Опис готелю (для LLM)",
     propertyDescriptionPlaceholder: "Опис, що є в готелі...",
@@ -850,7 +898,12 @@ export const translations = {
     finalizingDetails: "詳細を確定中...",
     generatingOffer: "個人オファーを作成中...",
     newChat: "新しいチャット",
-    contactManager: "マネージャー"
+    contactManager: "マネージャー",
+    goToApp: "アプリに移動",
+    downloadOnThe: "ダウンロード:",
+    appStore: "App Store",
+    getItOn: "で手に入れよう",
+    googlePlay: "Google Play"
   },
   ko: {
     buttonText: "호텔과 채팅",
@@ -871,7 +924,12 @@ export const translations = {
     finalizingDetails: "세부 사항 마무리 중...",
     generatingOffer: "개인 제안 생성 중...",
     newChat: "새 채팅",
-    contactManager: "매니저"
+    contactManager: "매니저",
+    goToApp: "앱으로 이동",
+    downloadOnThe: "다운로드:",
+    appStore: "App Store",
+    getItOn: "다운로드:",
+    googlePlay: "Google Play"
   },
   it: {
     buttonText: "Chat con Hotel",
@@ -892,7 +950,12 @@ export const translations = {
     finalizingDetails: "Finalizzazione dettagli...",
     generatingOffer: "Creazione offerta personale...",
     newChat: "Nuova chat",
-    contactManager: "Manager"
+    contactManager: "Manager",
+    goToApp: "Vai all'App",
+    downloadOnThe: "Scarica su",
+    appStore: "App Store",
+    getItOn: "DISPONIBILE SU",
+    googlePlay: "Google Play"
   },
   tr: {
     buttonText: "Otel ile Sohbet",
@@ -913,7 +976,12 @@ export const translations = {
     finalizingDetails: "Detaylar tamamlanıyor...",
     generatingOffer: "Kişisel teklif oluşturuluyor...",
     newChat: "Yeni sohbet",
-    contactManager: "Yönetici"
+    contactManager: "Yönetici",
+    goToApp: "Uygulamaya Git",
+    downloadOnThe: "Şuradan İndir:",
+    appStore: "App Store",
+    getItOn: "ŞURADAN ALIN",
+    googlePlay: "Google Play"
   },
   nl: {
     buttonText: "Chat met Hotel",
@@ -934,7 +1002,12 @@ export const translations = {
     finalizingDetails: "Details afronden...",
     generatingOffer: "Persoonlijk aanbod maken...",
     newChat: "Nieuwe chat",
-    contactManager: "Manager"
+    contactManager: "Manager",
+    goToApp: "Naar de App",
+    downloadOnThe: "Download in de",
+    appStore: "App Store",
+    getItOn: "ONTDEK HET OP",
+    googlePlay: "Google Play"
   },
   pl: {
     buttonText: "Czat z Hotelem",
@@ -959,7 +1032,12 @@ export const translations = {
     policyConsentPrefix: "Rozpoczynając czat, zgadzasz się na",
     userAgreement: "Warunki użytkowania",
     and: "i",
-    privacyPolicy: "Politykę prywatności"
+    privacyPolicy: "Politykę prywatności",
+    goToApp: "Przejdź do aplikacji",
+    downloadOnThe: "Pobierz w",
+    appStore: "App Store",
+    getItOn: "POBIERZ Z",
+    googlePlay: "Google Play"
   },
   vi: {
     buttonText: "Trò chuyện với Khách sạn",
@@ -984,7 +1062,12 @@ export const translations = {
     policyConsentPrefix: "Bằng cách bắt đầu trò chuyện, bạn đồng ý với",
     userAgreement: "Điều khoản sử dụng",
     and: "và",
-    privacyPolicy: "Chính sách bảo mật"
+    privacyPolicy: "Chính sách bảo mật",
+    goToApp: "Đến Ứng dụng",
+    downloadOnThe: "Tải xuống trên",
+    appStore: "App Store",
+    getItOn: "TẢI TRÊN",
+    googlePlay: "Google Play"
   },
   th: {
     buttonText: "แชทกับโรงแรม",
@@ -1009,7 +1092,12 @@ export const translations = {
     policyConsentPrefix: "การเริ่มแชทแสดงว่าคุณยอมรับ",
     userAgreement: "ข้อกำหนดการใช้งาน",
     and: "และ",
-    privacyPolicy: "นโยบายความเป็นส่วนตัว"
+    privacyPolicy: "นโยบายความเป็นส่วนตัว",
+    goToApp: "ไปที่แอป",
+    downloadOnThe: "ดาวน์โหลดบน",
+    appStore: "App Store",
+    getItOn: "ดาวน์โหลดผ่าน",
+    googlePlay: "Google Play"
   },
   // Legacy support for Ukrainian
   ua: {
@@ -1034,6 +1122,11 @@ export const translations = {
     policyConsentPrefix: "Починаючи чат ви погоджуєтесь з",
     userAgreement: "Умовами використання",
     and: "та",
-    privacyPolicy: "Політикою конфіденційності"
+    privacyPolicy: "Політикою конфіденційності",
+    goToApp: "Перейти в додаток",
+    downloadOnThe: "Завантажити в",
+    appStore: "App Store",
+    getItOn: "Завантажити з",
+    googlePlay: "Google Play"
   }
 };
