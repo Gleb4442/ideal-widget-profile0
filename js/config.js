@@ -244,7 +244,11 @@ export const translations = {
     multiPropertySearch: "Multi-property search participation",
     showInShortlist: "Show in Shortlist",
     additionalServices: "Additional Services",
-    noPhoto: "No photo"
+    noPhoto: "No photo",
+    chooseThisHotel: "Choose this hotel",
+    fromPrice: "from",
+    allHotelsIntro: "Choose a hotel to learn more or start booking.",
+    noAdminHotels: "There are no hotels in the admin panel yet."
   },
   zh: {
     buttonText: "与酒店聊天",
@@ -274,7 +278,11 @@ export const translations = {
     downloadOnThe: "下载于",
     appStore: "App Store",
     getItOn: "获取于",
-    googlePlay: "Google Play"
+    googlePlay: "Google Play",
+    chooseThisHotel: "选择这家酒店",
+    fromPrice: "从",
+    allHotelsIntro: "选择一家酒店以了解更多信息或开始预订。",
+    noAdminHotels: "管理面板中尚无酒店。"
   },
   hi: {
     buttonText: "होटल से चैट करें",
@@ -304,7 +312,11 @@ export const translations = {
     downloadOnThe: "डाउनलोड करें",
     appStore: "App Store",
     getItOn: "पायें",
-    googlePlay: "Google Play"
+    googlePlay: "Google Play",
+    chooseThisHotel: "यह होटल चुनें",
+    fromPrice: "से ప్రారంభ",
+    allHotelsIntro: "अधिक जानने या बुकिंग शुरू करने के लिए एक होटल चुनें।",
+    noAdminHotels: "एडमिन पैनल में अभी तक कोई होटल नहीं है।"
   },
   es: {
     buttonText: "Chat con el Hotel",
@@ -334,7 +346,11 @@ export const translations = {
     downloadOnThe: "Consíguelo en el",
     appStore: "App Store",
     getItOn: "DISPONIBLE EN",
-    googlePlay: "Google Play"
+    googlePlay: "Google Play",
+    chooseThisHotel: "Elegir este hotel",
+    fromPrice: "desde",
+    allHotelsIntro: "Elija un hotel para obtener más información o comenzar a reservar.",
+    noAdminHotels: "Aún no hay hoteles en el panel de administración."
   },
   ar: {
     buttonText: "الدردشة مع الفندق",
@@ -364,7 +380,11 @@ export const translations = {
     downloadOnThe: "تنزيل من",
     appStore: "App Store",
     getItOn: "احصل عليه من",
-    googlePlay: "Google Play"
+    googlePlay: "Google Play",
+    chooseThisHotel: "اختر هذا الفندق",
+    fromPrice: "من",
+    allHotelsIntro: "اختر فندقًا لمعرفة المزيد أو بدء الحجز.",
+    noAdminHotels: "لا توجد فنادق في لوحة الإدارة بعد."
   },
   fr: {
     buttonText: "Chat avec l'Hôtel",
@@ -394,7 +414,11 @@ export const translations = {
     downloadOnThe: "Télécharger dans l'",
     appStore: "App Store",
     getItOn: "DISPONIBLE SUR",
-    googlePlay: "Google Play"
+    googlePlay: "Google Play",
+    chooseThisHotel: "Choisir cet hôtel",
+    fromPrice: "à partir de",
+    allHotelsIntro: "Choisissez un hôtel pour en savoir plus ou commencer à réserver.",
+    noAdminHotels: "Il n'y a pas encore d'hôtels"
   },
   bn: {
     buttonText: "হোটেলের সাথে চ্যাট করুন",
@@ -424,7 +448,11 @@ export const translations = {
     downloadOnThe: "ডাউনলোড করুন",
     appStore: "App Store",
     getItOn: "এখান থেকে পান",
-    googlePlay: "Google Play"
+    googlePlay: "Google Play",
+    chooseThisHotel: "এই হোটেলটি বেছে নিন",
+    fromPrice: "থেকে",
+    allHotelsIntro: "আরও জানতে অথবা বুকিং শুরু করতে একটি হোটেল বেছে নিন।",
+    noAdminHotels: "অ্যাডমিন প্যানেলে এখনও কোনো হোটেল নেই।"
   },
   pt: {
     buttonText: "Chat com o Hotel",
@@ -454,7 +482,11 @@ export const translations = {
     downloadOnThe: "Baixar na",
     appStore: "App Store",
     getItOn: "DISPONÍVEL NO",
-    googlePlay: "Google Play"
+    googlePlay: "Google Play",
+    chooseThisHotel: "Escolher este hotel",
+    fromPrice: "a partir de",
+    allHotelsIntro: "Escolha um hotel para saber mais ou iniciar a reserva.",
+    noAdminHotels: "Ainda não há hotéis no painel de administração."
   },
   ru: {
     buttonText: "Чат с отелем",
@@ -639,7 +671,11 @@ export const translations = {
     downloadOnThe: "Скачать в",
     appStore: "App Store",
     getItOn: "Скачать в",
-    googlePlay: "Google Play"
+    googlePlay: "Google Play",
+    chooseThisHotel: "Выбрать этот отель",
+    fromPrice: "от",
+    allHotelsIntro: "Выберите отель, чтобы узнать больше или начать бронирование.",
+    noAdminHotels: "В административной панели еще нет ни одного отеля."
   },
   id: {
     buttonText: "Chat dengan Hotel",
@@ -669,7 +705,11 @@ export const translations = {
     downloadOnThe: "Unduh di",
     appStore: "App Store",
     getItOn: "DAPATKAN DI",
-    googlePlay: "Google Play"
+    googlePlay: "Google Play",
+    chooseThisHotel: "Pilih hotel ini",
+    fromPrice: "mulai dari",
+    allHotelsIntro: "Pilih hotel untuk mempelajari lebih lanjut atau mulai memesan.",
+    noAdminHotels: "Belum ada hotel di panel admin."
   },
   uk: {
     buttonText: "Чат з готелем",
@@ -853,7 +893,11 @@ export const translations = {
     multiPropertySearch: "Участь у multi-property пошуку",
     showInShortlist: "Показувати в Shortlist",
     additionalServices: "Додаткові послуги",
-    noPhoto: "Немає фото"
+    noPhoto: "Немає фото",
+    chooseThisHotel: "Обрати цей готель",
+    fromPrice: "від",
+    allHotelsIntro: "Оберіть готель, щоб дізнатися більше або розпочати бронювання.",
+    noAdminHotels: "В адміністративній панелі ще немає жодного готелю."
   },
   de: {
     buttonText: "Chat mit Hotel",
@@ -877,7 +921,15 @@ export const translations = {
     policyConsentPrefix: "Mit dem Start eines Chats erklären Sie sich mit den",
     userAgreement: "Nutzungsbedingungen",
     and: "und der",
-    privacyPolicy: "Datenschutzerklärung einverstanden"
+    privacyPolicy: "Datenschutzerklärung einverstanden",
+    chooseThisHotel: "Choose this hotel",
+    fromPrice: "from",
+    allHotelsIntro: "Choose a hotel to learn more or start booking.",
+    noAdminHotels: "There are no hotels in the admin panel yet.",
+    chooseThisHotel: "Choose this hotel",
+    fromPrice: "from",
+    allHotelsIntro: "Choose a hotel to learn more or start booking.",
+    noAdminHotels: "There are no hotels in the admin panel yet."
   },
   ja: {
     buttonText: "ホテルとチャット",
@@ -903,7 +955,11 @@ export const translations = {
     downloadOnThe: "ダウンロード:",
     appStore: "App Store",
     getItOn: "で手に入れよう",
-    googlePlay: "Google Play"
+    googlePlay: "Google Play",
+    chooseThisHotel: "Choose this hotel",
+    fromPrice: "from",
+    allHotelsIntro: "Choose a hotel to learn more or start booking.",
+    noAdminHotels: "There are no hotels in the admin panel yet."
   },
   ko: {
     buttonText: "호텔과 채팅",
@@ -929,7 +985,11 @@ export const translations = {
     downloadOnThe: "다운로드:",
     appStore: "App Store",
     getItOn: "다운로드:",
-    googlePlay: "Google Play"
+    googlePlay: "Google Play",
+    chooseThisHotel: "Choose this hotel",
+    fromPrice: "from",
+    allHotelsIntro: "Choose a hotel to learn more or start booking.",
+    noAdminHotels: "There are no hotels in the admin panel yet."
   },
   it: {
     buttonText: "Chat con Hotel",
@@ -955,7 +1015,11 @@ export const translations = {
     downloadOnThe: "Scarica su",
     appStore: "App Store",
     getItOn: "DISPONIBILE SU",
-    googlePlay: "Google Play"
+    googlePlay: "Google Play",
+    chooseThisHotel: "Choose this hotel",
+    fromPrice: "from",
+    allHotelsIntro: "Choose a hotel to learn more or start booking.",
+    noAdminHotels: "There are no hotels in the admin panel yet."
   },
   tr: {
     buttonText: "Otel ile Sohbet",
@@ -981,7 +1045,15 @@ export const translations = {
     downloadOnThe: "Şuradan İndir:",
     appStore: "App Store",
     getItOn: "ŞURADAN ALIN",
-    googlePlay: "Google Play"
+    googlePlay: "Google Play",
+    chooseThisHotel: "Choose this hotel",
+    fromPrice: "from",
+    allHotelsIntro: "Choose a hotel to learn more or start booking.",
+    noAdminHotels: "There are no hotels in the admin panel yet.",
+    chooseThisHotel: "Choose this hotel",
+    fromPrice: "from",
+    allHotelsIntro: "Choose a hotel to learn more or start booking.",
+    noAdminHotels: "There are no hotels in the admin panel yet."
   },
   nl: {
     buttonText: "Chat met Hotel",
@@ -1007,7 +1079,11 @@ export const translations = {
     downloadOnThe: "Download in de",
     appStore: "App Store",
     getItOn: "ONTDEK HET OP",
-    googlePlay: "Google Play"
+    googlePlay: "Google Play",
+    chooseThisHotel: "Choose this hotel",
+    fromPrice: "from",
+    allHotelsIntro: "Choose a hotel to learn more or start booking.",
+    noAdminHotels: "There are no hotels in the admin panel yet."
   },
   pl: {
     buttonText: "Czat z Hotelem",
@@ -1037,7 +1113,11 @@ export const translations = {
     downloadOnThe: "Pobierz w",
     appStore: "App Store",
     getItOn: "POBIERZ Z",
-    googlePlay: "Google Play"
+    googlePlay: "Google Play",
+    chooseThisHotel: "Choose this hotel",
+    fromPrice: "from",
+    allHotelsIntro: "Choose a hotel to learn more or start booking.",
+    noAdminHotels: "There are no hotels in the admin panel yet."
   },
   vi: {
     buttonText: "Trò chuyện với Khách sạn",
@@ -1067,7 +1147,11 @@ export const translations = {
     downloadOnThe: "Tải xuống trên",
     appStore: "App Store",
     getItOn: "TẢI TRÊN",
-    googlePlay: "Google Play"
+    googlePlay: "Google Play",
+    chooseThisHotel: "Choose this hotel",
+    fromPrice: "from",
+    allHotelsIntro: "Choose a hotel to learn more or start booking.",
+    noAdminHotels: "There are no hotels in the admin panel yet."
   },
   th: {
     buttonText: "แชทกับโรงแรม",

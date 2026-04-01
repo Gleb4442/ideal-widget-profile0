@@ -2154,7 +2154,7 @@ export function addPropertyShortlist(propertyIds) {
       : '';
 
     const priceHTML = prop.minPrice
-      ? `<div class="text-xs text-gray-400 mb-2">від <span class="font-semibold text-gray-700">${prop.minPrice} ${prop.currency || 'USD'}</span>/ніч</div>`
+      ? `<div class="text-xs text-gray-400 mb-2">${getTranslation('fromPrice')} <span class="font-semibold text-gray-700">${prop.minPrice} ${prop.currency || 'USD'}</span>/${getTranslation('night')}</div>`
       : '';
 
     card.innerHTML = `
@@ -2167,7 +2167,7 @@ export function addPropertyShortlist(propertyIds) {
         <div class="flex flex-wrap gap-1 mb-2 min-h-[20px]">${tagsHTML}</div>
         ${priceHTML}
         <button class="select-property-btn w-full py-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors rounded-xl text-xs font-bold" data-id="${prop.id}">
-          Вибрати цей готель
+          ${getTranslation('chooseThisHotel')}
         </button>
       </div>
     `;
@@ -2200,12 +2200,12 @@ export function showAllDiscoveryHotels() {
   const allHotels = [...networkProps, ...discHotels];
 
   if (allHotels.length === 0) {
-    addMessage('В адміністративній панелі ще немає жодного готелю.', 'ai');
+    addMessage(getTranslation('noAdminHotels'), 'ai');
     return;
   }
 
   // Intro message
-  const introText = `🏨 <strong>Всі готелі (${allHotels.length}):</strong>\n\nОберіть готель, щоб дізнатися більше або розпочати бронювання.`;
+  const introText = `🏨 <strong>${getTranslation('allHotels')} (${allHotels.length}):</strong>\n\n${getTranslation('allHotelsIntro')}`;
   addMessage(introText, 'ai');
   addToConversationHistory('assistant', introText);
 
@@ -2245,7 +2245,7 @@ export function showAllDiscoveryHotels() {
         : '';
 
       const priceHTML = prop.minPrice
-        ? `<div class="text-xs text-gray-400 mb-2">від <span class="font-semibold text-gray-700">${prop.minPrice} ${prop.currency || 'USD'}</span>/ніч</div>`
+        ? `<div class="text-xs text-gray-400 mb-2">${getTranslation('fromPrice')} <span class="font-semibold text-gray-700">${prop.minPrice} ${prop.currency || 'USD'}</span>/${getTranslation('night')}</div>`
         : '';
 
       const cityBadge = prop.geoCity
@@ -2264,7 +2264,7 @@ export function showAllDiscoveryHotels() {
           <div class="flex flex-wrap gap-1 mb-2 min-h-[20px]">${tagsHTML}</div>
           ${priceHTML}
           <button class="select-discovery-hotel-btn w-full py-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors rounded-xl text-xs font-bold" data-id="${prop.id}">
-            Обрати цей готель
+            ${getTranslation('chooseThisHotel')}
           </button>
         </div>
       `;
