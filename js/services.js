@@ -101,7 +101,9 @@ export function addService(serviceData) {
     id: generateId(),
     propertyId: serviceData.propertyId || null,
     name: serviceData.name || '',
+    nameEn: serviceData.nameEn || '',
     description: serviceData.description || '',
+    descriptionEn: serviceData.descriptionEn || '',
     price: serviceData.price || 0,
     priceType: serviceData.priceType || 'fixed', // 'fixed' | 'per_hour' | 'per_day' | 'on_request'
     mainPhoto: serviceData.mainPhoto || '',
@@ -136,7 +138,9 @@ export function updateService(id, serviceData) {
   services[index] = {
     ...services[index],
     name: serviceData.name ?? services[index].name,
+    nameEn: serviceData.nameEn ?? services[index].nameEn ?? '',
     description: serviceData.description ?? services[index].description,
+    descriptionEn: serviceData.descriptionEn ?? services[index].descriptionEn ?? '',
     price: serviceData.price ?? services[index].price,
     priceType: serviceData.priceType ?? services[index].priceType,
     mainPhoto: serviceData.mainPhoto ?? services[index].mainPhoto,

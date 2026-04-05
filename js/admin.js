@@ -578,7 +578,9 @@ export function openRoomModal(roomId = null) {
       currentRoomPropertyId = room.propertyId || null;
       if (hotelSelect) hotelSelect.value = room.propertyId || '';
       document.getElementById('room-name-input').value = room.name || '';
+      document.getElementById('room-name-en-input').value = room.nameEn || '';
       document.getElementById('room-description-input').value = room.description || '';
+      document.getElementById('room-description-en-input').value = room.descriptionEn || '';
       document.getElementById('room-area-input').value = room.area || '';
       document.getElementById('room-price-input').value = room.pricePerNight || '';
       document.getElementById('room-ask-toggle').checked = room.askQuestionEnabled !== false;
@@ -600,7 +602,9 @@ export function openRoomModal(roomId = null) {
     currentRoomPropertyId = null;
     if (hotelSelect) hotelSelect.value = '';
     document.getElementById('room-name-input').value = '';
+    document.getElementById('room-name-en-input').value = '';
     document.getElementById('room-description-input').value = '';
+    document.getElementById('room-description-en-input').value = '';
     document.getElementById('room-area-input').value = '';
     document.getElementById('room-price-input').value = '';
     document.getElementById('room-ask-toggle').checked = true;
@@ -616,6 +620,11 @@ export function openRoomModal(roomId = null) {
   updateGalleryPreview();
   renderRoomReviewsList(); // Render reviews
   renderCalendar();
+
+  // Reset Apply to all checkbox
+  const applyAllCheckbox = document.getElementById('room-apply-all-checkbox');
+  if (applyAllCheckbox) applyAllCheckbox.checked = false;
+
   modal.classList.add('active');
 }
 
@@ -698,7 +707,9 @@ function updateGalleryPreview() {
 // Save Room
 function saveRoom() {
   const name = document.getElementById('room-name-input').value.trim();
+  const nameEn = document.getElementById('room-name-en-input').value.trim();
   const description = document.getElementById('room-description-input').value.trim();
+  const descriptionEn = document.getElementById('room-description-en-input').value.trim();
   const area = parseInt(document.getElementById('room-area-input').value) || 0;
   const pricePerNight = parseInt(document.getElementById('room-price-input').value) || 0;
   const askQuestionEnabled = document.getElementById('room-ask-toggle').checked;
@@ -719,7 +730,9 @@ function saveRoom() {
   const roomData = {
     propertyId,
     name,
+    nameEn,
     description,
+    descriptionEn,
     area,
     pricePerNight,
     mainPhoto: currentMainPhoto,
@@ -739,6 +752,24 @@ function saveRoom() {
     rooms.updateRoom(currentEditRoomId, roomData);
   } else {
     rooms.addRoom(roomData);
+  }
+
+  // Apply to all hotels logic
+  const applyAll = document.getElementById('room-apply-all-checkbox').checked;
+  if (applyAll) {
+    const allProperties = orchestra.getNetworkProperties();
+    allProperties.forEach(prop => {
+      if (prop.id === propertyId) return; // Skip current property
+
+      const propRooms = rooms.getRoomsByProperty(prop.id);
+      const existingRoom = propRooms.find(r => r.name === name);
+
+      if (existingRoom) {
+        rooms.updateRoom(existingRoom.id, { ...roomData, propertyId: prop.id });
+      } else {
+        rooms.addRoom({ ...roomData, propertyId: prop.id });
+      }
+    });
   }
 
   closeRoomModal();
@@ -1179,7 +1210,9 @@ export function openServiceModal(serviceId = null) {
     if (service) {
       title.textContent = getTranslation('roomModalTitleEdit');
       document.getElementById('service-name-input').value = service.name || '';
+      document.getElementById('service-name-en-input').value = service.nameEn || '';
       document.getElementById('service-description-input').value = service.description || '';
+      document.getElementById('service-description-en-input').value = service.descriptionEn || '';
       document.getElementById('service-price-input').value = service.price || '';
       document.getElementById('service-price-type-input').value = service.priceType || 'fixed';
       document.getElementById('service-category-input').value = service.category || 'general';
@@ -1198,7 +1231,9 @@ export function openServiceModal(serviceId = null) {
   } else {
     title.textContent = getTranslation('roomModalTitleNew');
     document.getElementById('service-name-input').value = '';
+    document.getElementById('service-name-en-input').value = '';
     document.getElementById('service-description-input').value = '';
+    document.getElementById('service-description-en-input').value = '';
     document.getElementById('service-price-input').value = '';
     document.getElementById('service-price-type-input').value = 'fixed';
     document.getElementById('service-category-input').value = 'general';
@@ -1216,6 +1251,11 @@ export function openServiceModal(serviceId = null) {
   updateServiceMainPhotoPreview();
   updateServiceGalleryPreview();
   renderServiceReviewsList(); // Render reviews
+
+  // Reset Apply to all checkbox
+  const applyAllCheckbox = document.getElementById('service-apply-all-checkbox');
+  if (applyAllCheckbox) applyAllCheckbox.checked = false;
+
   modal.classList.add('active');
 }
 
@@ -1297,7 +1337,9 @@ function updateServiceGalleryPreview() {
 // Save Service
 function saveService() {
   const name = document.getElementById('service-name-input').value.trim();
+  const nameEn = document.getElementById('service-name-en-input').value.trim();
   const description = document.getElementById('service-description-input').value.trim();
+  const descriptionEn = document.getElementById('service-description-en-input').value.trim();
   const price = parseInt(document.getElementById('service-price-input').value) || 0;
   const priceType = document.getElementById('service-price-type-input').value;
   const category = document.getElementById('service-category-input').value;
@@ -1317,7 +1359,9 @@ function saveService() {
   const serviceData = {
     propertyId: currentServicePropertyId,
     name,
+    nameEn,
     description,
+    descriptionEn,
     price,
     priceType,
     category,
@@ -1337,6 +1381,24 @@ function saveService() {
     services.updateService(currentEditServiceId, serviceData);
   } else {
     services.addService(serviceData);
+  }
+
+  // Apply to all hotels logic
+  const applyAll = document.getElementById('service-apply-all-checkbox').checked;
+  if (applyAll) {
+    const allProperties = orchestra.getNetworkProperties();
+    allProperties.forEach(prop => {
+      if (prop.id === currentServicePropertyId) return; // Skip current property
+
+      const propServices = services.getServicesByProperty(prop.id);
+      const existingService = propServices.find(s => s.name === name);
+
+      if (existingService) {
+        services.updateService(existingService.id, { ...serviceData, propertyId: prop.id });
+      } else {
+        services.addService({ ...serviceData, propertyId: prop.id });
+      }
+    });
   }
 
   closeServiceModal();

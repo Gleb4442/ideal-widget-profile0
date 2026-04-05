@@ -3,6 +3,8 @@
  * Hilton Chat Widget
  */
 
+import { getTranslation } from './language.js';
+
 const STORAGE_KEY = 'hotel_rooms';
 const MAX_IMAGE_SIZE = 800; // Max dimension for image compression
 
@@ -102,7 +104,9 @@ export function addRoom(roomData) {
     id: generateId(),
     propertyId: roomData.propertyId || null,
     name: roomData.name || '',
+    nameEn: roomData.nameEn || '',
     description: roomData.description || '',
+    descriptionEn: roomData.descriptionEn || '',
     area: roomData.area || 0,
     pricePerNight: roomData.pricePerNight || 0,
     mainPhoto: roomData.mainPhoto || '',
@@ -136,7 +140,9 @@ export function updateRoom(id, roomData) {
     ...rooms[index],
     propertyId: roomData.propertyId ?? rooms[index].propertyId ?? null,
     name: roomData.name ?? rooms[index].name,
+    nameEn: roomData.nameEn ?? rooms[index].nameEn ?? '',
     description: roomData.description ?? rooms[index].description,
+    descriptionEn: roomData.descriptionEn ?? rooms[index].descriptionEn ?? '',
     area: roomData.area ?? rooms[index].area,
     pricePerNight: roomData.pricePerNight ?? rooms[index].pricePerNight,
     mainPhoto: roomData.mainPhoto ?? rooms[index].mainPhoto,
@@ -190,7 +196,7 @@ export function formatPrice(price) {
 
 // Format area for display
 export function formatArea(area) {
-  return `${area} м²`;
+  return `${area} ${getTranslation('sqm')}`;
 }
 
 // Badge types and labels

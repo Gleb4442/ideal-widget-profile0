@@ -1541,15 +1541,34 @@
           </select>
         </div>
 
+        <div class="room-toggle-group" id="room-apply-all-container">
+           <span class="room-toggle-label" data-i18n="applyToAllHotels">Застосувати для всіх готелів</span>
+          <label class="switch">
+            <input type="checkbox" id="room-apply-all-checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+
         <div class="room-form-group">
           <label class="room-form-label" data-i18n="roomName">Назва номера</label>
           <input type="text" id="room-name-input" class="room-form-input" data-i18n-placeholder="roomNamePlaceholder" placeholder="Наприклад: Люкс Панорама">
         </div>
 
         <div class="room-form-group">
+          <label class="room-form-label">English Name</label>
+          <input type="text" id="room-name-en-input" class="room-form-input" placeholder="e.g. Panorama Suite">
+        </div>
+
+        <div class="room-form-group">
           <label class="room-form-label" data-i18n="roomDescription">Опис</label>
           <textarea id="room-description-input" class="room-form-textarea" data-i18n-placeholder="roomDescriptionPlaceholder"
             placeholder="Детальний опис номера..."></textarea>
+        </div>
+
+        <div class="room-form-group">
+          <label class="room-form-label">English Description</label>
+          <textarea id="room-description-en-input" class="room-form-textarea"
+            placeholder="Detailed room description in English..."></textarea>
         </div>
 
         <div class="room-form-row">
@@ -1746,15 +1765,34 @@
       <div class="service-modal-body">
         <input type="hidden" id="service-edit-id">
 
+        <div class="service-toggle-group" id="service-apply-all-container">
+          <span class="service-toggle-label" data-i18n="applyToAllHotels">Застосувати для всіх готелів</span>
+          <label class="switch">
+            <input type="checkbox" id="service-apply-all-checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+
         <div class="service-form-group">
           <label class="service-form-label" data-i18n="serviceName">Назва послуги</label>
-          <input type="text" id="service-name-input" class="service-form-input" data-i18n-placeholder="serviceNamePlaceholder" placeholder="Наприклад: SPA масаж">
+          <input type="text" id="service-name-input" class="room-form-input" data-i18n-placeholder="serviceNamePlaceholder" placeholder="Наприклад: SPA масаж">
+        </div>
+
+        <div class="service-form-group">
+          <label class="service-form-label">English Name</label>
+          <input type="text" id="service-name-en-input" class="room-form-input" placeholder="e.g. SPA Massage">
         </div>
 
         <div class="service-form-group">
           <label class="service-form-label" data-i18n="serviceDescription">Опис</label>
-          <textarea id="service-description-input" class="service-form-textarea" data-i18n-placeholder="serviceDescriptionPlaceholder"
+          <textarea id="service-description-input" class="room-form-textarea" data-i18n-placeholder="serviceDescriptionPlaceholder"
             placeholder="Детальний опис послуги..."></textarea>
+        </div>
+
+        <div class="service-form-group">
+          <label class="service-form-label">English Description</label>
+          <textarea id="service-description-en-input" class="room-form-textarea"
+            placeholder="Detailed service description in English..."></textarea>
         </div>
 
         <div class="service-form-row">

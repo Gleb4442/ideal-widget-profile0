@@ -1935,7 +1935,8 @@ export function addRoomCarousel() {
       badgesHTML += `<div class="carousel-badge ${badgeInfo.class}">${badgeInfo.label}</div>`;
     }
     if (hasLeftCount) {
-      badgesHTML += `<div class="carousel-left-count">Залишилось: ${room.leftCount}</div>`;
+      const leftText = getTranslation('roomsLeftLabel').replace('{count}', room.leftCount);
+      badgesHTML += `<div class="carousel-left-count">${leftText}</div>`;
     }
 
     // Price HTML with discount
@@ -1952,49 +1953,55 @@ export function addRoomCarousel() {
       priceHTML = `<div class="room-carousel-price">${rooms.formatPrice(room.pricePerNight)}</div>`;
     }
 
+    const isEn = (currentLang === 'en');
+    const roomName = (isEn && room.nameEn) ? room.nameEn : (room.name || getTranslation('noName'));
+    const roomDesc = (isEn && room.descriptionEn) ? room.descriptionEn : room.description;
+
     card.innerHTML = `
-      <div class="room-carousel-image-container">
-        ${badgesHTML ? `<div class="carousel-badges">${badgesHTML}</div>` : ''}
-        <div class="room-carousel-images-track" data-current-index="0">
-          ${imageTrackHTML}
-        </div>
-        ${navHTML}
+      <div class="room-image-slider">
+        <div class="room-image-track">${imageTrackHTML}</div>
         ${dotsHTML}
-        <div class="room-carousel-overlay">
-          <div class="room-carousel-actions">
-            <button class="room-carousel-action-btn primary" data-action="book" data-room-id="${room.id}">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-              Забронювати
-            </button>
-            ${room.askQuestionEnabled !== false ? `
-              <button class="room-carousel-action-btn secondary" data-action="ask" data-room-id="${room.id}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-                Питання
-              </button>
-            ` : ''}
+        ${navHTML}
+        ${badgesHTML}
+      </div>
+      <div class="p-3">
+        <div class="flex justify-between items-start mb-0.5">
+          <div class="font-bold text-sm text-gray-800 leading-tight truncate mr-2">${roomName}</div>
+          ${ratingHTML}
+        </div>
+        
+        <div class="flex items-center gap-2 mb-2">
+          <div class="text-[11px] text-gray-400 flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M3 9h18"></path><path d="M9 21V9"></path></svg>
+            ${rooms.formatArea(room.area)}
           </div>
         </div>
-      </div>
-      <div class="room-carousel-info">
-        <div class="room-carousel-name">${room.name || 'Без назви'}</div>
-        ${ratingHTML}
-        ${priceHTML}
-        <div class="room-carousel-area">${rooms.formatArea(room.area)}</div>
+
+        <div class="text-[11px] text-gray-500 mb-3 line-clamp-2 leading-relaxed h-[32px]">
+          ${roomDesc || ''}
+        </div>
+
+        <div class="flex items-center justify-between mt-auto pt-1 border-t border-gray-50">
+          ${priceHTML}
+          <div class="flex gap-1.5 flex-shrink-0">
+            ${room.askQuestionEnabled !== false ? `
+              <button class="room-action-btn question-btn" title="${getTranslation('askQuestion')}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </button>
+            ` : ''}
+            <button class="room-action-btn book-btn px-3 flex items-center gap-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider">${getTranslation('book')}</span>
+            </button>
+          </div>
+        </div>
       </div>
     `;
 
     // Handle image navigation (like services)
     if (hasMultiplePhotos) {
-      const track = card.querySelector('.room-carousel-images-track');
+      const track = card.querySelector('.room-image-track');
       const prevBtn = card.querySelector('.room-image-nav.prev');
       const nextBtn = card.querySelector('.room-image-nav.next');
       const dots = card.querySelectorAll('.room-image-dot');
@@ -2041,11 +2048,11 @@ export function addRoomCarousel() {
     }
 
     // Handle action button clicks
-    card.querySelectorAll('.room-carousel-action-btn').forEach(btn => {
+    card.querySelectorAll('.room-action-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const action = btn.dataset.action;
-        const roomId = btn.dataset.roomId;
+        const action = btn.classList.contains('book-btn') ? 'book' : 'ask';
+        const roomId = room.id;
 
         // Remove the carousel after selection
         wrapper.remove();
@@ -2299,26 +2306,30 @@ export function showRoomsViaAgent() {
   const allRooms = rooms.getAllRooms();
 
   if (allRooms.length === 0) {
-    addMessage('На жаль, наразі немає доступних номерів.', 'ai');
+    addMessage(getTranslation('roomsUnavailable'), 'ai');
     return;
   }
 
   // Build rooms text description
-  let roomsText = '🏨 <strong>Наші номери:</strong>\n\n';
+  let roomsText = `${getTranslation('roomsDescriptionHeader')}\n\n`;
 
   allRooms.forEach((room, index) => {
-    roomsText += `<strong>${index + 1}. ${room.name}</strong>\n`;
-    roomsText += `   📐 ${room.area || '—'} м² | 💵 $${room.pricePerNight}/ніч\n`;
-    if (room.description) {
-      const shortDesc = room.description.length > 80
-        ? room.description.slice(0, 80) + '...'
-        : room.description;
+    const isEn = (currentLang === 'en');
+    const roomName = (isEn && room.nameEn) ? room.nameEn : (room.name || getTranslation('noName'));
+    const description = (isEn && room.descriptionEn) ? room.descriptionEn : room.description;
+
+    roomsText += `<strong>${index + 1}. ${roomName}</strong>\n`;
+    roomsText += `   📐 ${rooms.formatArea(room.area || 0)} | 💵 ${rooms.formatPrice(room.pricePerNight)}/${getTranslation('night')}\n`;
+    if (description) {
+      const shortDesc = description.length > 80
+        ? description.slice(0, 80) + '...'
+        : description;
       roomsText += `   ${shortDesc}\n`;
     }
     roomsText += '\n';
   });
 
-  roomsText += '---\nЯкий тип номера вас цікавить? Розкажіть про ваші побажання — кількість гостей, вид з вікна, поверх чи інші особливі вимоги.';
+  roomsText += `---\n${getTranslation('roomSelectionIntro')}`;
 
   addMessage(roomsText, 'ai');
   addToConversationHistory('assistant', roomsText);
@@ -2339,37 +2350,34 @@ export function showServicesViaAgent() {
     : services.getAllServices();
 
   if (allServices.length === 0) {
-    addMessage('На жаль, наразі немає доступних послуг.', 'ai');
+    addMessage(getTranslation('servicesUnavailable'), 'ai');
     return;
   }
 
   // Build services text description
-  let servicesText = '🛍️ <strong>Наші послуги:</strong>\n\n';
+  let servicesText = `${getTranslation('servicesDescriptionHeader')}\n\n`;
 
   allServices.forEach((service, index) => {
-    servicesText += `<strong>${index + 1}. ${service.name}</strong>\n`;
+    const isEn = (currentLang === 'en');
+    const serviceName = (isEn && service.nameEn) ? service.nameEn : (service.name || getTranslation('noName'));
+    const description = (isEn && service.descriptionEn) ? service.descriptionEn : service.description;
+
+    servicesText += `<strong>${index + 1}. ${serviceName}</strong>\n`;
 
     // Format price
-    let priceText = '';
-    if (service.price > 0) {
-      priceText = `💵 ${service.price} ₴`;
-      if (service.priceType === 'per_hour') priceText += '/год';
-      if (service.priceType === 'per_person') priceText += '/ос';
-    } else {
-      priceText = 'Безкоштовно';
-    }
+    let priceText = services.formatPrice(service.price, service.priceType);
     servicesText += `   ${priceText}\n`;
 
-    if (service.description) {
-      const shortDesc = service.description.length > 80
-        ? service.description.slice(0, 80) + '...'
-        : service.description;
+    if (description) {
+      const shortDesc = description.length > 80
+        ? description.slice(0, 80) + '...'
+        : description;
       servicesText += `   ${shortDesc}\n`;
     }
     servicesText += '\n';
   });
 
-  servicesText += '---\nЯка послуга вас цікавить? Напишіть мені, і я допоможу оформити замовлення.';
+  servicesText += `---\n${getTranslation('serviceSelectionIntro')}`;
 
   addMessage(servicesText, 'ai');
   addToConversationHistory('assistant', servicesText);
@@ -2390,7 +2398,8 @@ export function offerServicesAfterRoomSelection(selectedRoomName) {
 
   roomSelectionMode = false;
 
-  addMessage(`Чудово! Ви обрали "${selectedRoomName}". Можу запропонувати додаткові послуги для вашого комфорту:`, 'ai');
+  const introText = getTranslation('roomSelectedOfferServices').replace('{roomName}', selectedRoomName);
+  addMessage(introText, 'ai');
 
   // Show services carousel after a short delay
   setTimeout(() => {
@@ -2440,7 +2449,7 @@ export function addServicesCarousel() {
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
       </svg>
-      Додаткові послуги
+      ${getTranslation('additionalServices')}
     </span>
   `;
 
@@ -2503,92 +2512,43 @@ export function addServicesCarousel() {
       `;
     }
 
-    // Marketing elements
-    const badgeInfo = service.badge ? services.getBadgeInfo(service.badge) : null;
-    const hasDiscount = service.discount > 0 && service.originalPrice > 0;
-    const hasLeftCount = service.leftCount > 0;
-
-    // Reviews calculation
-    let ratingHTML = '';
-    const reviews = service.reviews || [];
-    if (reviews.length > 0) {
-      const avgRating = (reviews.reduce((sum, r) => sum + parseInt(r.rating), 0) / reviews.length).toFixed(1);
-      ratingHTML = `
-        <div class="service-carousel-rating">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-          </svg>
-          <span class="rating-value">${avgRating}</span>
-          <span class="rating-count">(${reviews.length})</span>
-        </div>
-      `;
-    }
-
-    // Marketing badges HTML
-    let badgesHTML = '';
-    if (badgeInfo) {
-      badgesHTML += `<div class="carousel-badge ${badgeInfo.class}">${badgeInfo.label}</div>`;
-    }
-    if (hasLeftCount) {
-      badgesHTML += `<div class="carousel-left-count">Залишилось: ${service.leftCount}</div>`;
-    }
-
-    // Price HTML with discount
-    let priceHTML = '';
-    if (hasDiscount) {
-      priceHTML = `
-        <div class="service-carousel-price-wrapper">
-          <span class="service-carousel-original-price">${services.formatPrice(service.originalPrice, service.priceType)}</span>
-          <span class="service-carousel-price">${services.formatPrice(service.price, service.priceType)}</span>
-          <span class="service-carousel-discount">-${service.discount}%</span>
-        </div>
-      `;
-    } else {
-      priceHTML = `<div class="service-carousel-price">${services.formatPrice(service.price, service.priceType)}</div>`;
-    }
+    const isEn = (currentLang === 'en');
+    const serviceName = (isEn && service.nameEn) ? service.nameEn : (service.name || getTranslation('noName'));
+    const serviceDesc = (isEn && service.descriptionEn) ? service.descriptionEn : service.description;
 
     card.innerHTML = `
-      <div class="service-carousel-image-container">
-        ${badgesHTML ? `<div class="carousel-badges">${badgesHTML}</div>` : ''}
-        <div class="service-carousel-images-track" data-current-index="0">
-          ${imageTrackHTML}
-        </div>
-        ${navHTML}
+      <div class="service-image-slider">
+        <div class="service-image-track">${imageTrackHTML}</div>
         ${dotsHTML}
-        <div class="service-carousel-overlay">
-          <div class="service-carousel-actions">
-            ${service.addToBookingEnabled !== false ? `
-              <button class="service-carousel-action-btn primary" data-action="add" data-service-id="${service.id}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                Додати
-              </button>
-            ` : ''}
-            ${service.askQuestionEnabled !== false ? `
-              <button class="service-carousel-action-btn secondary" data-action="ask" data-service-id="${service.id}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-                Питання
-              </button>
-            ` : ''}
+        ${navHTML}
+      </div>
+      <div class="p-3">
+        <div class="font-bold text-sm text-gray-800 mb-0.5 leading-tight truncate mr-2">${serviceName}</div>
+        
+        <div class="text-[11px] text-gray-400 mb-2">
+          ${services.formatPrice(service.price, service.priceType)}
+        </div>
+
+        <div class="text-[11px] text-gray-500 mb-3 line-clamp-2 leading-relaxed h-[32px]">
+          ${serviceDesc || ''}
+        </div>
+
+        <div class="flex items-center justify-between mt-auto pt-1 border-t border-gray-50">
+          <div class="flex gap-1.5 w-full">
+            <button class="service-action-btn question-btn flex-1 py-1.5 bg-gray-50 text-gray-600 rounded-lg text-[10px] font-bold uppercase transition-colors hover:bg-gray-100">
+              ${getTranslation('askQuestion')}
+            </button>
+            <button class="service-action-btn book-btn flex-1 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-bold uppercase transition-colors hover:bg-blue-600 hover:text-white">
+              ${getTranslation('book')}
+            </button>
           </div>
         </div>
-      </div>
-      <div class="service-carousel-info">
-        <div class="service-carousel-name">${service.name || 'Без назви'}</div>
-        ${ratingHTML}
-        ${priceHTML}
       </div>
     `;
 
     // Handle image navigation
     if (hasMultiplePhotos) {
-      const track = card.querySelector('.service-carousel-images-track');
+      const track = card.querySelector('.service-image-track');
       const prevBtn = card.querySelector('.service-image-nav.prev');
       const nextBtn = card.querySelector('.service-image-nav.next');
       const dots = card.querySelectorAll('.service-image-dot');
@@ -2635,48 +2595,43 @@ export function addServicesCarousel() {
     }
 
     // Handle action button clicks
-    card.querySelectorAll('.service-carousel-action-btn').forEach(btn => {
+    card.querySelectorAll('.service-action-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const action = btn.dataset.action;
-        const serviceId = btn.dataset.serviceId;
+        const action = btn.classList.contains('book-btn') ? 'add' : 'ask';
+        const serviceId = service.id;
         const serviceData = services.getService(serviceId);
 
         // Remove the carousel after selection
         wrapper.remove();
 
         if (action === 'add') {
-          addMessage(`Хочу додати до бронювання: ${serviceData?.name}`, 'user');
-          addToConversationHistory('user', `Хочу додати до бронювання: ${serviceData?.name}`);
+          const userMsg = getTranslation('serviceAddMsg_user').replace('{serviceName}', serviceName);
+          addMessage(userMsg, 'user');
+          addToConversationHistory('user', userMsg);
           showTyping();
           setTimeout(() => {
             hideTyping();
-            addMessage(`Чудово! Послугу "${serviceData?.name}" додано до вашого бронювання. Є ще щось, що вас цікавить?`, 'ai');
-            addToConversationHistory('assistant', `Чудово! Послугу "${serviceData?.name}" додано до вашого бронювання. Є ще щось, що вас цікавить?`);
+            const aiMsg = getTranslation('serviceAddMsg_ai').replace('{serviceName}', serviceName);
+            addMessage(aiMsg, 'ai');
+            addToConversationHistory('assistant', aiMsg);
           }, 800);
         } else if (action === 'ask') {
-          addMessage(`Маю питання про послугу: ${serviceData?.name}`, 'user');
-          addToConversationHistory('user', `Маю питання про послугу: ${serviceData?.name}`);
+          const userMsg = getTranslation('serviceAskMsg_user').replace('{serviceName}', serviceName);
+          addMessage(userMsg, 'user');
+          addToConversationHistory('user', userMsg);
           showTyping();
           setTimeout(() => {
             hideTyping();
-            const description = serviceData?.description || 'Це одна з наших найпопулярніших послуг.';
-            addMessage(`${serviceData?.name}\n\n${description}\n\nЦіна: ${services.formatPrice(serviceData?.price, serviceData?.priceType)}\n\nЧим ще можу допомогти?`, 'ai');
-            addToConversationHistory('assistant', `${serviceData?.name}: ${description}`);
+            const description = serviceDesc || getTranslation('noDescription');
+            const priceText = services.formatPrice(service.price, service.priceType);
+            const aiMsg = `${serviceName}\n\n${description}\n\n${getTranslation('price')}: ${priceText}\n\n${getTranslation('anythingElse')}`;
+            addMessage(aiMsg, 'ai');
+            addToConversationHistory('assistant', `${serviceName}: ${description}`);
           }, 800);
         }
       });
     });
-
-    // Handle card click to open detail view (click on info section)
-    const infoSection = card.querySelector('.service-carousel-info');
-    if (infoSection) {
-      infoSection.style.cursor = 'pointer';
-      infoSection.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openServiceDetailView(service.id);
-      });
-    }
 
     carousel.appendChild(card);
   });
@@ -3171,9 +3126,12 @@ export function addRoomContextBadge(room) {
 
   const badge = document.createElement('div');
   badge.className = 'room-context-badge animate-fade-in';
+  const isEn = (currentLang === 'en');
+  const roomName = (isEn && room.nameEn) ? room.nameEn : (room.name || getTranslation('noName'));
+
   badge.innerHTML = `
     ${room.mainPhoto
-      ? `<img src="${room.mainPhoto}" alt="${room.name}">`
+      ? `<img src="${room.mainPhoto}" alt="${roomName}">`
       : `<div class="room-context-placeholder">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -3181,10 +3139,10 @@ export function addRoomContextBadge(room) {
         </div>`
     }
     <div class="room-context-details">
-      <div class="room-context-badge-name">${room.name}</div>
+      <div class="room-context-badge-name">${roomName}</div>
       <div class="room-context-actions">
-        <button class="room-context-action room-context-book" data-action="book">Забронювати</button>
-        <button class="room-context-action room-context-change" data-action="change">Інший номер</button>
+        <button class="room-context-action room-context-book" data-action="book">${getTranslation('book')}</button>
+        <button class="room-context-action room-context-change" data-action="change">${getTranslation('differentRoom')}</button>
       </div>
     </div>
   `;
@@ -3910,23 +3868,21 @@ export function startRoomBookingFlow(room) {
   selectedRoom = null;
 
   // 6. Compose the initiating user message and show it in chat
-  const priceStr = rooms.formatPrice(room.pricePerNight);
-  let userMessage = `Хочу забронювати номер "${room.name}" (${priceStr}/ніч)`;
+  const isEn = (currentLang === 'en');
+  const roomName = (isEn && room.nameEn) ? room.nameEn : (room.name || getTranslation('noName'));
+  const priceStr = rooms.formatPrice(room.pricePerNight || 0);
 
-  // Localized message
-  if (currentLang === 'ru') {
-    userMessage = `Хочу забронировать номер "${room.name}" (${priceStr}/ночь)`;
-  } else if (currentLang === 'en') {
-    userMessage = `I want to book room "${room.name}" (${priceStr}/night)`;
-  }
-
-  addMessage(userMessage, 'user');
+  const userMsg = getTranslation('bookingIntentMsg_user')
+    .replace('{roomName}', roomName)
+    .replace('{price}', priceStr);
+  
+  addMessage(userMsg, 'user');
 
   // 7. Let the AI take over — it will see selectedRoom in bookingState and start collecting data
   setButtonLoading(true);
   showTyping();
   isGenerating = true;
-  getAIResponse(userMessage);
+  getAIResponse(userMsg);
 }
 
 // View Room Photos
@@ -4571,3 +4527,4 @@ export function getChatMode() {
 // ========================================
 export { archiveCurrentSession, showHistoryModal, continueHistoryChat } from './history.js';
 export { loadGuideItems, saveGuideItems } from './guide.js';
+export { initVoiceRecognition, stopVoiceRecognition } from './voice.js';
