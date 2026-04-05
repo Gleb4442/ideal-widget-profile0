@@ -4527,4 +4527,3 @@ export function getChatMode() {
 // ========================================
 export { archiveCurrentSession, showHistoryModal, continueHistoryChat } from './history.js';
 export { loadGuideItems, saveGuideItems } from './guide.js';
-export { initVoiceRecognition, stopVoiceRecognition } from './voice.js';
