@@ -3061,22 +3061,22 @@ function initRoomServiceFormListeners(container, initialCategory) {
 
 // Clarifying questions per category
 const IN_APP_SERVICE_QUESTIONS = {
-  towels: 'Что именно принести? Банные полотенца 🛁, халаты или дополнительные подушки/одеяла?',
-  cleaning: 'Когда вам удобно? Могу организовать уборку прямо сейчас или в удобное для вас время.',
-  minibar: 'Что именно пополнить — напитки, снеки или полностью обновить весь мини-бар?'
+  towels: 'serviceQuestionTowels',
+  cleaning: 'serviceQuestionCleaning',
+  minibar: 'serviceQuestionMinibar'
 };
 
 // Labels for the task card
 const IN_APP_SERVICE_LABELS = {
-  towels: 'Принести полотенца',
-  cleaning: 'Уборка номера',
-  minibar: 'Пополнение мини-бара'
+  towels: 'serviceLabelTowels',
+  cleaning: 'serviceLabelCleaning',
+  minibar: 'serviceLabelMinibar'
 };
 
 const IN_APP_SERVICE_TIMES = {
-  towels: '10–15 минут',
-  cleaning: '15–25 минут',
-  minibar: '10–20 минут'
+  towels: 'serviceTimeTowels',
+  cleaning: 'serviceTimeCleaning',
+  minibar: 'serviceTimeMinibar'
 };
 
 // SVG icons for the header pill (inline, white stroke)
@@ -3088,14 +3088,15 @@ const IN_APP_SERVICE_ICONS = {
 
 // Start the in-app conversational service request
 export function startInAppServiceRequest(category, _userMessage) {
-  const question = IN_APP_SERVICE_QUESTIONS[category];
-  if (!question) {
+  const questionKey = IN_APP_SERVICE_QUESTIONS[category];
+  if (!questionKey) {
     showRoomServiceForm(category);
     return;
   }
 
   inAppServiceState = { active: true, category, step: 'clarifying' };
 
+  const question = getTranslation(questionKey);
 
   // Ask the clarifying question (animation removed from bubble)
   addMessage(question, 'ai');
@@ -3128,8 +3129,12 @@ function addServiceTaskCard(category, details) {
   const wrapper = document.createElement('div');
   wrapper.className = 'message-wrapper ai animate-fade-in';
 
-  const label = IN_APP_SERVICE_LABELS[category] || 'Заявка принята';
-  const time = IN_APP_SERVICE_TIMES[category] || '15–30 минут';
+  const labelKey = IN_APP_SERVICE_LABELS[category];
+  const label = labelKey ? getTranslation(labelKey) : getTranslation('confirm');
+  
+  const timeKey = IN_APP_SERVICE_TIMES[category];
+  const time = timeKey ? getTranslation(timeKey) : '15–30 min';
+  
   const icon = IN_APP_SERVICE_ICONS[category] || '';
 
   wrapper.innerHTML = `
@@ -3139,14 +3144,14 @@ function addServiceTaskCard(category, details) {
         <div class="stc-check">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
-        <div class="stc-title">Задача создана</div>
+        <div class="stc-title">${getTranslation('taskCreated')}</div>
       </div>
       <div class="stc-body">
         <div class="stc-label">${label}</div>
         ${details ? `<div class="stc-details">${details}</div>` : ''}
         <div class="stc-time">
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Ожидаемое время: <strong>${time}</strong>
+          ${getTranslation('expectedTime')}: <strong>${time}</strong>
         </div>
       </div>
     </div>

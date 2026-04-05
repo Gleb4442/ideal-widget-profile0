@@ -248,7 +248,18 @@ export const translations = {
     chooseThisHotel: "Choose this hotel",
     fromPrice: "from",
     allHotelsIntro: "Choose a hotel to learn more or start booking.",
-    noAdminHotels: "There are no hotels in the admin panel yet."
+    noAdminHotels: "There are no hotels in the admin panel yet.",
+    serviceQuestionTowels: 'What exactly should I bring? Bath towels 🛁, bathrobes or extra pillows/blankets?',
+    serviceQuestionCleaning: 'When is it convenient for you? I can arrange cleaning right now or at a time that suits you.',
+    serviceQuestionMinibar: 'What exactly should be replenished — drinks, snacks or a full update of the entire mini-bar?',
+    serviceLabelTowels: 'Bring towels',
+    serviceLabelCleaning: 'Room cleaning',
+    serviceLabelMinibar: 'Minibar replenishment',
+    serviceTimeTowels: '10–15 minutes',
+    serviceTimeCleaning: '15–25 minutes',
+    serviceTimeMinibar: '10–20 minutes',
+    taskCreated: 'Task created',
+    expectedTime: 'Expected time'
   },
   zh: {
     buttonText: "与酒店聊天",
@@ -675,7 +686,18 @@ export const translations = {
     chooseThisHotel: "Выбрать этот отель",
     fromPrice: "от",
     allHotelsIntro: "Выберите отель, чтобы узнать больше или начать бронирование.",
-    noAdminHotels: "В административной панели еще нет ни одного отеля."
+    noAdminHotels: "В административной панели еще нет ни одного отеля.",
+    serviceQuestionTowels: 'Что именно принести? Банные полотенца 🛁, халаты или дополнительные подушки/одеяла?',
+    serviceQuestionCleaning: 'Когда вам удобно? Могу организовать уборку прямо сейчас или в удобное для вас время.',
+    serviceQuestionMinibar: 'Что именно пополнить — напитки, снеки или полностью обновить весь мини-бар?',
+    serviceLabelTowels: 'Принести полотенца',
+    serviceLabelCleaning: 'Уборка номера',
+    serviceLabelMinibar: 'Пополнение мини-бара',
+    serviceTimeTowels: '10–15 минут',
+    serviceTimeCleaning: '15–25 минут',
+    serviceTimeMinibar: '10–20 минут',
+    taskCreated: 'Задача создана',
+    expectedTime: 'Ожидаемое время'
   },
   id: {
     buttonText: "Chat dengan Hotel",
@@ -897,7 +919,18 @@ export const translations = {
     chooseThisHotel: "Обрати цей готель",
     fromPrice: "від",
     allHotelsIntro: "Оберіть готель, щоб дізнатися більше або розпочати бронювання.",
-    noAdminHotels: "В адміністративній панелі ще немає жодного готелю."
+    noAdminHotels: "В адміністративній панелі ще немає жодного готелю.",
+    serviceQuestionTowels: 'Що саме принести? Банні рушники 🛁, халати або додаткові подушки/ковдри?',
+    serviceQuestionCleaning: 'Коли вам зручно? Можу організувати прибирання прямо зараз або у зручний для вас час.',
+    serviceQuestionMinibar: 'Що саме поповнити — напої, снеки або повністю оновити весь міні-бар?',
+    serviceLabelTowels: 'Принести рушники',
+    serviceLabelCleaning: 'Прибирання номера',
+    serviceLabelMinibar: 'Поповнення міні-бару',
+    serviceTimeTowels: '10–15 хвилин',
+    serviceTimeCleaning: '15–25 хвилин',
+    serviceTimeMinibar: '10–20 хвилин',
+    taskCreated: 'Завдання створено',
+    expectedTime: 'Очікуваний час'
   },
   de: {
     buttonText: "Chat mit Hotel",
